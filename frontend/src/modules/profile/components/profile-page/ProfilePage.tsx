@@ -1,12 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { AuthService } from "../../../../shared/services/authService";
 import { ApplicationService } from "../../../../shared/services/applicationService";
 import { User, UserType } from "../../../../shared/types/user";
 import { AssignedCourse } from "../../../../shared/types/courseTypes";
 import { useAuth } from "../../../auth/hooks/useAuth";
+import {
+  getUserAvatarSrc,
+  getUserInitials,
+} from "../../../../shared/utils/avatarUtils";
 import styles from "./ProfilePage.module.css";
 
 export const ProfilePage: React.FC = () => {
@@ -17,92 +21,81 @@ export const ProfilePage: React.FC = () => {
   const [appliedApplications, setAppliedApplications] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [avatarMessage, setAvatarMessage] = useState("");
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [showAvatarInitials, setShowAvatarInitials] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const loadProfile = async () => {
-      // First, try to get user from context or local storage
       const savedUser = contextUser || AuthService.getUser();
 
-      if (savedUser) {
-        setUser(savedUser);
+      if (!savedUser) {
+        setError("Please log in to view your profile.");
+        setIsLoading(false);
+        return;
+      }
 
-        // For lecturers, always try to fetch assigned courses from the API
-        if (savedUser.userType === UserType.LECTURER) {
-          try {
-            const response = await AuthService.getProfile();
-            if (
-              response.success &&
-              response.data?.assignedCourses &&
-              Array.isArray(response.data.assignedCourses)
-            ) {
-              setAssignedCourses(response.data.assignedCourses);
-            } else {
-              // No courses assigned yet
-              setAssignedCourses([]);
-            }
-          } catch (apiError) {
-            console.error(
-              "Failed to fetch assigned courses for lecturer:",
-              apiError
-            );
-            setAssignedCourses([]);
-          }
-        }
+      setUser(savedUser);
 
-        // For candidates, fetch courses and applications data (same as tutor page)
+      try {
         if (savedUser.userType === UserType.CANDIDATE) {
-          try {
-            // Use same service as tutor page for consistency
-            const [coursesResponse, applicationsResponse] = await Promise.all([
+          const [profileResponse, coursesResponse, applicationsResponse] =
+            await Promise.all([
+              AuthService.getProfile(),
               ApplicationService.getCoursesAndRoles(),
               ApplicationService.getMyCandidateApplications(),
             ]);
 
-            if (coursesResponse.success && coursesResponse.data) {
-              const courses = coursesResponse.data.courses || [];
-              const roles = coursesResponse.data.roles || [];
-              
-              // Calculate available opportunities (same logic as tutor page)
-              let availableOpportunities = 0;
-              courses.forEach((course: { id: number; courseCode: string; courseName: string }) => {
+          if (profileResponse.success && profileResponse.data?.user) {
+            setUser(profileResponse.data.user);
+            updateUser(profileResponse.data.user);
+          }
+
+          if (coursesResponse.success && coursesResponse.data) {
+            const courses = coursesResponse.data.courses || [];
+            const roles = coursesResponse.data.roles || [];
+            const applications = applicationsResponse.data || [];
+
+            let availableOpportunities = 0;
+            courses.forEach(
+              (course: { id: number; courseCode: string; courseName: string }) => {
                 roles.forEach((role: { id: number; roleName: string }) => {
-                  const hasApplied = (applicationsResponse.data || []).some(
-                    (app: { courseId: number; roleId: number }) => app.courseId === course.id && app.roleId === role.id
+                  const hasApplied = applications.some(
+                    (app: { courseId: number; roleId: number }) =>
+                      app.courseId === course.id && app.roleId === role.id
                   );
                   if (!hasApplied) {
                     availableOpportunities += 1;
                   }
                 });
-              });
+              }
+            );
 
-              setAvailablePositions(availableOpportunities);
-            }
+            setAvailablePositions(availableOpportunities);
+          }
 
-            if (applicationsResponse.success && applicationsResponse.data) {
-              setAppliedApplications(applicationsResponse.data.length || 0);
+          if (applicationsResponse.success && applicationsResponse.data) {
+            setAppliedApplications(applicationsResponse.data.length || 0);
+          }
+        } else {
+          const profileResponse = await AuthService.getProfile();
+          if (profileResponse.success && profileResponse.data) {
+            setUser(profileResponse.data.user);
+            updateUser(profileResponse.data.user);
+
+            if (
+              savedUser.userType === UserType.LECTURER &&
+              Array.isArray(profileResponse.data.assignedCourses)
+            ) {
+              setAssignedCourses(profileResponse.data.assignedCourses);
             }
-          } catch (apiError) {
-            console.error("Failed to fetch candidate data:", apiError);
-            setAvailablePositions(0);
-            setAppliedApplications(0);
           }
         }
-
-        setIsLoading(false);
-
-        // Update user data from API (but don't change courses state again)
-        try {
-          const response = await AuthService.getProfile();
-          if (response.success && response.data) {
-            const userData = response.data.user;
-            setUser(userData);
-            updateUser(userData);
-          }
-        } catch (apiError) {
-          console.error("Failed to fetch fresh profile data:", apiError);
-        }
-      } else {
-        setError("Please log in to view your profile.");
+      } catch (apiError) {
+        console.error("Failed to load profile data:", apiError);
+      } finally {
         setIsLoading(false);
       }
     };
@@ -111,6 +104,12 @@ export const ProfilePage: React.FC = () => {
       loadProfile();
     }
   }, [authLoading, contextUser, updateUser]);
+
+  useEffect(() => {
+    if (user) {
+      setShowAvatarInitials(!user.avatarUrl);
+    }
+  }, [user?.avatarUrl]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -145,20 +144,88 @@ export const ProfilePage: React.FC = () => {
 
 
 
-  // Function to get avatar path - same logic as user dropdown
-  const getAvatarPath = (userData: User) => {
-    // Generate a consistent avatar number based on email
-    const emailHash = userData.email
-      .split("")
-      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-
-    // Use lecturer images if user is a lecturer
-    if (userData.userType === UserType.LECTURER) {
-      return `/lecturers/lecturer-${(emailHash % 4) + 1}.jpg`;
+  const handleAvatarFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) {
+      return;
     }
 
-    return `/avatars/avatar-${(emailHash % 12) + 1}.jpg`;
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setAvatarMessage("Please upload a JPEG, PNG, or WebP image.");
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setAvatarMessage("Image must be smaller than 2MB.");
+      return;
+    }
+
+    setAvatarMessage("");
+    setIsUploadingAvatar(true);
+    setAvatarPreview(URL.createObjectURL(file));
+    setShowAvatarInitials(false);
+
+    try {
+      const response = await AuthService.uploadAvatar(file);
+      if (response.success && response.data?.user) {
+        setUser(response.data.user);
+        updateUser(response.data.user);
+        AuthService.saveUser(response.data.user);
+        setAvatarMessage("Avatar updated successfully.");
+      } else {
+        setAvatarMessage(
+          response.message ||
+            "Upload failed. Sign in again or restart the backend."
+        );
+        setAvatarPreview(null);
+      }
+    } catch {
+      setAvatarMessage(
+        "Upload failed. Check backend is running and try again."
+      );
+      setAvatarPreview(null);
+    } finally {
+      setIsUploadingAvatar(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
   };
+
+  const handleRemoveAvatar = async () => {
+    if (!user?.avatarUrl) {
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    setAvatarMessage("");
+
+    try {
+      const response = await AuthService.deleteAvatar();
+      if (response.success && response.data?.user) {
+        setUser(response.data.user);
+        updateUser(response.data.user);
+        AuthService.saveUser(response.data.user);
+        setAvatarPreview(null);
+        setShowAvatarInitials(true);
+        setAvatarMessage("Avatar removed.");
+      } else {
+        setAvatarMessage(response.message || "Failed to remove avatar.");
+      }
+    } catch {
+      setAvatarMessage("Failed to remove avatar. Please try again.");
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
+
+  const avatarSrc =
+    avatarPreview ?? (user ? getUserAvatarSrc(user) : "");
+  const displayInitials = user
+    ? getUserInitials(user.firstName, user.lastName, user.email)
+    : "?";
 
   if (isLoading) {
     return (
@@ -195,14 +262,83 @@ export const ProfilePage: React.FC = () => {
         {/* Left Panel - User Information */}
         <div className={styles.userPanel}>
           <div className={styles.avatarSection}>
-            <div className={styles.avatarWrapper}>
-              <Image
-                src={getAvatarPath(user)}
-                alt={`${user.firstName} ${user.lastName} avatar`}
-                width={120}
-                height={120}
-                className={styles.avatarImage}
-              />
+            <button
+              type="button"
+              className={styles.avatarTrigger}
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploadingAvatar}
+              aria-label="Change profile photo"
+            >
+              <div className={styles.avatarRing}>
+                {showAvatarInitials && !user.avatarUrl && !avatarPreview ? (
+                  <span className={styles.avatarInitials}>{displayInitials}</span>
+                ) : (
+                  <Image
+                    src={avatarSrc}
+                    alt={`${user.firstName} ${user.lastName} avatar`}
+                    width={112}
+                    height={112}
+                    className={styles.avatarImage}
+                    unoptimized={!!user.avatarUrl || !!avatarPreview}
+                    onError={() => setShowAvatarInitials(true)}
+                  />
+                )}
+                <span className={styles.avatarOverlay} aria-hidden="true">
+                  {isUploadingAvatar ? (
+                    <span className={styles.avatarOverlaySpinner} />
+                  ) : (
+                    <>
+                      <svg
+                        className={styles.avatarOverlayIcon}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                        <circle cx="12" cy="13" r="4" />
+                      </svg>
+                      <span className={styles.avatarOverlayText}>
+                        Change photo
+                      </span>
+                    </>
+                  )}
+                </span>
+              </div>
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className={styles.avatarFileInput}
+              onChange={handleAvatarFileChange}
+            />
+
+            <div className={styles.avatarMeta}>
+              {user.avatarUrl && (
+                <button
+                  type="button"
+                  className={styles.removeAvatarLink}
+                  onClick={handleRemoveAvatar}
+                  disabled={isUploadingAvatar}
+                >
+                  Remove photo
+                </button>
+              )}
+              {avatarMessage && (
+                <p
+                  className={`${styles.avatarMessage} ${
+                    avatarMessage.toLowerCase().includes("success") ||
+                    avatarMessage.toLowerCase().includes("removed")
+                      ? styles.avatarMessageSuccess
+                      : styles.avatarMessageError
+                  }`}
+                >
+                  {avatarMessage}
+                </p>
+              )}
             </div>
           </div>
 

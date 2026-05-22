@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { AuthController } from "../controllers/AuthController";
 import { authenticateToken } from "../middleware/authMiddleware";
+import { avatarUpload } from "../middleware/uploadMiddleware";
 
 const router = Router();
 const authController = new AuthController();
@@ -108,6 +109,32 @@ router.post("/logout", async (req, res) => {
 // Protected routes
 router.get("/profile", authenticateToken, async (req, res) => {
     await authController.getProfile(req, res);
+});
+
+router.post("/avatar", authenticateToken, (req, res) => {
+    avatarUpload.single("avatar")(req, res, async (err) => {
+        if (err) {
+            const uploadErr = err as { code?: string; message?: string };
+            if (uploadErr.code === "ENOSPC") {
+                res.status(507).json({
+                    success: false,
+                    message:
+                        "Disk is full. Free space on your drive and try again.",
+                });
+                return;
+            }
+            res.status(400).json({
+                success: false,
+                message: err.message || "Invalid avatar upload",
+            });
+            return;
+        }
+        await authController.uploadAvatar(req, res);
+    });
+});
+
+router.delete("/avatar", authenticateToken, async (req, res) => {
+    await authController.deleteAvatar(req, res);
 });
 
 export default router;

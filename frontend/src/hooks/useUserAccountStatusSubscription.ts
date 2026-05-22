@@ -14,6 +14,8 @@ export function useUserAccountStatusSubscription({
   const { user } = useAuth();
   const wsRef = useRef<WebSocket | null>(null);
   const isCleanedUpRef = useRef(false);
+  const reconnectAttemptsRef = useRef(0);
+  const MAX_RECONNECT_ATTEMPTS = 2;
   const onAccountBlockedRef = useRef(onAccountBlocked);
   const onAccountDeletedRef = useRef(onAccountDeleted);
 
@@ -45,7 +47,11 @@ export function useUserAccountStatusSubscription({
 
   // Create WebSocket connection
   const createConnection = useCallback(() => {
-    if (isCleanedUpRef.current || !user?.id) {
+    if (
+      isCleanedUpRef.current ||
+      !user?.id ||
+      (!onAccountBlockedRef.current && !onAccountDeletedRef.current)
+    ) {
       return;
     }
 
@@ -203,23 +209,34 @@ export function useUserAccountStatusSubscription({
           loading: false,
         }));
 
-        // Attempt to reconnect after a delay
-        setTimeout(() => {
-          if (!isCleanedUpRef.current) {
-            createConnection();
-          }
-        }, 3000);
+        if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
+          reconnectAttemptsRef.current += 1;
+          setTimeout(() => {
+            if (!isCleanedUpRef.current) {
+              createConnection();
+            }
+          }, 5000 * reconnectAttemptsRef.current);
+        }
       }
     };
   }, [user?.id, processAccountEvent]);
 
   // Set up connection when user is available
   useEffect(() => {
-    if (!user?.id) {
+    if (
+      !user?.id ||
+      (!onAccountBlocked && !onAccountDeleted)
+    ) {
+      setSubscriptionState({
+        loading: false,
+        error: undefined,
+        isConnected: false,
+      });
       return;
     }
 
     isCleanedUpRef.current = false;
+    reconnectAttemptsRef.current = 0;
     createConnection();
 
     return () => {
@@ -241,7 +258,7 @@ export function useUserAccountStatusSubscription({
         wsRef.current = null;
       }
     };
-  }, [user?.id, createConnection]);
+  }, [user?.id, onAccountBlocked, onAccountDeleted, createConnection]);
 
   return subscriptionState;
 } 

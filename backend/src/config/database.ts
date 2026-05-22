@@ -6,6 +6,7 @@ import { Role } from "../entities/Role";
 import { CourseAssignment } from "../entities/CourseAssignment";
 import { Application, ApplicationStatus } from "../entities/Application";
 import { SelectedCandidate } from "../entities/SelectedCandidate";
+import { Notification } from "../entities/Notification";
 import bcrypt from "bcryptjs";
 import path from "path";
 
@@ -28,6 +29,7 @@ export const AppDataSource = new DataSource({
         CourseAssignment,
         Application,
         SelectedCandidate,
+        Notification,
     ],
     migrations: ["src/migrations/*.ts"],
     subscribers: ["src/subscribers/*.ts"],
@@ -39,9 +41,77 @@ export const AppDataSource = new DataSource({
     acquireTimeout: 60000,
 });
 
-export const initializeDatabase = async () => {
+const isNotificationSchemaConflict = (error: unknown): boolean => {
+    const err = error as { code?: string; driverError?: { code?: string } };
+    return (
+        err?.code === "ER_DROP_INDEX_FK" ||
+        err?.driverError?.code === "ER_DROP_INDEX_FK"
+    );
+};
+
+const recreateNotificationsTable = async (): Promise<void> => {
+    const mysql = await import("mysql2/promise");
+    const conn = await mysql.createConnection({
+        host: process.env.DB_HOST || "localhost",
+        port: parseInt(process.env.DB_PORT || "3306", 10),
+        user: process.env.DB_USERNAME || "",
+        password: process.env.DB_PASSWORD || "",
+        database: process.env.DB_NAME || "",
+    });
+
+    await conn.query("SET FOREIGN_KEY_CHECKS = 0");
+    await conn.query("DROP TABLE IF EXISTS notifications");
+    await conn.query("SET FOREIGN_KEY_CHECKS = 1");
+    await conn.end();
+};
+
+const initializeDataSource = async (): Promise<void> => {
     try {
         await AppDataSource.initialize();
+    } catch (error) {
+        if (!isNotificationSchemaConflict(error)) {
+            throw error;
+        }
+
+        console.warn(
+            "⚠️ Recreating notifications table (schema index conflict)..."
+        );
+
+        if (AppDataSource.isInitialized) {
+            await AppDataSource.destroy();
+        }
+
+        await recreateNotificationsTable();
+        await AppDataSource.initialize();
+    }
+};
+
+const ensureAvatarUrlColumn = async (): Promise<void> => {
+    const queryRunner = AppDataSource.createQueryRunner();
+    try {
+        const table = await queryRunner.getTable("users");
+        const hasAvatarUrl = table?.columns.some(
+            (column) => column.name === "avatarUrl"
+        );
+
+        if (!hasAvatarUrl) {
+            await queryRunner.query(
+                "ALTER TABLE `users` ADD `avatarUrl` varchar(512) NULL"
+            );
+            console.log("✅ Added avatarUrl column to users table");
+        }
+    } catch (error) {
+        console.error("❌ Failed to ensure avatarUrl column:", error);
+        throw error;
+    } finally {
+        await queryRunner.release();
+    }
+};
+
+export const initializeDatabase = async () => {
+    try {
+        await initializeDataSource();
+        await ensureAvatarUrlColumn();
         console.log("✅ Database connection initialized successfully");
         console.log("📊 All tables ready for TT application");
 
@@ -57,7 +127,7 @@ export const initializeDatabase = async () => {
 export const initializeDatabaseConnection = async () => {
     try {
         if (!AppDataSource.isInitialized) {
-            await AppDataSource.initialize();
+            await initializeDataSource();
             console.log("✅ Database connection initialized successfully");
             console.log("📊 All tables ready for TT application");
         }

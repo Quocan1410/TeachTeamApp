@@ -13,6 +13,8 @@ import { CourseAssignment } from "../types/CourseAssignment";
 import { User, UserType } from "../types/User";
 import { ApplicationStatus } from "../types/Application";
 import { AppDataSource } from "../config/database";
+import { NotificationService } from "../services/NotificationService";
+import { NotificationType } from "../types/Notification";
 import { pubsub, SUBSCRIPTION_TOPICS } from "../config/pubsub";
 import { CourseEvent } from "./SubscriptionResolver";
 
@@ -418,6 +420,18 @@ export class CourseResolver {
             const savedAssignment = await assignmentRepository.findOne({
                 where: { id: assignment.id },
                 relations: ["lecturer", "course"],
+            });
+
+            await NotificationService.create({
+                userId: lecturerId,
+                type: NotificationType.COURSE_ASSIGNED,
+                title: "Course assignment",
+                message: `You have been assigned to ${course.courseCode} - ${course.courseName}`,
+                link: "/lecturer",
+                metadata: {
+                    courseId: course.id,
+                    lecturerId,
+                },
             });
 
             return {

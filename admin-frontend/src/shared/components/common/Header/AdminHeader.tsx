@@ -17,6 +17,11 @@ import {
 } from "@heroicons/react/24/outline";
 import { useTheme } from "../../../contexts/ThemeContext";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
+import AdminNotificationBell from "../AdminNotificationBell/AdminNotificationBell";
+import {
+    getUserInitials,
+    resolveAvatarUrl,
+} from "@/lib/avatarUtils";
 import styles from "./AdminHeader.module.css";
 
 interface AdminUser {
@@ -25,6 +30,7 @@ interface AdminUser {
     email: string;
     userType: string;
     fullName: string;
+    avatarUrl?: string | null;
 }
 
 interface AdminHeaderProps {
@@ -84,9 +90,12 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onLogout }) => {
         setIsUserDropdownOpen(false);
     };
 
-    const getUserInitials = () => {
-        return `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`;
-    };
+    const initials = getUserInitials(
+        user.firstName,
+        user.lastName,
+        user.email
+    );
+    const avatarSrc = resolveAvatarUrl(user.avatarUrl);
 
     return (
         <header
@@ -142,6 +151,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onLogout }) => {
 
                     {/* Header Actions */}
                     <div className={styles.headerActions}>
+                        <AdminNotificationBell />
                         {/* User Dropdown */}
                         <div className={styles.userDropdown} ref={dropdownRef}>
                             <button
@@ -151,9 +161,20 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onLogout }) => {
                                 className={styles.userButton}
                             >
                                 <div className={styles.userAvatar}>
-                                    <span className={styles.userInitials}>
-                                        {getUserInitials()}
-                                    </span>
+                                    {avatarSrc ? (
+                                        <Image
+                                            src={avatarSrc}
+                                            alt={user.fullName}
+                                            width={40}
+                                            height={40}
+                                            className={styles.userAvatarImage}
+                                            unoptimized
+                                        />
+                                    ) : (
+                                        <span className={styles.userInitials}>
+                                            {initials}
+                                        </span>
+                                    )}
                                 </div>
                                 <div className={styles.userInfo}>
                                     <span className={styles.userName}>
@@ -176,13 +197,26 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onLogout }) => {
                                 <div className={styles.dropdownMenu}>
                                     <div className={styles.dropdownHeader}>
                                         <div className={styles.dropdownAvatar}>
-                                            <span
-                                                className={
-                                                    styles.dropdownInitials
-                                                }
-                                            >
-                                                {getUserInitials()}
-                                            </span>
+                                            {avatarSrc ? (
+                                                <Image
+                                                    src={avatarSrc}
+                                                    alt={user.fullName}
+                                                    width={56}
+                                                    height={56}
+                                                    className={
+                                                        styles.dropdownAvatarImage
+                                                    }
+                                                    unoptimized
+                                                />
+                                            ) : (
+                                                <span
+                                                    className={
+                                                        styles.dropdownInitials
+                                                    }
+                                                >
+                                                    {initials}
+                                                </span>
+                                            )}
                                         </div>
                                         <div
                                             className={styles.dropdownUserInfo}
@@ -213,6 +247,19 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onLogout }) => {
                                     </div>
 
                                     <div className={styles.dropdownContent}>
+                                        <Link
+                                            href="/dashboard/profile"
+                                            className={styles.profileLink}
+                                            onClick={() =>
+                                                setIsUserDropdownOpen(false)
+                                            }
+                                        >
+                                            <UserCircleIcon
+                                                className={styles.actionIcon}
+                                            />
+                                            <span>Profile & Avatar</span>
+                                        </Link>
+
                                         {/* Actions Row - Theme Toggle and Sign Out */}
                                         <div className={styles.actionsRow}>
                                             {/* Theme Toggle */}

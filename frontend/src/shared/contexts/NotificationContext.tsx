@@ -6,16 +6,26 @@ import React, {
   useState,
   useCallback,
   useEffect,
+  useRef,
 } from "react";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
+import {
+  fetchNotifications,
+  markNotificationAsRead as apiMarkAsRead,
+  markAllNotificationsAsRead as apiMarkAllAsRead,
+  deleteNotification as apiDeleteNotification,
+  StoredNotification,
+  NotificationType,
+} from "@/shared/services/notificationService";
 
 export interface Notification {
   id: string;
-  type: "candidate_blocked" | "candidate_unblocked";
+  type: NotificationType;
   title: string;
   message: string;
   timestamp: Date;
   read: boolean;
+  link?: string | null;
   candidateId?: number;
   candidateName?: string;
   unselectedCount?: number;
@@ -25,6 +35,8 @@ export interface Notification {
 interface NotificationContextType {
   notifications: Notification[];
   unreadCount: number;
+  loading: boolean;
+  refreshNotifications: () => Promise<void>;
   addNotification: (
     notification: Omit<Notification, "id" | "timestamp" | "read">
   ) => void;
@@ -52,85 +64,188 @@ interface NotificationProviderProps {
   children: React.ReactNode;
 }
 
+function mapStoredNotification(n: StoredNotification): Notification {
+  return {
+    id: String(n.id),
+    type: n.type,
+    title: n.title,
+    message: n.message,
+    timestamp: new Date(n.createdAt),
+    read: n.read,
+    link: n.link,
+    candidateId:
+      typeof n.metadata?.candidateId === "number"
+        ? n.metadata.candidateId
+        : undefined,
+    candidateName:
+      typeof n.metadata?.candidateName === "string"
+        ? n.metadata.candidateName
+        : undefined,
+    unselectedCount:
+      typeof n.metadata?.unselectedApplicationsCount === "number"
+        ? n.metadata.unselectedApplicationsCount
+        : undefined,
+    unrankedCount:
+      typeof n.metadata?.unrankedApplicationsCount === "number"
+        ? n.metadata.unrankedApplicationsCount
+        : undefined,
+  };
+}
+
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   children,
 }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const { user } = useAuth();
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const { user, isAuthenticated } = useAuth();
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Load notifications from localStorage on mount (lecturer-specific)
+  const refreshNotifications = useCallback(async () => {
+    if (!isAuthenticated || !user?.id) {
+      setNotifications([]);
+      setUnreadCount(0);
+      return;
+    }
+
+    if (
+      user.userType !== "candidate" &&
+      user.userType !== "lecturer"
+    ) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const data = await fetchNotifications();
+      setNotifications(data.notifications.map(mapStoredNotification));
+      setUnreadCount(data.unreadCount);
+    } catch (error) {
+      console.error("Failed to load notifications:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [isAuthenticated, user?.id, user?.userType]);
+
   useEffect(() => {
-    if (user?.userType === "lecturer" && user?.id) {
-      const storageKey = `lecturer_notifications_${user.id}`;
-      const savedNotifications = localStorage.getItem(storageKey);
-      if (savedNotifications) {
-        try {
-          const parsed = JSON.parse(savedNotifications);
-          const notificationsWithDates = parsed.map((n: Notification) => ({
-            ...n,
-            timestamp: new Date(n.timestamp),
-          }));
-          setNotifications(notificationsWithDates);
-        } catch (error) {
-          console.error("Failed to parse saved notifications:", error);
-        }
+    refreshNotifications();
+  }, [refreshNotifications]);
+
+  useEffect(() => {
+    if (pollRef.current) {
+      clearInterval(pollRef.current);
+      pollRef.current = null;
+    }
+
+    if (
+      isAuthenticated &&
+      user &&
+      (user.userType === "candidate" || user.userType === "lecturer")
+    ) {
+      pollRef.current = setInterval(() => {
+        refreshNotifications();
+      }, 30000);
+    }
+
+    return () => {
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
       }
-    }
-  }, [user?.userType, user?.id]);
-
-  // Save notifications to localStorage whenever they change
-  useEffect(() => {
-    if (user?.userType === "lecturer" && user?.id) {
-      const storageKey = `lecturer_notifications_${user.id}`;
-      localStorage.setItem(storageKey, JSON.stringify(notifications));
-    }
-  }, [notifications, user?.userType, user?.id]);
+    };
+  }, [isAuthenticated, user, refreshNotifications]);
 
   const addNotification = useCallback(
     (notificationData: Omit<Notification, "id" | "timestamp" | "read">) => {
       const newNotification: Notification = {
         ...notificationData,
-        id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        id: `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         timestamp: new Date(),
         read: false,
       };
 
-      setNotifications((prev) => [newNotification, ...prev]);
+      setNotifications((prev) => {
+        const exists = prev.some(
+          (n) =>
+            n.title === newNotification.title &&
+            n.message === newNotification.message &&
+            Math.abs(n.timestamp.getTime() - newNotification.timestamp.getTime()) <
+              5000
+        );
+        if (exists) return prev;
+        return [newNotification, ...prev];
+      });
+      setUnreadCount((prev) => prev + 1);
+
+      refreshNotifications();
+    },
+    [refreshNotifications]
+  );
+
+  const markAsRead = useCallback(
+    async (notificationId: string) => {
+      const numericId = parseInt(notificationId, 10);
+      if (!Number.isNaN(numericId)) {
+        try {
+          const count = await apiMarkAsRead(numericId);
+          setUnreadCount(count);
+        } catch (error) {
+          console.error("Failed to mark notification as read:", error);
+        }
+      }
+
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification.id === notificationId
+            ? { ...notification, read: true }
+            : notification
+        )
+      );
     },
     []
   );
 
-  const markAsRead = useCallback((notificationId: string) => {
-    setNotifications((prev) =>
-      prev.map((notification) =>
-        notification.id === notificationId
-          ? { ...notification, read: true }
-          : notification
-      )
-    );
-  }, []);
+  const markAllAsRead = useCallback(async () => {
+    try {
+      const count = await apiMarkAllAsRead();
+      setUnreadCount(count);
+    } catch (error) {
+      console.error("Failed to mark all notifications as read:", error);
+    }
 
-  const markAllAsRead = useCallback(() => {
     setNotifications((prev) =>
       prev.map((notification) => ({ ...notification, read: true }))
     );
   }, []);
 
-  const removeNotification = useCallback((notificationId: string) => {
-    setNotifications((prev) =>
-      prev.filter((notification) => notification.id !== notificationId)
-    );
-  }, []);
+  const removeNotification = useCallback(
+    async (notificationId: string) => {
+      const numericId = parseInt(notificationId, 10);
+      if (!Number.isNaN(numericId)) {
+        try {
+          const count = await apiDeleteNotification(numericId);
+          setUnreadCount(count);
+        } catch (error) {
+          console.error("Failed to delete notification:", error);
+        }
+      }
+
+      setNotifications((prev) =>
+        prev.filter((notification) => notification.id !== notificationId)
+      );
+    },
+    []
+  );
 
   const clearAllNotifications = useCallback(() => {
     setNotifications([]);
+    setUnreadCount(0);
   }, []);
-
-  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const contextValue: NotificationContextType = {
     notifications,
     unreadCount,
+    loading,
+    refreshNotifications,
     addNotification,
     markAsRead,
     markAllAsRead,

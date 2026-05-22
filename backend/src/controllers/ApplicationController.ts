@@ -8,6 +8,8 @@ import { CourseAssignment } from "../entities/CourseAssignment";
 import { SelectedCandidate } from "../entities/SelectedCandidate";
 import { AuthenticatedRequest } from "../middleware/authMiddleware";
 import { validateApplicationData } from "../utils/validation";
+import { NotificationService } from "../services/NotificationService";
+import { NotificationType } from "../entities/Notification";
 
 export class ApplicationController {
     private applicationRepository = AppDataSource.getRepository(Application);
@@ -111,7 +113,18 @@ export class ApplicationController {
                 newApplication
             );
 
-
+            const candidateName = `${candidate.firstName} ${candidate.lastName}`;
+            await NotificationService.notifyLecturersForCourse(courseId, {
+                type: NotificationType.APPLICATION_SUBMITTED,
+                title: "New application",
+                message: `${candidateName} applied for ${role.roleName} in ${course.courseCode}`,
+                link: "/lecturer",
+                metadata: {
+                    applicationId: savedApplication.id,
+                    courseId,
+                    candidateId,
+                },
+            });
 
             res.status(201).json({
                 success: true,
@@ -543,6 +556,46 @@ export class ApplicationController {
                 }
             }
 
+            const statusNotificationMap: Partial<
+                Record<
+                    ApplicationStatus,
+                    { type: NotificationType; title: string; message: string }
+                >
+            > = {
+                [ApplicationStatus.SELECTED]: {
+                    type: NotificationType.APPLICATION_SELECTED,
+                    title: "Application selected",
+                    message: `You were selected for ${application.role.roleName} in ${application.course.courseCode}`,
+                },
+                [ApplicationStatus.REJECTED]: {
+                    type: NotificationType.APPLICATION_REJECTED,
+                    title: "Application update",
+                    message: `Your application for ${application.role.roleName} in ${application.course.courseCode} was not selected`,
+                },
+                [ApplicationStatus.PENDING]: {
+                    type: NotificationType.APPLICATION_SUBMITTED,
+                    title: "Application update",
+                    message: `Your application for ${application.role.roleName} in ${application.course.courseCode} is pending review`,
+                },
+            };
+
+            const statusNotification =
+                statusNotificationMap[status as ApplicationStatus];
+            if (statusNotification) {
+                await NotificationService.create({
+                    userId: application.candidateId,
+                    type: statusNotification.type,
+                    title: statusNotification.title,
+                    message: statusNotification.message,
+                    link: "/tutor",
+                    metadata: {
+                        applicationId: application.id,
+                        courseId: application.courseId,
+                        status,
+                    },
+                });
+            }
+
             res.status(200).json({
                 success: true,
                 message: "Application status updated successfully",
@@ -762,6 +815,20 @@ export class ApplicationController {
             const updatedApplication = await this.applicationRepository.save(
                 application
             );
+
+            if (comment && comment.trim().length > 0) {
+                await NotificationService.create({
+                    userId: application.candidateId,
+                    type: NotificationType.APPLICATION_COMMENT,
+                    title: "New feedback on your application",
+                    message: `A lecturer left feedback on your ${application.role.roleName} application for ${application.course.courseCode}`,
+                    link: "/tutor",
+                    metadata: {
+                        applicationId: application.id,
+                        courseId: application.courseId,
+                    },
+                });
+            }
 
             res.status(200).json({
                 success: true,

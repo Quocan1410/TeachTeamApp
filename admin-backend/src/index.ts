@@ -16,6 +16,7 @@ import { UserResolver } from "./resolvers/UserResolver";
 import { CourseResolver } from "./resolvers/CourseResolver";
 import { ReportResolver } from "./resolvers/ReportResolver";
 import { SubscriptionResolver } from "./resolvers/SubscriptionResolver";
+import { NotificationResolver } from "./resolvers/NotificationResolver";
 import "./types/session";
 import path from "path";
 
@@ -54,6 +55,7 @@ async function startServer() {
                 CourseResolver,
                 ReportResolver,
                 SubscriptionResolver,
+                NotificationResolver,
             ],
             validate: false,
             pubSub: require("./config/pubsub").pubsub,

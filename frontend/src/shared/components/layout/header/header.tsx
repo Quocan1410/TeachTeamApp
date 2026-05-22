@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { useTheme } from "@/shared/contexts/ThemeContext";
 import UserDropdown from "../user-dropdown";
+import { getUserAvatarSrc } from "@/shared/utils/avatarUtils";
 import NotificationBell from "@/shared/components/common/notification-bell/NotificationBell";
 import styles from "./header.module.css";
 
@@ -154,12 +155,17 @@ const Header: React.FC = () => {
             )}
             {isAuthenticated && user ? (
               <div className={styles.userSection}>
-                {user.userType === "lecturer" && <NotificationBell />}
+                {(user.userType === "lecturer" ||
+                  user.userType === "candidate") && <NotificationBell />}
                 <UserDropdown
                   user={{
                     fullName: `${user.firstName} ${user.lastName}`,
                     email: user.email,
                     role: getUserRole(),
+                    avatarPath: getUserAvatarSrc(user),
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    hasCustomAvatar: !!user.avatarUrl,
                   }}
                   onSignOut={handleSignOut}
                   onToggleDarkMode={toggleDarkMode}

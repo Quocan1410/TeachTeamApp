@@ -76,6 +76,14 @@ export class User {
     })
     isBlocked: boolean;
 
+    @Field({ nullable: true })
+    @Column({
+        type: "varchar",
+        length: 512,
+        nullable: true,
+    })
+    avatarUrl: string | null;
+
     @Field()
     @CreateDateColumn()
     createdAt: Date;

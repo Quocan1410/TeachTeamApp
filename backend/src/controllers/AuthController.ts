@@ -10,6 +10,12 @@ import {
     validateSigninData,
     getUserTypeFromEmail,
 } from "../utils/validation";
+import { NotificationService } from "../services/NotificationService";
+import { NotificationType } from "../entities/Notification";
+import {
+    buildAvatarPublicPath,
+    deleteAvatarFileIfExists,
+} from "../utils/avatarUtils";
 
 interface AssignedCourse {
     id: number;
@@ -103,6 +109,19 @@ export class AuthController {
 
             // Save user to database
             const savedUser = await this.userRepository.save(newUser);
+
+            if (finalUserType !== UserType.ADMIN) {
+                await NotificationService.notifyAdmins({
+                    type: NotificationType.USER_REGISTERED,
+                    title: "New user registered",
+                    message: `${savedUser.firstName} ${savedUser.lastName} (${savedUser.email}) joined as ${finalUserType}`,
+                    link: "/dashboard/users",
+                    metadata: {
+                        userId: savedUser.id,
+                        userType: finalUserType,
+                    },
+                });
+            }
 
             // Generate JWT token
             const token = jwt.sign(
@@ -307,6 +326,145 @@ export class AuthController {
             res.status(500).json({
                 success: false,
                 message: "Internal server error while fetching profile",
+            });
+        }
+    }
+
+    async uploadAvatar(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = (req as any).user?.userId;
+
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    message: "User not authenticated",
+                });
+                return;
+            }
+
+            if (!req.file) {
+                res.status(400).json({
+                    success: false,
+                    message: "Avatar image file is required",
+                });
+                return;
+            }
+
+            const user = await this.userRepository.findOne({
+                where: { id: userId },
+            });
+
+            if (!user) {
+                res.status(404).json({
+                    success: false,
+                    message: "User not found",
+                });
+                return;
+            }
+
+            const previousAvatarUrl = user.avatarUrl;
+            const avatarUrl = buildAvatarPublicPath(req.file.filename);
+
+            user.avatarUrl = avatarUrl;
+            const updatedUser = await this.userRepository.save(user);
+
+            deleteAvatarFileIfExists(previousAvatarUrl);
+
+            const { password: _, ...userWithoutPassword } = updatedUser;
+
+            res.status(200).json({
+                success: true,
+                message: "Avatar updated successfully",
+                data: {
+                    user: userWithoutPassword,
+                },
+            });
+        } catch (error) {
+            console.error("Upload avatar error:", error);
+            const err = error as {
+                code?: string;
+                errno?: number;
+                message?: string;
+                driverError?: { code?: string; sqlMessage?: string };
+            };
+
+            if (
+                err.code === "ENOSPC" ||
+                err.errno === -4055 ||
+                err.message?.includes("ENOSPC")
+            ) {
+                res.status(507).json({
+                    success: false,
+                    message:
+                        "Disk is full. Free space on your drive and try again.",
+                });
+                return;
+            }
+
+            if (
+                err.code === "ER_BAD_FIELD_ERROR" ||
+                err.driverError?.code === "ER_BAD_FIELD_ERROR" ||
+                err.message?.includes("avatarUrl")
+            ) {
+                res.status(500).json({
+                    success: false,
+                    message:
+                        "Database is missing avatarUrl column. Restart the backend server.",
+                });
+                return;
+            }
+
+            res.status(500).json({
+                success: false,
+                message: "Internal server error while uploading avatar",
+            });
+        }
+    }
+
+    async deleteAvatar(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = (req as any).user?.userId;
+
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    message: "User not authenticated",
+                });
+                return;
+            }
+
+            const user = await this.userRepository.findOne({
+                where: { id: userId },
+            });
+
+            if (!user) {
+                res.status(404).json({
+                    success: false,
+                    message: "User not found",
+                });
+                return;
+            }
+
+            const previousAvatarUrl = user.avatarUrl;
+            user.avatarUrl = null;
+            const updatedUser = await this.userRepository.save(user);
+
+            deleteAvatarFileIfExists(previousAvatarUrl);
+
+            const { password: _, ...userWithoutPassword } = updatedUser;
+
+            res.status(200).json({
+                success: true,
+                message: "Avatar removed successfully",
+                data: {
+                    user: userWithoutPassword,
+                },
+            });
+        } catch (error) {
+            console.error("Delete avatar error:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal server error while removing avatar",
             });
         }
     }

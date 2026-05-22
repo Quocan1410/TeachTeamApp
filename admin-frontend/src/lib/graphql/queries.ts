@@ -14,6 +14,7 @@ export const ADMIN_LOGIN = gql`
                 lastName
                 userType
                 fullName
+                avatarUrl
             }
         }
     }
@@ -447,6 +448,59 @@ export const REMOVE_LECTURER_FROM_COURSE = gql`
         removeLecturerFromCourse(lecturerId: $lecturerId, courseId: $courseId) {
             success
             message
+        }
+    }
+`;
+
+// Notification Queries
+export const GET_MY_NOTIFICATIONS = gql`
+    query GetMyNotifications($limit: Int) {
+        getMyNotifications(limit: $limit) {
+            unreadCount
+            notifications {
+                id
+                type
+                title
+                message
+                link
+                read
+                createdAt
+                metadata
+            }
+        }
+    }
+`;
+
+export const GET_UNREAD_NOTIFICATION_COUNT = gql`
+    query GetUnreadNotificationCount {
+        getUnreadNotificationCount
+    }
+`;
+
+export const MARK_NOTIFICATION_AS_READ = gql`
+    mutation MarkNotificationAsRead($id: Int!) {
+        markNotificationAsRead(id: $id) {
+            success
+            message
+            unreadCount
+        }
+    }
+`;
+
+export const MARK_ALL_NOTIFICATIONS_AS_READ = gql`
+    mutation MarkAllNotificationsAsRead {
+        markAllNotificationsAsRead {
+            success
+            unreadCount
+        }
+    }
+`;
+
+export const DELETE_NOTIFICATION = gql`
+    mutation DeleteNotification($id: Int!) {
+        deleteNotification(id: $id) {
+            success
+            unreadCount
         }
     }
 `;

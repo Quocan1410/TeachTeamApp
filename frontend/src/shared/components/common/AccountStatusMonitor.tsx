@@ -87,10 +87,12 @@ const AccountStatusMonitor: React.FC = () => {
     }
   }, [user]);
 
-  // Subscribe to account status changes only if user is logged in
+  // Only candidates need real-time block/delete alerts from admin
   useUserAccountStatusSubscription({
-    onAccountBlocked: user ? handleAccountBlocked : undefined,
-    onAccountDeleted: user ? handleAccountDeleted : undefined,
+    onAccountBlocked:
+      user?.userType === "candidate" ? handleAccountBlocked : undefined,
+    onAccountDeleted:
+      user?.userType === "candidate" ? handleAccountDeleted : undefined,
   });
 
   // Don't render anything if user is not logged in

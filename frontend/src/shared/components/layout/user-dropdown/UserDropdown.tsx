@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { getUserInitials } from "@/shared/utils/avatarUtils";
 import styles from "./UserDropdown.module.css";
 
 export interface UserDropdownProps {
@@ -12,6 +13,9 @@ export interface UserDropdownProps {
     role: string;
     avatarPath?: string;
     avatarNumber?: number;
+    firstName?: string;
+    lastName?: string;
+    hasCustomAvatar?: boolean;
   };
   onSignOut: () => void;
   onToggleDarkMode: () => void;
@@ -27,7 +31,21 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
   isLoggingOut = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setAvatarLoadFailed(false);
+  }, [user.avatarPath]);
+
+  const showInitials =
+    avatarLoadFailed || (!user.hasCustomAvatar && !user.avatarNumber);
+
+  const initials = getUserInitials(
+    user.firstName,
+    user.lastName,
+    user.email
+  );
 
   // Function to get avatar path
   const getAvatarPath = () => {
@@ -97,13 +115,19 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
       <div className={styles.avatarButton} onClick={toggleDropdown}>
         <div className={styles.avatarWrapper}>
           <div className={styles.avatarContent}>
-            <Image
-              src={getAvatarPath()}
-              alt={user.fullName}
-              width={40}
-              height={40}
-              className={styles.avatarImage}
-            />
+            {showInitials ? (
+              <span className={styles.avatarInitials}>{initials}</span>
+            ) : (
+              <Image
+                src={getAvatarPath()}
+                alt={user.fullName}
+                width={40}
+                height={40}
+                className={styles.avatarImage}
+                unoptimized={user.hasCustomAvatar}
+                onError={() => setAvatarLoadFailed(true)}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -112,13 +136,19 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
       {isOpen && (
         <div className={styles.userDropdownMenu}>
           <div className={styles.dropdownHeader}>
+            {showInitials ? (
+              <div className={styles.dropdownAvatarInitials}>{initials}</div>
+            ) : (
             <Image
               src={getAvatarPath()}
               alt={user.fullName}
               width={60}
               height={60}
               className={styles.dropdownAvatar}
+              unoptimized={user.hasCustomAvatar}
+              onError={() => setAvatarLoadFailed(true)}
             />
+            )}
             <div className={styles.userInfo}>
               <h3 className={styles.userName}>
                 <span className={styles.firstName}>{firstName}</span>

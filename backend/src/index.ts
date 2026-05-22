@@ -6,24 +6,31 @@ import { initializeDatabase } from "./config/database";
 import authRoutes from "./routes/user-auth-routes";
 import applicationRoutes from "./routes/application-routes";
 import databaseRoutes from "./routes/database-routes";
+import notificationRoutes from "./routes/notification-routes";
 import { getMelbourneTimestamp } from "./utils/dateUtils";
 import path from "path";
+import { ensureAvatarUploadDir } from "./utils/avatarUtils";
 
 // Load environment variables from root .env file
 config({ path: path.resolve(__dirname, "../../.env") });
 
+ensureAvatarUploadDir();
+
 const app = express();
 const PORT = process.env.BACKEND_PORT || process.env.PORT || 5000;
+const uploadsPath = path.resolve(__dirname, "../uploads");
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/uploads", express.static(uploadsPath));
 
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/database", databaseRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // Basic health check route
 app.get("/health", (req, res) => {
@@ -96,6 +103,9 @@ const startServer = async () => {
             console.log(`Server is running on port ${PORT}`);
             console.log(`Health check: http://localhost:${PORT}/health`);
             console.log(`Auth endpoints: http://localhost:${PORT}/api/auth`);
+            console.log(
+                `Avatar upload: POST http://localhost:${PORT}/api/auth/avatar`
+            );
             console.log(
                 `Application endpoints: http://localhost:${PORT}/api/applications`
             );

@@ -12,16 +12,7 @@ export default function AppInitializer() {
         // Check storage health
         StorageManager.checkStorageHealth();
 
-        // Sync authentication with database if user is logged in
-        const isAuthenticated = AuthService.isAuthenticated();
-        if (isAuthenticated) {
-          const syncResult = await AuthService.syncWithDatabase();
-          if (!syncResult) {
-            console.warn(
-              "⚠️ Database sync failed - user may need to login again"
-            );
-          }
-        }
+        // AuthContext already verifies profile on load — avoid duplicate API call here
       } catch (error) {
         console.error("❌ App initialization error:", error);
       }

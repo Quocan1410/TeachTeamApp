@@ -10,7 +10,6 @@ import { ThemeProvider } from "@/shared/contexts/ThemeContext";
 import { NotificationProvider } from "@/shared/contexts/NotificationContext";
 import GlobalWelcomeBanner from "@/shared/components/welcome/GlobalWelcomeBanner";
 import AppInitializer from "@/shared/components/app-initialization/AppInitializer";
-import { AdminApolloProvider } from "@/components/AdminApolloProvider";
 import AccountStatusMonitor from "@/shared/components/common/AccountStatusMonitor";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -36,18 +35,14 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <NotificationProvider>
-              <AdminApolloProvider>
-                <AppInitializer />
-                <AccountStatusMonitor />
-                <Header />
-                <GlobalWelcomeBanner />
-                <main className="flex-grow">
-                  {" "}
-                  {/* Added flex-grow to push footer down */}
-                  {children}
-                </main>
-                <Footer />
-              </AdminApolloProvider>
+              <AppInitializer />
+              <AccountStatusMonitor />
+              <Header />
+              <GlobalWelcomeBanner />
+              <main className="flex-grow">
+                {children}
+              </main>
+              <Footer />
             </NotificationProvider>
           </AuthProvider>
         </ThemeProvider>

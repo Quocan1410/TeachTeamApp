@@ -10,6 +10,8 @@ import {
 } from "type-graphql";
 import { User, UserType } from "../types/User";
 import { AppDataSource } from "../config/database";
+import { NotificationService } from "../services/NotificationService";
+import { NotificationType } from "../types/Notification";
 import { pubsub, SUBSCRIPTION_TOPICS } from "../config/pubsub";
 import {
     CandidateBlockedEvent,
@@ -191,6 +193,34 @@ export class UserResolver {
                 userAccountUpdates: userAccountEvent,
             });
 
+            await NotificationService.create({
+                userId: user.id,
+                type: NotificationType.ACCOUNT_BLOCKED,
+                title: "Account blocked",
+                message:
+                    "Your account has been blocked by an administrator. Contact support for assistance.",
+                link: user.userType === UserType.CANDIDATE ? "/signin" : "/signin",
+            });
+
+            if (user.userType === UserType.CANDIDATE) {
+                await NotificationService.notifyLecturers(
+                    affectedLecturerIds,
+                    {
+                        type: NotificationType.CANDIDATE_BLOCKED,
+                        title: "Candidate blocked",
+                        message: `${user.fullName} has been blocked`,
+                        link: "/lecturer",
+                        metadata: {
+                            candidateId: user.id,
+                            unselectedApplicationsCount:
+                                applicationResult?.unselectedCount || 0,
+                            unrankedApplicationsCount:
+                                applicationResult?.unrankedCount || 0,
+                        },
+                    }
+                );
+            }
+
             return {
                 success: true,
                 message: "User blocked successfully",
@@ -239,7 +269,27 @@ export class UserResolver {
                 await pubsub.publish(SUBSCRIPTION_TOPICS.CANDIDATE_UNBLOCKED, {
                     candidateBlockingUpdates: event,
                 });
+
+                await NotificationService.notifyLecturers(
+                    affectedLecturerIds,
+                    {
+                        type: NotificationType.CANDIDATE_UNBLOCKED,
+                        title: "Candidate unblocked",
+                        message: `${user.fullName} has been unblocked`,
+                        link: "/lecturer",
+                        metadata: { candidateId: user.id },
+                    }
+                );
             }
+
+            await NotificationService.create({
+                userId: user.id,
+                type: NotificationType.ACCOUNT_UNBLOCKED,
+                title: "Account unblocked",
+                message: "Your account access has been restored.",
+                link:
+                    user.userType === UserType.CANDIDATE ? "/tutor" : "/lecturer",
+            });
 
             return {
                 success: true,

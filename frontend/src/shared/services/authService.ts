@@ -20,6 +20,10 @@ authAPI.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  // Let axios set multipart boundary automatically for file uploads
+  if (config.data instanceof FormData) {
+    delete config.headers["Content-Type"];
+  }
   return config;
 });
 
@@ -68,6 +72,52 @@ export class AuthService {
       return {
         success: false,
         message: "Network error occurred during logout.",
+      };
+    }
+  }
+
+  static async uploadAvatar(file: File): Promise<AuthResponse> {
+    try {
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      const response = await authAPI.post("/avatar", formData);
+      return response.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<AuthResponse>;
+      if (axiosError.response?.status === 404) {
+        return {
+          success: false,
+          message:
+            "Avatar API chưa sẵn sàng. Hãy restart backend: npm run dev:backend",
+        };
+      }
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      const networkMessage =
+        axiosError.code === "ERR_NETWORK"
+          ? "Cannot reach server. Check backend is running on port 5000."
+          : axiosError.message || "Network error occurred while uploading avatar.";
+      return {
+        success: false,
+        message: networkMessage,
+      };
+    }
+  }
+
+  static async deleteAvatar(): Promise<AuthResponse> {
+    try {
+      const response = await authAPI.delete("/avatar");
+      return response.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<AuthResponse>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Network error occurred while removing avatar.",
       };
     }
   }

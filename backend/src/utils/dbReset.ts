@@ -5,6 +5,7 @@ import { Role } from "../entities/Role";
 import { CourseAssignment } from "../entities/CourseAssignment";
 import { Application } from "../entities/Application";
 import { SelectedCandidate } from "../entities/SelectedCandidate";
+import { Notification } from "../entities/Notification";
 
 export class DatabaseResetService {
     /**
@@ -76,6 +77,7 @@ export class DatabaseResetService {
     static async clearAllData(): Promise<void> {
         try {
             // Clear in reverse dependency order to avoid foreign key constraint errors
+            await AppDataSource.getRepository(Notification).clear();
             await AppDataSource.getRepository(SelectedCandidate).clear();
             await AppDataSource.getRepository(Application).clear();
             await AppDataSource.getRepository(CourseAssignment).clear();

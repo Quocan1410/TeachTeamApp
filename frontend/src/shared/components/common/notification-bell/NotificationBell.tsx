@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useNotifications } from "@/shared/contexts/NotificationContext";
 import styles from "./NotificationBell.module.css";
 
@@ -8,10 +9,12 @@ const NotificationBell: React.FC = () => {
   const {
     notifications,
     unreadCount,
+    loading,
     markAsRead,
     markAllAsRead,
     removeNotification,
   } = useNotifications();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -36,8 +39,15 @@ const NotificationBell: React.FC = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleNotificationClick = (notificationId: string) => {
+  const handleNotificationClick = (
+    notificationId: string,
+    link?: string | null
+  ) => {
     markAsRead(notificationId);
+    if (link) {
+      router.push(link);
+      setIsOpen(false);
+    }
   };
 
   const handleMarkAllAsRead = () => {
@@ -65,6 +75,7 @@ const NotificationBell: React.FC = () => {
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case "candidate_blocked":
+      case "account_blocked":
         return (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -81,6 +92,7 @@ const NotificationBell: React.FC = () => {
           </svg>
         );
       case "candidate_unblocked":
+      case "account_unblocked":
         return (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -93,6 +105,55 @@ const NotificationBell: React.FC = () => {
               strokeLinecap="round"
               strokeLinejoin="round"
               d="M5 13l4 4L19 7"
+            />
+          </svg>
+        );
+      case "application_selected":
+        return (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="#22c55e"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        );
+      case "application_rejected":
+        return (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="#f59e0b"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+        );
+      case "application_comment":
+      case "application_submitted":
+        return (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
             />
           </svg>
         );
@@ -160,7 +221,11 @@ const NotificationBell: React.FC = () => {
           </div>
 
           <div className={styles.notificationList}>
-            {notifications.length === 0 ? (
+            {loading && notifications.length === 0 ? (
+              <div className={styles.emptyState}>
+                <p className={styles.emptyText}>Loading notifications...</p>
+              </div>
+            ) : notifications.length === 0 ? (
               <div className={styles.emptyState}>
                 <div className={styles.emptyIcon}>
                   <svg
@@ -186,7 +251,9 @@ const NotificationBell: React.FC = () => {
                   className={`${styles.notificationItem} ${
                     !notification.read ? styles.unread : ""
                   }`}
-                  onClick={() => handleNotificationClick(notification.id)}
+                  onClick={() =>
+                    handleNotificationClick(notification.id, notification.link)
+                  }
                 >
                   <div className={styles.notificationIcon}>
                     {getNotificationIcon(notification.type)}

@@ -6,6 +6,7 @@ import { Role } from "../types/Role";
 import { CourseAssignment } from "../types/CourseAssignment";
 import { Application } from "../types/Application";
 import { SelectedCandidate } from "../types/SelectedCandidate";
+import { Notification } from "../types/Notification";
 import bcrypt from "bcryptjs";
 import path from "path";
 
@@ -28,6 +29,7 @@ export const AppDataSource = new DataSource({
         CourseAssignment,
         Application,
         SelectedCandidate,
+        Notification,
     ],
     // Connection options for Cloud MySQL
     extra: {

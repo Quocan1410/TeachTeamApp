@@ -13,6 +13,7 @@ export interface User {
   lastName: string;
   userType: UserType;
   isBlocked: boolean;
+  avatarUrl?: string | null;
   createdAt: string;
   updatedAt: string;
 }

@@ -1,5 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "5000",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "https",
+        hostname: "**",
+        pathname: "/uploads/**",
+      },
+    ],
+  },
   // Temporarily disable React Strict Mode to prevent WebSocket double-mounting in development
   // This eliminates console errors from WebSocket connections being created/destroyed twice
   reactStrictMode: false,

@@ -22,7 +22,7 @@ export function useCandidateBlockingSubscription({
 
   // Get current user and notification system
   const { user } = useAuth();
-  const { addNotification } = useNotifications();
+  const { refreshNotifications } = useNotifications();
 
   // Update refs when callbacks change
   useEffect(() => {
@@ -57,37 +57,7 @@ export function useCandidateBlockingSubscription({
 
       // Add notification for affected lecturers
       if (shouldReceiveNotification) {
-        const action = event.isBlocked ? "blocked" : "unblocked";
-        const unselectedCount = event.unselectedApplicationsCount || 0;
-        const unrankedCount = event.unrankedApplicationsCount || 0;
-
-        const title = `Candidate ${action}`;
-        let message = `${event.candidateName} has been ${action}`;
-
-        if (event.isBlocked && (unselectedCount > 0 || unrankedCount > 0)) {
-          const details = [];
-          if (unselectedCount > 0) {
-            details.push(
-              `${unselectedCount} application${unselectedCount === 1 ? "" : "s"} unselected`
-            );
-          }
-          if (unrankedCount > 0) {
-            details.push(
-              `${unrankedCount} ranking${unrankedCount === 1 ? "" : "s"} removed`
-            );
-          }
-          message += ` - ${details.join(", ")}`;
-        }
-
-        addNotification({
-          type: event.isBlocked ? "candidate_blocked" : "candidate_unblocked",
-          title,
-          message,
-          candidateId: event.candidateId,
-          candidateName: event.candidateName,
-          unselectedCount: unselectedCount,
-          unrankedCount: unrankedCount,
-        });
+        void refreshNotifications();
       }
 
       // Call the callback if provided (for existing functionality)
@@ -97,7 +67,7 @@ export function useCandidateBlockingSubscription({
         currentOnCandidateBlocked(event);
       }
     },
-    [user?.id, user?.userType, addNotification]
+    [user?.id, user?.userType, refreshNotifications]
   );
 
   // Create WebSocket connection
