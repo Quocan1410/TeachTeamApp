@@ -2,7 +2,7 @@ import { Resolver, Mutation, Arg, Ctx, ObjectType, Field } from "type-graphql";
 import { User, UserType } from "../types/User";
 import { AppDataSource } from "../config/database";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { signAdminToken } from "../config/jwtConfig";
 
 @ObjectType()
 class LoginResponse {
@@ -70,18 +70,11 @@ export class AuthResolver {
                 };
             }
 
-            // Generate JWT token
-            const token = jwt.sign(
-                {
-                    userId: user.id,
-                    email: user.email,
-                    userType: user.userType,
-                },
-                process.env.ADMIN_JWT_SECRET ||
-                    process.env.JWT_SECRET ||
-                    "admin-secret-key",
-                { expiresIn: "24h" }
-            );
+            const token = signAdminToken({
+                userId: user.id,
+                email: user.email,
+                userType: user.userType,
+            });
 
             // Store session info
             if (ctx.req.session) {

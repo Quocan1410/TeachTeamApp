@@ -1,24 +1,5 @@
-export const getApiOrigin = (): string => {
-    const endpoint =
-        process.env.NEXT_PUBLIC_API_ENDPOINT ||
-        process.env.NEXT_PUBLIC_API_URL ||
-        "http://localhost:5000/api";
-
-    return endpoint.replace(/\/api\/?$/, "");
-};
-
-export const resolveAvatarUrl = (
-    avatarUrl?: string | null
-): string | null => {
-    if (!avatarUrl) {
-        return null;
-    }
-
-    if (avatarUrl.startsWith("http://") || avatarUrl.startsWith("https://")) {
-        return avatarUrl;
-    }
-
-    return `${getApiOrigin()}${avatarUrl}`;
+export const hasCustomAvatar = (avatarUrl?: string | null): boolean => {
+    return !!avatarUrl && avatarUrl.startsWith("/uploads/avatars/");
 };
 
 export const getUserInitials = (

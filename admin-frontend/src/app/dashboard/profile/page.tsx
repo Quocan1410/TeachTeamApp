@@ -6,10 +6,8 @@ import {
     deleteAdminAvatar,
     uploadAdminAvatar,
 } from "@/lib/avatarService";
-import {
-    getUserInitials,
-    resolveAvatarUrl,
-} from "@/lib/avatarUtils";
+import { getUserInitials, hasCustomAvatar } from "@/lib/avatarUtils";
+import { useProtectedAvatar } from "@/hooks/useProtectedAvatar";
 import styles from "./profile.module.css";
 
 export default function AdminProfilePage() {
@@ -18,6 +16,10 @@ export default function AdminProfilePage() {
     const [isUploading, setIsUploading] = useState(false);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const protectedAvatarUrl = useProtectedAvatar(
+        hasCustomAvatar(user?.avatarUrl),
+        user?.avatarUrl
+    );
 
     useEffect(() => {
         const userData = localStorage.getItem("admin-user");
@@ -115,7 +117,8 @@ export default function AdminProfilePage() {
     }
 
     const avatarSrc =
-        avatarPreview || resolveAvatarUrl(user.avatarUrl) || null;
+        avatarPreview ||
+        (hasCustomAvatar(user.avatarUrl) ? protectedAvatarUrl : null);
     const initials = getUserInitials(
         user.firstName,
         user.lastName,

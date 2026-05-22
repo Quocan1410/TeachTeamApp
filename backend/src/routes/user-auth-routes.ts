@@ -2,6 +2,7 @@ import { Router } from "express";
 import { AuthController } from "../controllers/AuthController";
 import { authenticateToken } from "../middleware/authMiddleware";
 import { avatarUpload } from "../middleware/uploadMiddleware";
+import { authRateLimiter } from "../middleware/rateLimiters";
 
 const router = Router();
 const authController = new AuthController();
@@ -94,11 +95,11 @@ const validateSignupFields = (req: any, res: any, next: any) => {
 };
 
 // Public routes with enhanced validation
-router.post("/signup", validateSignupFields, async (req, res) => {
+router.post("/signup", authRateLimiter, validateSignupFields, async (req, res) => {
     await authController.signup(req, res);
 });
 
-router.post("/signin", validateRequestBody(["email", "password"]), async (req, res) => {
+router.post("/signin", authRateLimiter, validateRequestBody(["email", "password"]), async (req, res) => {
     await authController.signin(req, res);
 });
 
@@ -109,6 +110,10 @@ router.post("/logout", async (req, res) => {
 // Protected routes
 router.get("/profile", authenticateToken, async (req, res) => {
     await authController.getProfile(req, res);
+});
+
+router.get("/avatar/image", authenticateToken, async (req, res) => {
+    await authController.getMyAvatar(req, res);
 });
 
 router.post("/avatar", authenticateToken, (req, res) => {

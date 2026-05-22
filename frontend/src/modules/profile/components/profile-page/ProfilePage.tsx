@@ -10,7 +10,9 @@ import { useAuth } from "../../../auth/hooks/useAuth";
 import {
   getUserAvatarSrc,
   getUserInitials,
+  hasCustomAvatar,
 } from "../../../../shared/utils/avatarUtils";
+import { useProtectedAvatar } from "../../../../shared/hooks/useProtectedAvatar";
 import styles from "./ProfilePage.module.css";
 
 export const ProfilePage: React.FC = () => {
@@ -26,6 +28,10 @@ export const ProfilePage: React.FC = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [showAvatarInitials, setShowAvatarInitials] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const protectedAvatarUrl = useProtectedAvatar(
+    !!user && hasCustomAvatar(user.avatarUrl),
+    user?.avatarUrl
+  );
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -222,7 +228,12 @@ export const ProfilePage: React.FC = () => {
   };
 
   const avatarSrc =
-    avatarPreview ?? (user ? getUserAvatarSrc(user) : "");
+    avatarPreview ??
+    (user && hasCustomAvatar(user.avatarUrl) && protectedAvatarUrl
+      ? protectedAvatarUrl
+      : user
+        ? getUserAvatarSrc(user)
+        : "");
   const displayInitials = user
     ? getUserInitials(user.firstName, user.lastName, user.email)
     : "?";

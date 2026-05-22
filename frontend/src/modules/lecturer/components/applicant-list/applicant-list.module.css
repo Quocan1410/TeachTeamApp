@@ -1,7 +1,7 @@
 .applicantListContainer {
   height: 100%;
   overflow-y: auto;
-  overflow-x: hidden; /* Bỏ thanh cuộn ngang */
+  overflow-x: hidden; /* hide horizontal scrollbar */
   max-height: 600px; /* Or as needed */
 }
 
@@ -108,7 +108,7 @@
   flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 1.05rem;
-  overflow: hidden; /* Ngăn content tràn ra ngoài */
+  overflow: hidden; /* prevent content overflow */
 }
 
 .detailItem {

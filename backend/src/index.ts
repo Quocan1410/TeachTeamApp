@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import { config } from "dotenv";
 import { initializeDatabase } from "./config/database";
 import authRoutes from "./routes/user-auth-routes";
@@ -10,6 +11,9 @@ import notificationRoutes from "./routes/notification-routes";
 import { getMelbourneTimestamp } from "./utils/dateUtils";
 import path from "path";
 import { ensureAvatarUploadDir } from "./utils/avatarUtils";
+import { corsOptions } from "./config/corsConfig";
+import { devOpsGuard } from "./middleware/devOpsGuard";
+import { generalRateLimiter } from "./middleware/rateLimiters";
 
 // Load environment variables from root .env file
 config({ path: path.resolve(__dirname, "../../.env") });
@@ -18,13 +22,13 @@ ensureAvatarUploadDir();
 
 const app = express();
 const PORT = process.env.BACKEND_PORT || process.env.PORT || 5000;
-const uploadsPath = path.resolve(__dirname, "../uploads");
+const isProduction = process.env.NODE_ENV === "production";
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use("/uploads", express.static(uploadsPath));
+app.use(helmet());
+app.use(cors(corsOptions));
+app.use(generalRateLimiter);
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 
 // Routes
 app.use("/api/auth", authRoutes);
@@ -32,8 +36,7 @@ app.use("/api/applications", applicationRoutes);
 app.use("/api/database", databaseRoutes);
 app.use("/api/notifications", notificationRoutes);
 
-// Basic health check route
-app.get("/health", (req, res) => {
+app.get("/health", (_req, res) => {
     res.json({
         status: "OK",
         message: "Teaching Tutor Backend API is running",
@@ -42,8 +45,7 @@ app.get("/health", (req, res) => {
     });
 });
 
-// Database test route
-app.get("/db-test", async (req, res) => {
+app.get("/db-test", devOpsGuard, async (_req, res) => {
     try {
         const { DatabaseResetService } = await import("./utils/dbReset");
 
@@ -71,8 +73,7 @@ app.get("/db-test", async (req, res) => {
     }
 });
 
-// Manual database reset route
-app.post("/db-reset", async (req, res) => {
+app.post("/db-reset", devOpsGuard, async (_req, res) => {
     try {
         const { DatabaseResetService } = await import("./utils/dbReset");
         await DatabaseResetService.resetDatabase();
@@ -93,10 +94,8 @@ app.post("/db-reset", async (req, res) => {
     }
 });
 
-// Start server
 const startServer = async () => {
     try {
-        // Initialize database connection (NO AUTO-RESET)
         await initializeDatabaseSafely();
 
         app.listen(PORT, () => {
@@ -104,17 +103,13 @@ const startServer = async () => {
             console.log(`Health check: http://localhost:${PORT}/health`);
             console.log(`Auth endpoints: http://localhost:${PORT}/api/auth`);
             console.log(
-                `Avatar upload: POST http://localhost:${PORT}/api/auth/avatar`
+                `Avatar image: GET http://localhost:${PORT}/api/auth/avatar/image`
             );
-            console.log(
-                `Application endpoints: http://localhost:${PORT}/api/applications`
-            );
-            console.log(
-                `Database endpoints: http://localhost:${PORT}/api/database`
-            );
-            console.log(
-                `Database status: http://localhost:${PORT}/api/database/status`
-            );
+            if (!isProduction) {
+                console.log(
+                    `Dev database reset: POST http://localhost:${PORT}/api/database/reset`
+                );
+            }
         });
     } catch (error) {
         console.error("Failed to start server:", error);
@@ -125,29 +120,20 @@ const startServer = async () => {
                 `Server is running on port ${PORT} (DATABASE MAY NOT BE AVAILABLE)`
             );
             console.log(`Health check: http://localhost:${PORT}/health`);
-            console.log(
-                `Manual database reset: POST http://localhost:${PORT}/api/database/reset`
-            );
         });
     }
 };
 
-// Safe database initialization - NO AUTO-RESET, preserves existing data
 const initializeDatabaseSafely = async () => {
     console.log("Starting Teaching Tutor Backend API...");
     console.log("Initializing database connection (safe mode)...");
 
     try {
-        // Just initialize the database connection
         await initializeDatabase();
         console.log("Database initialization completed successfully");
         console.log("User data will be preserved across server restarts");
     } catch (error) {
         console.error("Database initialization failed:", error);
-        console.warn("Manual database intervention may be required");
-
-        // Don't auto-reset, just log the error
-        console.log("To manually reset database if needed: POST /db-reset");
         throw error;
     }
 };

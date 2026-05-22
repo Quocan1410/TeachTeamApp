@@ -89,7 +89,7 @@ export class AuthService {
         return {
           success: false,
           message:
-            "Avatar API chưa sẵn sàng. Hãy restart backend: npm run dev:backend",
+            "Avatar API is not available. Restart the backend: npm run dev:backend",
         };
       }
       if (axiosError.response?.data) {
@@ -145,7 +145,6 @@ export class AuthService {
       if (payload && payload.exp) {
         StorageManager.setItem("token", token);
         StorageManager.setItem("tokenExpiry", payload.exp.toString());
-        console.log("Token saved with expiry:", new Date(payload.exp * 1000));
       } else {
         console.warn(
           "Invalid token structure, saving without expiry validation"

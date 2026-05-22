@@ -9,18 +9,9 @@ const getApiOrigin = (): string => {
   return endpoint.replace(/\/api\/?$/, "");
 };
 
-export const resolveAvatarUrl = (
-  avatarUrl?: string | null
-): string | null => {
-  if (!avatarUrl) {
-    return null;
-  }
-
-  if (avatarUrl.startsWith("http://") || avatarUrl.startsWith("https://")) {
-    return avatarUrl;
-  }
-
-  return `${getApiOrigin()}${avatarUrl}`;
+/** Avatar images are served via authenticated API, not public /uploads. */
+export const hasCustomAvatar = (avatarUrl?: string | null): boolean => {
+  return !!avatarUrl && avatarUrl.startsWith("/uploads/avatars/");
 };
 
 export const getDefaultAvatarPath = (
@@ -38,8 +29,13 @@ export const getDefaultAvatarPath = (
   return `/avatars/avatar-${(emailHash % 12) + 1}.jpg`;
 };
 
-export const getUserAvatarSrc = (user: Pick<User, "email" | "userType" | "avatarUrl">): string => {
-  return resolveAvatarUrl(user.avatarUrl) ?? getDefaultAvatarPath(user.email, user.userType);
+export const getUserAvatarSrc = (
+  user: Pick<User, "email" | "userType" | "avatarUrl">
+): string => {
+  if (hasCustomAvatar(user.avatarUrl)) {
+    return getDefaultAvatarPath(user.email, user.userType);
+  }
+  return getDefaultAvatarPath(user.email, user.userType);
 };
 
 export const getUserInitials = (

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import fs from "fs";
+import path from "path";
 import { AppDataSource } from "../config/database";
 import { User, UserType } from "../entities/User";
 import { Course } from "../entities/Course";
@@ -15,7 +16,10 @@ import { NotificationType } from "../entities/Notification";
 import {
     buildAvatarPublicPath,
     deleteAvatarFileIfExists,
+    getAvatarMimeType,
+    resolveAvatarFilePath,
 } from "../utils/avatarUtils";
+import { signBackendToken } from "../config/jwtConfig";
 
 interface AssignedCourse {
     id: number;
@@ -123,18 +127,11 @@ export class AuthController {
                 });
             }
 
-            // Generate JWT token
-            const token = jwt.sign(
-                {
-                    userId: savedUser.id,
-                    email: savedUser.email,
-                    userType: savedUser.userType,
-                },
-                process.env.BACKEND_JWT_SECRET ||
-                process.env.JWT_SECRET ||
-                "fallback_secret_key",
-                { expiresIn: "7d" }
-            );
+            const token = signBackendToken({
+                userId: savedUser.id,
+                email: savedUser.email,
+                userType: savedUser.userType,
+            });
 
             // Return success response (exclude password)
             const { password: _, ...userWithoutPassword } = savedUser;
@@ -208,18 +205,11 @@ export class AuthController {
                 return;
             }
 
-            // Generate JWT token
-            const token = jwt.sign(
-                {
-                    userId: user.id,
-                    email: user.email,
-                    userType: user.userType,
-                },
-                process.env.BACKEND_JWT_SECRET ||
-                process.env.JWT_SECRET ||
-                "fallback_secret_key",
-                { expiresIn: "7d" }
-            );
+            const token = signBackendToken({
+                userId: user.id,
+                email: user.email,
+                userType: user.userType,
+            });
 
             // Return success response (exclude password)
             const { password: _, ...userWithoutPassword } = user;
@@ -465,6 +455,52 @@ export class AuthController {
             res.status(500).json({
                 success: false,
                 message: "Internal server error while removing avatar",
+            });
+        }
+    }
+
+    async getMyAvatar(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = (req as any).user?.userId;
+
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    message: "User not authenticated",
+                });
+                return;
+            }
+
+            const user = await this.userRepository.findOne({
+                where: { id: userId },
+            });
+
+            if (!user?.avatarUrl) {
+                res.status(404).json({
+                    success: false,
+                    message: "No avatar uploaded",
+                });
+                return;
+            }
+
+            const filePath = resolveAvatarFilePath(user.avatarUrl);
+
+            if (!filePath) {
+                res.status(404).json({
+                    success: false,
+                    message: "Avatar file not found",
+                });
+                return;
+            }
+
+            res.setHeader("Content-Type", getAvatarMimeType(filePath));
+            res.setHeader("Cache-Control", "private, max-age=300");
+            fs.createReadStream(filePath).pipe(res);
+        } catch (error) {
+            console.error("Get avatar error:", error);
+            res.status(500).json({
+                success: false,
+                message: "Failed to load avatar",
             });
         }
     }

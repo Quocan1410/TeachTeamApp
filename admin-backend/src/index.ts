@@ -8,6 +8,7 @@ import { buildSchema } from "type-graphql";
 import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/use/ws";
 import cors from "cors";
+import helmet from "helmet";
 import session from "express-session";
 import { config } from "dotenv";
 import { initializeDatabase } from "./config/database";
@@ -17,37 +18,55 @@ import { CourseResolver } from "./resolvers/CourseResolver";
 import { ReportResolver } from "./resolvers/ReportResolver";
 import { SubscriptionResolver } from "./resolvers/SubscriptionResolver";
 import { NotificationResolver } from "./resolvers/NotificationResolver";
+import { resolveAdminFromContext, resolveWsUser } from "./utils/graphqlContext";
 import "./types/session";
 import path from "path";
 
-// Load environment variables from root .env file
 config({ path: path.resolve(__dirname, "../../.env") });
+
+const parseAllowedOrigins = (): string[] => {
+    const fromEnv = process.env.ALLOWED_ORIGINS;
+    if (fromEnv) {
+        return fromEnv.split(",").map((o) => o.trim()).filter(Boolean);
+    }
+    return [
+        process.env.ADMIN_FRONTEND_URL || "http://localhost:3001",
+        process.env.FRONTEND_URL || "http://localhost:3000",
+        "http://localhost:3000",
+        "http://localhost:3001",
+    ];
+};
 
 async function startServer() {
     try {
-        // Initialize database
         await initializeDatabase();
 
-        // Create Express app
         const app = express();
+        const isProduction = process.env.NODE_ENV === "production";
 
-        // Session configuration
+        const sessionSecret =
+            process.env.ADMIN_SESSION_SECRET ||
+            process.env.SESSION_SECRET ||
+            (isProduction ? "" : "dev-only-admin-session-secret");
+
+        if (!sessionSecret && isProduction) {
+            throw new Error("ADMIN_SESSION_SECRET must be set in production");
+        }
+
+        app.use(helmet({ contentSecurityPolicy: false }));
         app.use(
             session({
-                secret:
-                    process.env.ADMIN_SESSION_SECRET ||
-                    process.env.SESSION_SECRET ||
-                    "admin-session-secret",
+                secret: sessionSecret,
                 resave: false,
                 saveUninitialized: false,
                 cookie: {
-                    secure: process.env.NODE_ENV === "production",
-                    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+                    secure: isProduction,
+                    httpOnly: true,
+                    maxAge: 8 * 60 * 60 * 1000,
                 },
             })
         );
 
-        // Build GraphQL schema
         const schema = await buildSchema({
             resolvers: [
                 AuthResolver,
@@ -61,47 +80,37 @@ async function startServer() {
             pubSub: require("./config/pubsub").pubsub,
         });
 
-        // Create HTTP server
         const httpServer = createServer(app);
 
-        // Create WebSocket server
         const wsServer = new WebSocketServer({
             server: httpServer,
             path: "/graphql",
         });
 
-        // WebSocket connection handling
-        wsServer.on("connection", (ws, req) => {
-            ws.on("error", (error) => {
-                // Silent error handling for production
-            });
-        });
-
-        // Save the returned server's info so we can shutdown this server later
         const serverCleanup = useServer(
             {
                 schema,
-                onConnect: (ctx) => {
+                onConnect: async (ctx) => {
+                    const user = await resolveWsUser(
+                        ctx.connectionParams as
+                            | Record<string, unknown>
+                            | undefined
+                    );
+                    if (!user) {
+                        return false;
+                    }
+                    (ctx.extra as { userId?: number }).userId = user.id;
                     return true;
-                },
-                onDisconnect: (ctx, code, reason) => {
-                    // Silent disconnect handling
-                },
-                onSubscribe: (ctx, id, payload) => {
-                    // Silent subscription handling
                 },
             },
             wsServer
         );
 
-        // Create Apollo Server
         const server = new ApolloServer({
             schema,
-            introspection: true,
+            introspection: !isProduction,
             plugins: [
-                // Proper shutdown for the HTTP server.
                 ApolloServerPluginDrainHttpServer({ httpServer }),
-                // Proper shutdown for the WebSocket server.
                 {
                     async serverWillStart() {
                         return {
@@ -116,35 +125,44 @@ async function startServer() {
 
         await server.start();
 
-        // Apply middleware
         app.use(
             "/graphql",
             cors<cors.CorsRequest>({
-                origin: [
-                    process.env.ADMIN_FRONTEND_URL ||
-                        process.env.FRONTEND_URL ||
-                        "http://localhost:3001",
-                    process.env.FRONTEND_URL || "http://localhost:3000",
-                    "http://localhost:3000", // Default Next.js port
-                    "http://localhost:3001", // Alternative port
-                    "http://localhost:3002", // Another alternative
-                ],
+                origin: (origin, callback) => {
+                    if (!origin) {
+                        callback(null, true);
+                        return;
+                    }
+                    const allowed = parseAllowedOrigins();
+                    callback(
+                        null,
+                        allowed.includes(origin)
+                    );
+                },
                 credentials: true,
             }),
-            express.json(),
+            express.json({ limit: "1mb" }),
             expressMiddleware(server, {
-                context: async ({ req, res }) => ({
-                    req,
-                    res,
-                    user: req.session?.userId
-                        ? { id: req.session.userId }
-                        : null,
-                }),
+                context: async ({ req, res }) => {
+                    const adminUser = await resolveAdminFromContext({
+                        req,
+                        res,
+                    });
+                    return {
+                        req,
+                        res,
+                        user: adminUser
+                            ? { id: adminUser.id }
+                            : req.session?.userId
+                              ? { id: req.session.userId }
+                              : null,
+                        adminUser,
+                    };
+                },
             })
         );
 
-        // Health check endpoint
-        app.get("/health", (req, res) => {
+        app.get("/health", (_req, res) => {
             res.json({
                 status: "OK",
                 service: "Admin GraphQL Backend",
@@ -152,12 +170,12 @@ async function startServer() {
             });
         });
 
-        // Start server
         const PORT = process.env.ADMIN_BACKEND_PORT || process.env.PORT || 4002;
         httpServer.listen(PORT, () => {
-            // Server started successfully
+            console.log(`Admin GraphQL server on port ${PORT}`);
         });
     } catch (error) {
+        console.error("Failed to start admin backend:", error);
         process.exit(1);
     }
 }

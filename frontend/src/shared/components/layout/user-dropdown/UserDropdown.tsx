@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getUserInitials } from "@/shared/utils/avatarUtils";
+import { useProtectedAvatar } from "@/shared/hooks/useProtectedAvatar";
 import styles from "./UserDropdown.module.css";
 
 export interface UserDropdownProps {
@@ -33,13 +34,19 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const protectedAvatarUrl = useProtectedAvatar(
+    !!user.hasCustomAvatar,
+    user.hasCustomAvatar ? user.email : null
+  );
 
   useEffect(() => {
     setAvatarLoadFailed(false);
-  }, [user.avatarPath]);
+  }, [user.avatarPath, protectedAvatarUrl]);
 
   const showInitials =
-    avatarLoadFailed || (!user.hasCustomAvatar && !user.avatarNumber);
+    avatarLoadFailed ||
+    (!user.hasCustomAvatar && !user.avatarNumber) ||
+    (user.hasCustomAvatar && !protectedAvatarUrl);
 
   const initials = getUserInitials(
     user.firstName,
@@ -119,12 +126,12 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
               <span className={styles.avatarInitials}>{initials}</span>
             ) : (
               <Image
-                src={getAvatarPath()}
+                src={user.hasCustomAvatar && protectedAvatarUrl ? protectedAvatarUrl : getAvatarPath()}
                 alt={user.fullName}
                 width={40}
                 height={40}
                 className={styles.avatarImage}
-                unoptimized={user.hasCustomAvatar}
+                unoptimized={!!user.hasCustomAvatar}
                 onError={() => setAvatarLoadFailed(true)}
               />
             )}
@@ -140,12 +147,12 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
               <div className={styles.dropdownAvatarInitials}>{initials}</div>
             ) : (
             <Image
-              src={getAvatarPath()}
+              src={user.hasCustomAvatar && protectedAvatarUrl ? protectedAvatarUrl : getAvatarPath()}
               alt={user.fullName}
               width={60}
               height={60}
               className={styles.dropdownAvatar}
-              unoptimized={user.hasCustomAvatar}
+              unoptimized={!!user.hasCustomAvatar}
               onError={() => setAvatarLoadFailed(true)}
             />
             )}

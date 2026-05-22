@@ -27,3 +27,33 @@ export const ensureAvatarUploadDir = (): void => {
         fs.mkdirSync(AVATAR_UPLOAD_DIR, { recursive: true });
     }
 };
+
+export const resolveAvatarFilePath = (
+    avatarUrl?: string | null
+): string | null => {
+    if (!avatarUrl || !avatarUrl.startsWith("/uploads/avatars/")) {
+        return null;
+    }
+
+    const filename = path.basename(avatarUrl);
+    if (!/^user-\d+-\d+\.(jpg|jpeg|png|webp)$/i.test(filename)) {
+        return null;
+    }
+
+    const filePath = path.join(AVATAR_UPLOAD_DIR, filename);
+    return fs.existsSync(filePath) ? filePath : null;
+};
+
+export const getAvatarMimeType = (filePath: string): string => {
+    const ext = path.extname(filePath).toLowerCase();
+    switch (ext) {
+        case ".png":
+            return "image/png";
+        case ".webp":
+            return "image/webp";
+        case ".jpg":
+        case ".jpeg":
+        default:
+            return "image/jpeg";
+    }
+};

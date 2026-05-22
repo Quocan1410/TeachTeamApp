@@ -7,7 +7,9 @@ import {
     ObjectType,
     Field,
     Ctx,
+    UseMiddleware,
 } from "type-graphql";
+import { AdminAuthMiddleware } from "../middleware/AdminAuthMiddleware";
 import { User, UserType } from "../types/User";
 import { AppDataSource } from "../config/database";
 import { NotificationService } from "../services/NotificationService";
@@ -50,6 +52,7 @@ class UserResponse {
 }
 
 @Resolver()
+@UseMiddleware(AdminAuthMiddleware)
 export class UserResolver {
     @Query(() => [User])
     async getAllUsers(): Promise<User[]> {

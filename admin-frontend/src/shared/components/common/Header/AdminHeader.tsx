@@ -18,10 +18,8 @@ import {
 import { useTheme } from "../../../contexts/ThemeContext";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import AdminNotificationBell from "../AdminNotificationBell/AdminNotificationBell";
-import {
-    getUserInitials,
-    resolveAvatarUrl,
-} from "@/lib/avatarUtils";
+import { getUserInitials, hasCustomAvatar } from "@/lib/avatarUtils";
+import { useProtectedAvatar } from "@/hooks/useProtectedAvatar";
 import styles from "./AdminHeader.module.css";
 
 interface AdminUser {
@@ -95,7 +93,13 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onLogout }) => {
         user.lastName,
         user.email
     );
-    const avatarSrc = resolveAvatarUrl(user.avatarUrl);
+    const protectedAvatarUrl = useProtectedAvatar(
+        hasCustomAvatar(user.avatarUrl),
+        user.avatarUrl
+    );
+    const avatarSrc = hasCustomAvatar(user.avatarUrl)
+        ? protectedAvatarUrl
+        : null;
 
     return (
         <header

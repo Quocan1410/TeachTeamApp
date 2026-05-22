@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { AppDataSource } from "../config/database";
 import { User } from "../entities/User";
+import { verifyAnyAppToken } from "../config/jwtConfig";
 
 interface JwtPayload {
     userId: number;
@@ -39,31 +40,7 @@ export const authenticateToken = async (
     }
 
     try {
-        const jwtSecrets = [
-            process.env.BACKEND_JWT_SECRET,
-            process.env.JWT_SECRET,
-            process.env.ADMIN_JWT_SECRET,
-            "fallback_secret_key",
-            "admin-secret-key",
-        ].filter((value, index, array): value is string => {
-            return !!value && array.indexOf(value) === index;
-        });
-
-        let decoded: JwtPayload | null = null;
-        let lastError: unknown;
-
-        for (const secret of jwtSecrets) {
-            try {
-                decoded = jwt.verify(token, secret) as JwtPayload;
-                break;
-            } catch (error) {
-                lastError = error;
-            }
-        }
-
-        if (!decoded) {
-            throw lastError ?? new jwt.JsonWebTokenError("Invalid token");
-        }
+        const decoded = verifyAnyAppToken(token) as JwtPayload;
 
         // Verify user still exists in database and is not blocked
         const userRepository = AppDataSource.getRepository(User);

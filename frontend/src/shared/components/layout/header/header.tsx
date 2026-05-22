@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { useTheme } from "@/shared/contexts/ThemeContext";
 import UserDropdown from "../user-dropdown";
-import { getUserAvatarSrc } from "@/shared/utils/avatarUtils";
+import { hasCustomAvatar } from "@/shared/utils/avatarUtils";
 import NotificationBell from "@/shared/components/common/notification-bell/NotificationBell";
 import styles from "./header.module.css";
 
@@ -162,10 +162,9 @@ const Header: React.FC = () => {
                     fullName: `${user.firstName} ${user.lastName}`,
                     email: user.email,
                     role: getUserRole(),
-                    avatarPath: getUserAvatarSrc(user),
                     firstName: user.firstName,
                     lastName: user.lastName,
-                    hasCustomAvatar: !!user.avatarUrl,
+                    hasCustomAvatar: hasCustomAvatar(user.avatarUrl),
                   }}
                   onSignOut={handleSignOut}
                   onToggleDarkMode={toggleDarkMode}

@@ -1,4 +1,12 @@
-import { Resolver, Query, ObjectType, Field, Int } from "type-graphql";
+import {
+    Resolver,
+    Query,
+    ObjectType,
+    Field,
+    Int,
+    UseMiddleware,
+} from "type-graphql";
+import { AdminAuthMiddleware } from "../middleware/AdminAuthMiddleware";
 import { User, UserType } from "../types/User";
 import { Course } from "../types/Course";
 import { Application } from "../types/Application";
@@ -60,6 +68,7 @@ class UnselectedCandidate {
 }
 
 @Resolver()
+@UseMiddleware(AdminAuthMiddleware)
 export class ReportResolver {
     @Query(() => [CourseSelectedCandidates])
     async getCandidatesChosenPerCourse(): Promise<CourseSelectedCandidates[]> {

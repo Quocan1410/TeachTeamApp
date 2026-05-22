@@ -1,8 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "@/shared/styles/globals.css"; // Adjusted path as per proposed structure
-import "@/lib/development"; // Development utilities (HMR error suppression)
+import "@/shared/styles/globals.css";
 import Header from "@/shared/components/layout/header/header";
 import Footer from "@/shared/components/layout/footer/footer";
 import { AuthProvider } from "@/modules/auth/contexts/AuthContext";

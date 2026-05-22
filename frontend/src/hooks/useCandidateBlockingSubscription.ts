@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 import { CandidateBlockedEvent } from "@/lib/graphql-subscriptions";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
+import { AuthService } from "@/shared/services/authService";
 import { useNotifications } from "@/shared/contexts/NotificationContext";
 
 interface UseCandidateBlockingSubscriptionOptions {
@@ -91,9 +92,10 @@ export function useCandidateBlockingSubscription({
       }
 
       // Send connection init message
+      const token = AuthService.getToken();
       const initMessage = {
         type: "connection_init",
-        payload: {},
+        payload: token ? { authorization: `Bearer ${token}` } : {},
       };
       try {
         ws.send(JSON.stringify(initMessage));

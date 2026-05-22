@@ -29,6 +29,7 @@
         "graphql": "^16.8.0",
         "graphql-subscriptions": "^3.0.0",
         "graphql-ws": "^6.0.5",
+        "helmet": "^8.2.0",
         "jsonwebtoken": "^9.0.2",
         "mysql2": "^3.14.1",
         "reflect-metadata": "^0.2.2",

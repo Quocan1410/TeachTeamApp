@@ -1,7 +1,10 @@
 import { Router, Request, Response } from "express";
 import { getMelbourneTimestamp } from "../utils/dateUtils";
+import { devOpsGuard } from "../middleware/devOpsGuard";
 
 const router = Router();
+
+router.use(devOpsGuard);
 
 /**
  * GET /api/database/test

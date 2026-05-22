@@ -7,7 +7,9 @@ import {
     Ctx,
     ObjectType,
     Field,
+    UseMiddleware,
 } from "type-graphql";
+import { AdminAuthMiddleware } from "../middleware/AdminAuthMiddleware";
 import {
     Notification,
     NotificationListResponse,
@@ -28,6 +30,7 @@ class NotificationActionResponse {
 }
 
 @Resolver()
+@UseMiddleware(AdminAuthMiddleware)
 export class NotificationResolver {
     @Query(() => NotificationListResponse)
     async getMyNotifications(

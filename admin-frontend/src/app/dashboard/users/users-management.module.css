@@ -43,9 +43,9 @@
 
 .subtitle {
     font-size: 2rem;
-    color: #f97316; /* Màu cam */
+    color: #f97316; /* orange accent */
     font-weight: bold;
-    margin: 1.5rem 0 0.5rem 0; /* Tăng margin-top */
+    margin: 1.5rem 0 0.5rem 0; /* extra top margin */
     line-height: 1.4;
     letter-spacing: -0.025em;
     text-align: center;
@@ -776,7 +776,7 @@
 }
 
 :global(.dark) .subtitle {
-    color: #fb923c; /* Màu cam sáng hơn cho dark mode */
+    color: #fb923c; /* lighter orange for dark mode */
 }
 
 /* Responsive Design */

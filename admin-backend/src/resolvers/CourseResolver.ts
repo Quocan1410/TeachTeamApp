@@ -7,7 +7,9 @@ import {
     ObjectType,
     Field,
     InputType,
+    UseMiddleware,
 } from "type-graphql";
+import { AdminAuthMiddleware } from "../middleware/AdminAuthMiddleware";
 import { Course } from "../types/Course";
 import { CourseAssignment } from "../types/CourseAssignment";
 import { User, UserType } from "../types/User";
@@ -64,6 +66,7 @@ class AssignmentResponse {
 }
 
 @Resolver()
+@UseMiddleware(AdminAuthMiddleware)
 export class CourseResolver {
     @Query(() => [Course])
     async getAllCourses(): Promise<Course[]> {

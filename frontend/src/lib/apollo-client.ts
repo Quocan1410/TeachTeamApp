@@ -45,9 +45,13 @@ const wsClient = createClient({
     return true;
   },
   connectionParams: () => {
-    return {
-      // Add any authentication params here if needed
-    };
+    if (typeof window === "undefined") {
+      return {};
+    }
+    const adminToken = localStorage.getItem("admin-token");
+    const appToken = localStorage.getItem("token");
+    const token = adminToken || appToken;
+    return token ? { authorization: `Bearer ${token}` } : {};
   },
   on: {
     error: (error: unknown) => {

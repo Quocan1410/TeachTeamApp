@@ -52,3 +52,13 @@ Desktop.ini
 uploads/
 tmp/
 temp/
+
+# Local API test artifacts (may contain JWTs)
+signup.out
+token.txt
+**/signup.out
+**/token.txt
+test-avatar.png
+**/test-avatar.png
+debug-test.md
+**/debug-test.md
