@@ -8,6 +8,7 @@ import React, {
   useEffect,
   useRef,
 } from "react";
+import axios from "axios";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import {
   fetchNotifications,
@@ -100,6 +101,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   const [loading, setLoading] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const inFlightRef = useRef(false);
+  const lastFetchAtRef = useRef(0);
+  const rateLimitedUntilRef = useRef(0);
 
   const refreshNotifications = useCallback(async () => {
     if (!isAuthenticated || !user?.id) {
@@ -115,14 +119,31 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       return;
     }
 
+    const now = Date.now();
+    if (now < rateLimitedUntilRef.current) {
+      return;
+    }
+
+    if (inFlightRef.current || now - lastFetchAtRef.current < 5000) {
+      return;
+    }
+
+    inFlightRef.current = true;
+    lastFetchAtRef.current = now;
+
     try {
       setLoading(true);
       const data = await fetchNotifications();
       setNotifications(data.notifications.map(mapStoredNotification));
       setUnreadCount(data.unreadCount);
     } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 429) {
+        rateLimitedUntilRef.current = Date.now() + 60_000;
+        return;
+      }
       console.error("Failed to load notifications:", error);
     } finally {
+      inFlightRef.current = false;
       setLoading(false);
     }
   }, [isAuthenticated, user?.id, user?.userType]);
@@ -139,12 +160,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 
     if (
       isAuthenticated &&
-      user &&
+      user?.id &&
       (user.userType === "candidate" || user.userType === "lecturer")
     ) {
       pollRef.current = setInterval(() => {
         refreshNotifications();
-      }, 30000);
+      }, 60000);
     }
 
     return () => {
@@ -152,7 +173,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         clearInterval(pollRef.current);
       }
     };
-  }, [isAuthenticated, user, refreshNotifications]);
+  }, [isAuthenticated, user?.id, user?.userType, refreshNotifications]);
 
   const addNotification = useCallback(
     (notificationData: Omit<Notification, "id" | "timestamp" | "read">) => {
@@ -175,10 +196,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         return [newNotification, ...prev];
       });
       setUnreadCount((prev) => prev + 1);
-
-      refreshNotifications();
     },
-    [refreshNotifications]
+    []
   );
 
   const markAsRead = useCallback(

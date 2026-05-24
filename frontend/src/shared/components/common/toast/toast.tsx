@@ -1,6 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import styles from "./Toast.module.css";
+import styles from "./toast.module.css";
 
 interface ToastProps {
   message: string;

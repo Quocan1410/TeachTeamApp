@@ -94,6 +94,37 @@ const validateSignupFields = (req: any, res: any, next: any) => {
     next();
 };
 
+const validateProfileFields = (req: any, res: any, next: any) => {
+    const { firstName, lastName } = req.body;
+    const errors: Record<string, string> = {};
+
+    if (!firstName || (typeof firstName === "string" && firstName.trim() === "")) {
+        errors.firstName = "First name is required";
+    } else if (firstName.length < 1) {
+        errors.firstName = "First name must be at least 1 character long";
+    } else if (!/^[a-zA-Z\s]+$/.test(firstName)) {
+        errors.firstName = "First name can only contain letters and spaces";
+    }
+
+    if (!lastName || (typeof lastName === "string" && lastName.trim() === "")) {
+        errors.lastName = "Last name is required";
+    } else if (lastName.length < 1) {
+        errors.lastName = "Last name must be at least 1 character long";
+    } else if (!/^[a-zA-Z\s]+$/.test(lastName)) {
+        errors.lastName = "Last name can only contain letters and spaces";
+    }
+
+    if (Object.keys(errors).length > 0) {
+        return res.status(400).json({
+            success: false,
+            message: "",
+            errors,
+        });
+    }
+
+    next();
+};
+
 // Public routes with enhanced validation
 router.post("/signup", authRateLimiter, validateSignupFields, async (req, res) => {
     await authController.signup(req, res);
@@ -110,6 +141,10 @@ router.post("/logout", async (req, res) => {
 // Protected routes
 router.get("/profile", authenticateToken, async (req, res) => {
     await authController.getProfile(req, res);
+});
+
+router.put("/profile", authenticateToken, validateProfileFields, async (req, res) => {
+    await authController.updateProfile(req, res);
 });
 
 router.get("/avatar/image", authenticateToken, async (req, res) => {

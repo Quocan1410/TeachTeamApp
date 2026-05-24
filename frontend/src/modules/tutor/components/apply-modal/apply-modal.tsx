@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { CourseDetails } from "@/shared/types/courseTypes";
 import type { Application as TutorApplication } from "@/shared/types/application";
 import { Course, Role, ApplicationData } from "@/shared/services/applicationService";
-import { availableSkills } from "@/modules/tutor/utils/applicationDisplay.utils";
+import { availableSkills } from "@/modules/tutor/utils/skillOptions";
 import SkillTag from "@/modules/tutor/components/skill-tag/skill-tag";
 import styles from "./apply-modal.module.css";
 import { getMelbourneTime, getMelbourneDateOnly } from "@/shared/utils/dateUtils";

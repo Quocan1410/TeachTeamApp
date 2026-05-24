@@ -1,14 +1,5 @@
 import { User, UserType } from "../types/user";
 
-const getApiOrigin = (): string => {
-  const endpoint =
-    process.env.NEXT_PUBLIC_API_ENDPOINT ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    "http://localhost:5000/api";
-
-  return endpoint.replace(/\/api\/?$/, "");
-};
-
 /** Avatar images are served via authenticated API, not public /uploads. */
 export const hasCustomAvatar = (avatarUrl?: string | null): boolean => {
   return !!avatarUrl && avatarUrl.startsWith("/uploads/avatars/");

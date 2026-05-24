@@ -10,7 +10,7 @@ import ApplicantList from "@/modules/lecturer/components/applicant-list/applican
 import ApplicantDetails from "@/modules/lecturer/components/applicant-details/applicant-details";
 import RankedCandidates from "@/modules/lecturer/components/ranked-candidates/ranked-candidates";
 import ApplicantStatsVisualization from "@/modules/lecturer/components/applicant-stats-visualization/applicant-stats-visualization";
-import Toast from "@/shared/components/common/toast/Toast";
+import Toast from "@/shared/components/common/toast/toast";
 import LoadingWrapper from "@/shared/components/common/loading-wrapper/LoadingWrapper";
 import { useLecturerAuth } from "@/modules/lecturer/hooks/useLecturerAuth";
 import { useApplicationManagement } from "@/modules/lecturer/hooks/useApplicationManagement";

@@ -98,12 +98,6 @@ export const validateStatusUpdate = (
     res: Response,
     next: NextFunction
 ) => {
-    console.log("📋 validateStatusUpdate middleware called:", {
-        body: req.body,
-        params: req.params,
-        user: req.user?.userId,
-    });
-
     const { status, comment, selectedCourses } = req.body;
     const errors: ValidationError[] = [];
 
@@ -137,29 +131,12 @@ export const validateStatusUpdate = (
                 code: "COURSES_REQUIRED",
             });
         } else {
-            // Validate course code format
-            console.log("🔍 Validating selectedCourses:", {
-                selectedCourses,
-                selectedCoursesType: typeof selectedCourses,
-                isArray: Array.isArray(selectedCourses),
-                length: selectedCourses?.length,
-            });
-
             const invalidCourses = selectedCourses.filter((course: string) => {
-                const isValid =
+                return !(
                     course &&
                     typeof course === "string" &&
-                    /^[A-Z]{4}\d{4}$/.test(course.trim());
-                console.log("🔍 Validating course:", {
-                    course,
-                    courseType: typeof course,
-                    trimmed: course?.trim(),
-                    regexTest: course
-                        ? /^[A-Z]{4}\d{4}$/.test(course.trim())
-                        : false,
-                    isValid,
-                });
-                return !isValid;
+                    /^[A-Z]{4}\d{4}$/.test(course.trim())
+                );
             });
 
             if (invalidCourses.length > 0) {
@@ -201,10 +178,6 @@ export const validateStatusUpdate = (
     }
 
     if (errors.length > 0) {
-        console.log("❌ validateStatusUpdate validation failed:", {
-            errors,
-            errorCount: errors.length,
-        });
         res.status(400).json({
             success: false,
             message: "",
@@ -217,7 +190,6 @@ export const validateStatusUpdate = (
         return;
     }
 
-    console.log("✅ validateStatusUpdate passed, calling next()");
     next();
 };
 
@@ -451,12 +423,6 @@ export const validateLecturerApplicationAccess = async (
     res: Response,
     next: NextFunction
 ) => {
-    console.log("🔐 validateLecturerApplicationAccess middleware called:", {
-        userId: req.user?.userId,
-        params: req.params,
-        applicationId: req.params.id,
-    });
-
     try {
         const lecturerId = req.user?.userId;
         const { id } = req.params;
@@ -485,9 +451,6 @@ export const validateLecturerApplicationAccess = async (
             applicationId: Number(id),
         };
 
-        console.log(
-            "✅ validateLecturerApplicationAccess passed, calling next()"
-        );
         next();
     } catch (error) {
         res.status(500).json({
@@ -506,22 +469,15 @@ export const sanitizeCommentData = (
     res: Response,
     next: NextFunction
 ) => {
-    console.log("🧹 sanitizeCommentData middleware called:", {
-        body: req.body,
-        comment: req.body.comment,
-        hasComment: req.body.comment !== undefined,
-    });
-
     if (req.body.comment !== undefined) {
         // Sanitize comment
         req.body.comment = req.body.comment
             .trim()
             .replace(/\s+/g, " ") // Replace multiple spaces with single space
             .replace(/\n\s*\n\s*\n/g, "\n\n") // Remove excessive line breaks
-            .substring(0, 1000); // Enforce max length
+            .substring(0, 1000);
     }
 
-    console.log("🧹 sanitizeCommentData completed, calling next()");
     next();
 };
 

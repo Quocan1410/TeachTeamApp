@@ -42,3 +42,8 @@ export interface SigninData {
   email: string;
   password: string;
 }
+
+export interface UpdateProfileData {
+  firstName: string;
+  lastName: string;
+}

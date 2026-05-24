@@ -1,6 +1,6 @@
 import type { CourseDetails } from "@/shared/types/courseTypes";
 import { availableCourses } from "@/shared/data/courses";
-import { availableSkills } from "./applicationDisplay.utils";
+import { availableSkills } from "./skillOptions";
 
 // Function to get random role - client-side display helper
 export const getRandomRole = (): "Tutor" | "Lab-Assistant" => {

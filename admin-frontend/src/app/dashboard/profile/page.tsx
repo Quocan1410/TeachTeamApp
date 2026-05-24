@@ -7,14 +7,20 @@ import {
     uploadAdminAvatar,
 } from "@/lib/avatarService";
 import { getUserInitials, hasCustomAvatar } from "@/lib/avatarUtils";
+import { updateAdminProfile } from "@/lib/profileService";
 import { useProtectedAvatar } from "@/hooks/useProtectedAvatar";
 import styles from "./profile.module.css";
 
 export default function AdminProfilePage() {
     const [user, setUser] = useState<any>(null);
     const [avatarMessage, setAvatarMessage] = useState("");
+    const [profileMessage, setProfileMessage] = useState("");
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [isUploading, setIsUploading] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+    const [editForm, setEditForm] = useState({ firstName: "", lastName: "" });
     const fileInputRef = useRef<HTMLInputElement>(null);
     const protectedAvatarUrl = useProtectedAvatar(
         hasCustomAvatar(user?.avatarUrl),
@@ -39,6 +45,49 @@ export default function AdminProfilePage() {
         setUser(mergedUser);
         localStorage.setItem("admin-user", JSON.stringify(mergedUser));
         window.dispatchEvent(new Event("admin-user-updated"));
+    };
+
+    const startEditing = () => {
+        if (!user) {
+            return;
+        }
+        setEditForm({
+            firstName: user.firstName || "",
+            lastName: user.lastName || "",
+        });
+        setFieldErrors({});
+        setProfileMessage("");
+        setIsEditing(true);
+    };
+
+    const cancelEditing = () => {
+        setIsEditing(false);
+        setFieldErrors({});
+        setProfileMessage("");
+    };
+
+    const handleSaveProfile = async () => {
+        setIsSaving(true);
+        setProfileMessage("");
+        setFieldErrors({});
+
+        try {
+            const response = await updateAdminProfile(editForm);
+            if (response.success && response.data?.user) {
+                persistUser(response.data.user);
+                setIsEditing(false);
+                setProfileMessage("Profile saved successfully.");
+            } else if (response.errors) {
+                setFieldErrors(response.errors);
+                setProfileMessage("Please fix the errors below.");
+            } else {
+                setProfileMessage(response.message || "Failed to save profile.");
+            }
+        } catch {
+            setProfileMessage("Failed to save profile.");
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const handleFileChange = async (
@@ -124,9 +173,12 @@ export default function AdminProfilePage() {
         user.lastName,
         user.email
     );
-    const isSuccessMessage =
+    const isAvatarSuccess =
         avatarMessage.toLowerCase().includes("success") ||
         avatarMessage.toLowerCase().includes("removed");
+    const isProfileSuccess = profileMessage
+        .toLowerCase()
+        .includes("success");
 
     return (
         <div className={styles.container}>
@@ -134,7 +186,7 @@ export default function AdminProfilePage() {
                 <header className={styles.header}>
                     <h1 className={styles.title}>Profile</h1>
                     <p className={styles.subtitle}>
-                        Manage your admin account photo.
+                        Manage your admin account details and photo.
                     </p>
                 </header>
 
@@ -195,15 +247,6 @@ export default function AdminProfilePage() {
                         onChange={handleFileChange}
                     />
 
-                    <div className={styles.identity}>
-                        <h2>
-                            {user.fullName ||
-                                `${user.firstName} ${user.lastName}`}
-                        </h2>
-                        <p>{user.email}</p>
-                        <span className={styles.roleBadge}>Administrator</span>
-                    </div>
-
                     <div className={styles.meta}>
                         {user.avatarUrl && (
                             <button
@@ -218,7 +261,7 @@ export default function AdminProfilePage() {
                         {avatarMessage && (
                             <p
                                 className={`${styles.message} ${
-                                    isSuccessMessage
+                                    isAvatarSuccess
                                         ? styles.messageSuccess
                                         : styles.messageError
                                 }`}
@@ -228,6 +271,139 @@ export default function AdminProfilePage() {
                         )}
                     </div>
                 </div>
+
+                <section className={styles.detailsSection}>
+                    <div className={styles.detailsHeader}>
+                        <h2 className={styles.detailsTitle}>Account details</h2>
+                        <div className={styles.detailsActions}>
+                            {isEditing ? (
+                                <>
+                                    <button
+                                        type="button"
+                                        className={styles.cancelButton}
+                                        onClick={cancelEditing}
+                                        disabled={isSaving}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={styles.saveButton}
+                                        onClick={handleSaveProfile}
+                                        disabled={isSaving}
+                                    >
+                                        {isSaving ? "Saving..." : "Save"}
+                                    </button>
+                                </>
+                            ) : (
+                                <button
+                                    type="button"
+                                    className={styles.editButton}
+                                    onClick={startEditing}
+                                >
+                                    Edit
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    {profileMessage && (
+                        <p
+                            className={`${styles.bannerMessage} ${
+                                isProfileSuccess
+                                    ? styles.bannerSuccess
+                                    : styles.bannerError
+                            }`}
+                        >
+                            {profileMessage}
+                        </p>
+                    )}
+
+                    <div className={styles.formGrid}>
+                        <div className={styles.formField}>
+                            <label htmlFor="admin-first-name">First name</label>
+                            {isEditing ? (
+                                <>
+                                    <input
+                                        id="admin-first-name"
+                                        type="text"
+                                        className={
+                                            fieldErrors.firstName
+                                                ? styles.inputError
+                                                : ""
+                                        }
+                                        value={editForm.firstName}
+                                        onChange={(e) =>
+                                            setEditForm((prev) => ({
+                                                ...prev,
+                                                firstName: e.target.value,
+                                            }))
+                                        }
+                                        disabled={isSaving}
+                                    />
+                                    {fieldErrors.firstName && (
+                                        <span className={styles.fieldError}>
+                                            {fieldErrors.firstName}
+                                        </span>
+                                    )}
+                                </>
+                            ) : (
+                                <span className={styles.fieldValue}>
+                                    {user.firstName}
+                                </span>
+                            )}
+                        </div>
+
+                        <div className={styles.formField}>
+                            <label htmlFor="admin-last-name">Last name</label>
+                            {isEditing ? (
+                                <>
+                                    <input
+                                        id="admin-last-name"
+                                        type="text"
+                                        className={
+                                            fieldErrors.lastName
+                                                ? styles.inputError
+                                                : ""
+                                        }
+                                        value={editForm.lastName}
+                                        onChange={(e) =>
+                                            setEditForm((prev) => ({
+                                                ...prev,
+                                                lastName: e.target.value,
+                                            }))
+                                        }
+                                        disabled={isSaving}
+                                    />
+                                    {fieldErrors.lastName && (
+                                        <span className={styles.fieldError}>
+                                            {fieldErrors.lastName}
+                                        </span>
+                                    )}
+                                </>
+                            ) : (
+                                <span className={styles.fieldValue}>
+                                    {user.lastName}
+                                </span>
+                            )}
+                        </div>
+
+                        <div className={`${styles.formField} ${styles.formFieldFull}`}>
+                            <label>Email</label>
+                            <span className={styles.fieldValue}>{user.email}</span>
+                            {isEditing && (
+                                <span className={styles.fieldHint}>
+                                    Email cannot be changed.
+                                </span>
+                            )}
+                        </div>
+
+                        <div className={styles.formField}>
+                            <label>Role</label>
+                            <span className={styles.roleBadge}>Administrator</span>
+                        </div>
+                    </div>
+                </section>
             </div>
         </div>
     );

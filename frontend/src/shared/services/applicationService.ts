@@ -383,15 +383,10 @@ export class ApplicationService {
     applicationId: number
   ): Promise<ApiResponse<ApplicationResponse>> {
     try {
-      console.log(
-        "🌐 Sending DELETE request to:",
-        `${applicationAPI.defaults.baseURL}/${applicationId}/ranking`
-      );
       const response = await applicationAPI.delete(`/${applicationId}/ranking`);
-      console.log("🌐 DELETE response:", response.data);
       return response.data;
     } catch (error: unknown) {
-      console.error("🌐 DELETE request failed:", error);
+      console.error("Remove from ranking request failed:", error);
       const axiosError = error as AxiosError<ApiResponse<ApplicationResponse>>;
       if (axiosError.response?.data) {
         return axiosError.response.data;

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Toast from "./Toast";
+import Toast from "./toast";
 import { useTheme } from "@/shared/contexts/ThemeContext";
 
 interface GlobalToastProps {

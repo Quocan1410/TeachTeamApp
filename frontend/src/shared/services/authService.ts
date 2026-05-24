@@ -1,5 +1,11 @@
 import axios, { AxiosError } from "axios";
-import { AuthResponse, SignupData, SigninData, User } from "../types/user";
+import {
+  AuthResponse,
+  SignupData,
+  SigninData,
+  UpdateProfileData,
+  User,
+} from "../types/user";
 import StorageManager from "../utils/storageManager";
 
 const API_BASE_URL =
@@ -138,6 +144,22 @@ export class AuthService {
     }
   }
 
+  static async updateProfile(data: UpdateProfileData): Promise<AuthResponse> {
+    try {
+      const response = await authAPI.put("/profile", data);
+      return response.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<AuthResponse>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Network error occurred while updating profile.",
+      };
+    }
+  }
+
   static saveToken(token: string): void {
     try {
       // Parse JWT to get expiration
@@ -182,7 +204,6 @@ export class AuthService {
         if (expiryTime > now) {
           return token;
         } else {
-          console.log("Token expired, cleaning up");
           this.removeToken();
           this.removeUser();
           return null;
@@ -199,7 +220,6 @@ export class AuthService {
             StorageManager.setItem("tokenExpiry", payload.exp.toString());
             return token;
           } else {
-            console.log("Token expired during validation, cleaning up");
             this.removeToken();
             this.removeUser();
             return null;

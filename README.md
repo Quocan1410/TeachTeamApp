@@ -1,84 +1,134 @@
 # TeachTeamApp
 
-Teaching assistant hiring platform for candidates, lecturers, and admins. Four apps in one monorepo: public UI, REST API, admin UI, and admin GraphQL API.
-
-**Repo:** https://github.com/rmit-fsd-2025-s1/s3959931-s3978302-a2
+Monorepo for hiring teaching assistants (tutors and lab assistants) at RMIT-style courses. One MySQL database, a public REST API + UI for candidates and lecturers, and an admin GraphQL stack for operations and reporting.
 
 ---
 
-## Tech stack
+## Roles & features
 
-| Layer | Stack |
-|-------|--------|
-| **Frontend** | Next.js 15, React 19, TypeScript, Tailwind CSS, Apollo Client, Axios, Framer Motion |
-| **Backend** | Node.js, Express 5, TypeORM, MySQL, JWT, Multer, Helmet, rate limiting |
-| **Admin frontend** | Next.js 15, React 19, TypeScript, Tailwind CSS, Apollo Client |
-| **Admin backend** | Express, Apollo Server, Type-GraphQL, GraphQL WS, TypeORM, MySQL, sessions |
+### Candidate (`@candidate.edu.au`)
+
+Applies for **tutor** or **lab assistant** positions on published courses.
+
+| Capability | Description |
+|------------|-------------|
+| Register / sign in | Email must end with `@candidate.edu.au` |
+| Browse courses | View open roles and remaining slots per course |
+| Apply | Submit skills, motivation, availability (part/full time) per course + role |
+| Track applications | See status: pending, selected, or rejected |
+| Profile | Update name; upload avatar (authenticated endpoint) |
+| Notifications | In-app list; mark read / delete |
+| Live account alerts | WebSocket when admin blocks or deletes the account |
+
+**UI:** http://localhost:3000 → `/tutor` after login
 
 ---
 
-## What it does
+### Lecturer (`@lecturer.edu.au`)
 
-### Candidates (`@candidate.edu.au`)
-- Sign up / sign in
-- Browse courses and tutor / lab assistant roles
-- Submit and track applications
-- Profile and avatar upload
-- In-app notifications
-- Real-time alerts when account is blocked
+Reviews applicants **only on assigned courses** (set by admin).
 
-### Lecturers (`@lecturer.edu.au`)
-- View assigned courses and applicants
-- Select candidates (respects position limits)
-- Rank selected candidates
-- Review skills, credentials, and comments
-- Live updates when candidates are blocked
+| Capability | Description |
+|------------|-------------|
+| Register / sign in | Email must end with `@lecturer.edu.au` |
+| Assigned courses | See courses linked to this lecturer |
+| Applicant list | Filter by name, course, role, status, skills |
+| Select candidates | Mark applications selected (enforces `maxTutors` / `maxLabAssistants`) |
+| Comments | Add, edit, or remove feedback on selected applicants |
+| Rankings | Order selected candidates per course (after comment) |
+| Statistics | Dashboard metrics for assigned courses |
+| Notifications | e.g. new applications, candidate blocked |
+| Live updates | WebSocket when a candidate on their course is blocked |
 
-### Admins (`admin@admin.com`)
-- User CRUD, block / unblock, delete
-- Course CRUD and position limits (`maxTutors`, `maxLabAssistants`)
-- Assign lecturers to courses
-- Reports and analytics dashboard
-- Notification center
-- Profile and avatar upload
+**UI:** http://localhost:3000 → `/lecturer` after login
 
-### Platform
-- REST API for auth, applications, notifications
-- GraphQL + WebSocket subscriptions for admin and live events
-- Protected avatars (auth required, no public `/uploads`)
-- Role-based access on REST and GraphQL
+**Homepage:** Lecturers also appear on the public “Meet Our Lecturers” section via `GET /api/public/lecturers` (non-blocked only).
+
+---
+
+### Admin (`admin@admin.com`)
+
+Full platform management via **admin UI + GraphQL** (not the main REST app).
+
+| Capability | Description |
+|------------|-------------|
+| Sign in | Admin-only GraphQL login |
+| Users | List all users; block / unblock / delete (not other admins) |
+| Courses | Create, update, delete courses; set tutor & lab caps |
+| Assign lecturers | Link lecturers to courses |
+| Reports | Selected per course, multi-course selections, unselected candidates |
+| Notifications | Admin notification center |
+| Real-time events | Subscriptions for user block/delete and course changes |
+
+Blocking a **candidate** auto-unselects their applications and notifies affected lecturers. Blocked users cannot sign in; blocked lecturers are hidden from the public homepage.
+
+**UI:** http://localhost:3001  
+**API:** http://localhost:4002/graphql
+
+---
+
+## Position types (not user roles)
+
+Stored in table `roles` — what a candidate applies for:
+
+| `roleName` | Meaning |
+|------------|---------|
+| `tutor` | Tutorial / teaching support |
+| `lab_assistant` | Laboratory session support |
+
+Each course has limits: `maxTutors`, `maxLabAssistants`.
 
 ---
 
 ## Quick start
 
-**Prerequisites:** Node.js 18+, MySQL
+**Prerequisites:** Node.js 18+, MySQL, `.env` from `env.example`
 
 ```bash
-git clone https://github.com/rmit-fsd-2025-s1/s3959931-s3978302-a2.git
-cd s3959931-s3978302-a2
 npm run install
-cp env.example .env   # edit DB credentials and secrets
-```
+cp env.example .env   # set DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME
 
-**Run (pick your OS):**
-
-```bash
-# Main app
-npm run dev:windows        # or dev:unix
-
-# Admin app (separate terminals or combined)
-npm run dev:admin:windows  # or dev:admin:unix
+npm run dev:windows        # frontend :3000 + backend :5000
+npm run dev:admin:windows  # admin UI :3001 + GraphQL :4002
 ```
 
 | Service | URL |
 |---------|-----|
-| Frontend | http://localhost:3000 |
-| Backend API | http://localhost:5000/api |
+| Main UI | http://localhost:3000 |
+| REST API | http://localhost:5000/api |
 | Admin UI | http://localhost:3001 |
 | Admin GraphQL | http://localhost:4002/graphql |
 
-**Default admin login:** `admin@admin.com` / `admin`
+---
+
+## 5-minute demo flow
+
+1. Open homepage → four lecturers loaded from the database.  
+2. **Candidate:** `alice.chen@candidate.edu.au` / `candidate123` → apply or view applications on `/tutor`.  
+3. **Lecturer:** `john.smith@lecturer.edu.au` / `lecturer123` → review applicants on `/lecturer`.  
+4. **Admin:** `admin@admin.com` / `admin` → Users → block `frank.blocked@candidate.edu.au` → candidate cannot sign in; homepage/API hide blocked lecturers.
+
+---
+
+## Dev seed data
+
+Seeds run on backend start and via `POST /api/database/seed` (idempotent).  
+Source: `backend/src/seeds/` (`runAllSeeds()` in `index.ts`).
+
+**Reset database (dev):** `POST http://localhost:5000/api/database/reset`
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | `admin@admin.com` | `admin` |
+| Lecturer | `john.smith@lecturer.edu.au` | `lecturer123` |
+| Lecturer | `sarah.johnson@lecturer.edu.au` | `lecturer123` |
+| Lecturer | `michael.williams@lecturer.edu.au` | `lecturer123` |
+| Lecturer | `emily.brown@lecturer.edu.au` | `lecturer123` |
+| Candidate | `alice.chen@candidate.edu.au` | `candidate123` |
+| Candidate | `eva.patel@candidate.edu.au` | `candidate123` (selected on 2 courses — reports) |
+| Candidate | `frank.blocked@candidate.edu.au` | `candidate123` (blocked — login fails) |
+
+More candidates (pending / rejected / ranked): see `backend/src/seeds/devDataset.ts`.
 
 ---
 
@@ -86,61 +136,45 @@ npm run dev:admin:windows  # or dev:admin:unix
 
 ```
 TeachTeamApp/
-├── frontend/          # Candidate & lecturer UI (Next.js)
-├── backend/           # REST API (Express + TypeORM)
+├── frontend/          # Candidate & lecturer (Next.js)
+├── backend/           # REST API + seeds (Express, TypeORM)
 ├── admin-frontend/    # Admin dashboard (Next.js)
-├── admin-backend/     # Admin API (GraphQL + WS)
-├── env.example        # Environment template (copy to .env)
-└── package.json       # Root scripts
+├── admin-backend/     # GraphQL + WebSocket (Apollo, TypeORM)
+└── env.example
 ```
 
 ---
 
-## Main API surface
+## API overview
 
-**REST** (`backend`, port 5000)
+**REST** (main backend)
 
-| Area | Examples |
-|------|----------|
-| Auth | `POST /api/auth/signup`, `signin`, `GET /profile`, `POST /avatar` |
-| Applications | courses, apply, status, lecturer selections |
-| Notifications | list, mark read |
-| Health | `GET /health` |
+| Area | Endpoints |
+|------|-----------|
+| Public | `GET /api/public/lecturers` |
+| Auth | `/api/auth/signup`, `signin`, `profile`, `avatar` |
+| Applications | apply, my-applications, lecturer review, rank, comment |
+| Notifications | `/api/notifications` |
+| Dev ops | `/api/database/seed`, `reset`, `status` |
 
-**GraphQL** (`admin-backend`, port 4002)
-
-| Type | Purpose |
-|------|---------|
-| Queries | users, courses, reports |
-| Mutations | admin CRUD, block user, assign lecturer |
-| Subscriptions | user blocked, account status |
+**GraphQL** (admin backend): users, courses, assignments, reports, notifications, subscriptions.
 
 ---
 
 ## Scripts
 
 ```bash
-npm run install          # all packages
-npm run dev:windows      # frontend + backend
+npm run install
+npm run dev:windows
 npm run dev:admin:windows
-npm run build            # production build all
+npm run build
 ```
 
 ---
 
-## Security (summary)
+## Notes
 
-- JWT auth; separate secrets for backend and admin
-- GraphQL resolvers protected with admin middleware
-- CORS whitelist via `ALLOWED_ORIGINS`
-- Rate limits on auth routes
-- DB reset routes gated in production (`DEV_OPS_SECRET`)
-- Never commit `.env` — use `env.example`
-
----
-
-## Team
-
-RMIT Full Stack Development 2025 S1 — s3959931, s3978302
-
-License: ISC
+- JWT auth; role checks on REST and admin resolvers.  
+- Avatars served through authenticated API routes (not public `/uploads`).  
+- CORS: configure `ALLOWED_ORIGINS` in `.env`.  
+- Do not commit `.env`.

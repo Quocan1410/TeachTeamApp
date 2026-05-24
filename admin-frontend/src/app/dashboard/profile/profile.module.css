@@ -1,5 +1,5 @@
 .container {
-    max-width: 480px;
+    max-width: 560px;
     margin: 0 auto;
     padding: 2rem 1.5rem;
 }
@@ -223,4 +223,143 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+.detailsSection {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #f3f4f6;
+    width: 100%;
+}
+
+.detailsHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.detailsTitle {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.detailsActions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.editButton,
+.saveButton,
+.cancelButton {
+    padding: 0.4rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.editButton {
+    background: rgba(249, 115, 22, 0.1);
+    color: #ea580c;
+    border-color: rgba(249, 115, 22, 0.3);
+}
+
+.saveButton {
+    background: #f97316;
+    color: #fff;
+}
+
+.cancelButton {
+    background: #fff;
+    color: #6b7280;
+    border-color: #e5e7eb;
+}
+
+.saveButton:disabled,
+.cancelButton:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+.bannerMessage {
+    margin: 0 0 1rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.bannerSuccess {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+    border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.bannerError {
+    background: rgba(239, 68, 68, 0.08);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.formField {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.formFieldFull {
+    grid-column: 1 / -1;
+}
+
+.formField label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6b7280;
+}
+
+.formField input {
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    font-size: 0.9375rem;
+    color: #111827;
+}
+
+.formField input:focus {
+    outline: none;
+    border-color: rgba(249, 115, 22, 0.6);
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
+}
+
+.inputError {
+    border-color: #ef4444 !important;
+}
+
+.fieldValue {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.fieldError {
+    font-size: 0.75rem;
+    color: #ef4444;
+}
+
+.fieldHint {
+    font-size: 0.75rem;
+    color: #9ca3af;
 }

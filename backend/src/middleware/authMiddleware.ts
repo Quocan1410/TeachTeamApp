@@ -49,9 +49,6 @@ export const authenticateToken = async (
         });
 
         if (!user) {
-            console.log(
-                `Token verification failed: User ${decoded.userId} not found in database`
-            );
             res.status(401).json({
                 success: false,
                 message: "User account not found",
@@ -60,9 +57,6 @@ export const authenticateToken = async (
         }
 
         if (user.isBlocked) {
-            console.log(
-                `Token verification failed: User ${decoded.userId} is blocked`
-            );
             res.status(403).json({
                 success: false,
                 message:

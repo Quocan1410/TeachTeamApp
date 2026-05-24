@@ -16,7 +16,7 @@
         "dev:admin": "echo \"Choose your OS: npm run dev:admin:windows (Windows) or npm run dev:admin:unix (Mac/Linux)\"",
         "dev:admin:windows": "start \"Admin Frontend\" cmd /c \"npm run dev:admin-frontend\" && start \"Admin Backend\" cmd /c \"npm run dev:admin-backend\"",
         "dev:admin:unix": "npm run dev:admin-frontend & npm run dev:admin-backend",
-        "dev:admin-frontend": "cd admin-frontend && npm run dev",
+        "dev:admin-frontend": "cd admin-frontend && npm run dev:clean",
         "dev:admin-backend": "cd admin-backend && npm run dev",
         "build": "npm run build:frontend && npm run build:backend && npm run build:admin-frontend && npm run build:admin-backend",
         "build:frontend": "cd frontend && npm run build",

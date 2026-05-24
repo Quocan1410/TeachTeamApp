@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Toast from "@/shared/components/common/toast/Toast";
+import Toast from "@/shared/components/common/toast/toast";
 import GlobalToast from "@/shared/components/common/toast/GlobalToast";
 import { useToast } from "@/shared/hooks/useNotification";
 import { useTheme } from "@/shared/contexts/ThemeContext";

@@ -6,7 +6,7 @@ import {
   Role,
   ApplicationResponse,
 } from "@/shared/services/applicationService";
-import { availableSkills } from "@/modules/tutor/utils/applicationDisplay.utils";
+import { availableSkills } from "@/modules/tutor/utils/skillOptions";
 import SkillTag from "@/modules/tutor/components/skill-tag/skill-tag";
 import styles from "./course-card.module.css";
 
@@ -101,8 +101,6 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
-                console.log("Expand skills list");
-
               }
             }}
           >

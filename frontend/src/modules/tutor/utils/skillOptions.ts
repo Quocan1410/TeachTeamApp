@@ -1,0 +1,18 @@
+export const availableSkills = [
+  "Java",
+  "Python",
+  "JavaScript",
+  "TypeScript",
+  "React",
+  "Angular",
+  "Node.js",
+  "C/C++",
+  "HTML/CSS",
+  "SQL",
+  "MongoDB",
+  "Express.js",
+  "Git",
+  "Docker",
+  "AWS",
+  "Azure",
+];

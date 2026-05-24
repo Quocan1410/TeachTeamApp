@@ -40,11 +40,6 @@ const nextConfig = {
       }
       return config;
     },
-
-    // Reduce fast refresh sensitivity
-    experimental: {
-      esmExternals: "loose",
-    },
   }),
 };
 

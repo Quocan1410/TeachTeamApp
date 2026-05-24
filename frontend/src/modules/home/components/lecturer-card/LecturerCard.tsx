@@ -10,11 +10,20 @@ interface LecturerCardProps {
   imageIndex: number;
 }
 
+function lecturerAvatarIndex(contact: string, fallbackIndex: number): number {
+  const emailHash = contact
+    .split("")
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return (emailHash % 4) + 1 || (fallbackIndex % 4) + 1;
+}
+
 const LecturerCard: React.FC<LecturerCardProps> = ({
   lecturer,
   onOpenModal,
   imageIndex,
 }) => {
+  const avatarIndex = lecturerAvatarIndex(lecturer.contact, imageIndex);
+
   const handleCardClick = () => {
     onOpenModal(lecturer.id);
   };
@@ -32,7 +41,7 @@ const LecturerCard: React.FC<LecturerCardProps> = ({
       <div>
         <div className={styles.lecturerImageContainer}>
           <Image
-            src={`/lecturers/lecturer-${imageIndex + 1}.jpg`}
+            src={`/lecturers/lecturer-${avatarIndex}.jpg`}
             alt={lecturer.name}
             width={200}
             height={200}

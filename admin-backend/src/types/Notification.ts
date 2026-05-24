@@ -7,6 +7,7 @@ import {
     JoinColumn,
 } from "typeorm";
 import { ObjectType, Field, ID, registerEnumType } from "type-graphql";
+import { GraphQLJSONObject } from "graphql-scalars";
 import { User } from "./User";
 
 export enum NotificationType {
@@ -53,7 +54,7 @@ export class Notification {
     @Column({ type: "varchar", length: 255, nullable: true })
     link?: string | null;
 
-    @Field({ nullable: true })
+    @Field(() => GraphQLJSONObject, { nullable: true })
     @Column({ type: "json", nullable: true })
     metadata?: Record<string, unknown> | null;
 

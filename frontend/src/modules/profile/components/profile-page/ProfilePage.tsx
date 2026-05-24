@@ -27,6 +27,11 @@ export const ProfilePage: React.FC = () => {
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [showAvatarInitials, setShowAvatarInitials] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [profileMessage, setProfileMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [editForm, setEditForm] = useState({ firstName: "", lastName: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const protectedAvatarUrl = useProtectedAvatar(
     !!user && hasCustomAvatar(user.avatarUrl),
@@ -148,7 +153,54 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
+  const startEditing = () => {
+    if (!user) {
+      return;
+    }
+    setEditForm({
+      firstName: user.firstName,
+      lastName: user.lastName,
+    });
+    setFieldErrors({});
+    setProfileMessage("");
+    setIsEditing(true);
+  };
 
+  const cancelEditing = () => {
+    setIsEditing(false);
+    setFieldErrors({});
+    setProfileMessage("");
+  };
+
+  const handleSaveProfile = async () => {
+    if (!user) {
+      return;
+    }
+
+    setIsSaving(true);
+    setProfileMessage("");
+    setFieldErrors({});
+
+    try {
+      const response = await AuthService.updateProfile(editForm);
+      if (response.success && response.data?.user) {
+        setUser(response.data.user);
+        updateUser(response.data.user);
+        AuthService.saveUser(response.data.user);
+        setIsEditing(false);
+        setProfileMessage("Profile saved successfully.");
+      } else if (response.errors) {
+        setFieldErrors(response.errors);
+        setProfileMessage("Please fix the errors below.");
+      } else {
+        setProfileMessage(response.message || "Failed to save profile.");
+      }
+    } catch {
+      setProfileMessage("Failed to save profile. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleAvatarFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -418,19 +470,60 @@ export const ProfilePage: React.FC = () => {
           <div className={styles.infoCard}>
             <div className={styles.cardHeader}>
               <h3 className={styles.cardTitle}>Account Information</h3>
+              <div className={styles.cardHeaderActions}>
+                {isEditing ? (
+                  <>
+                    <button
+                      type="button"
+                      className={styles.cancelButton}
+                      onClick={cancelEditing}
+                      disabled={isSaving}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.saveButton}
+                      onClick={handleSaveProfile}
+                      disabled={isSaving}
+                    >
+                      {isSaving ? "Saving..." : "Save"}
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    className={styles.editButton}
+                    onClick={startEditing}
+                    disabled={user.isBlocked}
+                    title={
+                      user.isBlocked
+                        ? "Blocked accounts cannot edit their profile"
+                        : "Edit profile"
+                    }
+                  >
+                    Edit
+                  </button>
+                )}
+              </div>
             </div>
             <div className={styles.cardContent}>
+              {profileMessage && (
+                <p
+                  className={`${styles.profileMessage} ${
+                    profileMessage.toLowerCase().includes("success")
+                      ? styles.profileMessageSuccess
+                      : styles.profileMessageError
+                  }`}
+                >
+                  {profileMessage}
+                </p>
+              )}
               <div className={styles.infoGrid}>
                 <div className={styles.infoItem}>
                   <span className={styles.infoLabel}>Account Type</span>
                   <span className={styles.infoValue}>
                     {getUserTypeLabel(user.userType)}
-                  </span>
-                </div>
-                <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>Username</span>
-                  <span className={styles.infoValue}>
-                    {user.firstName} {user.lastName}
                   </span>
                 </div>
                 <div className={styles.infoItem}>
@@ -440,8 +533,77 @@ export const ProfilePage: React.FC = () => {
                   </span>
                 </div>
                 <div className={styles.infoItem}>
+                  <label className={styles.infoLabel} htmlFor="profile-first-name">
+                    First Name
+                  </label>
+                  {isEditing ? (
+                    <>
+                      <input
+                        id="profile-first-name"
+                        type="text"
+                        className={`${styles.formInput} ${
+                          fieldErrors.firstName ? styles.formInputError : ""
+                        }`}
+                        value={editForm.firstName}
+                        onChange={(e) =>
+                          setEditForm((prev) => ({
+                            ...prev,
+                            firstName: e.target.value,
+                          }))
+                        }
+                        disabled={isSaving}
+                        autoComplete="given-name"
+                      />
+                      {fieldErrors.firstName && (
+                        <span className={styles.fieldError}>
+                          {fieldErrors.firstName}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <span className={styles.infoValue}>{user.firstName}</span>
+                  )}
+                </div>
+                <div className={styles.infoItem}>
+                  <label className={styles.infoLabel} htmlFor="profile-last-name">
+                    Last Name
+                  </label>
+                  {isEditing ? (
+                    <>
+                      <input
+                        id="profile-last-name"
+                        type="text"
+                        className={`${styles.formInput} ${
+                          fieldErrors.lastName ? styles.formInputError : ""
+                        }`}
+                        value={editForm.lastName}
+                        onChange={(e) =>
+                          setEditForm((prev) => ({
+                            ...prev,
+                            lastName: e.target.value,
+                          }))
+                        }
+                        disabled={isSaving}
+                        autoComplete="family-name"
+                      />
+                      {fieldErrors.lastName && (
+                        <span className={styles.fieldError}>
+                          {fieldErrors.lastName}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <span className={styles.infoValue}>{user.lastName}</span>
+                  )}
+                </div>
+                <div className={`${styles.infoItem} ${styles.infoItemFull}`}>
                   <span className={styles.infoLabel}>Email</span>
                   <span className={styles.infoValue}>{user.email}</span>
+                  {isEditing && (
+                    <span className={styles.fieldHint}>
+                      Email cannot be changed.
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -524,7 +686,7 @@ export const ProfilePage: React.FC = () => {
                           </svg>
                         </div>
                         <div className={styles.candidateStatContent}>
-                          <span className={styles.candidateStatLabel}>Available Postions</span>
+                          <span className={styles.candidateStatLabel}>Available Positions</span>
                           <span className={styles.candidateStatValue}>
                             {availablePositions} Position{availablePositions !== 1 ? 's' : ''}
                           </span>

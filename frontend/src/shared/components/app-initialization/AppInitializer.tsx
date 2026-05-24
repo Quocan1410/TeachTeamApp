@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import StorageManager from "@/shared/utils/storageManager";
-import { AuthService } from "@/shared/services/authService";
 
 export default function AppInitializer() {
   useEffect(() => {

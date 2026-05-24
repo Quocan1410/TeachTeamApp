@@ -1,8 +1,6 @@
 /* Import the shared styles from the main frontend */
 @import "../shared/styles/globals.css";
 
-@tailwind components;
-
 /* Custom admin styles using CSS variables */
 .admin-gradient {
     background: linear-gradient(

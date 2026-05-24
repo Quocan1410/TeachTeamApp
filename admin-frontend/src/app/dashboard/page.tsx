@@ -23,28 +23,24 @@ export default function Dashboard() {
             value: userStats?.getUserStats?.totalUsers || 0,
             icon: UsersIcon,
             color: "total",
-            trend: "+12%",
         },
         {
             name: "Candidates",
             value: userStats?.getUserStats?.totalCandidates || 0,
             icon: UserGroupIcon,
             color: "selected",
-            trend: "+8%",
         },
         {
             name: "Lecturers",
             value: userStats?.getUserStats?.totalLecturers || 0,
             icon: AcademicCapIcon,
             color: "pending",
-            trend: "+5%",
         },
         {
             name: "Blocked Users",
             value: userStats?.getUserStats?.blockedUsers || 0,
             icon: ExclamationTriangleIcon,
             color: "rate",
-            trend: "-2%",
         },
     ];
 

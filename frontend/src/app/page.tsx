@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { lecturers } from "@/modules/lecturer/utils/lecturerDisplay.utils";
 import modalStyles from "@/shared/components/common/modal/Modal.module.css";
 import TimelineSection from "@/modules/home/components/timeline-section/TimelineSection";
 import LecturerShowcase from "@/modules/home/components/lecturer-showcase/LecturerShowcase";
@@ -10,15 +9,44 @@ import Modal from "@/shared/components/common/modal/Modal";
 import type { Lecturer } from "@/shared/types/lecturer";
 import HeroSection from "@/modules/home/components/hero-section/HeroSection";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
+import { PublicService } from "@/shared/services/publicService";
+
+function lecturerAvatarIndex(contact: string, fallbackIndex: number): number {
+  const emailHash = contact
+    .split("")
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return (emailHash % 4) + 1 || (fallbackIndex % 4) + 1;
+}
 
 export default function HomePage() {
+  const [lecturers, setLecturers] = useState<Lecturer[]>([]);
+  const [lecturersLoading, setLecturersLoading] = useState(true);
+  const [lecturersError, setLecturersError] = useState<string | null>(null);
   const [activeLecturer, setActiveLecturer] = useState<Lecturer | null>(null);
 
-  // Use new centralized AuthContext
   const { user, isAuthenticated } = useAuth();
-
-  // Convert user type to role for compatibility with existing components
   const userRole = user?.userType || null;
+
+  const loadLecturers = useCallback(async () => {
+    setLecturersLoading(true);
+    setLecturersError(null);
+    try {
+      const data = await PublicService.getLecturers();
+      setLecturers(data);
+    } catch (error) {
+      console.error("Failed to load lecturers:", error);
+      setLecturersError(
+        "Unable to load lecturers right now. Please try again later."
+      );
+      setLecturers([]);
+    } finally {
+      setLecturersLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadLecturers();
+  }, [loadLecturers]);
 
   const handleOpenLecturerModal = (lecturerId: string): void => {
     const lecturer = lecturers.find((l) => l.id === lecturerId);
@@ -29,9 +57,6 @@ export default function HomePage() {
     setActiveLecturer(null);
   };
 
-  const currentLecturerDetails = activeLecturer
-    ? lecturers.find((l) => l.id === activeLecturer.id)
-    : null;
   const activeLecturerImageIndex = activeLecturer
     ? lecturers.findIndex((l) => l.id === activeLecturer.id)
     : -1;
@@ -44,10 +69,13 @@ export default function HomePage() {
 
       <LecturerShowcase
         lecturers={lecturers}
+        isLoading={lecturersLoading}
+        error={lecturersError}
+        onRetry={loadLecturers}
         onOpenLecturerModal={handleOpenLecturerModal}
       />
 
-      {currentLecturerDetails && (
+      {activeLecturer && (
         <Modal
           isOpen={!!activeLecturer}
           onClose={handleCloseModal}
@@ -56,11 +84,8 @@ export default function HomePage() {
           <div className={modalStyles.modalImageSection}>
             <div className={modalStyles.modalImageContainer}>
               <Image
-                src={
-                  currentLecturerDetails.avatarPath ||
-                  `/lecturers/lecturer-${activeLecturerImageIndex + 1}.jpg`
-                }
-                alt={currentLecturerDetails.name}
+                src={`/lecturers/lecturer-${lecturerAvatarIndex(activeLecturer.contact, activeLecturerImageIndex)}.jpg`}
+                alt={activeLecturer.name}
                 width={300}
                 height={300}
                 className={modalStyles.lecturerImage}
@@ -68,44 +93,36 @@ export default function HomePage() {
             </div>
           </div>
           <div className={modalStyles.modalContent}>
-            <h3 className={modalStyles.modalTitle}>
-              {currentLecturerDetails.name}
-            </h3>
+            <h3 className={modalStyles.modalTitle}>{activeLecturer.name}</h3>
             <p className={modalStyles.modalSubtitle}>
-              {currentLecturerDetails.title} in{" "}
-              {currentLecturerDetails.specialization}
+              {activeLecturer.title} · {activeLecturer.specialization}
             </p>
-            <p className={modalStyles.modalText}>
-              {currentLecturerDetails.bio}
-            </p>
+            <p className={modalStyles.modalText}>{activeLecturer.bio}</p>
             <ul className={modalStyles.modalInfoList}>
               <li className={modalStyles.modalInfoItem}>
                 <span className={modalStyles.modalInfoIcon}>📚</span>
                 <span>
-                  <strong>Teaches:</strong> {currentLecturerDetails.courses}
+                  <strong>Teaches:</strong> {activeLecturer.courses}
                 </span>
               </li>
-              {currentLecturerDetails.certifications && (
-                <li className={modalStyles.modalInfoItem}>
-                  <span className={modalStyles.modalInfoIcon}>🎓</span>
-                  <span>
-                    <strong>Certifications:</strong>{" "}
-                    {currentLecturerDetails.certifications}
-                  </span>
-                </li>
-              )}
-              {currentLecturerDetails.awards && (
-                <li className={modalStyles.modalInfoItem}>
-                  <span className={modalStyles.modalInfoIcon}>🏆</span>
-                  <span>
-                    <strong>Awards:</strong> {currentLecturerDetails.awards}
-                  </span>
-                </li>
-              )}
+              {activeLecturer.assignedCourses &&
+                activeLecturer.assignedCourses.length > 0 && (
+                  <li className={modalStyles.modalInfoItem}>
+                    <span className={modalStyles.modalInfoIcon}>🗓️</span>
+                    <span>
+                      <strong>Semesters:</strong>{" "}
+                      {[
+                        ...new Set(
+                          activeLecturer.assignedCourses.map((c) => c.semester)
+                        ),
+                      ].join(", ")}
+                    </span>
+                  </li>
+                )}
               <li className={modalStyles.modalInfoItem}>
                 <span className={modalStyles.modalInfoIcon}>📧</span>
                 <span>
-                  <strong>Contact:</strong> {currentLecturerDetails.contact}
+                  <strong>Contact:</strong> {activeLecturer.contact}
                 </span>
               </li>
             </ul>

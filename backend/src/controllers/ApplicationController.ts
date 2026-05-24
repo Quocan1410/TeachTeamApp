@@ -750,10 +750,6 @@ export class ApplicationController {
                 })
             );
 
-            console.log(
-                `✅ Found ${coursesWithAvailability.length} assigned courses for lecturer`
-            );
-
             res.status(200).json({
                 success: true,
                 data: coursesWithAvailability,

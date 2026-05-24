@@ -37,8 +37,6 @@ export function useUserAccountStatusSubscription({
 
   // Process subscription data
   const processAccountEvent = useCallback((event: UserAccountEvent) => {
-    console.log("🔔 Processing user account event:", event);
-    
     if (event.action === "blocked" && onAccountBlockedRef.current) {
       onAccountBlockedRef.current(event);
     } else if (event.action === "deleted" && onAccountDeletedRef.current) {
@@ -133,7 +131,6 @@ export function useUserAccountStatusSubscription({
                 error: undefined,
                 isConnected: true,
               }));
-              console.log(`✅ User ${user.id} subscribed to account status changes`);
             } catch (error) {
               console.error("Failed to send subscription:", error);
             }
@@ -146,7 +143,7 @@ export function useUserAccountStatusSubscription({
             break;
 
           case "error":
-            console.error("❌ Account subscription error:", message.payload);
+            console.error("Account subscription error:", message.payload);
             if (!isCleanedUpRef.current) {
               setSubscriptionState((prev) => ({
                 ...prev,
@@ -158,7 +155,6 @@ export function useUserAccountStatusSubscription({
             break;
 
           case "complete":
-            console.log("🔚 Account subscription completed");
             if (!isCleanedUpRef.current) {
               setSubscriptionState((prev) => ({
                 ...prev,
@@ -172,7 +168,7 @@ export function useUserAccountStatusSubscription({
             break;
         }
       } catch (error) {
-        console.error("❌ Error parsing account subscription message:", error);
+        console.error("Error parsing account subscription message:", error);
       }
     };
 
@@ -182,7 +178,7 @@ export function useUserAccountStatusSubscription({
       }
 
       if (process.env.NODE_ENV === "development") {
-        console.warn("⚠️ Account subscription WebSocket error:", error);
+        console.warn("Account subscription WebSocket error:", error);
       }
 
       setTimeout(() => {
@@ -202,8 +198,6 @@ export function useUserAccountStatusSubscription({
         return;
       }
 
-      console.log("🔌 Account subscription WebSocket closed:", event.code, event.reason);
-      
       if (event.code !== 1000) {
         setSubscriptionState((prev) => ({
           ...prev,

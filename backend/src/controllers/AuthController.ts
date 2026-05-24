@@ -320,6 +320,59 @@ export class AuthController {
         }
     }
 
+    async updateProfile(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = (req as any).user?.userId;
+
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    message: "User not authenticated",
+                });
+                return;
+            }
+
+            const { firstName, lastName } = req.body;
+
+            const user = await this.userRepository.findOne({
+                where: { id: userId },
+            });
+
+            if (!user) {
+                res.status(404).json({
+                    success: false,
+                    message: "User not found",
+                });
+                return;
+            }
+
+            if (user.isBlocked) {
+                res.status(403).json({
+                    success: false,
+                    message: "Blocked accounts cannot update their profile",
+                });
+                return;
+            }
+
+            user.firstName = firstName.trim();
+            user.lastName = lastName.trim();
+            const updatedUser = await this.userRepository.save(user);
+            const { password: _, ...userProfile } = updatedUser;
+
+            res.status(200).json({
+                success: true,
+                message: "Profile updated successfully",
+                data: { user: userProfile },
+            });
+        } catch (error) {
+            console.error("Update profile error:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal server error while updating profile",
+            });
+        }
+    }
+
     async uploadAvatar(req: Request, res: Response): Promise<void> {
         try {
             const userId = (req as any).user?.userId;

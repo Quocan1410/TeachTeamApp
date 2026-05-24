@@ -34,9 +34,8 @@ export const AppDataSource = new DataSource({
     // Connection options for Cloud MySQL
     extra: {
         charset: "utf8mb4_unicode_ci",
+        connectTimeout: 60000,
     },
-    connectTimeout: 60000,
-    acquireTimeout: 60000,
 });
 
 export const initializeDatabase = async () => {
@@ -55,26 +54,26 @@ const seedAdminUser = async () => {
         const userRepository = AppDataSource.getRepository(User);
 
         // Check if admin user already exists
-        const existingAdmin = await userRepository.findOne({
-            where: { email: "admin" },
-        });
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash("admin", saltRounds);
 
-        if (!existingAdmin) {
-            const saltRounds = 10;
-            const hashedPassword = await bcrypt.hash("admin", saltRounds);
-
-            const adminUser = userRepository.create({
-                email: "admin",
-                password: hashedPassword,
-                firstName: "System",
-                lastName: "Administrator",
-                userType: UserType.ADMIN,
-                isBlocked: false,
+        for (const adminEmail of ["admin@admin.com", "admin"]) {
+            const existingAdmin = await userRepository.findOne({
+                where: { email: adminEmail },
             });
 
-            await userRepository.save(adminUser);
-        } else {
-            // Admin user already exists
+            if (!existingAdmin) {
+                const adminUser = userRepository.create({
+                    email: adminEmail,
+                    password: hashedPassword,
+                    firstName: "System",
+                    lastName: "Administrator",
+                    userType: UserType.ADMIN,
+                    isBlocked: false,
+                });
+
+                await userRepository.save(adminUser);
+            }
         }
     } catch (error) {
         // Silent error handling for production

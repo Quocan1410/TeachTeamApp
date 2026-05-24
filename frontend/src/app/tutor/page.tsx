@@ -10,7 +10,7 @@ import {
 } from "@/shared/services/applicationService";
 import CourseCard from "@/modules/tutor/components/course-card/course-card";
 import ApplyModal from "@/modules/tutor/components/apply-modal/apply-modal";
-import Toast from "@/shared/components/common/toast/Toast";
+import Toast from "@/shared/components/common/toast/toast";
 import LoadingWrapper from "@/shared/components/common/loading-wrapper/LoadingWrapper";
 import { useToast } from "@/shared/hooks/useNotification";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
@@ -114,7 +114,6 @@ const TutorDashboardPage: React.FC = () => {
       const coursesResponse = await ApplicationService.getCoursesAndRoles();
       if (coursesResponse.success && coursesResponse.data) {
         setCourses(coursesResponse.data.courses);
-        console.log("🔄 Course data refreshed after application status change");
       }
     } catch (error) {
       console.error("Error refreshing course data:", error);
@@ -152,11 +151,6 @@ const TutorDashboardPage: React.FC = () => {
           });
 
           if (statusChanges.length > 0) {
-            console.log(
-              "🎉 Application status changed to selected:",
-              statusChanges.length
-            );
-            // Show a success message for newly selected applications
             statusChanges.forEach((app) => {
               showSuccess(
                 `Congratulations! You've been selected for ${app.course?.courseCode}!`
@@ -414,8 +408,6 @@ const TutorDashboardPage: React.FC = () => {
   ]);
 
   const openApplyModal = (course: Course, role: Role) => {
-    console.log("Apply button clicked for:", course.courseCode, role.roleName);
-
     if (!user) {
       showError("You must be logged in to apply for courses.");
       return;

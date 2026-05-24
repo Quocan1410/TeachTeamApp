@@ -130,14 +130,6 @@ export const useApplicationActions = ({
   };
 
   const handleAddToRanking = async () => {
-    console.log("🚀 handleAddToRanking called:", {
-      selectedApplication: selectedApplication?.id,
-      currentRank: selectedApplication?.rank,
-      hasRank: !!selectedApplication?.rank,
-      rankCheck: !selectedApplication?.rank,
-      canAddToRank: selectedApplication && !selectedApplication.rank,
-    });
-
     if (
       selectedApplication &&
       (selectedApplication.rank === null ||
@@ -153,12 +145,6 @@ export const useApplicationActions = ({
         rank: maxRank + 1,
       };
 
-      console.log("✅ Adding to ranking:", {
-        applicationId: selectedApplication.id,
-        newRank: maxRank + 1,
-        updatedApplication: updatedApplication,
-      });
-
       const result = await saveApplication(updatedApplication);
       if (result.success) {
         loadApplications();
@@ -167,14 +153,6 @@ export const useApplicationActions = ({
       } else {
         showToast(result.message || "Failed to add to ranking.", "error");
       }
-    } else {
-      console.log("❌ Cannot add to ranking:", {
-        hasSelectedApplication: !!selectedApplication,
-        currentRank: selectedApplication?.rank,
-        reason: !selectedApplication
-          ? "No selected application"
-          : "Already has rank",
-      });
     }
   };
 

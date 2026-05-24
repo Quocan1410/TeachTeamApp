@@ -8,6 +8,7 @@ import authRoutes from "./routes/user-auth-routes";
 import applicationRoutes from "./routes/application-routes";
 import databaseRoutes from "./routes/database-routes";
 import notificationRoutes from "./routes/notification-routes";
+import publicRoutes from "./routes/public-routes";
 import { getMelbourneTimestamp } from "./utils/dateUtils";
 import path from "path";
 import { ensureAvatarUploadDir } from "./utils/avatarUtils";
@@ -35,6 +36,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/database", databaseRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/public", publicRoutes);
 
 app.get("/health", (_req, res) => {
     res.json({
