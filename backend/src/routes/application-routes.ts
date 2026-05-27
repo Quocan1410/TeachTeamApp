@@ -199,6 +199,22 @@ router.delete(
 );
 
 router.get(
+    "/:id/lecturer-notes",
+    authenticateToken,
+    requireUserType(["lecturer"]),
+    validateLecturerApplicationAccess,
+    applicationController.getLecturerNotes.bind(applicationController)
+);
+
+router.put(
+    "/:id/lecturer-notes",
+    authenticateToken,
+    requireUserType(["lecturer"]),
+    validateLecturerApplicationAccess,
+    applicationController.updateLecturerNotes.bind(applicationController)
+);
+
+router.get(
     "/lecturer-assigned-courses",
     authenticateToken,
     requireUserType(["lecturer"]),

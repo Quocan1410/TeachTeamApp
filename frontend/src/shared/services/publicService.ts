@@ -1,13 +1,9 @@
 import axios from "axios";
 import type { Lecturer } from "@/shared/types/lecturer";
-
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_ENDPOINT ||
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000/api";
+import { env } from "@/lib/env";
 
 const publicAPI = axios.create({
-  baseURL: `${API_BASE_URL}/public`,
+  baseURL: `${env.apiEndpoint}/public`,
   headers: {
     "Content-Type": "application/json",
   },

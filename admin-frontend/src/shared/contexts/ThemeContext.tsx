@@ -14,15 +14,20 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(true);
     const [isHydrated, setIsHydrated] = useState(false);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
             try {
+                const storedPreference = StorageManager.getItem("darkMode");
                 const darkModePreference =
-                    StorageManager.getItem("darkMode") === "true";
+                    storedPreference === null ? true : storedPreference === "true";
                 setIsDarkMode(darkModePreference);
+                StorageManager.setItem(
+                    "darkMode",
+                    darkModePreference ? "true" : "false"
+                );
                 if (darkModePreference) {
                     document.documentElement.setAttribute("data-theme", "dark");
                     document.documentElement.classList.add("dark");

@@ -102,7 +102,7 @@ export const validateStatusUpdate = (
     const errors: ValidationError[] = [];
 
     // Status validation
-    const allowedStatuses = ["pending", "selected"];
+    const allowedStatuses = ["pending", "shortlisted", "selected", "rejected"];
     if (!status) {
         errors.push({
             field: "status",
@@ -387,14 +387,14 @@ export const validateLecturerFilters = (
     // Status validation
     if (
         status &&
-        !["all", "pending", "selected"].includes(
+        !["all", "pending", "shortlisted", "selected", "rejected"].includes(
             status as string
         )
     ) {
         errors.push({
             field: "status",
             message:
-                "Status must be one of: all, pending, selected",
+                "Status must be one of: all, pending, shortlisted, selected, rejected",
             code: "STATUS_INVALID",
         });
     }

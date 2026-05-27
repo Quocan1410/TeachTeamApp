@@ -9,6 +9,7 @@ interface LoginSuccessModalProps {
   isVisible: boolean;
   onHide: () => void;
   duration?: number; // Duration to show the modal in milliseconds
+  isPreparing?: boolean;
 }
 
 export const LoginSuccessModal: React.FC<LoginSuccessModalProps> = ({
@@ -16,21 +17,20 @@ export const LoginSuccessModal: React.FC<LoginSuccessModalProps> = ({
   isVisible,
   onHide,
   duration = 3000,
+  isPreparing = false,
 }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [showFireworks, setShowFireworks] = useState(false);
 
   const handleHide = useCallback(() => {
-    setIsAnimating(false);
+    if (isPreparing) return;
     setShowFireworks(false);
-    
-    // Wait for exit animation before calling onHide
-    setTimeout(() => {
-      onHide();
-    }, 300);
-  }, [onHide]);
+    // Navigate immediately to avoid a brief white gap between modal and route loading.
+    onHide();
+  }, [isPreparing, onHide]);
 
   const handleContinueClick = () => {
+    if (isPreparing) return;
     setShowFireworks(true);
     // Hide fireworks after a short duration, then close modal
     setTimeout(() => {
@@ -42,15 +42,17 @@ export const LoginSuccessModal: React.FC<LoginSuccessModalProps> = ({
   useEffect(() => {
     if (isVisible) {
       setIsAnimating(true);
-      
-      // Auto-hide after duration
-      const timer = setTimeout(() => {
-        handleHide();
-      }, duration);
 
-      return () => clearTimeout(timer);
+      // Auto-hide only after dashboard prefetch is ready.
+      if (!isPreparing) {
+        const timer = setTimeout(() => {
+          handleHide();
+        }, duration);
+
+        return () => clearTimeout(timer);
+      }
     }
-  }, [isVisible, duration, handleHide]);
+  }, [isVisible, duration, handleHide, isPreparing]);
 
   const getWelcomeMessage = () => {
     const firstName = user.firstName || "User";
@@ -64,9 +66,9 @@ export const LoginSuccessModal: React.FC<LoginSuccessModalProps> = ({
   return (
     <>
       {/* Modal Overlay */}
-      <div 
+      <div
         className={`${styles.modalOverlay} ${isAnimating ? styles.visible : styles.hidden}`}
-        onClick={handleHide}
+        onClick={isPreparing ? undefined : handleHide}
       >
         {/* Modal Content */}
         <div 
@@ -108,8 +110,11 @@ export const LoginSuccessModal: React.FC<LoginSuccessModalProps> = ({
               className={`${styles.continueButton} ${showFireworks ? styles.fireworksActive : ''}`}
               onClick={handleContinueClick}
               aria-label="Continue to dashboard"
+              disabled={isPreparing}
             >
-              <span className={styles.buttonText}>Continue</span>
+              <span className={styles.buttonText}>
+                {isPreparing ? "Preparing dashboard..." : "Continue"}
+              </span>
               {showFireworks && (
                 <div className={styles.fireworksContainer}>
                   {[...Array(8)].map((_, i) => (

@@ -1,4 +1,7 @@
 :root {
+  /* Fixed app header (matches layout header.module.css) */
+  --app-header-height: 4.5rem;
+
   /* Base colors */
   --color-primary: #f97316;
   --color-primary-dark: #ea580c;

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { AuthService } from "../../../shared/services/authService";
 import { User } from "../../../shared/types/user";
 
@@ -33,7 +32,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     // Check if user is already logged in on app start
@@ -107,18 +105,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       AuthService.removeUser();
       setUser(null);
       setIsLoggingOut(false);
-
-      // Use window.location.href as a fallback for more reliable navigation
-      try {
-        await router.replace("/signin");
-      } catch (navigationError) {
-        console.warn(
-          "Router navigation failed, using window.location:",
-          navigationError
-        );
-        // Force navigation using window.location as fallback
-        window.location.href = "/signin";
-      }
+      // Hard redirect to guarantee fresh unauthenticated app state.
+      window.location.replace("/signin");
     }
   };
 

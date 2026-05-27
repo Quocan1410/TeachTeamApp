@@ -1,75 +1,73 @@
-/* Apply Modal CSS Modules - Redesigned for better UX and compact layout */
+/* Apply modal — light, in sync with tutor page & course cards */
 
 .applyModalBackdrop {
-  background-color: rgba(255, 255, 255, 0.8) !important;
+  background-color: rgba(15, 23, 42, 0.72) !important;
   backdrop-filter: blur(8px) !important;
   z-index: 50 !important;
   position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
+  inset: 0 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  padding: 1rem !important;
-  animation: fadeIn 0.3s ease-out !important;
+  padding: 1.25rem !important;
+  animation: fadeIn 0.22s ease-out !important;
 }
 
 :global(.dark) .applyModalBackdrop {
-  background-color: rgba(0, 0, 0, 0.8) !important;
+  background-color: rgba(2, 6, 23, 0.88) !important;
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
 }
 
 .applyModal {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-  border: 1px solid #e5e7eb !important;
-  border-radius: 0.75rem !important;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
-  width: 100% !important;
-  max-width: 36rem !important; /* Smaller max-width for more compact layout */
-  max-height: 90vh !important;
-  overflow-y: auto !important;
-  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background-color: var(--color-bg-primary) !important;
+  color: var(--color-text-primary) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.1) !important;
+  width: min(56rem, calc(100vw - 2.5rem)) !important;
+  max-width: none !important;
+  max-height: min(90vh, 820px) !important;
+  overflow: hidden !important;
+  animation: slideIn 0.22s ease-out !important;
 }
 
 :global(.dark) .applyModal {
-  background-color: #1f2937 !important;
-  color: #f3f4f6 !important;
-  border: 1px solid #374151 !important;
+  background-color: rgba(22, 26, 38, 0.98) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55) !important;
 }
 
 @keyframes slideIn {
   from {
     opacity: 0;
-    transform: scale(0.95) translateY(20px);
+    transform: translateY(8px);
   }
+
   to {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: translateY(0);
   }
 }
 
-/* Compact Header */
 .applyModalHeader {
-  border-bottom: 1px solid #e5e7eb !important;
-  padding: 1.5rem 1.5rem 1rem !important;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
-  position: relative !important;
+  padding: 1.25rem 1.75rem 1rem !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  background: transparent !important;
 }
 
 :global(.dark) .applyModalHeader {
-  border-bottom: 1px solid #374151 !important;
-  background: linear-gradient(135deg, #1f2937 0%, #111827 100%) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.06) !important;
 }
 
 .applyModalHeaderContent {
@@ -81,89 +79,141 @@
 
 .headerTitleSection {
   flex: 1 !important;
+  min-width: 0 !important;
 }
 
 .applyModalTitle {
-  color: #111827 !important;
-  font-size: 1.375rem !important;
-  font-weight: 700 !important;
-  margin: 0 0 0.375rem 0 !important;
-  line-height: 1.3 !important;
+  margin: 0 0 0.25rem !important;
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+  letter-spacing: -0.02em !important;
+  color: var(--color-text-primary) !important;
 }
 
-:global(.dark) .applyModalTitle {
-  color: #f3f4f6 !important;
+.labelAccent {
+  color: var(--color-text-primary) !important;
+  font-weight: 600 !important;
+}
+
+.titleHighlight {
+  color: var(--color-primary) !important;
+}
+
+:global(.dark) .titleHighlight {
+  color: #fdba74 !important;
+}
+
+.labelAccent::before {
+  content: "" !important;
+  display: inline-block !important;
+  width: 3px !important;
+  height: 0.75rem !important;
+  margin-right: 0.4rem !important;
+  vertical-align: -1px !important;
+  border-radius: 2px !important;
+  background: var(--color-primary) !important;
 }
 
 .headerSubtitle {
-  color: #6b7280 !important;
-  font-size: 0.8rem !important;
   margin: 0 !important;
-  font-weight: 500 !important;
+  font-size: 0.8125rem !important;
+  font-weight: 400 !important;
+  color: var(--color-text-tertiary) !important;
 }
 
-:global(.dark) .headerSubtitle {
-  color: #9ca3af !important;
-}
-
-/* Enhanced Close Button with X icon and hover effects - Round shape */
 .applyModalClose {
-  color: #6b7280 !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  background: white !important;
-  border: 1px solid #e5e7eb !important;
-  padding: 0.5rem !important;
-  border-radius: 50% !important;
-  cursor: pointer !important;
+  width: 2rem !important;
+  height: 2rem !important;
+  padding: 0 !important;
+  flex-shrink: 0 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
-  position: relative !important;
-  overflow: hidden !important;
-  width: 36px !important;
-  height: 36px !important;
-  flex-shrink: 0 !important;
-}
-
-:global(.dark) .applyModalClose {
-  color: #9ca3af !important;
-  background: #374151 !important;
-  border-color: #4b5563 !important;
+  border: none !important;
+  border-radius: 0.5rem !important;
+  background: transparent !important;
+  color: var(--color-text-tertiary) !important;
+  cursor: pointer !important;
+  transition: color 0.15s ease, background 0.15s ease !important;
+  box-shadow: none !important;
 }
 
 .applyModalClose:hover {
-  color: #ef4444 !important;
-  background-color: #fef2f2 !important;
-  border-color: #f87171 !important;
-  transform: scale(1.1) rotate(90deg) !important;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2) !important;
+  color: var(--color-text-primary) !important;
+  background: var(--color-bg-secondary) !important;
 }
 
 :global(.dark) .applyModalClose:hover {
-  color: #f87171 !important;
-  background-color: #450a0a !important;
-  border-color: #7f1d1d !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: var(--color-text-primary) !important;
 }
 
 .applyModalClose svg {
-  width: 18px !important;
-  height: 18px !important;
-  position: relative !important;
-  z-index: 1 !important;
-  transition: transform 0.2s ease !important;
+  width: 1.125rem !important;
+  height: 1.125rem !important;
 }
 
-/* Compact Form Layout */
 .applyModalForm {
-  padding: 1.5rem !important;
+  display: flex !important;
+  flex: 1 !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+
+.applyModalFormInner {
+  display: flex !important;
+  flex: 1 !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+}
+
+.applyModalScroll {
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  padding: 1.25rem 1.75rem 1rem !important;
+  scrollbar-gutter: stable !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(148, 163, 184, 0.45) transparent !important;
+}
+
+.applyModalScroll::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.applyModalScroll::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.applyModalScroll::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.4) !important;
+  border-radius: 999px !important;
+}
+
+.applyModalScroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(148, 163, 184, 0.55) !important;
+}
+
+:global(.dark) .applyModalScroll {
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent !important;
+}
+
+:global(.dark) .applyModalScroll::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+:global(.dark) .applyModalScroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.28) !important;
 }
 
 .applyModalCompactGrid {
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
-  gap: 1rem !important;
-  margin-bottom: 1rem !important;
+  gap: 0.875rem !important;
+  margin-bottom: 0.875rem !important;
 }
 
 @media (max-width: 768px) {
@@ -172,90 +222,99 @@
   }
 }
 
-/* Compact Course Information Card */
 .courseInfoCard {
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
-  color: white !important;
-  padding: 1rem !important;
-  border-radius: 0.5rem !important;
-  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3) !important;
-  transition: transform 0.3s ease !important;
-  text-align: center !important;
+  padding: 0.875rem 1rem !important;
+  border-radius: 0.625rem !important;
+  border: 1px solid rgba(249, 115, 22, 0.15) !important;
+  background: linear-gradient(
+    135deg,
+    rgba(249, 115, 22, 0.06) 0%,
+    var(--color-bg-secondary) 55%
+  ) !important;
+  text-align: left !important;
 }
 
-.courseInfoCard:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4) !important;
-}
-
-.courseMainInfo {
-  text-align: center !important;
+:global(.dark) .courseInfoCard {
+  background: linear-gradient(
+    135deg,
+    rgba(251, 146, 60, 0.08) 0%,
+    rgba(255, 255, 255, 0.03) 55%
+  ) !important;
+  border-color: rgba(251, 146, 60, 0.2) !important;
 }
 
 .courseCodeTitle {
-  font-size: 1.1rem !important;
-  font-weight: 700 !important;
-  margin: 0 0 0.375rem 0 !important;
-  letter-spacing: 0.05em !important;
+  margin: 0 0 0.2rem !important;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace !important;
+  font-size: 0.8125rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.03em !important;
+  color: rgba(234, 88, 12, 0.9) !important;
+}
+
+:global(.dark) .courseCodeTitle {
+  color: rgba(251, 146, 60, 0.85) !important;
 }
 
 .courseNameTitle {
-  font-size: 0.85rem !important;
   margin: 0 !important;
-  opacity: 0.9 !important;
-  line-height: 1.4 !important;
+  font-size: 0.875rem !important;
+  line-height: 1.45 !important;
+  color: var(--color-text-secondary) !important;
 }
 
-/* Compact Role and Availability Cards */
-.roleInfoCard, .availabilityCard {
-  background: var(--color-bg-secondary) !important;
-  border: 1px solid var(--color-border) !important;
-  padding: 0.75rem !important;
-  border-radius: 0.5rem !important;
+.roleInfoCard,
+.availabilityCard {
   display: flex !important;
   align-items: center !important;
-  gap: 0.5rem !important;
-  transition: all 0.3s ease !important;
+  gap: 0.625rem !important;
+  padding: 0.625rem 0.75rem !important;
+  border-radius: 0.5rem !important;
+  border: 1px solid var(--color-border) !important;
+  background: var(--color-bg-secondary) !important;
 }
 
-.roleInfoCard:hover, .availabilityCard:hover {
-  border-color: var(--color-primary) !important;
-  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.15) !important;
-  transform: translateY(-1px) !important;
+:global(.dark) .roleInfoCard,
+:global(.dark) .availabilityCard {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
 }
 
-.roleIconContainer, .availabilityIconContainer {
+.roleIconContainer,
+.availabilityIconContainer {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 2rem !important;
-  height: 2rem !important;
+  width: 1.75rem !important;
+  height: 1.75rem !important;
   border-radius: 0.375rem !important;
-  background: rgba(249, 115, 22, 0.1) !important;
+  background: var(--color-bg-primary) !important;
   flex-shrink: 0 !important;
 }
 
-.roleIcon, .availabilityIcon {
-  width: 1rem !important;
-  height: 1rem !important;
-  color: var(--color-primary) !important;
+.roleIcon,
+.availabilityIcon {
+  width: 0.9rem !important;
+  height: 0.9rem !important;
+  color: var(--color-text-tertiary) !important;
 }
 
-.roleText, .availabilityText {
-  font-weight: 600 !important;
+.roleText,
+.availabilityText {
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
   color: var(--color-text-primary) !important;
-  font-size: 0.85rem !important;
 }
 
 .applyModalFieldGroup {
-  margin-bottom: 1rem !important;
+  margin-bottom: 0.875rem !important;
 }
 
 .applyModalGrid {
   display: grid !important;
   grid-template-columns: 1fr !important;
-  gap: 1rem !important;
-  margin-bottom: 1rem !important;
+  gap: 0.875rem !important;
+  margin-bottom: 0.875rem !important;
 }
 
 @media (min-width: 768px) {
@@ -264,102 +323,70 @@
   }
 }
 
+.applyModalLabel {
+  display: block !important;
+  margin-bottom: 0.375rem !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  color: var(--color-text-secondary) !important;
+}
+
 .applyModalInput {
-  background-color: #f9fafb !important;
-  border: 1px solid #d1d5db !important;
-  color: #111827 !important;
-  transition: all 0.3s ease !important;
-  resize: none !important;
   width: 100% !important;
-  padding: 0.625rem !important;
+  padding: 0.625rem 0.75rem !important;
   border-radius: 0.5rem !important;
-  font-size: 0.8rem !important;
-  line-height: 1.25rem !important;
+  border: 1px solid var(--color-border) !important;
+  background: var(--color-bg-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-size: 0.8125rem !important;
+  line-height: 1.4 !important;
+  resize: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
 }
 
 :global(.dark) .applyModalInput {
-  background-color: #1f2937 !important;
-  border: 1px solid #374151 !important;
-  color: #f3f4f6 !important;
+  background: rgba(0, 0, 0, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .applyModalInput:focus {
   outline: none !important;
-  border-color: #f97316 !important;
-  background-color: #ffffff !important;
-}
-
-:global(.dark) .applyModalInput:focus {
-  background-color: #1f2937 !important;
-  border-color: #f97316 !important;
+  border-color: rgba(249, 115, 22, 0.35) !important;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.08) !important;
 }
 
 .applyModalInput::placeholder {
-  color: #9ca3af !important;
-}
-
-:global(.dark) .applyModalInput::placeholder {
-  color: #6b7280 !important;
+  color: var(--color-text-tertiary) !important;
 }
 
 .applyModalInputError {
-  border-color: #ef4444 !important;
-}
-
-:global(.dark) .applyModalInputError {
-  border-color: #ef4444 !important;
-}
-
-.applyModalLabel {
-  color: #111827 !important;
-  font-weight: 600 !important;
-  font-size: 0.875rem !important;
-  display: block !important;
-  margin-bottom: 0.5rem !important;
-}
-
-:global(.dark) .applyModalLabel {
-  color: #f3f4f6 !important;
+  border-color: #f87171 !important;
 }
 
 .applyModalSecondaryText {
-  color: #4b5563 !important;
-  font-size: 0.75rem !important;
   margin-top: 0.25rem !important;
-}
-
-:global(.dark) .applyModalSecondaryText {
-  color: #9ca3af !important;
+  font-size: 0.75rem !important;
+  color: var(--color-text-tertiary) !important;
 }
 
 .applyModalTextPrimary {
-  color: #111827 !important;
   font-weight: 500 !important;
-}
-
-:global(.dark) .applyModalTextPrimary {
-  color: #f3f4f6 !important;
+  color: var(--color-text-primary) !important;
 }
 
 .applyModalReadonlyField {
-  background-color: #f3f4f6 !important;
-  color: #111827 !important;
-  border: 1px solid #e5e7eb !important;
-  padding: 0.75rem !important;
+  padding: 0.625rem 0.75rem !important;
   border-radius: 0.5rem !important;
-  font-size: 0.875rem !important;
-}
-
-:global(.dark) .applyModalReadonlyField {
-  background-color: #374151 !important;
-  color: #f3f4f6 !important;
-  border: 1px solid #4b5563 !important;
+  border: 1px solid var(--color-border) !important;
+  background: var(--color-bg-secondary) !important;
+  color: var(--color-text-primary) !important;
+  font-size: 0.8125rem !important;
 }
 
 .applyModalSkillsContainer {
   display: flex !important;
   flex-wrap: wrap !important;
-  gap: 0.75rem !important;
+  gap: 0.625rem !important;
   margin-bottom: 0.5rem !important;
 }
 
@@ -370,96 +397,67 @@
 
 .applyModalSkillInputField {
   flex: 1 !important;
-  padding: 0.5rem !important;
-  border: 1px solid #d1d5db !important;
+  padding: 0.5rem 0.75rem !important;
+  border: 1px solid var(--color-border) !important;
   border-radius: 0.5rem 0 0 0.5rem !important;
-  background-color: #f9fafb !important;
-  color: #111827 !important;
-  transition: all 0.3s ease !important;
-}
-
-:global(.dark) .applyModalSkillInputField {
-  background-color: #1f2937 !important;
-  border-color: #374151 !important;
-  color: #f3f4f6 !important;
+  background: var(--color-bg-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-size: 0.8125rem !important;
 }
 
 .applyModalSkillInputField:focus {
   outline: none !important;
-  border-color: #f97316 !important;
-  background-color: #ffffff !important;
-}
-
-:global(.dark) .applyModalSkillInputField:focus {
-  background-color: #1f2937 !important;
-  border-color: #f97316 !important;
+  border-color: rgba(249, 115, 22, 0.35) !important;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.08) !important;
 }
 
 .applyModalAddButton {
-  background-color: #f97316 !important;
-  color: white !important;
-  transition: background-color 0.3s ease !important;
+  padding: 0.5rem 0.875rem !important;
   border: none !important;
-  padding: 0.5rem 1rem !important;
   border-radius: 0 0.5rem 0.5rem 0 !important;
-  font-weight: 600 !important;
+  background: var(--color-primary) !important;
+  color: #fff !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
   cursor: pointer !important;
+  transition: background 0.15s ease !important;
 }
 
 .applyModalAddButton:hover {
-  background-color: #ea580c !important;
-}
-
-.applyModalAddButton:focus {
-  outline: none !important;
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.3) !important;
+  background: var(--color-primary-dark) !important;
 }
 
 .applyModalAddSkillsButton {
   display: flex !important;
   align-items: center !important;
-  color: #f97316 !important;
-  transition: color 0.2s ease !important;
-  background: none !important;
+  padding: 0.375rem 0 !important;
   border: none !important;
-  padding: 0.5rem 0 !important;
+  background: none !important;
+  color: var(--color-text-secondary) !important;
+  font-size: 0.8125rem !important;
   font-weight: 500 !important;
   cursor: pointer !important;
-  white-space: nowrap !important;
-}
-
-.applyModalAddSkillsButton svg {
-  width: 1.9rem !important;
-  height: 1.9rem !important;
-  margin-right: 0.25rem !important;
-  flex-shrink: 0 !important;
 }
 
 .applyModalAddSkillsButton:hover {
-  color: #ea580c !important;
+  color: var(--color-primary) !important;
 }
 
-:global(.dark) .applyModalAddSkillsButton {
-  color: #f97316 !important;
-}
-
-:global(.dark) .applyModalAddSkillsButton:hover {
-  color: #fb923c !important;
+.applyModalAddSkillsButton svg {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  margin-right: 0.25rem !important;
 }
 
 .applyModalPopularSkills {
-  margin-top: 1rem !important;
+  margin-top: 0.75rem !important;
 }
 
 .applyModalPopularSkillsLabel {
-  color: #4b5563 !important;
-  font-size: 0.875rem !important;
-  margin-bottom: 0.5rem !important;
   display: block !important;
-}
-
-:global(.dark) .applyModalPopularSkillsLabel {
-  color: #9ca3af !important;
+  margin-bottom: 0.375rem !important;
+  font-size: 0.75rem !important;
+  color: var(--color-text-tertiary) !important;
 }
 
 .applyModalPopularSkillsContainer {
@@ -468,253 +466,363 @@
 }
 
 .popularSkillButton {
-  padding: 0.25rem 0.5rem !important;
-  background-color: #f3f4f6 !important;
-  color: #4b5563 !important;
-  font-size: 0.875rem !important;
-  border-radius: 9999px !important;
-  margin-right: 0.5rem !important;
-  margin-bottom: 0.5rem !important;
-  transition: all 0.2s ease !important;
-  border: none !important;
+  margin: 0 0.375rem 0.375rem 0 !important;
+  padding: 0.25rem 0.625rem !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 999px !important;
+  background: var(--color-bg-secondary) !important;
+  color: var(--color-text-secondary) !important;
+  font-size: 0.75rem !important;
   cursor: pointer !important;
-}
-
-:global(.dark) .popularSkillButton {
-  background-color: #374151 !important;
-  color: #d1d5db !important;
+  transition: border-color 0.15s ease, color 0.15s ease !important;
 }
 
 .popularSkillButton:hover {
-  background-color: #e5e7eb !important;
-}
-
-:global(.dark) .popularSkillButton:hover {
-  background-color: #4b5563 !important;
+  border-color: rgba(249, 115, 22, 0.35) !important;
+  color: var(--color-text-primary) !important;
 }
 
 .popularSkillButton:disabled {
-  opacity: 0.5 !important;
+  opacity: 0.45 !important;
   cursor: not-allowed !important;
 }
 
-/* Compact Actions Section */
 .applyModalActions {
   display: flex !important;
+  flex-shrink: 0 !important;
   justify-content: flex-end !important;
-  padding: 1rem 1.5rem !important;
-  border-top: 1px solid #e5e7eb !important;
-  gap: 0.75rem !important;
-  background-color: #f9fafb !important;
+  gap: 0.625rem !important;
+  padding: 1rem 1.75rem 1.25rem !important;
+  border-top: 1px solid var(--color-border) !important;
+  background: var(--color-bg-primary) !important;
 }
 
 :global(.dark) .applyModalActions {
-  border-top: 1px solid #374151 !important;
-  background-color: #1f2937 !important;
+  border-top-color: rgba(255, 255, 255, 0.06) !important;
 }
 
-/* Compact Cancel Button */
 .applyModalButtonCancel {
-  color: #111827 !important;
-  border: 1px solid #d1d5db !important;
-  background-color: #ffffff !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  font-weight: 600 !important;
-  font-size: 0.8rem !important;
-  cursor: pointer !important;
   padding: 0.5rem 1rem !important;
   border-radius: 0.5rem !important;
-  position: relative !important;
-  overflow: hidden !important;
-}
-
-:global(.dark) .applyModalButtonCancel {
-  color: #f3f4f6 !important;
-  border: 1px solid #374151 !important;
-  background-color: #1f2937 !important;
+  border: 1px solid var(--color-border) !important;
+  background: transparent !important;
+  color: var(--color-text-secondary) !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease, color 0.15s ease !important;
 }
 
 .applyModalButtonCancel:hover {
-  border-color: #9ca3af !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  background: var(--color-bg-secondary) !important;
+  color: var(--color-text-primary) !important;
 }
 
-:global(.dark) .applyModalButtonCancel:hover {
-  border-color: #6b7280 !important;
-}
-
-/* Compact Submit Button */
 .applyModalButtonSubmit {
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
-  color: white !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  font-weight: 600 !important;
-  font-size: 0.8rem !important;
-  border: none !important;
-  cursor: pointer !important;
-  padding: 0.5rem 1rem !important;
+  padding: 0.5rem 1.125rem !important;
   border-radius: 0.5rem !important;
-  position: relative !important;
-  overflow: hidden !important;
-  box-shadow: 0 2px 4px rgba(249, 115, 22, 0.2) !important;
+  border: 1px solid rgba(249, 115, 22, 0.4) !important;
+  background: var(--color-primary) !important;
+  color: #fff !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+  transition: background 0.15s ease, border-color 0.15s ease !important;
 }
 
 .applyModalButtonSubmit:hover {
-  background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%) !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 4px 8px rgba(249, 115, 22, 0.2) !important;
+  background: var(--color-primary-dark) !important;
+  border-color: var(--color-primary-dark) !important;
 }
 
 .applyModalButtonSubmit:focus {
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.3) !important;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12) !important;
 }
 
 .applyModalErrorText {
-  color: #ef4444 !important;
-  font-size: 0.75rem !important;
   margin-top: 0.25rem !important;
+  font-size: 0.75rem !important;
   font-weight: 500 !important;
-}
-
-/* Enhanced Styles for Merged Functionality */
-.applyModalRequiredAsterisk {
   color: #ef4444 !important;
-  margin-left: 0.25rem !important;
 }
 
-.applyModalHint {
-  font-weight: 400 !important;
-  color: var(--color-text-secondary) !important;
-  font-size: 0.75rem !important;
-  margin-left: 0.5rem !important;
+.applyModalRequiredAsterisk {
+  margin-left: 0.15rem !important;
+  color: rgba(239, 68, 68, 0.75) !important;
 }
 
+.applyModalHint,
 .applyModalOptional {
-  font-weight: 400 !important;
-  color: var(--color-text-secondary) !important;
+  margin-left: 0.35rem !important;
   font-size: 0.75rem !important;
+  font-weight: 400 !important;
+  color: var(--color-text-tertiary) !important;
 }
 
-/* Enhanced Availability Options */
-.availabilityOptions {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  gap: 1rem !important;
+/* Availability — segmented control */
+.availabilitySegment {
+  display: flex !important;
+  gap: 0.5rem !important;
+  padding: 0.25rem !important;
+  border-radius: 0.625rem !important;
+  border: 1px solid var(--color-border) !important;
+  background: var(--color-bg-secondary) !important;
 }
 
-.availabilityOption {
+:global(.dark) .availabilitySegment {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.availabilitySegmentOption {
+  flex: 1 !important;
   display: flex !important;
   align-items: center !important;
+  justify-content: center !important;
+  padding: 0.55rem 0.5rem !important;
+  border-radius: 0.45rem !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
   cursor: pointer !important;
-  padding: 1rem !important;
-  border: 2px solid var(--color-border) !important;
-  border-radius: 0.75rem !important;
-  transition: all 0.3s ease !important;
-  background-color: var(--color-bg-secondary) !important;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease !important;
 }
 
-.availabilityOption:hover {
-  border-color: var(--color-primary) !important;
-  background-color: var(--color-bg-primary) !important;
+.availabilitySegmentOption input {
+  position: absolute !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
-.availabilityOption.selected {
-  border-color: var(--color-primary) !important;
-  background-color: rgba(249, 115, 22, 0.05) !important;
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1) !important;
+.availabilitySegmentOption:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.availabilitySegmentActive {
+  border-color: rgba(249, 115, 22, 0.35) !important;
+  background: rgba(249, 115, 22, 0.1) !important;
+}
+
+:global(.dark) .availabilitySegmentActive {
+  background: rgba(251, 146, 60, 0.12) !important;
+  border-color: rgba(251, 146, 60, 0.35) !important;
+}
+
+.segmentTitle {
+  font-size: 0.8125rem !important;
+  font-weight: 600 !important;
+  color: var(--color-text-primary) !important;
+}
+
+.availabilitySegmentActive .segmentTitle {
+  color: var(--color-primary) !important;
+}
+
+:global(.dark) .availabilitySegmentActive .segmentTitle {
+  color: #fdba74 !important;
+}
+
+.segmentHint {
+  font-size: 0.6875rem !important;
+  color: var(--color-text-tertiary) !important;
+}
+
+/* Skills panel */
+.skillsPanel {
+  padding: 0.875rem !important;
+  border-radius: 0.625rem !important;
+  border: 1px solid var(--color-border) !important;
+  background: var(--color-bg-secondary) !important;
+}
+
+:global(.dark) .skillsPanel {
+  background: rgba(0, 0, 0, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.skillsSelectedBlock {
+  margin-bottom: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+:global(.dark) .skillsSelectedBlock {
+  border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.skillsBlockLabel {
+  display: block !important;
+  margin-bottom: 0.5rem !important;
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  color: var(--color-text-tertiary) !important;
+}
+
+.skillsCount {
+  color: var(--color-primary) !important;
+}
+
+.skillsChipGrid {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.375rem !important;
+  margin-bottom: 0.75rem !important;
+}
+
+.skillChip {
+  padding: 0.35rem 0.7rem !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--color-border) !important;
+  background: var(--color-bg-primary) !important;
+  color: var(--color-text-secondary) !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease !important;
+}
+
+.skillChip:hover:not(:disabled) {
+  border-color: rgba(249, 115, 22, 0.35) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.skillChipActive {
+  border-color: rgba(249, 115, 22, 0.5) !important;
+  background: rgba(249, 115, 22, 0.12) !important;
+  color: var(--color-primary) !important;
+}
+
+.skillChip:disabled {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+}
+
+.skillsAddRow {
+  display: flex !important;
+  gap: 0.5rem !important;
+  align-items: stretch !important;
+}
+
+.skillsAddInput {
+  flex: 1 !important;
+  min-width: 0 !important;
+  padding: 0.5rem 0.75rem !important;
+  border-radius: 0.5rem !important;
+  border: 1px solid var(--color-border) !important;
+  background: var(--color-bg-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-size: 0.8125rem !important;
+}
+
+.skillsAddInput:focus {
+  outline: none !important;
+  border-color: rgba(249, 115, 22, 0.4) !important;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.08) !important;
+}
+
+.skillsAddBtn {
+  flex-shrink: 0 !important;
+  padding: 0.5rem 1rem !important;
+  border: 1px solid rgba(249, 115, 22, 0.45) !important;
+  border-radius: 0.5rem !important;
+  background: transparent !important;
+  color: var(--color-primary) !important;
+  font-size: 0.8125rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease !important;
+}
+
+.skillsAddBtn:hover:not(:disabled) {
+  background: rgba(249, 115, 22, 0.1) !important;
+}
+
+.skillsAddBtn:disabled {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+}
+
+.courseMainInfo {
+  text-align: left !important;
+}
+
+.popularSkillsLabel {
+  display: block !important;
+  margin-bottom: 0.375rem !important;
+  font-size: 0.75rem !important;
+  color: var(--color-text-tertiary) !important;
+}
+
+.popularSkillButtons,
+.applyModalSkillsGrid {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.375rem !important;
 }
 
 .availabilityOption input[type="radio"] {
   display: none !important;
 }
 
-.optionContent {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 0.25rem !important;
-}
-
 .optionTitle {
-  font-weight: 600 !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
   color: var(--color-text-primary) !important;
-  font-size: 0.875rem !important;
 }
 
 .optionDescription {
   font-size: 0.75rem !important;
-  color: var(--color-text-secondary) !important;
+  color: var(--color-text-tertiary) !important;
 }
 
-/* Enhanced Skills Section */
 .selectedSkills {
-  background-color: var(--color-bg-secondary) !important;
-  border-radius: 0.75rem !important;
-  padding: 1rem !important;
-  margin-bottom: 1rem !important;
+  margin-bottom: 0.875rem !important;
+  padding: 0.75rem !important;
+  border-radius: 0.5rem !important;
+  border: 1px solid var(--color-border) !important;
+  background: var(--color-bg-secondary) !important;
 }
 
 .selectedSkillsTitle {
-  font-size: 0.875rem !important;
-  font-weight: 600 !important;
-  color: var(--color-text-primary) !important;
-  margin-bottom: 0.75rem !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  color: var(--color-text-secondary) !important;
 }
-
-/* Removed pseudo-element to prevent React DOM conflicts */
 
 .skillTags {
   display: flex !important;
   flex-wrap: wrap !important;
-  gap: 0.5rem !important;
-}
-
-.popularSkills {
-  margin-bottom: 1rem !important;
-}
-
-.popularSkillsLabel {
-  display: block !important;
-  font-size: 0.875rem !important;
-  font-weight: 500 !important;
-  color: var(--color-text-primary) !important;
-  margin-bottom: 0.75rem !important;
-}
-
-.popularSkillButtons {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 0.5rem !important;
+  gap: 0.375rem !important;
 }
 
 .skillButton {
-  padding: 0.5rem 0.75rem !important;
+  padding: 0.375rem 0.625rem !important;
   border: 1px solid var(--color-border) !important;
-  border-radius: 0.5rem !important;
-  background-color: var(--color-bg-secondary) !important;
-  color: var(--color-text-primary) !important;
-  font-size: 0.875rem !important;
+  border-radius: 0.375rem !important;
+  background: var(--color-bg-primary) !important;
+  color: var(--color-text-secondary) !important;
+  font-size: 0.75rem !important;
   cursor: pointer !important;
-  transition: all 0.2s ease !important;
+  transition: border-color 0.15s ease, color 0.15s ease !important;
 }
 
 .skillButton:hover:not(:disabled) {
-  border-color: var(--color-primary) !important;
-  background-color: rgba(249, 115, 22, 0.05) !important;
-}
-
-.skillButton:disabled {
-  opacity: 0.5 !important;
-  cursor: not-allowed !important;
+  border-color: rgba(249, 115, 22, 0.3) !important;
+  color: var(--color-text-primary) !important;
 }
 
 .skillButtonSelected {
-  border-color: var(--color-primary) !important;
-  background-color: rgba(249, 115, 22, 0.1) !important;
+  border-color: rgba(249, 115, 22, 0.45) !important;
+  background: rgba(249, 115, 22, 0.06) !important;
   color: var(--color-primary) !important;
 }
 
@@ -726,97 +834,83 @@
 
 .skillInput {
   flex: 1 !important;
-  padding: 0.75rem !important;
+  padding: 0.625rem 0.75rem !important;
   border: 1px solid var(--color-border) !important;
   border-radius: 0.5rem !important;
-  font-size: 0.875rem !important;
-  background-color: var(--color-bg-primary) !important;
+  background: var(--color-bg-primary) !important;
   color: var(--color-text-primary) !important;
+  font-size: 0.8125rem !important;
 }
 
 .skillInput:focus {
   outline: none !important;
-  border-color: var(--color-primary) !important;
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1) !important;
-}
-
-.skillInput:disabled {
-  opacity: 0.5 !important;
-  cursor: not-allowed !important;
+  border-color: rgba(249, 115, 22, 0.35) !important;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.08) !important;
 }
 
 .addSkillButton {
-  padding: 0.75rem 1rem !important;
-  background-color: var(--color-primary) !important;
-  color: white !important;
+  padding: 0.625rem 0.875rem !important;
   border: none !important;
   border-radius: 0.5rem !important;
-  font-size: 0.875rem !important;
-  font-weight: 600 !important;
+  background: var(--color-primary) !important;
+  color: #fff !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
   cursor: pointer !important;
-  transition: all 0.2s ease !important;
 }
 
 .addSkillButton:hover:not(:disabled) {
-  background-color: var(--color-secondary) !important;
-}
-
-.addSkillButton:disabled {
-  opacity: 0.5 !important;
-  cursor: not-allowed !important;
+  background: var(--color-primary-dark) !important;
 }
 
 .applyModalCancelButton {
-  flex: 1 !important;
-  padding: 0.75rem 1rem !important;
-  background-color: var(--color-bg-secondary) !important;
-  color: var(--color-text-secondary) !important;
-  border: 1px solid var(--color-border) !important;
+  flex: none !important;
+  width: auto !important;
+  min-width: 5.5rem !important;
+  padding: 0.45rem 1rem !important;
   border-radius: 0.5rem !important;
-  font-size: 0.875rem !important;
-  font-weight: 600 !important;
+  border: 1px solid var(--color-border) !important;
+  background: transparent !important;
+  color: var(--color-text-secondary) !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
   cursor: pointer !important;
-  transition: all 0.2s ease !important;
+  transition: background 0.15s ease, color 0.15s ease !important;
 }
 
 .applyModalCancelButton:hover:not(:disabled) {
-  background-color: var(--color-bg-hover) !important;
+  background: var(--color-bg-secondary) !important;
   color: var(--color-text-primary) !important;
 }
 
-.applyModalCancelButton:disabled {
-  opacity: 0.5 !important;
-  cursor: not-allowed !important;
-}
-
 .applyModalSubmitButton {
-  flex: 2 !important;
-  padding: 0.75rem 1rem !important;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%) !important;
-  color: white !important;
-  border: none !important;
-  border-radius: 0.5rem !important;
-  font-size: 0.875rem !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  transition: all 0.3s ease !important;
-  display: flex !important;
+  flex: none !important;
+  width: auto !important;
+  min-width: 8.5rem !important;
+  display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 0.5rem !important;
+  gap: 0.375rem !important;
+  padding: 0.45rem 1.125rem !important;
+  border-radius: 0.5rem !important;
+  border: none !important;
+  background: var(--color-primary) !important;
+  color: #fff !important;
+  font-size: 0.8125rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+  transition: background 0.15s ease !important;
 }
 
 .applyModalSubmitButton:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--color-secondary) 0%, #ea580c 100%) !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 4px 8px rgba(249, 115, 22, 0.2) !important;
+  background: var(--color-primary-dark) !important;
 }
 
-.applyModalSubmitButton:disabled {
-  opacity: 0.7 !important;
+.applyModalSubmitButton:disabled,
+.applyModalCancelButton:disabled {
+  opacity: 0.5 !important;
   cursor: not-allowed !important;
-  transform: none !important;
-  box-shadow: none !important;
 }
 
 .applyModalSpinner {
@@ -826,49 +920,53 @@
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
   to {
     transform: rotate(360deg);
   }
 }
 
-/* Dark mode support for enhanced styles */
-:global(.dark) .availabilityOption {
-  border-color: #374151 !important;
+/* Legacy class aliases used in markup */
+.applyModalAvailableSkills,
+.applyModalSelectedSkills,
+.applyModalSkillsGrid,
+.applyModalCustomSkill,
+.applyModalAddSkillButton {
+  /* styled via parent / skill components */
 }
 
-:global(.dark) .skillButton {
-  border-color: #374151 !important;
-  background-color: #111827 !important;
+.roleOption,
+.roleHeader {
+  display: contents;
 }
 
-:global(.dark) .skillInput {
-  border-color: #374151 !important;
-  background-color: #1f2937 !important;
-}
-
-:global(.dark) .applyModalCancelButton {
-  border-color: #374151 !important;
-  background-color: #111827 !important;
-}
-
-:global(.dark) .applyModalCancelButton:hover:not(:disabled) {
-  background-color: #374151 !important;
+.noPositionsContainer {
+  padding: 0.75rem !important;
+  text-align: center !important;
+  color: var(--color-text-tertiary) !important;
+  font-size: 0.8125rem !important;
 }
 
 @media (max-width: 640px) {
-  .availabilityOptions {
-    grid-template-columns: 1fr !important;
+  .applyModal {
+    width: calc(100vw - 1.5rem) !important;
   }
-  
-  .customSkillInput {
-    flex-direction: column !important;
-    align-items: stretch !important;
-  }
-  
+
+  .applyModalScroll,
+  .applyModalHeader,
   .applyModalActions {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
+
+  .availabilitySegment {
     flex-direction: column !important;
+  }
+
+  .skillsAddRow {
+    flex-direction: column !important;
+  }
+
+  .skillsAddBtn {
+    width: 100% !important;
   }
 }

@@ -8,6 +8,7 @@ import {
   formatValidationErrors,
   DEFAULT_COMMENT_CONFIG,
 } from "../../utils/lecturerValidation.utils";
+import { ApplicationService } from "@/shared/services/applicationService";
 
 interface Course {
   courseCode: string;
@@ -51,6 +52,8 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
   const [commentError, setCommentError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
+  const [lecturerNotes, setLecturerNotes] = useState("");
+  const [notesSaving, setNotesSaving] = useState(false);
 
   // Note: Course selection logic removed since there's only one course
 
@@ -60,6 +63,20 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
     setHasUnsavedChanges(false);
     // Note: Course selection reset removed since there's only one course
   }, [application?.id, application]);
+
+  useEffect(() => {
+    if (!application?.id) {
+      setLecturerNotes("");
+      return;
+    }
+    ApplicationService.getLecturerNotes(parseInt(application.id, 10)).then(
+      (res) => {
+        if (res.success && res.data) {
+          setLecturerNotes(res.data.lecturerNotes || "");
+        }
+      }
+    );
+  }, [application?.id]);
 
   // Track unsaved changes
   useEffect(() => {
@@ -491,7 +508,7 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
                   d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                 />
               </svg>
-              Comments & Notes
+              Candidate feedback (visible to applicant)
             </h4>
             <div className={styles.commentInputContainer}>
               <textarea
@@ -584,6 +601,48 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
                   Delete Comment
                 </button>
               )}
+            </div>
+          </div>
+
+          <div className={styles.section}>
+            <h4 className={styles.sectionTitle}>Private lecturer notes</h4>
+            <p style={{ fontSize: "0.8rem", opacity: 0.7, marginBottom: "0.5rem" }}>
+              Only you can see these — not sent to the candidate.
+            </p>
+            <textarea
+              value={lecturerNotes}
+              onChange={(e) => setLecturerNotes(e.target.value)}
+              placeholder="Internal notes, interview reminders…"
+              className={styles.commentTextarea}
+              maxLength={2000}
+              disabled={notesSaving}
+            />
+            <div className={styles.commentActions}>
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!application?.id) return;
+                  setNotesSaving(true);
+                  try {
+                    const res = await ApplicationService.updateLecturerNotes(
+                      parseInt(application.id, 10),
+                      lecturerNotes
+                    );
+                    if (res.success) {
+                      showToast("Private notes saved", "success");
+                    } else {
+                      showToast(res.message || "Failed to save notes", "error");
+                    }
+                  } finally {
+                    setNotesSaving(false);
+                  }
+                }}
+                disabled={notesSaving}
+                className={`${styles.actionButton} ${styles.addToRankingButton}`}
+                style={{ fontSize: "0.875rem" }}
+              >
+                {notesSaving ? "Saving…" : "Save private notes"}
+              </button>
             </div>
           </div>
         </motion.div>

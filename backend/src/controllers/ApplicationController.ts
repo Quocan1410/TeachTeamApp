@@ -10,6 +10,8 @@ import { AuthenticatedRequest } from "../middleware/authMiddleware";
 import { validateApplicationData } from "../utils/validation";
 import { NotificationService } from "../services/NotificationService";
 import { NotificationType } from "../entities/Notification";
+import { assertCourseAcceptsApplications, getCourseApplicationWindow } from "../utils/courseDeadline";
+import { ApplicationDraft } from "../entities/ApplicationDraft";
 
 export class ApplicationController {
     private applicationRepository = AppDataSource.getRepository(Application);
@@ -20,6 +22,7 @@ export class ApplicationController {
         AppDataSource.getRepository(CourseAssignment);
     private selectedCandidateRepository =
         AppDataSource.getRepository(SelectedCandidate);
+    private draftRepository = AppDataSource.getRepository(ApplicationDraft);
 
     // PA Part C: Create new application
     async createApplication(
@@ -79,6 +82,15 @@ export class ApplicationController {
                 return;
             }
 
+            const deadlineCheck = assertCourseAcceptsApplications(course);
+            if (!deadlineCheck.ok) {
+                res.status(400).json({
+                    success: false,
+                    message: deadlineCheck.message,
+                });
+                return;
+            }
+
             // Check for duplicate application
             const existingApplication =
                 await this.applicationRepository.findOne({
@@ -112,6 +124,12 @@ export class ApplicationController {
             const savedApplication = await this.applicationRepository.save(
                 newApplication
             );
+
+            await this.draftRepository.delete({
+                candidateId,
+                courseId,
+                roleId,
+            });
 
             const candidateName = `${candidate.firstName} ${candidate.lastName}`;
             await NotificationService.notifyLecturersForCourse(courseId, {
@@ -216,6 +234,8 @@ export class ApplicationController {
                         course.maxLabAssistants - selectedLabAssistants
                     );
 
+                    const applicationWindow = getCourseApplicationWindow(course);
+
                     return {
                         ...course,
                         // Keep original max positions
@@ -226,6 +246,9 @@ export class ApplicationController {
                         availableLabAssistants,
                         selectedTutors,
                         selectedLabAssistants,
+                        applicationDeadline: applicationWindow.applicationDeadline,
+                        isApplicationOpen: applicationWindow.isApplicationOpen,
+                        closesInMs: applicationWindow.closesInMs,
                     };
                 })
             );
@@ -1094,6 +1117,119 @@ export class ApplicationController {
             });
         } catch (error) {
             console.error("Error removing application from ranking:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal server error",
+            });
+        }
+    }
+
+    async getLecturerNotes(
+        req: AuthenticatedRequest,
+        res: Response
+    ): Promise<void> {
+        try {
+            const { id } = req.params;
+            const lecturerId = req.user?.userId;
+            const application = await this.applicationRepository.findOne({
+                where: { id: parseInt(id, 10) },
+            });
+
+            if (!application) {
+                res.status(404).json({
+                    success: false,
+                    message: "Application not found",
+                });
+                return;
+            }
+
+            const courseAssignment =
+                await this.courseAssignmentRepository.findOne({
+                    where: {
+                        lecturerId,
+                        courseId: application.courseId,
+                    },
+                });
+
+            if (!courseAssignment) {
+                res.status(403).json({
+                    success: false,
+                    message: "You don't have access to this application",
+                });
+                return;
+            }
+
+            res.status(200).json({
+                success: true,
+                data: { lecturerNotes: application.lecturerNotes ?? "" },
+            });
+        } catch (error) {
+            console.error("getLecturerNotes error:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal server error",
+            });
+        }
+    }
+
+    async updateLecturerNotes(
+        req: AuthenticatedRequest,
+        res: Response
+    ): Promise<void> {
+        try {
+            const { id } = req.params;
+            const lecturerId = req.user?.userId;
+            const notes =
+                typeof req.body.lecturerNotes === "string"
+                    ? req.body.lecturerNotes.trim()
+                    : "";
+
+            if (notes.length > 5000) {
+                res.status(400).json({
+                    success: false,
+                    message: "Notes must be under 5000 characters",
+                });
+                return;
+            }
+
+            const application = await this.applicationRepository.findOne({
+                where: { id: parseInt(id, 10) },
+            });
+
+            if (!application) {
+                res.status(404).json({
+                    success: false,
+                    message: "Application not found",
+                });
+                return;
+            }
+
+            const courseAssignment =
+                await this.courseAssignmentRepository.findOne({
+                    where: {
+                        lecturerId,
+                        courseId: application.courseId,
+                    },
+                });
+
+            if (!courseAssignment) {
+                res.status(403).json({
+                    success: false,
+                    message: "You don't have access to this application",
+                });
+                return;
+            }
+
+            application.lecturerNotes = notes || null;
+            await this.applicationRepository.save(application);
+
+            res.status(200).json({
+                success: true,
+                message: "Private notes saved",
+                data: { lecturerNotes: application.lecturerNotes },
+            });
+        } catch (error) {
+            console.error("updateLecturerNotes error:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",

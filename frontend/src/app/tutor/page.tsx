@@ -11,7 +11,7 @@ import {
 import CourseCard from "@/modules/tutor/components/course-card/course-card";
 import ApplyModal from "@/modules/tutor/components/apply-modal/apply-modal";
 import Toast from "@/shared/components/common/toast/toast";
-import LoadingWrapper from "@/shared/components/common/loading-wrapper/LoadingWrapper";
+import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
 import { useToast } from "@/shared/hooks/useNotification";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { redirect } from "next/navigation";
@@ -480,20 +480,11 @@ const TutorDashboardPage: React.FC = () => {
 
   // Show loading while auth is being checked or data is loading
   if (authLoading || isLoading) {
-    return (
-      <LoadingWrapper
-        isLoading={true}
-        loadingMessage="Loading tutor dashboard..."
-        minHeight="100vh"
-        position="top-center"
-      >
-        <div />
-      </LoadingWrapper>
-    );
+    return <PageSkeleton variant="tutor" />;
   }
 
   return (
-    <LoadingWrapper isLoading={false}>
+    <>
       {/* Hero Section with improved statistics */}
       <TutorHeroSection
         totalCourses={stats.totalCourses}
@@ -589,7 +580,7 @@ const TutorDashboardPage: React.FC = () => {
         onSubmit={handleSubmitApplication}
         isSubmitting={isSubmitting}
       />
-    </LoadingWrapper>
+    </>
   );
 };
 

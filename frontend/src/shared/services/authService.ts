@@ -7,14 +7,10 @@ import {
   User,
 } from "../types/user";
 import StorageManager from "../utils/storageManager";
-
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_ENDPOINT ||
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000/api";
+import { env } from "@/lib/env";
 
 const authAPI = axios.create({
-  baseURL: `${API_BASE_URL}/auth`,
+  baseURL: `${env.apiEndpoint}/auth`,
   headers: {
     "Content-Type": "application/json",
   },
@@ -156,6 +152,22 @@ export class AuthService {
       return {
         success: false,
         message: "Network error occurred while updating profile.",
+      };
+    }
+  }
+
+  static async updateTheme(theme: "light" | "dark"): Promise<AuthResponse> {
+    try {
+      const response = await authAPI.patch("/theme", { theme });
+      return response.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<AuthResponse>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Network error occurred while updating theme.",
       };
     }
   }

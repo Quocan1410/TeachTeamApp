@@ -72,6 +72,13 @@ export class User {
     })
     avatarUrl: string | null;
 
+    @Column({
+        type: "varchar",
+        length: 10,
+        default: "dark",
+    })
+    theme: "light" | "dark";
+
     @CreateDateColumn()
     createdAt: Date;
 

@@ -10,6 +10,7 @@ import { NotificationProvider } from "@/shared/contexts/NotificationContext";
 import GlobalWelcomeBanner from "@/shared/components/welcome/GlobalWelcomeBanner";
 import AppInitializer from "@/shared/components/app-initialization/AppInitializer";
 import AccountStatusMonitor from "@/shared/components/common/AccountStatusMonitor";
+import SystemAnnouncementBanner from "@/shared/components/common/SystemAnnouncementBanner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,27 +25,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark" data-theme="dark" suppressHydrationWarning>
       <body
         className={`${inter.className} flex flex-col min-h-screen`}
         suppressHydrationWarning={true} // Suppress hydration warnings for browser extension modifications
       >
         {" "}
         {/* Added flex classes for sticky footer */}
-        <ThemeProvider>
-          <AuthProvider>
+        <AuthProvider>
+          <ThemeProvider>
             <NotificationProvider>
               <AppInitializer />
               <AccountStatusMonitor />
               <Header />
+              <SystemAnnouncementBanner />
               <GlobalWelcomeBanner />
               <main className="flex-grow">
                 {children}
               </main>
               <Footer />
             </NotificationProvider>
-          </AuthProvider>
-        </ThemeProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -9,6 +9,7 @@ import {
 } from "../entities/Application";
 import { SelectedCandidate } from "../entities/SelectedCandidate";
 import { Notification, NotificationType } from "../entities/Notification";
+import { ApplicationDraft } from "../entities/ApplicationDraft";
 
 const SALT_ROUNDS = 10;
 export const DEV_CANDIDATE_PASSWORD = "candidate123";
@@ -74,6 +75,36 @@ export const DEV_CANDIDATES = [
         lastName: "Turner",
         isBlocked: false,
     },
+    {
+        email: "lisa.tran@candidate.edu.au",
+        firstName: "Lisa",
+        lastName: "Tran",
+        isBlocked: false,
+    },
+    {
+        email: "marco.rossi@candidate.edu.au",
+        firstName: "Marco",
+        lastName: "Rossi",
+        isBlocked: false,
+    },
+    {
+        email: "nina.okonkwo@candidate.edu.au",
+        firstName: "Nina",
+        lastName: "Okonkwo",
+        isBlocked: false,
+    },
+    {
+        email: "omar.hassan@candidate.edu.au",
+        firstName: "Omar",
+        lastName: "Hassan",
+        isBlocked: false,
+    },
+    {
+        email: "priya.sharma@candidate.edu.au",
+        firstName: "Priya",
+        lastName: "Sharma",
+        isBlocked: false,
+    },
 ] as const;
 
 type DevApplicationSeed = {
@@ -86,6 +117,7 @@ type DevApplicationSeed = {
     motivation: string;
     experience?: string;
     comment?: string;
+    lecturerNotes?: string;
     rank?: number;
     lecturerEmail?: string;
 };
@@ -249,6 +281,278 @@ export const DEV_APPLICATIONS: DevApplicationSeed[] = [
         motivation:
             "I am building teaching experience through lab assistant roles.",
     },
+    {
+        candidateEmail: "daniel.lee@candidate.edu.au",
+        courseCode: "COSC2758",
+        roleName: "tutor",
+        status: ApplicationStatus.SHORTLISTED,
+        availability: "Part Time",
+        skills: "C++, algorithms, mentoring, LaTeX",
+        motivation: "Shortlisted for strong algorithms background.",
+        lecturerNotes: "Strong technical interview — schedule second panel.",
+        lecturerEmail: "john.smith@lecturer.edu.au",
+    },
+    {
+        candidateEmail: "henry.wong@candidate.edu.au",
+        courseCode: "COSC2758",
+        roleName: "tutor",
+        status: ApplicationStatus.SHORTLISTED,
+        availability: "Part Time",
+        skills: "Linux, Docker, AWS, CI/CD",
+        motivation: "Platform ops experience relevant to full stack cohort.",
+        lecturerNotes: "Good DevOps narrative; compare with Eva before final select.",
+        lecturerEmail: "john.smith@lecturer.edu.au",
+    },
+    {
+        candidateEmail: "iris.martinez@candidate.edu.au",
+        courseCode: "COSC2758",
+        roleName: "lab_assistant",
+        status: ApplicationStatus.SHORTLISTED,
+        availability: "Part Time",
+        skills: "Algorithms, Python, tutoring",
+        motivation: "Cross-training in full stack while supporting algorithms students.",
+        lecturerEmail: "john.smith@lecturer.edu.au",
+    },
+    {
+        candidateEmail: "grace.kim@candidate.edu.au",
+        courseCode: "COSC2758",
+        roleName: "lab_assistant",
+        status: ApplicationStatus.PENDING,
+        availability: "Part Time",
+        skills: "Java, OOP, debugging",
+        motivation: "Want to broaden from advanced Java into web stack labs.",
+    },
+    {
+        candidateEmail: "bob.nguyen@candidate.edu.au",
+        courseCode: "COSC2758",
+        roleName: "lab_assistant",
+        status: ApplicationStatus.SHORTLISTED,
+        availability: "Part Time",
+        skills: "Python, JavaScript, Git",
+        motivation: "Re-applying for lab role after improving React portfolio.",
+        lecturerNotes: "Improved since rejection — worth shortlist for lab stream.",
+        lecturerEmail: "john.smith@lecturer.edu.au",
+    },
+    {
+        candidateEmail: "jack.turner@candidate.edu.au",
+        courseCode: "COSC2758",
+        roleName: "tutor",
+        status: ApplicationStatus.PENDING,
+        availability: "Full Time",
+        skills: "JavaScript, React, communication",
+        motivation: "Applying to tutor after peer mentoring experience.",
+    },
+    {
+        candidateEmail: "lisa.tran@candidate.edu.au",
+        courseCode: "COSC2758",
+        roleName: "tutor",
+        status: ApplicationStatus.PENDING,
+        availability: "Part Time",
+        skills: "TypeScript, React, UX basics, Figma",
+        motivation: "UI-focused tutor support for design-heavy assignments.",
+    },
+    {
+        candidateEmail: "lisa.tran@candidate.edu.au",
+        courseCode: "COSC2671",
+        roleName: "lab_assistant",
+        status: ApplicationStatus.SHORTLISTED,
+        availability: "Part Time",
+        skills: "HTML, CSS, accessibility, JavaScript",
+        motivation: "Web fundamentals lab fits my frontend internship.",
+        lecturerEmail: "john.smith@lecturer.edu.au",
+    },
+    {
+        candidateEmail: "marco.rossi@candidate.edu.au",
+        courseCode: "COSC2938",
+        roleName: "tutor",
+        status: ApplicationStatus.PENDING,
+        availability: "Full Time",
+        skills: "Angular, RxJS, testing, Italian/English bilingual",
+        motivation: "Can support international students in advanced web.",
+    },
+    {
+        candidateEmail: "marco.rossi@candidate.edu.au",
+        courseCode: "COSC2758",
+        roleName: "tutor",
+        status: ApplicationStatus.REJECTED,
+        availability: "Part Time",
+        skills: "Angular, TypeScript",
+        motivation: "Prefer COSC2938 but applied to full stack as backup.",
+        comment: "Angular-heavy profile — better fit for COSC2938 pipeline.",
+        lecturerEmail: "john.smith@lecturer.edu.au",
+    },
+    {
+        candidateEmail: "nina.okonkwo@candidate.edu.au",
+        courseCode: "COSC2123",
+        roleName: "tutor",
+        status: ApplicationStatus.SHORTLISTED,
+        availability: "Full Time",
+        skills: "Algorithms, discrete math, Python",
+        motivation: "PASS leader experience for algorithms cohort.",
+        lecturerNotes: "Excellent proofs walkthrough in mock session.",
+        lecturerEmail: "sarah.johnson@lecturer.edu.au",
+    },
+    {
+        candidateEmail: "nina.okonkwo@candidate.edu.au",
+        courseCode: "COSC2758",
+        roleName: "lab_assistant",
+        status: ApplicationStatus.PENDING,
+        availability: "Part Time",
+        skills: "Python, SQL, algorithms",
+        motivation: "Secondary application for broader teaching hours.",
+    },
+    {
+        candidateEmail: "omar.hassan@candidate.edu.au",
+        courseCode: "COSC2767",
+        roleName: "tutor",
+        status: ApplicationStatus.SELECTED,
+        availability: "Part Time",
+        skills: "Kubernetes, Terraform, monitoring",
+        motivation: "Industry SRE experience for deployment course.",
+        comment: "Top pick for ops tutorials — start onboarding early.",
+        rank: 1,
+        lecturerEmail: "michael.williams@lecturer.edu.au",
+    },
+    {
+        candidateEmail: "omar.hassan@candidate.edu.au",
+        courseCode: "COSC2758",
+        roleName: "lab_assistant",
+        status: ApplicationStatus.PENDING,
+        availability: "Part Time",
+        skills: "Docker, Linux, scripting",
+        motivation: "Cross-skill into full stack lab support.",
+    },
+    {
+        candidateEmail: "priya.sharma@candidate.edu.au",
+        courseCode: "COSC1295",
+        roleName: "tutor",
+        status: ApplicationStatus.SHORTLISTED,
+        availability: "Part Time",
+        skills: "Java, Spring, design patterns",
+        motivation: "Enterprise Java tutor for advanced programming.",
+        lecturerNotes: "Solid OOP interview — shortlist for Michael's course.",
+        lecturerEmail: "michael.williams@lecturer.edu.au",
+    },
+    {
+        candidateEmail: "priya.sharma@candidate.edu.au",
+        courseCode: "COSC2938",
+        roleName: "lab_assistant",
+        status: ApplicationStatus.PENDING,
+        availability: "Full Time",
+        skills: "React, Node.js, Jest",
+        motivation: "Lab assistant role while completing honours project.",
+    },
+    {
+        candidateEmail: "alice.chen@candidate.edu.au",
+        courseCode: "COSC2938",
+        roleName: "tutor",
+        status: ApplicationStatus.SHORTLISTED,
+        availability: "Part Time",
+        skills: "React, Node.js, teaching",
+        motivation: "Progressing from pending apps toward tutor pipeline.",
+        lecturerNotes: "Monitor tutorial demo — decide by week 6.",
+        lecturerEmail: "emily.brown@lecturer.edu.au",
+    },
+    {
+        candidateEmail: "lisa.tran@candidate.edu.au",
+        courseCode: "COSC2401",
+        roleName: "tutor",
+        status: ApplicationStatus.PENDING,
+        availability: "Part Time",
+        skills: "SQL, PostgreSQL, ER modelling, normalization",
+        motivation: "Database systems aligns with my data engineering internship.",
+    },
+    {
+        candidateEmail: "grace.kim@candidate.edu.au",
+        courseCode: "COSC2401",
+        roleName: "lab_assistant",
+        status: ApplicationStatus.SHORTLISTED,
+        availability: "Part Time",
+        skills: "MySQL, SQL, Java",
+        motivation: "Support SQL labs and query tuning workshops.",
+        lecturerNotes: "Strong lab demo — confirm before deadline (7 days).",
+        lecturerEmail: "john.smith@lecturer.edu.au",
+    },
+    {
+        candidateEmail: "marco.rossi@candidate.edu.au",
+        courseCode: "COSC2510",
+        roleName: "tutor",
+        status: ApplicationStatus.PENDING,
+        availability: "Full Time",
+        skills: "Networking, Wireshark, TCP/IP, security basics",
+        motivation: "Teaching networks after CCNA study group experience.",
+    },
+    {
+        candidateEmail: "henry.wong@candidate.edu.au",
+        courseCode: "COSC2510",
+        roleName: "lab_assistant",
+        status: ApplicationStatus.SHORTLISTED,
+        availability: "Part Time",
+        skills: "Linux, networking, bash, monitoring",
+        motivation: "Lab assistant for packet capture and routing labs.",
+        lecturerEmail: "sarah.johnson@lecturer.edu.au",
+    },
+    {
+        candidateEmail: "nina.okonkwo@candidate.edu.au",
+        courseCode: "COSC2207",
+        roleName: "tutor",
+        status: ApplicationStatus.PENDING,
+        availability: "Part Time",
+        skills: "Security, cryptography, Python, threat modelling",
+        motivation: "Cyber security fundamentals matches honours research area.",
+    },
+    {
+        candidateEmail: "jack.turner@candidate.edu.au",
+        courseCode: "COSC2207",
+        roleName: "lab_assistant",
+        status: ApplicationStatus.REJECTED,
+        availability: "Part Time",
+        skills: "Basic security, scripting",
+        motivation: "Building security lab experience.",
+        comment: "Needs more hands-on lab portfolio for this intake.",
+        lecturerEmail: "sarah.johnson@lecturer.edu.au",
+    },
+    {
+        candidateEmail: "omar.hassan@candidate.edu.au",
+        courseCode: "COSC2810",
+        roleName: "tutor",
+        status: ApplicationStatus.SHORTLISTED,
+        availability: "Part Time",
+        skills: "Agile, Jira, CI/CD, code review",
+        motivation: "Industry agile coach experience for software engineering process.",
+        lecturerNotes: "Excellent sprint planning workshop sample.",
+        lecturerEmail: "emily.brown@lecturer.edu.au",
+    },
+    {
+        candidateEmail: "priya.sharma@candidate.edu.au",
+        courseCode: "COSC2625",
+        roleName: "tutor",
+        status: ApplicationStatus.PENDING,
+        availability: "Part Time",
+        skills: "React Native, TypeScript, mobile UX",
+        motivation: "Published two student apps — keen to mentor mobile cohort.",
+    },
+    {
+        candidateEmail: "iris.martinez@candidate.edu.au",
+        courseCode: "COSC2625",
+        roleName: "lab_assistant",
+        status: ApplicationStatus.SELECTED,
+        availability: "Part Time",
+        skills: "Flutter, React Native, API integration",
+        motivation: "Mobile lab support during semester 2 intake.",
+        comment: "Top mobile lab candidate for Michael's stream.",
+        rank: 1,
+        lecturerEmail: "michael.williams@lecturer.edu.au",
+    },
+    {
+        candidateEmail: "bob.nguyen@candidate.edu.au",
+        courseCode: "COSC2810",
+        roleName: "lab_assistant",
+        status: ApplicationStatus.PENDING,
+        availability: "Full Time",
+        skills: "Git, GitHub Actions, testing, documentation",
+        motivation: "DevOps-minded lab support for agile delivery units.",
+    },
 ];
 
 async function upsertCandidate(userData: (typeof DEV_CANDIDATES)[number]) {
@@ -340,6 +644,10 @@ export async function seedDevDataset(): Promise<void> {
         application.motivation = appSeed.motivation;
         application.experience = appSeed.experience;
 
+        if (appSeed.lecturerNotes) {
+            application.lecturerNotes = appSeed.lecturerNotes;
+        }
+
         if (appSeed.comment && lecturer) {
             application.comment = appSeed.comment;
             application.commentedBy = lecturer.id;
@@ -367,6 +675,110 @@ export async function seedDevDataset(): Promise<void> {
                     })
                 );
             }
+        }
+    }
+
+    const draftRepository = AppDataSource.getRepository(ApplicationDraft);
+    const draftSeeds = [
+        {
+            email: "lisa.tran@candidate.edu.au",
+            courseCode: "COSC2938",
+            roleName: "tutor" as const,
+            payload: {
+                availability: "Part Time",
+                skills: "React, Next.js, testing",
+                motivation: "Draft — finishing portfolio before submit.",
+            },
+        },
+        {
+            email: "priya.sharma@candidate.edu.au",
+            courseCode: "COSC2758",
+            roleName: "lab_assistant" as const,
+            payload: {
+                availability: "Full Time",
+                skills: "Java, React, SQL",
+                experience: "Teaching assistant (2024)",
+            },
+        },
+    ];
+    for (const d of draftSeeds) {
+        const candidate = userByEmail.get(d.email);
+        const c = courseByCode.get(d.courseCode);
+        const r = roleByName.get(d.roleName);
+        if (!candidate || !c || !r) continue;
+        let draft = await draftRepository.findOne({
+            where: {
+                candidateId: candidate.id,
+                courseId: c.id,
+                roleId: r.id,
+            },
+        });
+        if (!draft) {
+            await draftRepository.save(
+                draftRepository.create({
+                    candidateId: candidate.id,
+                    courseId: c.id,
+                    roleId: r.id,
+                    payload: d.payload,
+                })
+            );
+        }
+    }
+
+    const notificationSeeds = [
+        {
+            email: "carla.santos@candidate.edu.au",
+            type: NotificationType.APPLICATION_SUBMITTED,
+            title: "Application selected",
+            message: "You have been selected for COSC2758 — check your dashboard.",
+            link: "/tutor",
+        },
+        {
+            email: "bob.nguyen@candidate.edu.au",
+            type: NotificationType.APPLICATION_SUBMITTED,
+            title: "Application update",
+            message: "Your COSC2758 application status changed — review feedback.",
+            link: "/tutor",
+        },
+        {
+            email: "daniel.lee@candidate.edu.au",
+            type: NotificationType.APPLICATION_SUBMITTED,
+            title: "Shortlisted",
+            message: "You are shortlisted for COSC2758 tutor — prepare for follow-up.",
+            link: "/tutor",
+        },
+        {
+            email: "sarah.johnson@lecturer.edu.au",
+            type: NotificationType.APPLICATION_SUBMITTED,
+            title: "New applicants on COSC2123",
+            message: "3 pending and 1 shortlisted — kanban ready for review.",
+            link: "/lecturer",
+        },
+        {
+            email: "emily.brown@lecturer.edu.au",
+            type: NotificationType.APPLICATION_SUBMITTED,
+            title: "COSC2938 shortlist",
+            message: "Review shortlisted tutors for Further Web Programming.",
+            link: "/lecturer",
+        },
+    ];
+    for (const n of notificationSeeds) {
+        const u = userByEmail.get(n.email);
+        if (!u) continue;
+        const exists = await notificationRepository.findOne({
+            where: { userId: u.id, title: n.title },
+        });
+        if (!exists) {
+            await notificationRepository.save(
+                notificationRepository.create({
+                    userId: u.id,
+                    type: n.type,
+                    title: n.title,
+                    message: n.message,
+                    link: n.link,
+                    read: false,
+                })
+            );
         }
     }
 

@@ -147,6 +147,10 @@ router.put("/profile", authenticateToken, validateProfileFields, async (req, res
     await authController.updateProfile(req, res);
 });
 
+router.patch("/theme", authenticateToken, async (req, res) => {
+    await authController.updateTheme(req, res);
+});
+
 router.get("/avatar/image", authenticateToken, async (req, res) => {
     await authController.getMyAvatar(req, res);
 });

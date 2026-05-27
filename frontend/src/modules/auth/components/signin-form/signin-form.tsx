@@ -9,12 +9,15 @@ import {
 import { SigninData, User } from "../../../../shared/types/user";
 import { useAuth } from "../../hooks/useAuth";
 import { LoginSuccessModal } from "../../../../shared/components/common/modal/LoginSuccessModal";
+import { preloadDashboardRoute } from "../../utils/preloadDashboard";
 import styles from "./signin-form.module.css";
+
+const PRELOAD_TIMEOUT_MS = 12000;
 
 export default function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login } = useAuth();
+  const { login, user, isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const [formData, setFormData] = useState<SigninData>({
     email: "",
     password: "",
@@ -29,6 +32,15 @@ export default function SignInForm() {
   // New state for login success modal
   const [showLoginSuccess, setShowLoginSuccess] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
+  const [redirectPath, setRedirectPath] = useState<string>("");
+  const [isDashboardReady, setIsDashboardReady] = useState(false);
+
+  const getRedirectPath = (targetUser: User) =>
+    targetUser.userType === "lecturer"
+      ? "/lecturer"
+      : targetUser.userType === "candidate"
+        ? "/tutor"
+        : "/";
 
   // Check for success message and email from signup redirect
   useEffect(() => {
@@ -52,6 +64,48 @@ export default function SignInForm() {
       window.history.replaceState({}, '', newUrl);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    if (isAuthLoading || !isAuthenticated || !user || showLoginSuccess) return;
+    router.replace(getRedirectPath(user));
+  }, [isAuthLoading, isAuthenticated, user, showLoginSuccess, router]);
+
+  useEffect(() => {
+    if (!showLoginSuccess || !redirectPath) return;
+    let cancelled = false;
+    setIsDashboardReady(false);
+
+    const prepareDashboard = async () => {
+      const timeout = new Promise<void>((resolve) => {
+        setTimeout(resolve, PRELOAD_TIMEOUT_MS);
+      });
+
+      try {
+        await Promise.race([
+          Promise.all([
+            router.prefetch(redirectPath),
+            preloadDashboardRoute(redirectPath),
+          ]),
+          timeout,
+        ]);
+      } catch (error) {
+        console.warn("Dashboard preload failed, continuing anyway:", error);
+      } finally {
+        if (!cancelled) {
+          setIsDashboardReady(true);
+        }
+      }
+    };
+
+    void prepareDashboard();
+    return () => {
+      cancelled = true;
+    };
+  }, [showLoginSuccess, redirectPath, router]);
+
+  if (!isAuthLoading && isAuthenticated && !showLoginSuccess) {
+    return null;
+  }
 
   const handleInputChange = (field: keyof SigninData, value: string) => {
     setFormData((prev) => ({
@@ -114,8 +168,12 @@ export default function SignInForm() {
         login(response.data.user, token);
         
         // Store user data and show success modal
+        const nextPath = getRedirectPath(response.data.user);
+        setRedirectPath(nextPath);
+        setIsDashboardReady(false);
         setLoggedInUser(response.data.user);
         setShowLoginSuccess(true);
+        void preloadDashboardRoute(nextPath);
       } else {
         // Handle validation errors from backend
         if (response.errors) {
@@ -133,8 +191,11 @@ export default function SignInForm() {
   };
 
   const handleLoginSuccessModalHide = () => {
+    if (!isDashboardReady) return;
+    const destination = redirectPath || (loggedInUser ? getRedirectPath(loggedInUser) : "/");
     setShowLoginSuccess(false);
-    router.push("/");
+    router.replace(destination);
+
   };
 
   return (
@@ -251,6 +312,7 @@ export default function SignInForm() {
           isVisible={showLoginSuccess}
           onHide={handleLoginSuccessModalHide}
           duration={3000}
+          isPreparing={!isDashboardReady}
         />
       )}
     </>

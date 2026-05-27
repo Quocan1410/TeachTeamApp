@@ -116,21 +116,34 @@
   align-items: center;
 }
 
-/* Navigation Loading Styles */
-.navLoadingPlaceholder {
+.navSkeleton {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
+  gap: 1.5rem;
 }
 
-.navLoadingSpinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--color-border);
-  border-top: 2px solid var(--color-primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+.navSkeletonLink {
+  display: inline-block;
+  width: 4.5rem;
+  height: 0.85rem;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-secondary) 0%,
+    rgba(249, 115, 22, 0.12) 50%,
+    var(--color-bg-secondary) 100%
+  );
+  background-size: 200% 100%;
+  animation: navShimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes navShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .nav-links {

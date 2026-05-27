@@ -1,12 +1,8 @@
 import axios from "axios";
-
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_ENDPOINT ||
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000/api";
+import { env } from "@/lib/env";
 
 const notificationAPI = axios.create({
-  baseURL: `${API_BASE_URL}/notifications`,
+  baseURL: `${env.apiEndpoint}/notifications`,
   headers: {
     "Content-Type": "application/json",
   },

@@ -3,6 +3,7 @@ import styles from "./LecturerShowcase.module.css";
 import LecturerCard from "../lecturer-card/LecturerCard";
 import SectionTitle from "../SectionTitle/SectionTitle";
 import type { Lecturer } from "@/shared/types/lecturer";
+import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
 
 interface LecturerShowcaseProps {
   lecturers: Lecturer[];
@@ -34,11 +35,7 @@ const LecturerShowcase: React.FC<LecturerShowcaseProps> = ({
             subtitle="Meet four of our lecturers and the courses they support on TeachTeam."
           />
 
-          {isLoading && (
-            <p className={styles.statusMessage} role="status">
-              Loading lecturers…
-            </p>
-          )}
+          {isLoading && <PageSkeleton variant="home" fullPage={false} />}
 
           {!isLoading && error && (
             <div className={styles.statusBlock}>

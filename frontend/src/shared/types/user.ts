@@ -14,6 +14,7 @@ export interface User {
   userType: UserType;
   isBlocked: boolean;
   avatarUrl?: string | null;
+  theme?: "light" | "dark";
   createdAt: string;
   updatedAt: string;
 }

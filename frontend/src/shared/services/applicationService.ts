@@ -1,12 +1,8 @@
 import axios, { AxiosError } from "axios";
-
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_ENDPOINT ||
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000/api";
+import { env } from "@/lib/env";
 
 const applicationAPI = axios.create({
-  baseURL: `${API_BASE_URL}/applications`,
+  baseURL: `${env.apiEndpoint}/applications`,
   headers: {
     "Content-Type": "application/json",
   },
@@ -42,6 +38,9 @@ export interface Course {
   availableLabAssistants?: number;
   selectedTutors?: number;
   selectedLabAssistants?: number;
+  applicationDeadline?: string | null;
+  isApplicationOpen?: boolean;
+  closesInMs?: number | null;
 }
 
 export interface Role {
@@ -64,7 +63,7 @@ export interface ApplicationResponse {
   candidateId: number;
   courseId: number;
   roleId: number;
-  status: "pending" | "selected" | "rejected";
+  status: "pending" | "shortlisted" | "selected" | "rejected";
   availability: { type: string };
   skills?: string;
   experience?: string;
@@ -262,7 +261,7 @@ export class ApplicationService {
   // CR Part: Update application status
   static async updateApplicationStatus(
     applicationId: number,
-    status: "pending" | "selected" | "rejected",
+    status: "pending" | "shortlisted" | "selected" | "rejected",
     comment?: string,
     selectedCourses?: string[]
   ): Promise<ApiResponse<ApplicationResponse>> {
@@ -395,6 +394,42 @@ export class ApplicationService {
         success: false,
         message: "Network error occurred while removing from ranking.",
       };
+    }
+  }
+
+  static async getLecturerNotes(
+    applicationId: number
+  ): Promise<ApiResponse<{ lecturerNotes: string }>> {
+    try {
+      const response = await applicationAPI.get(
+        `/${applicationId}/lecturer-notes`
+      );
+      return response.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<
+        ApiResponse<{ lecturerNotes: string }>
+      >;
+      if (axiosError.response?.data) return axiosError.response.data;
+      return { success: false, message: "Failed to load notes." };
+    }
+  }
+
+  static async updateLecturerNotes(
+    applicationId: number,
+    lecturerNotes: string
+  ): Promise<ApiResponse<{ lecturerNotes: string | null }>> {
+    try {
+      const response = await applicationAPI.put(
+        `/${applicationId}/lecturer-notes`,
+        { lecturerNotes }
+      );
+      return response.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<
+        ApiResponse<{ lecturerNotes: string | null }>
+      >;
+      if (axiosError.response?.data) return axiosError.response.data;
+      return { success: false, message: "Failed to save notes." };
     }
   }
 

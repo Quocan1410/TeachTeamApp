@@ -373,6 +373,57 @@ export class AuthController {
         }
     }
 
+    async updateTheme(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = (req as any).user?.userId;
+            const theme = req.body.theme;
+
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    message: "User not authenticated",
+                });
+                return;
+            }
+
+            if (theme !== "light" && theme !== "dark") {
+                res.status(400).json({
+                    success: false,
+                    message: "Theme must be 'light' or 'dark'",
+                });
+                return;
+            }
+
+            const user = await this.userRepository.findOne({
+                where: { id: userId },
+            });
+
+            if (!user) {
+                res.status(404).json({
+                    success: false,
+                    message: "User not found",
+                });
+                return;
+            }
+
+            user.theme = theme;
+            const updatedUser = await this.userRepository.save(user);
+            const { password: _, ...userProfile } = updatedUser;
+
+            res.status(200).json({
+                success: true,
+                message: "Theme updated",
+                data: { user: userProfile },
+            });
+        } catch (error) {
+            console.error("Update theme error:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal server error while updating theme",
+            });
+        }
+    }
+
     async uploadAvatar(req: Request, res: Response): Promise<void> {
         try {
             const userId = (req as any).user?.userId;

@@ -16,6 +16,7 @@ import { SelectedCandidate } from "./SelectedCandidate";
 
 export enum ApplicationStatus {
     PENDING = "pending",
+    SHORTLISTED = "shortlisted",
     SELECTED = "selected",
     REJECTED = "rejected",
 }
@@ -75,7 +76,13 @@ export class Application {
     })
     motivation?: string;
 
-    // Lecturer comment fields
+    @Column({
+        type: "text",
+        nullable: true,
+    })
+    lecturerNotes?: string | null;
+
+    // Lecturer comment fields (visible to candidate via notification)
     @Column({
         type: "text",
         nullable: true,
@@ -171,6 +178,10 @@ export class Application {
 
     get isPending(): boolean {
         return this.status === ApplicationStatus.PENDING;
+    }
+
+    get isShortlisted(): boolean {
+        return this.status === ApplicationStatus.SHORTLISTED;
     }
 
     get isRejected(): boolean {

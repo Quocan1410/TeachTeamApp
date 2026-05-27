@@ -2,14 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AuthService } from "../services/authService";
-
-const getApiBase = (): string => {
-  return (
-    process.env.NEXT_PUBLIC_API_ENDPOINT ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    "http://localhost:5000/api"
-  );
-};
+import { env } from "@/lib/env";
 
 export function useProtectedAvatar(
   hasAvatar: boolean,
@@ -33,7 +26,7 @@ export function useProtectedAvatar(
       }
 
       try {
-        const response = await fetch(`${getApiBase()}/auth/avatar/image`, {
+        const response = await fetch(`${env.apiEndpoint}/auth/avatar/image`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

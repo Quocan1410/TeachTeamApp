@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { CourseDetails } from "@/shared/types/courseTypes";
 import type { Application as TutorApplication } from "@/shared/types/application";
@@ -7,6 +7,7 @@ import { availableSkills } from "@/modules/tutor/utils/skillOptions";
 import SkillTag from "@/modules/tutor/components/skill-tag/skill-tag";
 import styles from "./apply-modal.module.css";
 import { getMelbourneTime, getMelbourneDateOnly } from "@/shared/utils/dateUtils";
+import { DraftService } from "@/shared/services/draftService";
 
 /**
  * Validation Rules for Tutor Application Form:
@@ -90,6 +91,9 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
   const [motivation, setMotivation] = useState("");
   const [selectedSkillTags, setSelectedSkillTags] = useState<string[]>([]);
   const [customSkillInput, setCustomSkillInput] = useState("");
+
+  const [draftSavedAt, setDraftSavedAt] = useState<string | null>(null);
+  const saveDraftTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Validation error states
   const [errors, setErrors] = useState<{
@@ -285,6 +289,71 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
     }
   };
 
+  useEffect(() => {
+    if (!isOpen || !enhancedProps || !course || !role) return;
+
+    const loadDraft = async () => {
+      try {
+        const res = await DraftService.getDraft(
+          (course as Course).id,
+          role.id
+        );
+        if (res.success && res.data?.payload) {
+          const p = res.data.payload;
+          if (p.availability === "Part Time" || p.availability === "Full Time") {
+            setAvailability(p.availability);
+          }
+          if (p.skills) {
+            setSelectedSkillTags(
+              p.skills.split(",").map((s: string) => s.trim()).filter(Boolean)
+            );
+          }
+          if (p.experience) setExperience(p.experience);
+          if (p.motivation) setMotivation(p.motivation);
+          setDraftSavedAt(res.data.updatedAt);
+        }
+      } catch {
+        // ignore
+      }
+    };
+    loadDraft();
+  }, [isOpen, enhancedProps, course, role]);
+
+  useEffect(() => {
+    if (!isOpen || !enhancedProps || !course || !role) return;
+
+    if (saveDraftTimer.current) clearTimeout(saveDraftTimer.current);
+
+    saveDraftTimer.current = setTimeout(async () => {
+      try {
+        const res = await DraftService.saveDraft((course as Course).id, role.id, {
+          availability,
+          skills: selectedSkillTags.join(", "),
+          experience: experience.trim() || undefined,
+          motivation: motivation.trim(),
+        });
+        if (res.success && res.data?.updatedAt) {
+          setDraftSavedAt(res.data.updatedAt);
+        }
+      } catch {
+        // ignore
+      }
+    }, 800);
+
+    return () => {
+      if (saveDraftTimer.current) clearTimeout(saveDraftTimer.current);
+    };
+  }, [
+    isOpen,
+    enhancedProps,
+    course,
+    role,
+    availability,
+    selectedSkillTags,
+    experience,
+    motivation,
+  ]);
+
   // Don't render if modal is not open or no course is selected
   if (!isOpen || !course) return null;
 
@@ -298,10 +367,10 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
       >
         <motion.div 
           className={styles.applyModal}
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ duration: 0.3 }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 8 }}
+          transition={{ duration: 0.22, ease: "easeOut" }}
           onClick={(e) => e.stopPropagation()}
         >
         {/* Header */}
@@ -309,9 +378,18 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
           <div className={styles.applyModalHeaderContent}>
             <div className={styles.headerTitleSection}>
                 <h3 className={styles.applyModalTitle}>
-                  {enhancedProps ? "Apply for Position" : "Apply for Course"}
+                  Apply for{" "}
+                  <span className={styles.titleHighlight}>
+                    {enhancedProps ? "position" : "course"}
+                  </span>
                 </h3>
-              <p className={styles.headerSubtitle}>Complete your application below</p>
+              <p className={styles.headerSubtitle}>
+                {enhancedProps
+                  ? draftSavedAt
+                    ? "Draft saved to your account"
+                    : "Complete your application below"
+                  : "Complete your application below"}
+              </p>
             </div>
             <button
               type="button"
@@ -329,10 +407,13 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
 
         {/* Form */}
         <div className={styles.applyModalForm}>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className={styles.applyModalFormInner}>
+            <div className={styles.applyModalScroll}>
               {/* Course Info */}
             <div className={styles.applyModalFieldGroup}>
-              <label className={styles.applyModalLabel}>Course Information</label>
+              <label className={styles.applyModalLabel}>
+                <span className={styles.labelAccent}>Course information</span>
+              </label>
               <div className={styles.courseInfoCard}>
                 <div className={styles.courseMainInfo}>
                     <h4 className={styles.courseCodeTitle}>
@@ -348,7 +429,9 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
               {/* Role & Availability */}
             <div className={styles.applyModalCompactGrid}>
               <div className={styles.applyModalFieldGroup}>
-                <label className={styles.applyModalLabel}>Role</label>
+                <label className={styles.applyModalLabel}>
+                  <span className={styles.labelAccent}>Role</span>
+                </label>
                 <div className={styles.roleInfoCard}>
                   <div className={styles.roleIconContainer}>
                       <svg className={styles.roleIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -366,34 +449,48 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
                 </div>
 
                 <div className={styles.applyModalFieldGroup}>
-                  <label className={styles.applyModalLabel}>Availability</label>
+                  <label className={styles.applyModalLabel}>
+                    <span className={styles.labelAccent}>Availability</span>
+                  </label>
                   {enhancedProps ? (
-                    <div className={styles.availabilityOptions}>
-                      <label className={`${styles.availabilityOption} ${availability === "Part Time" ? styles.selected : ""}`}>
+                    <div
+                      className={styles.availabilitySegment}
+                      role="radiogroup"
+                      aria-label="Availability"
+                    >
+                      <label
+                        className={`${styles.availabilitySegmentOption} ${
+                          availability === "Part Time" ? styles.availabilitySegmentActive : ""
+                        }`}
+                      >
                         <input
                           type="radio"
                           name="availability"
                           value="Part Time"
                           checked={availability === "Part Time"}
-                          onChange={(e) => setAvailability(e.target.value as "Part Time" | "Full Time")}
+                          onChange={(e) =>
+                            setAvailability(e.target.value as "Part Time" | "Full Time")
+                          }
                           disabled={isSubmitting}
                         />
-                        <div className={styles.optionContent}>
-                          <span className={styles.optionTitle}>Part Time</span>
-                        </div>
+                        <span className={styles.segmentTitle}>Part time</span>
                       </label>
-                      <label className={`${styles.availabilityOption} ${availability === "Full Time" ? styles.selected : ""}`}>
+                      <label
+                        className={`${styles.availabilitySegmentOption} ${
+                          availability === "Full Time" ? styles.availabilitySegmentActive : ""
+                        }`}
+                      >
                         <input
                           type="radio"
                           name="availability"
                           value="Full Time"
                           checked={availability === "Full Time"}
-                          onChange={(e) => setAvailability(e.target.value as "Part Time" | "Full Time")}
+                          onChange={(e) =>
+                            setAvailability(e.target.value as "Part Time" | "Full Time")
+                          }
                           disabled={isSubmitting}
                         />
-                        <div className={styles.optionContent}>
-                          <span className={styles.optionTitle}>Full Time</span>
-                        </div>
+                        <span className={styles.segmentTitle}>Full time</span>
                       </label>
                     </div>
                   ) : (
@@ -415,51 +512,61 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
               {/* Skills Section */}
               <div className={styles.applyModalFieldGroup}>
                 <label className={styles.applyModalLabel}>
-                  {enhancedProps ? "Your Skills" : "Skills"} 
+                  <span className={styles.labelAccent}>
+                    {enhancedProps ? "Your skills" : "Skills"}
+                  </span>
                   <span className={styles.applyModalRequiredAsterisk}>*</span>
                   {enhancedProps && (
-                    <span className={styles.applyModalHint}>Select skills that match this role</span>
+                    <span className={styles.applyModalHint}>Up to 10 skills</span>
                   )}
                 </label>
-                
+
                 {enhancedProps ? (
-                  <>
-                    {/* Enhanced Skills Section */}
+                  <div className={styles.skillsPanel}>
                     {selectedSkillTags.length > 0 && (
-                      <div className={styles.selectedSkills}>
-                        <h4 className={styles.selectedSkillsTitle}>
-                          Selected Skills ({selectedSkillTags.length}/10)
-                        </h4>
+                      <div className={styles.skillsSelectedBlock}>
+                        <span className={styles.skillsBlockLabel}>
+                          Selected{" "}
+                          <span className={styles.skillsCount}>
+                            {selectedSkillTags.length}/10
+                          </span>
+                        </span>
                         <div className={styles.skillTags}>
                           {selectedSkillTags.map((skill, index) => (
-                            <SkillTag key={index} skill={skill} onRemove={handleRemoveSkillTag} />
+                            <SkillTag
+                              key={index}
+                              skill={skill}
+                              onRemove={handleRemoveSkillTag}
+                            />
                           ))}
                         </div>
                       </div>
                     )}
 
-                    {/* Popular Skills */}
-                    <div className={styles.popularSkills}>
-                      <span className={styles.popularSkillsLabel}>Popular skills for this role:</span>
-                      <div className={styles.popularSkillButtons}>
-                        {getPopularSkills(role?.roleName).map((skill, index) => (
-                          <button
-                            key={index}
-                            type="button"
-                            className={`${styles.skillButton} ${
-                              selectedSkillTags.includes(skill) ? styles.skillButtonSelected : ""
-                            }`}
-                            onClick={() => handleAddSkillTag(skill)}
-                            disabled={selectedSkillTags.includes(skill) || selectedSkillTags.length >= 10 || isSubmitting}
-                          >
-                            {skill}
-                          </button>
-                        ))}
-                      </div>
+                    <span className={styles.skillsBlockLabel}>Suggested for this role</span>
+                    <div className={styles.skillsChipGrid}>
+                      {getPopularSkills(role?.roleName).map((skill, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          className={`${styles.skillChip} ${
+                            selectedSkillTags.includes(skill)
+                              ? styles.skillChipActive
+                              : ""
+                          }`}
+                          onClick={() => handleAddSkillTag(skill)}
+                          disabled={
+                            selectedSkillTags.includes(skill) ||
+                            selectedSkillTags.length >= 10 ||
+                            isSubmitting
+                          }
+                        >
+                          {skill}
+                        </button>
+                      ))}
                     </div>
 
-                    {/* Custom Skill Input */}
-                    <div className={styles.customSkillInput}>
+                    <div className={styles.skillsAddRow}>
                       <input
                         type="text"
                         value={customSkillInput}
@@ -470,20 +577,24 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
                             handleAddSkillTag(customSkillInput);
                           }
                         }}
-                        placeholder="Add a custom skill (press Enter or click Add)"
-                        className={styles.skillInput}
+                        placeholder="Add a custom skill…"
+                        className={styles.skillsAddInput}
                         disabled={selectedSkillTags.length >= 10 || isSubmitting}
                       />
                       <button
                         type="button"
                         onClick={() => handleAddSkillTag(customSkillInput)}
-                        className={styles.addSkillButton}
-                        disabled={!customSkillInput.trim() || selectedSkillTags.length >= 10 || isSubmitting}
+                        className={styles.skillsAddBtn}
+                        disabled={
+                          !customSkillInput.trim() ||
+                          selectedSkillTags.length >= 10 ||
+                          isSubmitting
+                        }
                       >
                         Add
                       </button>
                     </div>
-                  </>
+                  </div>
                 ) : (
                   <>
                     {/* Legacy Skills Section */}
@@ -650,6 +761,7 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
               </div>
                 </>
               )}
+            </div>
 
               {/* Submit Button */}
               <div className={styles.applyModalActions}>

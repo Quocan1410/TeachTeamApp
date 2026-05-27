@@ -7,6 +7,8 @@ import { CourseAssignment } from "../entities/CourseAssignment";
 import { Application } from "../entities/Application";
 import { SelectedCandidate } from "../entities/SelectedCandidate";
 import { Notification } from "../entities/Notification";
+import { ApplicationDraft } from "../entities/ApplicationDraft";
+import { Announcement } from "../entities/Announcement";
 import path from "path";
 
 // Load environment variables from root .env file
@@ -29,6 +31,8 @@ export const AppDataSource = new DataSource({
         Application,
         SelectedCandidate,
         Notification,
+        ApplicationDraft,
+        Announcement,
     ],
     migrations: ["src/migrations/*.ts"],
     subscribers: ["src/subscribers/*.ts"],
@@ -84,31 +88,50 @@ const initializeDataSource = async (): Promise<void> => {
     }
 };
 
-const ensureAvatarUrlColumn = async (): Promise<void> => {
+const ensureColumn = async (
+    tableName: string,
+    columnName: string,
+    ddl: string
+): Promise<void> => {
     const queryRunner = AppDataSource.createQueryRunner();
     try {
-        const table = await queryRunner.getTable("users");
-        const hasAvatarUrl = table?.columns.some(
-            (column) => column.name === "avatarUrl"
-        );
-
-        if (!hasAvatarUrl) {
-            await queryRunner.query(
-                "ALTER TABLE `users` ADD `avatarUrl` varchar(512) NULL"
-            );
+        const table = await queryRunner.getTable(tableName);
+        const exists = table?.columns.some((c) => c.name === columnName);
+        if (!exists) {
+            await queryRunner.query(ddl);
         }
-    } catch (error) {
-        console.error("Failed to ensure avatarUrl column:", error);
-        throw error;
     } finally {
         await queryRunner.release();
     }
 };
 
+const ensureSchemaColumns = async (): Promise<void> => {
+    await ensureColumn(
+        "users",
+        "avatarUrl",
+        "ALTER TABLE `users` ADD `avatarUrl` varchar(512) NULL"
+    );
+    await ensureColumn(
+        "users",
+        "theme",
+        "ALTER TABLE `users` ADD `theme` varchar(10) NOT NULL DEFAULT 'dark'"
+    );
+    await ensureColumn(
+        "courses",
+        "applicationDeadline",
+        "ALTER TABLE `courses` ADD `applicationDeadline` datetime NULL"
+    );
+    await ensureColumn(
+        "applications",
+        "lecturerNotes",
+        "ALTER TABLE `applications` ADD `lecturerNotes` text NULL"
+    );
+};
+
 export const initializeDatabase = async () => {
     try {
         await initializeDataSource();
-        await ensureAvatarUrlColumn();
+        await ensureSchemaColumns();
 
         const { runAllSeeds } = await import("../seeds");
         await runAllSeeds();

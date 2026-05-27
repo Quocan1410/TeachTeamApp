@@ -34,10 +34,27 @@ export const DEFAULT_LECTURERS = [
 
 /** Course codes assigned to each default lecturer (homepage + lecturer dashboard). */
 export const DEFAULT_LECTURER_ASSIGNMENTS: Record<string, string[]> = {
-    "john.smith@lecturer.edu.au": ["COSC2758", "COSC2671"],
-    "sarah.johnson@lecturer.edu.au": ["COSC2938", "COSC2123"],
-    "michael.williams@lecturer.edu.au": ["COSC1295", "COSC2767"],
-    "emily.brown@lecturer.edu.au": ["COSC2758", "COSC2938"],
+    "john.smith@lecturer.edu.au": [
+        "COSC2758",
+        "COSC2671",
+        "COSC2401",
+    ],
+    "sarah.johnson@lecturer.edu.au": [
+        "COSC2938",
+        "COSC2123",
+        "COSC2510",
+        "COSC2207",
+    ],
+    "michael.williams@lecturer.edu.au": [
+        "COSC1295",
+        "COSC2767",
+        "COSC2625",
+    ],
+    "emily.brown@lecturer.edu.au": [
+        "COSC2758",
+        "COSC2938",
+        "COSC2810",
+    ],
 };
 
 const SALT_ROUNDS = 10;

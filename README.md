@@ -86,7 +86,9 @@ Each course has limits: `maxTutors`, `maxLabAssistants`.
 
 ```bash
 npm run install
-cp env.example .env   # set DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME
+cp env.example .env
+# Edit .env: DB credentials + generate unique secrets (see env.example header).
+# Never commit .env — only env.example is tracked.
 
 npm run dev:windows        # frontend :3000 + backend :5000
 npm run dev:admin:windows  # admin UI :3001 + GraphQL :4002
@@ -113,22 +115,24 @@ npm run dev:admin:windows  # admin UI :3001 + GraphQL :4002
 ## Dev seed data
 
 Seeds run on backend start and via `POST /api/database/seed` (idempotent).  
-Source: `backend/src/seeds/` (`runAllSeeds()` in `index.ts`).
+**Reset (wipe + reseed):** `POST http://localhost:5000/api/database/reset`
 
-**Reset database (dev):** `POST http://localhost:5000/api/database/reset`
+| Role | Email | Password | Ghi chú |
+|------|-------|----------|---------|
+| Admin | `admin@admin.com` | `admin` | Admin UI |
+| Lecturer | `john.smith@lecturer.edu.au` | `lecturer123` | COSC2758 — nhiều đơn, Kanban |
+| Lecturer | `sarah.johnson@lecturer.edu.au` | `lecturer123` | COSC2123 / COSC2938 |
+| Lecturer | `michael.williams@lecturer.edu.au` | `lecturer123` | COSC1295 / COSC2767 |
+| Lecturer | `emily.brown@lecturer.edu.au` | `lecturer123` | COSC2758 / COSC2938 |
+| Candidate | `alice.chen@candidate.edu.au` | `candidate123` | COSC2758, drafts |
+| Candidate | `carla.santos@candidate.edu.au` | `candidate123` | Selected COSC2758 |
+| Candidate | `daniel.lee@candidate.edu.au` | `candidate123` | Shortlisted COSC2758 |
+| Candidate | `frank.blocked@candidate.edu.au` | `candidate123` | Blocked — login fails |
 
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | `admin@admin.com` | `admin` |
-| Lecturer | `john.smith@lecturer.edu.au` | `lecturer123` |
-| Lecturer | `sarah.johnson@lecturer.edu.au` | `lecturer123` |
-| Lecturer | `michael.williams@lecturer.edu.au` | `lecturer123` |
-| Lecturer | `emily.brown@lecturer.edu.au` | `lecturer123` |
-| Candidate | `alice.chen@candidate.edu.au` | `candidate123` |
-| Candidate | `eva.patel@candidate.edu.au` | `candidate123` (selected on 2 courses — reports) |
-| Candidate | `frank.blocked@candidate.edu.au` | `candidate123` (blocked — login fails) |
-
-More candidates (pending / rejected / ranked): see `backend/src/seeds/devDataset.ts`.
+**Dataset (~15 candidates, ~35 applications):** pending / shortlisted / selected / rejected, lecturer notes, rankings.  
+**Extra seed data** via `completeDataset.ts`: application drafts, sample notifications, announcements.  
+**Reset to load everything:** `POST http://localhost:5000/api/database/reset`  
+All candidates: password `candidate123` — see `backend/src/seeds/devDataset.ts`.
 
 ---
 
@@ -176,5 +180,7 @@ npm run build
 
 - JWT auth; role checks on REST and admin resolvers.  
 - Avatars served through authenticated API routes (not public `/uploads`).  
-- CORS: configure `ALLOWED_ORIGINS` in `.env`.  
-- Do not commit `.env`.
+- Copy `env.example` → `.env`; use strong unique values for `*_JWT_SECRET`, `ADMIN_SESSION_SECRET`, and `DEV_OPS_SECRET` (see comments in `env.example`).
+- `NEXT_PUBLIC_*` variables are exposed to the browser — URLs only, never secrets.
+- CORS: set `ALLOWED_ORIGINS` to exact frontend origins (comma-separated).
+- Do not commit `.env` (gitignored).

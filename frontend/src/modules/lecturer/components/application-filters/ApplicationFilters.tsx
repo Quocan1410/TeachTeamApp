@@ -98,7 +98,9 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
   const statusOptions = [
     { value: '', label: 'All Statuses' },
     { value: 'pending', label: 'Pending' },
+    { value: 'shortlisted', label: 'Shortlisted' },
     { value: 'selected', label: 'Selected' },
+    { value: 'rejected', label: 'Rejected' },
   ];
 
   const sortOptions = [

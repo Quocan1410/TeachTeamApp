@@ -28,6 +28,16 @@ interface EnhancedCourseCardProps {
 // Combined interface to support both legacy and new usage
 type CombinedCourseCardProps = CourseCardProps | EnhancedCourseCardProps;
 
+const formatClosesIn = (ms: number | null | undefined): string => {
+  if (ms == null || ms <= 0) return "Applications closed";
+  const days = Math.floor(ms / 86400000);
+  const hours = Math.floor((ms % 86400000) / 3600000);
+  if (days > 0) return `Closes in ${days}d ${hours}h`;
+  if (hours > 0) return `Closes in ${hours}h`;
+  const mins = Math.floor((ms % 3600000) / 60000);
+  return `Closes in ${mins}m`;
+};
+
 const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
   // Type guards to determine which interface we're using
   const isLegacyProps = (
@@ -137,43 +147,58 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
   };
 
   const statusInfo = getStatusInfo();
+  const enhancedCourse = enhancedProps ? (course as Course) : null;
+  const applicationOpen = enhancedCourse?.isApplicationOpen !== false;
+
+  const deadlineLabel = enhancedCourse
+    ? formatClosesIn(enhancedCourse.closesInMs)
+    : "";
+  const isUrgent =
+    enhancedCourse?.closesInMs != null &&
+    enhancedCourse.closesInMs > 0 &&
+    enhancedCourse.closesInMs < 7 * 86400000;
 
   if (enhancedProps) {
-    // Enhanced rendering
+    const courseData = course as Course;
     return (
-      <motion.div
+      <motion.article
         className={styles.enhancedCourseCard}
-        whileHover={{ y: -8 }}
-        transition={{ duration: 0.3 }}
+        whileHover={{ y: -2 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
       >
-        {/* Card Header */}
-        <div className={styles.cardHeader}>
-          <span className={styles.courseCode}>
-            {(course as Course).courseCode}
-          </span>
-          <span className={styles.semester}>{(course as Course).semester}</span>
-        </div>
+        <div className={styles.cardMain}>
+          <p className={styles.eyebrow}>
+            <span className={styles.eyebrowCode}>{courseData.courseCode}</span>
+            <span className={styles.eyebrowDot} aria-hidden>
+              ·
+            </span>
+            <span>{courseData.semester}</span>
+          </p>
 
-        {/* Card Body */}
-        <div className={styles.cardBody}>
-          <h3 className={styles.courseTitle}>
-            {(course as Course).courseName}
-          </h3>
-
-          {/* Course Description Section */}
-          <div className={styles.descriptionContainer}>
-            <span className={styles.descriptionLabel}>Course Description:</span>
-            <p className={styles.courseDescription}>
-              {(course as Course).description || "No description available."}
-            </p>
+          <div className={styles.titleRow}>
+            <h3 className={styles.courseTitle}>{courseData.courseName}</h3>
+            {enhancedCourse?.applicationDeadline && (
+              <span
+                className={`${styles.deadlineText} ${
+                  !applicationOpen
+                    ? styles.deadlineClosed
+                    : isUrgent
+                      ? styles.deadlineUrgent
+                      : ""
+                }`}
+              >
+                {deadlineLabel}
+              </span>
+            )}
           </div>
+
+          <p className={styles.courseDescription}>
+            {courseData.description || "No description available."}
+          </p>
         </div>
 
-        {/* Available Positions Section */}
         <div className={styles.roleSection}>
-          <h4 className={styles.roleSectionTitle}>Available Positions</h4>
-
-          <div className={styles.roleContent}>
+          <ul className={styles.roleList}>
             {(() => {
               // Filter roles to show individually based on their specific availability
               const availableRoles: Role[] = [];
@@ -213,15 +238,9 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
               // If no roles are available for application and user hasn't applied to any, show disabled state
               if (rolesToShow.length === 0 && unavailableRoles.length > 0) {
                 return (
-                  <div className={styles.noPositionsContainer}>
-                    <div className={styles.noPositionsText}></div>
-                    <motion.button
-                      className={styles.applyButtonDisabled}
-                      disabled
-                    >
-                      No Positions Available
-                    </motion.button>
-                  </div>
+                  <li className={styles.roleItemEmpty}>
+                    <span>No positions available</span>
+                  </li>
                 );
               }
 
@@ -243,18 +262,21 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
                       ? (course as Course).availableLabAssistants
                       : (course as Course).maxLabAssistants;
 
+                const roleLabel =
+                  role.roleName === "tutor" ? "Tutor" : "Lab Assistant";
+                const spotsLeft =
+                  availablePositions != null ? availablePositions : maxPositions;
+
                 return (
-                  <div key={role.id} className={styles.roleOption}>
-                    <div className={styles.roleHeader}>
-                      <div className={styles.roleInfo}>
-                        <div className={styles.roleIconWrapper}>
-                          <div
-                            className={`${styles.roleIcon} ${
-                              role.roleName === "tutor"
-                                ? styles.roleIconTutor
-                                : styles.roleIconAssistant
-                            }`}
-                          >
+                  <li key={role.id} className={styles.roleItem}>
+                    <div className={styles.roleInfo}>
+                      <div
+                        className={`${styles.roleIcon} ${
+                          role.roleName === "tutor"
+                            ? styles.roleIconTutor
+                            : styles.roleIconAssistant
+                        }`}
+                      >
                             {role.roleName === "tutor" ? (
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -276,27 +298,23 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
                                 />
                               </svg>
                             )}
-                          </div>
                         </div>
                         <div className={styles.roleDetails}>
-                          <span className={styles.roleName}>
-                            {role.roleName === "tutor"
-                              ? "Tutor"
-                              : "Lab Assistant"}
-                          </span>
+                          <span className={styles.roleName}>{roleLabel}</span>
                           <span className={styles.rolePositions}>
-                            {maxPositions} positions
+                            {spotsLeft > 0
+                              ? `${spotsLeft} of ${maxPositions} spots left`
+                              : `${maxPositions} spots · filled`}
                           </span>
                         </div>
-                      </div>
+                    </div>
 
-                      {/* Status or Apply Button */}
-                      <div className={styles.roleAction}>
-                        {applicationStatus ? (
-                          <div
-                            className={`${styles.statusBadge} ${styles[`status-${applicationStatus}`]}`}
-                          >
-                            <div className={styles.statusIcon}>
+                    <div className={styles.roleAction}>
+                      {applicationStatus ? (
+                        <span
+                          className={`${styles.statusBadge} ${styles[`status-${applicationStatus}`]}`}
+                        >
+                          <span className={styles.statusIcon}>
                               {applicationStatus === "pending" && (
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
@@ -323,6 +341,15 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
                                   />
                                 </svg>
                               )}
+                              {applicationStatus === "shortlisted" && (
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                >
+                                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                              )}
                               {applicationStatus === "rejected" && (
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
@@ -336,44 +363,36 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
                                   />
                                 </svg>
                               )}
-                            </div>
-                            <span className={styles.statusText}>
-                              {applicationStatus.charAt(0).toUpperCase() +
-                                applicationStatus.slice(1)}
-                            </span>
-                          </div>
-                        ) : availablePositions! > 0 ? (
-                          <motion.button
-                            className={styles.applyButton}
-                            onClick={() =>
-                              enhancedProps.onApplyForRole(
-                                course as Course,
-                                role
-                              )
-                            }
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                          >
-                            Apply
-                          </motion.button>
-                        ) : (
-                          <button
-                            className={styles.applyButtonDisabled}
-                            disabled
-                          >
-                            Filled
-                          </button>
-                        )}
-                      </div>
+                          </span>
+                          <span className={styles.statusText}>
+                            {applicationStatus.charAt(0).toUpperCase() +
+                              applicationStatus.slice(1)}
+                          </span>
+                        </span>
+                      ) : availablePositions! > 0 && applicationOpen ? (
+                        <motion.button
+                          type="button"
+                          className={styles.applyOutline}
+                          onClick={() =>
+                            enhancedProps.onApplyForRole(courseData, role)
+                          }
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          Apply
+                        </motion.button>
+                      ) : (
+                        <span className={styles.applyMuted}>
+                          {!applicationOpen ? "Closed" : "Filled"}
+                        </span>
+                      )}
                     </div>
-                  </div>
+                  </li>
                 );
               });
             })()}
-          </div>
-
+          </ul>
         </div>
-      </motion.div>
+      </motion.article>
     );
   }
 

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { AuthService } from "../../../../shared/services/authService";
 import { ApplicationService } from "../../../../shared/services/applicationService";
 import { User, UserType } from "../../../../shared/types/user";
@@ -13,16 +14,17 @@ import {
   hasCustomAvatar,
 } from "../../../../shared/utils/avatarUtils";
 import { useProtectedAvatar } from "../../../../shared/hooks/useProtectedAvatar";
+import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
 import styles from "./ProfilePage.module.css";
 
 export const ProfilePage: React.FC = () => {
   const { user: contextUser, updateUser, isLoading: authLoading } = useAuth();
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [assignedCourses, setAssignedCourses] = useState<AssignedCourse[]>([]);
   const [availablePositions, setAvailablePositions] = useState<number>(0);
   const [appliedApplications, setAppliedApplications] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
   const [avatarMessage, setAvatarMessage] = useState("");
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -39,12 +41,19 @@ export const ProfilePage: React.FC = () => {
   );
 
   useEffect(() => {
+    if (authLoading) return;
+    const savedUser = contextUser || AuthService.getUser();
+    if (!savedUser) {
+      router.replace("/signin");
+    }
+  }, [authLoading, contextUser, router]);
+
+  useEffect(() => {
     const loadProfile = async () => {
       const savedUser = contextUser || AuthService.getUser();
 
       if (!savedUser) {
-        setError("Please log in to view your profile.");
-        setIsLoading(false);
+        // Redirect effect handles unauthenticated state.
         return;
       }
 
@@ -116,11 +125,13 @@ export const ProfilePage: React.FC = () => {
     }
   }, [authLoading, contextUser, updateUser]);
 
+  const avatarUrl = user?.avatarUrl;
+
   useEffect(() => {
     if (user) {
-      setShowAvatarInitials(!user.avatarUrl);
+      setShowAvatarInitials(!avatarUrl);
     }
-  }, [user?.avatarUrl]);
+  }, [user, avatarUrl]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -290,33 +301,12 @@ export const ProfilePage: React.FC = () => {
     ? getUserInitials(user.firstName, user.lastName, user.email)
     : "?";
 
-  if (isLoading) {
-    return (
-      <div className={styles.profileContainer}>
-        <div className={styles.loadingWrapper}>
-          <div className={styles.loadingSpinner}></div>
-          <p className={styles.loadingText}>Loading your profile...</p>
-        </div>
-      </div>
-    );
+  if (authLoading || isLoading) {
+    return <PageSkeleton variant="profile" />;
   }
 
-  if (error || !user) {
-    return (
-      <div className={styles.profileContainer}>
-        <div className={styles.errorWrapper}>
-          <div className={styles.errorIcon}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </div>
-          <h2 className={styles.errorTitle}>Error Loading Profile</h2>
-          <p className={styles.errorMessage}>
-            {error || "Profile information could not be loaded."}
-          </p>
-        </div>
-      </div>
-    );
+  if (!user) {
+    return null;
   }
 
   return (

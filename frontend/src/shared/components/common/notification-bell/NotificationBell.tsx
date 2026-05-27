@@ -18,7 +18,6 @@ const NotificationBell: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -30,14 +29,8 @@ const NotificationBell: React.FC = () => {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
 
   const handleNotificationClick = (
     notificationId: string,
@@ -50,139 +43,120 @@ const NotificationBell: React.FC = () => {
     }
   };
 
-  const handleMarkAllAsRead = () => {
-    markAllAsRead();
-  };
-
   const formatTimeAgo = (date: Date) => {
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-    if (diffInSeconds < 60) {
-      return "Just now";
-    } else if (diffInSeconds < 3600) {
-      const minutes = Math.floor(diffInSeconds / 60);
-      return `${minutes}m ago`;
-    } else if (diffInSeconds < 86400) {
-      const hours = Math.floor(diffInSeconds / 3600);
-      return `${hours}h ago`;
-    } else {
-      const days = Math.floor(diffInSeconds / 86400);
-      return `${days}d ago`;
+    if (diffInSeconds < 60) return "now";
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`;
+    return `${Math.floor(diffInSeconds / 86400)}d`;
+  };
+
+  const getNotificationActor = (type: string) => {
+    switch (type) {
+      case "candidate_blocked":
+      case "candidate_unblocked":
+      case "account_blocked":
+      case "account_unblocked":
+      case "course_assigned":
+        return "Admin";
+      default:
+        return null;
     }
   };
 
   const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case "candidate_blocked":
-      case "account_blocked":
-        return (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="#ef4444"
-            strokeWidth={2.5}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        );
-      case "candidate_unblocked":
-      case "account_unblocked":
-        return (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
-        );
-      case "application_selected":
-        return (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="#22c55e"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-        );
-      case "application_rejected":
-        return (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="#f59e0b"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-            />
-          </svg>
-        );
-      case "application_comment":
-      case "application_submitted":
-        return (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-            />
-          </svg>
-        );
-      default:
-        return (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-            />
-          </svg>
-        );
-    }
+    const toneClass = (() => {
+      switch (type) {
+        case "candidate_blocked":
+        case "account_blocked":
+        case "application_rejected":
+          return styles.iconToneDanger;
+        case "candidate_unblocked":
+        case "account_unblocked":
+        case "application_selected":
+          return styles.iconToneSuccess;
+        default:
+          return styles.iconToneInfo;
+      }
+    })();
+
+    const iconSvg = (() => {
+      switch (type) {
+        case "candidate_blocked":
+        case "account_blocked":
+          return (
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          );
+        case "candidate_unblocked":
+        case "account_unblocked":
+          return (
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          );
+        case "application_selected":
+          return (
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          );
+        case "application_rejected":
+          return (
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+          );
+        case "application_comment":
+        case "application_submitted":
+          return (
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+              />
+            </svg>
+          );
+        default:
+          return (
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+              />
+            </svg>
+          );
+      }
+    })();
+
+    return (
+      <div className={`${styles.notificationIcon} ${toneClass}`}>{iconSvg}</div>
+    );
   };
+
+  const visible = notifications.slice(0, 10);
 
   return (
     <div className={styles.notificationContainer} ref={dropdownRef}>
-      {/* Notification Bell Button */}
       <button
-        className={styles.bellButton}
-        onClick={toggleDropdown}
+        type="button"
+        className={`${styles.bellButton} ${isOpen ? styles.bellButtonActive : ""}`}
+        onClick={() => setIsOpen(!isOpen)}
         aria-label={`Notifications (${unreadCount} unread)`}
+        aria-expanded={isOpen}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -194,7 +168,7 @@ const NotificationBell: React.FC = () => {
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth={2}
+            strokeWidth={1.75}
             d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
           />
         </svg>
@@ -205,17 +179,22 @@ const NotificationBell: React.FC = () => {
         )}
       </button>
 
-      {/* Notification Dropdown */}
       {isOpen && (
-        <div className={styles.notificationDropdown}>
+        <div className={styles.notificationDropdown} role="dialog" aria-label="Notifications">
           <div className={styles.dropdownHeader}>
-            <h3 className={styles.dropdownTitle}>Notifications</h3>
+            <div className={styles.dropdownTitleRow}>
+              <h3 className={styles.dropdownTitle}>Activity</h3>
+              {unreadCount > 0 && (
+                <span className={styles.unreadPill}>{unreadCount} new</span>
+              )}
+            </div>
             {unreadCount > 0 && (
               <button
+                type="button"
                 className={styles.markAllButton}
-                onClick={handleMarkAllAsRead}
+                onClick={markAllAsRead}
               >
-                Mark all as read
+                Clear all
               </button>
             )}
           </div>
@@ -223,18 +202,12 @@ const NotificationBell: React.FC = () => {
           <div className={styles.notificationList}>
             {loading && notifications.length === 0 ? (
               <div className={styles.emptyState}>
-                <p className={styles.emptyText}>Loading notifications...</p>
+                <p className={styles.emptyText}>Loading…</p>
               </div>
             ) : notifications.length === 0 ? (
               <div className={styles.emptyState}>
-                <div className={styles.emptyIcon}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
+                <div className={styles.emptyIconWrap}>
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -242,55 +215,85 @@ const NotificationBell: React.FC = () => {
                     />
                   </svg>
                 </div>
-                <p className={styles.emptyText}>No notifications yet</p>
+                <p className={styles.emptyTitle}>All caught up</p>
+                <p className={styles.emptyText}>
+                  Application updates and messages will show up here.
+                </p>
               </div>
             ) : (
-              notifications.slice(0, 10).map((notification) => (
-                <div
-                  key={notification.id}
-                  className={`${styles.notificationItem} ${
-                    !notification.read ? styles.unread : ""
-                  }`}
-                  onClick={() =>
-                    handleNotificationClick(notification.id, notification.link)
-                  }
-                >
-                  <div className={styles.notificationIcon}>
-                    {getNotificationIcon(notification.type)}
-                  </div>
-                  <div className={styles.notificationContent}>
-                    <div className={styles.notificationTitle}>
-                      {notification.title}
-                    </div>
-                    <div className={styles.notificationMessage}>
-                      {notification.message}
-                    </div>
-                    <div className={styles.notificationTime}>
-                      {formatTimeAgo(notification.timestamp)}
-                    </div>
-                  </div>
-                  {!notification.read && (
-                    <div className={styles.unreadIndicator}></div>
-                  )}
-                  <button
-                    className={styles.removeButton}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeNotification(notification.id);
-                    }}
-                    aria-label="Remove notification"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))
+              <div className={styles.notificationListInner}>
+                {visible.map((notification) => {
+                  const actor = getNotificationActor(notification.type);
+                  return (
+                    <button
+                      key={notification.id}
+                      type="button"
+                      className={`${styles.notificationItem} ${
+                        !notification.read ? styles.unread : ""
+                      }`}
+                      onClick={() =>
+                        handleNotificationClick(notification.id, notification.link)
+                      }
+                    >
+                      <div className={styles.notificationIconWrap}>
+                        {getNotificationIcon(notification.type)}
+                        {!notification.read && (
+                          <span className={styles.unreadDot} aria-hidden />
+                        )}
+                      </div>
+                      <div className={styles.notificationContent}>
+                        {actor && <span className={styles.actorBadge}>{actor}</span>}
+                        <span className={styles.notificationTitle}>
+                          {notification.title}
+                        </span>
+                        <p className={styles.notificationMessage}>
+                          {notification.message}
+                        </p>
+                      </div>
+                      <div className={styles.itemAside}>
+                        <span
+                          role="button"
+                          tabIndex={0}
+                          className={styles.removeButton}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeNotification(notification.id);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.stopPropagation();
+                              removeNotification(notification.id);
+                            }
+                          }}
+                          aria-label="Remove notification"
+                        >
+                          <svg
+                            className={styles.removeIcon}
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2.25}
+                            strokeLinecap="round"
+                            aria-hidden
+                          >
+                            <path d="M6 6l12 12M18 6L6 18" />
+                          </svg>
+                        </span>
+                        <span className={styles.notificationTime}>
+                          {formatTimeAgo(notification.timestamp)}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             )}
           </div>
 
           {notifications.length > 10 && (
             <div className={styles.dropdownFooter}>
               <span className={styles.moreText}>
-                {notifications.length - 10} more notifications...
+                +{notifications.length - 10} more in your inbox
               </span>
             </div>
           )}

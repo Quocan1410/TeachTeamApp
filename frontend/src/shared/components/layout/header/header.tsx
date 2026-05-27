@@ -99,8 +99,9 @@ const Header: React.FC = () => {
 
           <nav className={styles["main-nav"]}>
             {isLoading ? (
-              <div className={styles.navLoadingPlaceholder}>
-                <div className={styles.navLoadingSpinner}></div>
+              <div className={styles.navSkeleton} aria-hidden>
+                <span className={styles.navSkeletonLink} />
+                <span className={styles.navSkeletonLink} />
               </div>
             ) : (
               <div className={styles["nav-links"]}>

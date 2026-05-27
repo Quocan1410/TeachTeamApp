@@ -2,14 +2,13 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import {
     HomeIcon,
     UsersIcon,
     AcademicCapIcon,
     ArrowRightOnRectangleIcon,
-    UserCircleIcon,
     SunIcon,
     MoonIcon,
     ChevronDownIcon,
@@ -37,7 +36,6 @@ interface AdminHeaderProps {
 }
 
 const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onLogout }) => {
-    const router = useRouter();
     const pathname = usePathname();
     const { isDarkMode, toggleDarkMode, isHydrated } = useTheme();
     const [isScrolled, setIsScrolled] = useState(false);
@@ -251,19 +249,6 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onLogout }) => {
                                     </div>
 
                                     <div className={styles.dropdownContent}>
-                                        <Link
-                                            href="/dashboard/profile"
-                                            className={styles.profileLink}
-                                            onClick={() =>
-                                                setIsUserDropdownOpen(false)
-                                            }
-                                        >
-                                            <UserCircleIcon
-                                                className={styles.actionIcon}
-                                            />
-                                            <span>Profile & Avatar</span>
-                                        </Link>
-
                                         {/* Actions Row - Theme Toggle and Sign Out */}
                                         <div className={styles.actionsRow}>
                                             {/* Theme Toggle */}

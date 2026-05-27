@@ -23,18 +23,6 @@ export default function DashboardLayout({
         }
 
         setUser(JSON.parse(userData));
-
-        const refreshUser = () => {
-            const storedUser = localStorage.getItem("admin-user");
-            if (storedUser) {
-                setUser(JSON.parse(storedUser));
-            }
-        };
-
-        window.addEventListener("admin-user-updated", refreshUser);
-        return () => {
-            window.removeEventListener("admin-user-updated", refreshUser);
-        };
     }, [router]);
 
     const handleLogout = () => {

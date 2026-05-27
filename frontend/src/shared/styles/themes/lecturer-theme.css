@@ -25,7 +25,8 @@
 }
 
 /* Dark Mode Colors for Lecturer Page */
-.dark {
+.dark,
+[data-theme="dark"] {
   /* Primary colors */
   --lecturer-primary: #3b82f6;
   --lecturer-secondary: #1d4ed8;

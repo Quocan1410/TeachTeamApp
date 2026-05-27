@@ -2,10 +2,13 @@ import "reflect-metadata";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import { createServer } from "http";
 import { config } from "dotenv";
 import { initializeDatabase } from "./config/database";
 import authRoutes from "./routes/user-auth-routes";
 import applicationRoutes from "./routes/application-routes";
+import applicationDraftRoutes from "./routes/application-draft-routes";
+import announcementRoutes from "./routes/announcement-routes";
 import databaseRoutes from "./routes/database-routes";
 import notificationRoutes from "./routes/notification-routes";
 import publicRoutes from "./routes/public-routes";
@@ -15,6 +18,7 @@ import { ensureAvatarUploadDir } from "./utils/avatarUtils";
 import { corsOptions } from "./config/corsConfig";
 import { devOpsGuard } from "./middleware/devOpsGuard";
 import { generalRateLimiter } from "./middleware/rateLimiters";
+import { initSocketServer } from "./socket/socketServer";
 
 // Load environment variables from root .env file
 config({ path: path.resolve(__dirname, "../../.env") });
@@ -22,6 +26,7 @@ config({ path: path.resolve(__dirname, "../../.env") });
 ensureAvatarUploadDir();
 
 const app = express();
+const httpServer = createServer(app);
 const PORT = process.env.BACKEND_PORT || process.env.PORT || 5000;
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -30,10 +35,13 @@ app.use(cors(corsOptions));
 app.use(generalRateLimiter);
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
+app.use("/uploads", express.static(path.resolve(__dirname, "../uploads")));
 
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/applications", applicationRoutes);
+app.use("/api/application-drafts", applicationDraftRoutes);
+app.use("/api/announcements", announcementRoutes);
 app.use("/api/database", databaseRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/public", publicRoutes);
@@ -99,9 +107,11 @@ app.post("/db-reset", devOpsGuard, async (_req, res) => {
 const startServer = async () => {
     try {
         await initializeDatabaseSafely();
+        initSocketServer(httpServer);
 
-        app.listen(PORT, () => {
+        httpServer.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
+            console.log(`WebSocket: ws://localhost:${PORT}`);
             console.log(`Health check: http://localhost:${PORT}/health`);
             console.log(`Auth endpoints: http://localhost:${PORT}/api/auth`);
             console.log(
@@ -116,8 +126,9 @@ const startServer = async () => {
     } catch (error) {
         console.error("Failed to start server:", error);
         console.warn("Starting server anyway for debugging purposes");
+        initSocketServer(httpServer);
 
-        app.listen(PORT, () => {
+        httpServer.listen(PORT, () => {
             console.log(
                 `Server is running on port ${PORT} (DATABASE MAY NOT BE AVAILABLE)`
             );

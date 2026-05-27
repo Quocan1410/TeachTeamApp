@@ -24,7 +24,8 @@
     "next": "15.2.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "recharts": "^2.15.2"
+    "recharts": "^2.15.2",
+    "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -35,6 +36,7 @@
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "@typescript-eslint/parser": "^8.32.1",
     "concurrently": "^8.2.2",
+    "dotenv": "^16.6.1",
     "eslint": "^9",
     "eslint-config-next": "15.2.5",
     "eslint-config-prettier": "^10.1.5",
