@@ -106,9 +106,8 @@ npm run dev:admin:windows  # admin UI :3001 + GraphQL :4002
 ## 5-minute demo flow
 
 1. Open homepage → four lecturers loaded from the database.  
-2. **Candidate:** `alice.chen@candidate.edu.au` / `candidate123` → apply or view applications on `/tutor`.  
-3. **Lecturer:** `john.smith@lecturer.edu.au` / `lecturer123` → review applicants on `/lecturer`.  
-4. **Admin:** `admin@admin.com` / `admin` → Users → block `frank.blocked@candidate.edu.au` → candidate cannot sign in; homepage/API hide blocked lecturers.
+2. Use your own local test users to validate candidate and lecturer flows.  
+3. In admin, test block/unblock workflows and verify UI/API behavior.
 
 ---
 
@@ -117,22 +116,10 @@ npm run dev:admin:windows  # admin UI :3001 + GraphQL :4002
 Seeds run on backend start and via `POST /api/database/seed` (idempotent).  
 **Reset (wipe + reseed):** `POST http://localhost:5000/api/database/reset`
 
-| Role | Email | Password | Ghi chú |
-|------|-------|----------|---------|
-| Admin | `admin@admin.com` | `admin` | Admin UI |
-| Lecturer | `john.smith@lecturer.edu.au` | `lecturer123` | COSC2758 — nhiều đơn, Kanban |
-| Lecturer | `sarah.johnson@lecturer.edu.au` | `lecturer123` | COSC2123 / COSC2938 |
-| Lecturer | `michael.williams@lecturer.edu.au` | `lecturer123` | COSC1295 / COSC2767 |
-| Lecturer | `emily.brown@lecturer.edu.au` | `lecturer123` | COSC2758 / COSC2938 |
-| Candidate | `alice.chen@candidate.edu.au` | `candidate123` | COSC2758, drafts |
-| Candidate | `carla.santos@candidate.edu.au` | `candidate123` | Selected COSC2758 |
-| Candidate | `daniel.lee@candidate.edu.au` | `candidate123` | Shortlisted COSC2758 |
-| Candidate | `frank.blocked@candidate.edu.au` | `candidate123` | Blocked — login fails |
-
 **Dataset (~15 candidates, ~35 applications):** pending / shortlisted / selected / rejected, lecturer notes, rankings.  
 **Extra seed data** via `completeDataset.ts`: application drafts, sample notifications, announcements.  
 **Reset to load everything:** `POST http://localhost:5000/api/database/reset`  
-All candidates: password `candidate123` — see `backend/src/seeds/devDataset.ts`.
+Create your own local credentials for testing and keep real credentials out of docs.
 
 ---
 
