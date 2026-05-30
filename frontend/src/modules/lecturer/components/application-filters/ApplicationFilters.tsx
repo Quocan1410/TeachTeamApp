@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import CloseIcon from '@/shared/components/common/icons/CloseIcon';
 import styles from './ApplicationFilters.module.css';
 
 interface ApplicationFiltersProps {
@@ -98,7 +99,6 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
   const statusOptions = [
     { value: '', label: 'All Statuses' },
     { value: 'pending', label: 'Pending' },
-    { value: 'shortlisted', label: 'Shortlisted' },
     { value: 'selected', label: 'Selected' },
     { value: 'rejected', label: 'Rejected' },
   ];
@@ -167,11 +167,13 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
             />
             {searchQuery && (
               <button
+                type="button"
                 onClick={() => onSearchChange('')}
-                className={styles.clearSearchButton}
+                className={`${styles.clearSearchButton} iconCloseHit`}
                 title="Clear search"
+                aria-label="Clear search"
               >
-                ✕
+                <CloseIcon size={11} />
               </button>
             )}
           </div>
@@ -355,37 +357,37 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
                   {searchQuery && (
                     <span className={styles.activeFilter}>
                       Name: &quot;{searchQuery}&quot;
-                      <button onClick={() => onSearchChange('')} className={styles.removeFilter}>✕</button>
+                      <button type="button" onClick={() => onSearchChange('')} className={`${styles.removeFilter} iconCloseHit`} aria-label="Remove name filter"><CloseIcon size={10} /></button>
                     </span>
                   )}
                   {selectedCourse && (
                     <span className={styles.activeFilter}>
                       Course: {selectedCourse}
-                      <button onClick={() => onCourseChange('')} className={styles.removeFilter}>✕</button>
+                      <button type="button" onClick={() => onCourseChange('')} className={`${styles.removeFilter} iconCloseHit`} aria-label="Remove course filter"><CloseIcon size={10} /></button>
                     </span>
                   )}
                   {roleTypeFilter && (
                     <span className={styles.activeFilter}>
                       Role: {roleTypeOptions.find(opt => opt.value === roleTypeFilter)?.label}
-                      <button onClick={() => onRoleTypeChange('')} className={styles.removeFilter}>✕</button>
+                      <button type="button" onClick={() => onRoleTypeChange('')} className={`${styles.removeFilter} iconCloseHit`} aria-label="Remove role filter"><CloseIcon size={10} /></button>
                     </span>
                   )}
                   {availabilityFilter && (
                     <span className={styles.activeFilter}>
                       Availability: {availabilityFilter}
-                      <button onClick={() => onAvailabilityChange('')} className={styles.removeFilter}>✕</button>
+                      <button type="button" onClick={() => onAvailabilityChange('')} className={`${styles.removeFilter} iconCloseHit`} aria-label="Remove availability filter"><CloseIcon size={10} /></button>
                     </span>
                   )}
                   {statusFilter && (
                     <span className={styles.activeFilter}>
                       Status: {statusOptions.find(opt => opt.value === statusFilter)?.label}
-                      <button onClick={() => onStatusFilterChange('')} className={styles.removeFilter}>✕</button>
+                      <button type="button" onClick={() => onStatusFilterChange('')} className={`${styles.removeFilter} iconCloseHit`} aria-label="Remove status filter"><CloseIcon size={10} /></button>
                     </span>
                   )}
                   {skillsFilter.map((skill) => (
                     <span key={skill} className={styles.activeFilter}>
                       Skill: {skill}
-                      <button onClick={() => handleSkillToggle(skill)} className={styles.removeFilter}>✕</button>
+                      <button type="button" onClick={() => handleSkillToggle(skill)} className={`${styles.removeFilter} iconCloseHit`} aria-label={`Remove skill ${skill}`}><CloseIcon size={10} /></button>
                     </span>
                   ))}
                 </div>

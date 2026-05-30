@@ -3,15 +3,8 @@ import { env } from "@/lib/env";
 
 const draftAPI = axios.create({
   baseURL: `${env.apiEndpoint}/application-drafts`,
+  withCredentials: true,
   headers: { "Content-Type": "application/json" },
-});
-
-draftAPI.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
 });
 
 export interface DraftPayload {

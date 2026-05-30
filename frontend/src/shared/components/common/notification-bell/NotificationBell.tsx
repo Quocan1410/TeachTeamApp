@@ -61,6 +61,9 @@ const NotificationBell: React.FC = () => {
       case "account_unblocked":
       case "course_assigned":
         return "Admin";
+      case "application_response":
+      case "application_withdrawn":
+        return "Candidate";
       default:
         return null;
     }

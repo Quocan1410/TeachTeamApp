@@ -1,0 +1,96 @@
+.wrap {
+  margin: 0 0 0.55rem 2.95rem;
+  padding: 0.45rem 0.55rem 0.5rem;
+  border-radius: 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 22%, var(--color-border));
+  background: color-mix(in srgb, var(--color-bg-primary) 88%, transparent);
+}
+
+.wrapFull {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.headLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.dismiss {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  border-radius: 0.3rem;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.dismiss:hover {
+  background: color-mix(in srgb, var(--color-border) 70%, transparent);
+  color: var(--color-text-secondary);
+}
+
+.quote {
+  display: block;
+  width: 100%;
+  padding: 0.4rem 0.55rem 0.42rem 0.5rem;
+  border: none;
+  border-left: 3px solid color-mix(in srgb, var(--color-primary) 72%, #b91c1c);
+  border-radius: 0 0.35rem 0.35rem 0;
+  background: color-mix(in srgb, var(--color-bg-secondary) 72%, transparent);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.14s ease;
+}
+
+.quote:hover:not(:disabled),
+.quote:focus-visible:not(:disabled) {
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-secondary));
+  outline: none;
+}
+
+.quote:disabled {
+  cursor: default;
+}
+
+:global(.dark) .quote {
+  border-left-color: color-mix(in srgb, #f97316 55%, #ef4444);
+  background: color-mix(in srgb, #292524 88%, transparent);
+}
+
+.quoteName {
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--color-primary) 80%, #b91c1c);
+}
+
+:global(.dark) .quoteName {
+  color: color-mix(in srgb, #fb923c 85%, #fca5a5);
+}
+
+.quoteBody {
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--color-text-secondary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

@@ -16,7 +16,6 @@ import { SelectedCandidate } from "./SelectedCandidate";
 
 export enum ApplicationStatus {
     PENDING = "pending",
-    SHORTLISTED = "shortlisted",
     SELECTED = "selected",
     REJECTED = "rejected",
 }
@@ -82,6 +81,45 @@ export class Application {
     })
     lecturerNotes?: string | null;
 
+    /** Threaded chat messages between candidate and lecturer. */
+    @Column({
+        type: "json",
+        nullable: true,
+    })
+    correspondenceMessages?: Array<{
+        id: string;
+        authorRole: "candidate" | "lecturer";
+        authorId: number;
+        body: string;
+        createdAt: string;
+        editedAt?: string | null;
+        replyToMessageId?: string | null;
+    }> | null;
+
+    @Column({
+        type: "text",
+        nullable: true,
+    })
+    candidateResponse?: string | null;
+
+    @Column({
+        type: "datetime",
+        nullable: true,
+    })
+    candidateRespondedAt?: Date | null;
+
+    @Column({
+        type: "boolean",
+        default: false,
+    })
+    isWithdrawn: boolean;
+
+    @Column({
+        type: "datetime",
+        nullable: true,
+    })
+    withdrawnAt?: Date | null;
+
     // Lecturer comment fields (visible to candidate via notification)
     @Column({
         type: "text",
@@ -100,6 +138,13 @@ export class Application {
         nullable: true,
     })
     commentedAt?: Date;
+
+    /** Emoji reactions per correspondence message id (lecturer | candidate). */
+    @Column({
+        type: "json",
+        nullable: true,
+    })
+    messageReactions?: Record<string, Record<string, number[]>> | null;
 
     // Ranking fields
     @Column({
@@ -178,10 +223,6 @@ export class Application {
 
     get isPending(): boolean {
         return this.status === ApplicationStatus.PENDING;
-    }
-
-    get isShortlisted(): boolean {
-        return this.status === ApplicationStatus.SHORTLISTED;
     }
 
     get isRejected(): boolean {

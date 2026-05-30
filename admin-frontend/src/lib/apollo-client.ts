@@ -27,7 +27,7 @@ const authLink = setContext((_, { headers }) => {
     // Get the authentication token from local storage if it exists
     const token =
         typeof window !== "undefined"
-            ? localStorage.getItem("admin-token")
+            ? sessionStorage.getItem("admin-token")
             : null;
 
     // Return the headers to the context so httpLink can read them
@@ -64,7 +64,7 @@ const wsClient = createClient({
         if (typeof window === "undefined") {
             return {};
         }
-        const token = localStorage.getItem("admin-token");
+        const token = sessionStorage.getItem("admin-token");
         return token ? { authorization: `Bearer ${token}` } : {};
     },
     on: {

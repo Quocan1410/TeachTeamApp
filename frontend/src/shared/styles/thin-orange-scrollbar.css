@@ -1,0 +1,156 @@
+/* Browser-like 90% zoom — entire app (all routes) */
+html {
+  zoom: 0.9;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(249, 115, 22, 0.45) transparent;
+}
+
+html::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+html::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background-color: rgba(249, 115, 22, 0.45);
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(249, 115, 22, 0.65);
+}
+
+html.dark,
+html[data-theme="dark"] {
+  scrollbar-color: rgba(251, 146, 60, 0.55) transparent;
+}
+
+html.dark::-webkit-scrollbar-thumb,
+html[data-theme="dark"]::-webkit-scrollbar-thumb {
+  background-color: rgba(251, 146, 60, 0.55);
+}
+
+html.dark::-webkit-scrollbar-thumb:hover,
+html[data-theme="dark"]::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(251, 146, 60, 0.75);
+}
+
+body {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(249, 115, 22, 0.45) transparent;
+}
+
+body::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+body::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background-color: rgba(249, 115, 22, 0.45);
+}
+
+html.dark body::-webkit-scrollbar-thumb,
+html[data-theme="dark"] body::-webkit-scrollbar-thumb {
+  background-color: rgba(251, 146, 60, 0.55);
+}
+
+/* Nested scroll areas (list panes, panels, etc.) */
+.thinOrangeScroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(249, 115, 22, 0.45) transparent;
+}
+
+.thinOrangeScroll::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.thinOrangeScroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thinOrangeScroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background-color: rgba(249, 115, 22, 0.45);
+}
+
+.thinOrangeScroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(249, 115, 22, 0.65);
+}
+
+html.dark .thinOrangeScroll,
+html[data-theme="dark"] .thinOrangeScroll {
+  scrollbar-color: rgba(251, 146, 60, 0.55) transparent;
+}
+
+html.dark .thinOrangeScroll::-webkit-scrollbar-thumb,
+html[data-theme="dark"] .thinOrangeScroll::-webkit-scrollbar-thumb {
+  background-color: rgba(251, 146, 60, 0.55);
+}
+
+html.dark .thinOrangeScroll::-webkit-scrollbar-thumb:hover,
+html[data-theme="dark"] .thinOrangeScroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(251, 146, 60, 0.75);
+}
+
+/* Extra-thin variant (application list) — use alone, not with .thinOrangeScroll */
+.thinOrangeScrollNarrow {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(249, 115, 22, 0.32) transparent;
+}
+
+.thinOrangeScrollNarrow::-webkit-scrollbar {
+  width: 1px;
+  height: 1px;
+}
+
+.thinOrangeScrollNarrow::-webkit-scrollbar-button,
+.thinOrangeScrollNarrow::-webkit-scrollbar-corner {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.thinOrangeScrollNarrow::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 2px 0;
+}
+
+.thinOrangeScrollNarrow::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background-color: rgba(249, 115, 22, 0.35);
+  border: none;
+}
+
+.thinOrangeScrollNarrow::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(249, 115, 22, 0.5);
+}
+
+/* If both classes are present, narrow wins over default 5px */
+.thinOrangeScroll.thinOrangeScrollNarrow::-webkit-scrollbar {
+  width: 1px;
+  height: 1px;
+}
+
+html.dark .thinOrangeScrollNarrow,
+html[data-theme="dark"] .thinOrangeScrollNarrow {
+  scrollbar-color: rgba(251, 146, 60, 0.45) transparent;
+}
+
+html.dark .thinOrangeScrollNarrow::-webkit-scrollbar-thumb,
+html[data-theme="dark"] .thinOrangeScrollNarrow::-webkit-scrollbar-thumb {
+  background-color: rgba(251, 146, 60, 0.45);
+}
+
+html.dark .thinOrangeScrollNarrow::-webkit-scrollbar-thumb:hover,
+html[data-theme="dark"] .thinOrangeScrollNarrow::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(251, 146, 60, 0.65);
+}

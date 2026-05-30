@@ -13,6 +13,8 @@ export enum NotificationType {
     APPLICATION_SELECTED = "application_selected",
     APPLICATION_REJECTED = "application_rejected",
     APPLICATION_COMMENT = "application_comment",
+    APPLICATION_RESPONSE = "application_response",
+    APPLICATION_WITHDRAWN = "application_withdrawn",
     CANDIDATE_BLOCKED = "candidate_blocked",
     CANDIDATE_UNBLOCKED = "candidate_unblocked",
     ACCOUNT_BLOCKED = "account_blocked",

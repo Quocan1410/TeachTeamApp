@@ -3,7 +3,7 @@ import { In } from "typeorm";
 import { AppDataSource } from "../config/database";
 import { User, UserType } from "../entities/User";
 import { CourseAssignment } from "../entities/CourseAssignment";
-import { DEFAULT_LECTURERS } from "../seeds/defaultLecturers";
+const FEATURED_LECTURER_EMAILS = ["jane.lecturer@lecturer.edu.au"];
 
 export interface PublicLecturerCourse {
     courseCode: string;
@@ -29,7 +29,7 @@ export class PublicController {
 
     async getLecturers(_req: Request, res: Response): Promise<void> {
         try {
-            const defaultEmails: string[] = DEFAULT_LECTURERS.map((l) => l.email);
+            const defaultEmails: string[] = FEATURED_LECTURER_EMAILS;
 
             const lecturers = await this.userRepository.find({
                 where: {

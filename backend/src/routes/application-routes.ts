@@ -106,6 +106,40 @@ router.get(
     applicationController.getMyCandidateApplications.bind(applicationController)
 );
 
+router.put(
+    "/:id/candidate-response",
+    authenticateToken,
+    requireUserType(["candidate"]),
+    applicationController.updateCandidateResponse.bind(applicationController)
+);
+
+router.delete(
+    "/:id/candidate-response",
+    authenticateToken,
+    requireUserType(["candidate"]),
+    applicationController.deleteCandidateResponse.bind(applicationController)
+);
+
+router.patch(
+    "/:id/candidate-response",
+    authenticateToken,
+    requireUserType(["candidate"]),
+    applicationController.editCorrespondenceMessage.bind(applicationController)
+);
+
+router.put(
+    "/:id/withdraw",
+    authenticateToken,
+    requireUserType(["candidate"]),
+    applicationController.withdrawApplication.bind(applicationController)
+);
+
+router.put(
+    "/:id/message-reactions",
+    authenticateToken,
+    applicationController.toggleMessageReaction.bind(applicationController)
+);
+
 router.get(
     "/courses-and-roles",
     authenticateToken,
@@ -223,12 +257,5 @@ router.get(
     )
 );
 
-// Test endpoint for debugging course validation
-router.post(
-    "/test-course-validation",
-    authenticateToken,
-    requireUserType(["lecturer"]),
-    applicationController.testCourseValidation.bind(applicationController)
-);
 
 export default router;

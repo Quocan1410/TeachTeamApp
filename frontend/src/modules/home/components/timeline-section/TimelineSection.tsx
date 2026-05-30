@@ -99,10 +99,16 @@ const TimelineSection: React.FC<TimelineSectionProps> = ({
                 Apply as a Tutor
               </Button>
             </Link>
-          ) : userRole === "tutor" ? (
+          ) : userRole === "candidate" ? (
             <Link href="/tutor" passHref legacyBehavior>
               <Button variant="primary" className={styles.applyButton}>
                 Go to Tutor Dashboard
+              </Button>
+            </Link>
+          ) : userRole === "lecturer" ? (
+            <Link href="/lecturer" passHref legacyBehavior>
+              <Button variant="primary" className={styles.applyButton}>
+                Go to Lecturer Dashboard
               </Button>
             </Link>
           ) : null}

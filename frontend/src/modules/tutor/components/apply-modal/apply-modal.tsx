@@ -5,6 +5,7 @@ import type { Application as TutorApplication } from "@/shared/types/application
 import { Course, Role, ApplicationData } from "@/shared/services/applicationService";
 import { availableSkills } from "@/modules/tutor/utils/skillOptions";
 import SkillTag from "@/modules/tutor/components/skill-tag/skill-tag";
+import CloseIcon from "@/shared/components/common/icons/CloseIcon";
 import styles from "./apply-modal.module.css";
 import { getMelbourneTime, getMelbourneDateOnly } from "@/shared/utils/dateUtils";
 import { DraftService } from "@/shared/services/draftService";
@@ -394,13 +395,11 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
             <button
               type="button"
               onClick={onClose}
-              className={styles.applyModalClose}
-                disabled={isSubmitting}
-              >
-                <span className="sr-only">Close</span>
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              className={`${styles.applyModalClose} iconCloseHit`}
+              disabled={isSubmitting}
+              aria-label="Close"
+            >
+                <CloseIcon size={18} />
             </button>
           </div>
         </div>

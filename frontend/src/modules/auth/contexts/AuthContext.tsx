@@ -9,7 +9,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   isLoggingOut: boolean;
-  login: (user: User, token: string) => void;
+  login: (user: User) => void;
   logout: () => void;
   updateUser: (user: User) => void;
 }
@@ -34,78 +34,55 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
-    // Check if user is already logged in on app start
+    let cancelled = false;
+
     const initializeAuth = async () => {
       try {
-        const token = AuthService.getToken();
-        const savedUser = AuthService.getUser();
+        const response = await AuthService.getProfile();
+        if (cancelled) return;
 
-        if (token && savedUser) {
-          // Set user immediately from localStorage for better UX
-          setUser(savedUser);
-
-          // Verify token is still valid by making an API call
-          try {
-            const response = await AuthService.getProfile();
-            if (response.success && response.data) {
-              // Update user data from server if different
-              if (
-                JSON.stringify(savedUser) !== JSON.stringify(response.data.user)
-              ) {
-                setUser(response.data.user);
-                AuthService.saveUser(response.data.user);
-              }
-            } else {
-              // Token is invalid, clear local storage and state
-              AuthService.removeToken();
-              AuthService.removeUser();
-              setUser(null);
-            }
-          } catch (profileError) {
-            console.warn(
-              "Profile verification failed, keeping local user data:",
-              profileError
-            );
-            // Keep the local user data if network error, don't logout user
-          }
-        } else {
-          // No token or user data, ensure clean state
-          setUser(null);
+        if (response.success && response.data) {
+          setUser(response.data.user);
+          AuthService.saveUser(response.data.user);
+          return;
         }
+
+        AuthService.removeUser();
+        setUser(null);
       } catch (initError) {
+        if (cancelled) return;
         console.error("Auth initialization error:", initError);
-        // Error during initialization, clear local storage
-        AuthService.removeToken();
         AuthService.removeUser();
         setUser(null);
       } finally {
-        setIsLoading(false);
+        if (!cancelled) {
+          setIsLoading(false);
+        }
       }
     };
 
-    initializeAuth();
+    void initializeAuth();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const login = (user: User, token: string) => {
-    AuthService.saveToken(token);
-    AuthService.saveUser(user);
-    setUser(user);
+  const login = (loggedInUser: User) => {
+    AuthService.saveUser(loggedInUser);
+    setUser(loggedInUser);
   };
 
   const logout = async () => {
     setIsLoggingOut(true);
     try {
-      // Call backend logout endpoint
       await AuthService.logout();
     } catch (error) {
       console.error("Logout API call failed:", error);
     } finally {
-      // Always clear local state and storage
-      AuthService.removeToken();
       AuthService.removeUser();
       setUser(null);
       setIsLoggingOut(false);
-      // Hard redirect to guarantee fresh unauthenticated app state.
       window.location.replace("/signin");
     }
   };

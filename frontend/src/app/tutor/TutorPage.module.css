@@ -90,6 +90,36 @@
   line-height: 1.6;
 }
 
+.emptyStateCard {
+  margin: 0 auto;
+  max-width: 52rem;
+  text-align: center;
+  padding: 2.75rem 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid var(--color-border);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-bg-primary) 92%, transparent),
+    color-mix(in srgb, var(--color-bg-secondary) 95%, transparent)
+  );
+  box-shadow: 0 8px 28px var(--color-shadow);
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.emptySubtitle {
+  margin: 0.8rem auto 0;
+  max-width: 42rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+}
+
 /* Responsive adjustments */
 @media (max-width: 480px) {
   .tutorContainer {

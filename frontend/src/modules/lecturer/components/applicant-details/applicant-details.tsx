@@ -2,12 +2,6 @@ import React, { useState, useEffect } from "react";
 import type { Application as TutorApplication } from "@/shared/types/application"; // Updated
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./applicant-details.module.css";
-import {
-  validateLecturerComment,
-  sanitizeComment,
-  formatValidationErrors,
-  DEFAULT_COMMENT_CONFIG,
-} from "../../utils/lecturerValidation.utils";
 import { ApplicationService } from "@/shared/services/applicationService";
 
 interface Course {
@@ -23,11 +17,7 @@ interface Course {
 
 interface ApplicantDetailsProps {
   application: TutorApplication | null;
-  comment: string;
-  setComment: (comment: string) => void;
   onSelectApplicant: (selectedCourses: string[]) => Promise<void>;
-  onSaveComment: () => Promise<void>;
-  onDeleteComment: () => Promise<void>;
   onUnselectApplicant: () => Promise<void>;
   onAddToRanking: () => Promise<void>;
   showToast: (message: string, type?: "success" | "error" | "info") => void;
@@ -37,32 +27,17 @@ interface ApplicantDetailsProps {
 
 const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
   application,
-  comment,
-  setComment,
   onSelectApplicant,
-  onSaveComment,
-  onDeleteComment,
   onUnselectApplicant,
   onAddToRanking,
   showToast,
   title = "Applicant Details",
   courses = [],
 }) => {
-  // Validation states
-  const [commentError, setCommentError] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
   const [lecturerNotes, setLecturerNotes] = useState("");
   const [notesSaving, setNotesSaving] = useState(false);
 
   // Note: Course selection logic removed since there's only one course
-
-  // Clear validation errors when application changes
-  useEffect(() => {
-    setCommentError("");
-    setHasUnsavedChanges(false);
-    // Note: Course selection reset removed since there's only one course
-  }, [application?.id, application]);
 
   useEffect(() => {
     if (!application?.id) {
@@ -77,15 +52,6 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
       }
     );
   }, [application?.id]);
-
-  // Track unsaved changes
-  useEffect(() => {
-    const originalComment = application?.comment || "";
-    const hasChanges = comment !== originalComment;
-    setHasUnsavedChanges(hasChanges);
-  }, [comment, application?.comment, application?.id]);
-
-  // Note: Course selection handlers removed since there's only one course
 
   if (!application) {
     return (
@@ -116,55 +82,6 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
     );
   }
 
-  // Handle comment changes with validation
-  const handleCommentChange = (value: string) => {
-    setComment(value);
-    setCommentError(""); // Clear error on change
-  };
-
-  // Validate and save comment
-  const handleSaveComment = async () => {
-    if (!application || isSubmitting) return;
-
-    setIsSubmitting(true);
-    setCommentError("");
-
-    try {
-      // Sanitize comment
-      const sanitizedComment = sanitizeComment(comment);
-
-      // Validate comment
-      const validation = validateLecturerComment(sanitizedComment, {
-        ...DEFAULT_COMMENT_CONFIG,
-        allowEmpty: true,
-        minLength: 3,
-      });
-
-      if (!validation.isValid) {
-        const errorMessages = formatValidationErrors(validation.errors);
-        setCommentError(errorMessages[0] || "Invalid comment");
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Update comment value with sanitized version
-      if (sanitizedComment !== comment) {
-        setComment(sanitizedComment);
-      }
-
-      // Call the parent's save function (this should handle the API call)
-      await onSaveComment();
-
-      showToast("Comment saved successfully!", "success");
-      setHasUnsavedChanges(false);
-    } catch {
-      setCommentError("Failed to save comment. Please try again.");
-      showToast("Failed to save comment", "error");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   // Handle status updates with validation
   const handleSelectButtonClick = () => {
     if (!application) return;
@@ -190,9 +107,9 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
       showToast("Applicant is already added to ranking", "info");
       return;
     }
-    if (!application.comment) {
+    if (!application.comment?.trim()) {
       showToast(
-        "Please add and save a comment before adding to ranking.",
+        "Please send feedback in the correspondence panel before adding to ranking.",
         "error"
       );
       return;
@@ -258,11 +175,13 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
                 </span>
 
                 <span className={styles.statusBadge}>
-                  {(application.status as string) === "pending"
-                    ? "Pending Review"
-                    : (application.status as string) === "selected"
-                      ? "Selected"
-                      : application.status}
+                  {application.isWithdrawn
+                    ? "Withdrawn"
+                    : (application.status as string) === "pending"
+                      ? "Pending Review"
+                      : (application.status as string) === "selected"
+                        ? "Selected"
+                        : application.status}
                 </span>
               </div>
             </div>
@@ -315,7 +234,9 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
                   onClick={handleSelectButtonClick}
                   className={`${styles.actionButton} ${styles.selectButton}`}
                   title="Select applicant for all applied courses"
-                  disabled={application.isBlocked}
+                  disabled={
+                    application.isBlocked || Boolean(application.isWithdrawn)
+                  }
                 >
                   {application.isBlocked
                     ? "Candidate Blocked"
@@ -489,118 +410,6 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
             <div className={styles.academicText}>
               {application.academicCredentials ||
                 "No academic credentials provided"}
-            </div>
-          </div>
-
-          <div className={styles.section}>
-            <h4 className={styles.sectionTitle}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className={styles.sectionIcon}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                />
-              </svg>
-              Candidate feedback (visible to applicant)
-            </h4>
-            <div className={styles.commentInputContainer}>
-              <textarea
-                value={comment}
-                onChange={(e) => handleCommentChange(e.target.value)}
-                placeholder="Add your comments about this applicant..."
-                className={`${styles.commentTextarea} ${commentError ? styles.commentTextareaError : ""}`}
-                maxLength={1000}
-                disabled={isSubmitting}
-              />
-              <div className={styles.commentMeta}>
-                <span className={styles.characterCount}>
-                  {comment.length}/1000 characters
-                </span>
-                {hasUnsavedChanges && (
-                  <span className={styles.unsavedIndicator}>
-                    • Unsaved changes
-                  </span>
-                )}
-              </div>
-              {commentError && (
-                <div className={styles.errorMessage}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className={styles.errorIcon}
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  {commentError}
-                </div>
-              )}
-            </div>
-            <div className={styles.commentActions}>
-              <button
-                onClick={handleSaveComment}
-                disabled={
-                  isSubmitting || (!comment.trim() && !application.comment)
-                }
-                className={`${styles.actionButton} ${styles.addToRankingButton}`}
-                style={{ fontSize: "0.875rem" }}
-              >
-                {isSubmitting ? (
-                  <>
-                    <svg className={styles.spinner} viewBox="0 0 24 24">
-                      <circle
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        strokeDasharray="32"
-                        strokeDashoffset="32"
-                      >
-                        <animate
-                          attributeName="strokeDasharray"
-                          dur="2s"
-                          values="0 32;16 16;0 32;0 32"
-                          repeatCount="indefinite"
-                        />
-                        <animate
-                          attributeName="strokeDashoffset"
-                          dur="2s"
-                          values="0;-16;-32;-32"
-                          repeatCount="indefinite"
-                        />
-                      </circle>
-                    </svg>
-                    Saving...
-                  </>
-                ) : (
-                  "Save Comment"
-                )}
-              </button>
-              {application.comment && (
-                <button
-                  onClick={onDeleteComment}
-                  disabled={isSubmitting}
-                  className={`${styles.actionButton} ${styles.unselectButton}`}
-                  style={{ fontSize: "0.875rem" }}
-                >
-                  Delete Comment
-                </button>
-              )}
             </div>
           </div>
 

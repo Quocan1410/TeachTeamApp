@@ -14,8 +14,8 @@ export default function DashboardLayout({
 
     useEffect(() => {
         // Check if user is authenticated
-        const token = localStorage.getItem("admin-token");
-        const userData = localStorage.getItem("admin-user");
+        const token = sessionStorage.getItem("admin-token");
+        const userData = sessionStorage.getItem("admin-user");
 
         if (!token || !userData) {
             router.push("/");
@@ -26,8 +26,8 @@ export default function DashboardLayout({
     }, [router]);
 
     const handleLogout = () => {
-        localStorage.removeItem("admin-token");
-        localStorage.removeItem("admin-user");
+        sessionStorage.removeItem("admin-token");
+        sessionStorage.removeItem("admin-user");
         router.push("/");
     };
 

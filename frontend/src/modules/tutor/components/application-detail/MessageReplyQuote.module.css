@@ -1,0 +1,51 @@
+.quote {
+  display: block;
+  width: 100%;
+  margin: 0.4rem 0 0.55rem;
+  padding: 0.45rem 0.6rem 0.45rem 0.55rem;
+  border: none;
+  border-left: 3px solid color-mix(in srgb, var(--color-primary) 72%, #b91c1c);
+  border-radius: 0 0.35rem 0.35rem 0;
+  background: color-mix(in srgb, var(--color-bg-secondary) 70%, transparent);
+  text-align: left;
+  font: inherit;
+}
+
+.quoteInteractive {
+  cursor: pointer;
+  transition:
+    background 0.14s ease,
+    border-color 0.14s ease;
+}
+
+.quoteInteractive:hover,
+.quoteInteractive:focus-visible {
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-secondary));
+  border-left-color: color-mix(in srgb, var(--color-primary) 85%, #b91c1c);
+  outline: none;
+}
+
+:global(.dark) .quote {
+  border-left-color: color-mix(in srgb, #f97316 55%, #ef4444);
+  background: color-mix(in srgb, #292524 88%, transparent);
+}
+
+.quoteName {
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--color-primary) 80%, #b91c1c);
+}
+
+:global(.dark) .quoteName {
+  color: color-mix(in srgb, #fb923c 85%, #fca5a5);
+}
+
+.quoteBody {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--color-text-secondary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}

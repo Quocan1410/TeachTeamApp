@@ -7,6 +7,7 @@ import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { useTheme } from "@/shared/contexts/ThemeContext";
 import UserDropdown from "../user-dropdown";
 import { hasCustomAvatar } from "@/shared/utils/avatarUtils";
+import { getUserDisplayName } from "@/shared/utils/personDisplayName";
 import NotificationBell from "@/shared/components/common/notification-bell/NotificationBell";
 import styles from "./header.module.css";
 
@@ -119,6 +120,14 @@ const Header: React.FC = () => {
                     Candidates
                   </Link>
                 )}
+                {isAuthenticated && user?.userType === "candidate" && (
+                  <Link
+                    href="/tutor/applications"
+                    className={`${styles["nav-link"]} ${pathname.startsWith("/tutor/applications") ? styles.active : ""}`}
+                  >
+                    Applications
+                  </Link>
+                )}
                 {showLecturerLink && (
                   <Link
                     href="/lecturer"
@@ -160,11 +169,17 @@ const Header: React.FC = () => {
                   user.userType === "candidate") && <NotificationBell />}
                 <UserDropdown
                   user={{
-                    fullName: `${user.firstName} ${user.lastName}`,
+                    fullName: getUserDisplayName({
+                      firstName: user.firstName,
+                      lastName: user.lastName,
+                      email: user.email,
+                      userType: user.userType,
+                    }),
                     email: user.email,
                     role: getUserRole(),
                     firstName: user.firstName,
                     lastName: user.lastName,
+                    userType: user.userType,
                     hasCustomAvatar: hasCustomAvatar(user.avatarUrl),
                   }}
                   onSignOut={handleSignOut}

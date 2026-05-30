@@ -57,7 +57,12 @@ export class User {
     })
     userType: UserType;
 
-
+    @Column({
+        type: "varchar",
+        length: 10,
+        nullable: true,
+    })
+    honorific: string | null;
 
     @Column({
         type: "boolean",

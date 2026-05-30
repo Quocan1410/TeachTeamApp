@@ -24,6 +24,7 @@ export default function SignUpForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState<"tutor" | "lecturer">("tutor");
+  const [honorific, setHonorific] = useState<"Mr." | "Ms." | "Mrs.">("Mr.");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -153,6 +154,7 @@ export default function SignUpForm() {
         firstName,
         lastName,
         userType,
+        honorific: userType === UserType.CANDIDATE ? honorific : "Dr.",
       };
 
       // Call the signup API
@@ -208,6 +210,24 @@ export default function SignUpForm() {
             </div>
           )}
         </div>
+
+        {role === "tutor" && (
+          <div className={styles.inputContainer}>
+            <select
+              id="honorific"
+              value={honorific}
+              onChange={(e) =>
+                setHonorific(e.target.value as "Mr." | "Ms." | "Mrs.")
+              }
+              className={styles.inputField}
+              aria-label="Title"
+            >
+              <option value="Mr.">Mr.</option>
+              <option value="Ms.">Ms.</option>
+              <option value="Mrs.">Mrs.</option>
+            </select>
+          </div>
+        )}
 
         <div className={styles.inputContainer}>
           <EmailAutocomplete

@@ -14,6 +14,7 @@ import {
   hasCustomAvatar,
 } from "../../../../shared/utils/avatarUtils";
 import { useProtectedAvatar } from "../../../../shared/hooks/useProtectedAvatar";
+import { getUserDisplayName } from "@/shared/utils/personDisplayName";
 import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
 import styles from "./ProfilePage.module.css";
 
@@ -328,7 +329,12 @@ export const ProfilePage: React.FC = () => {
                 ) : (
                   <Image
                     src={avatarSrc}
-                    alt={`${user.firstName} ${user.lastName} avatar`}
+                    alt={`${getUserDisplayName({
+                      firstName: user.firstName,
+                      lastName: user.lastName,
+                      email: user.email,
+                      userType: user.userType,
+                    })} avatar`}
                     width={112}
                     height={112}
                     className={styles.avatarImage}
@@ -397,7 +403,12 @@ export const ProfilePage: React.FC = () => {
 
           <div className={styles.userInfo}>
             <h1 className={styles.userName}>
-              {user.firstName} {user.lastName}
+              {getUserDisplayName({
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                userType: user.userType,
+              })}
             </h1>
             <div className={styles.userRole}>
               <span className={`${styles.roleBadge} ${styles[user.userType]}`}>

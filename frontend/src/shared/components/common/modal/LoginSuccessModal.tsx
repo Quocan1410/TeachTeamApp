@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { User } from "../../../types/user";
+import { getUserDisplayName } from "@/shared/utils/personDisplayName";
 import styles from "./LoginSuccessModal.module.css";
 
 interface LoginSuccessModalProps {
@@ -29,34 +30,48 @@ export const LoginSuccessModal: React.FC<LoginSuccessModalProps> = ({
     onHide();
   }, [isPreparing, onHide]);
 
-  const handleContinueClick = () => {
+  const handleContinueClick = useCallback(() => {
     if (isPreparing) return;
     setShowFireworks(true);
-    // Hide fireworks after a short duration, then close modal
     setTimeout(() => {
       handleHide();
     }, 1500);
-  };
+  }, [handleHide, isPreparing]);
 
   // Start animation when modal becomes visible
   useEffect(() => {
     if (isVisible) {
       setIsAnimating(true);
-
-      // Auto-hide only after dashboard prefetch is ready.
-      if (!isPreparing) {
-        const timer = setTimeout(() => {
-          handleHide();
-        }, duration);
-
-        return () => clearTimeout(timer);
-      }
     }
-  }, [isVisible, duration, handleHide, isPreparing]);
+  }, [isVisible]);
+
+  // Auto-continue once prefetch finishes (same path as the Continue button).
+  useEffect(() => {
+    if (!isVisible || isPreparing) return;
+
+    const timer = setTimeout(() => {
+      handleContinueClick();
+    }, duration);
+
+    return () => clearTimeout(timer);
+  }, [isVisible, isPreparing, duration, handleContinueClick]);
+
+  // Enter on keyboard uses the same handler as clicking Continue.
+  useEffect(() => {
+    if (!isVisible) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      handleContinueClick();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isVisible, handleContinueClick]);
 
   const getWelcomeMessage = () => {
-    const firstName = user.firstName || "User";
-    return `Welcome back, ${firstName}!`;
+    return `Welcome back, ${getUserDisplayName(user)}!`;
   };
 
   if (!isVisible) {
@@ -107,10 +122,12 @@ export const LoginSuccessModal: React.FC<LoginSuccessModalProps> = ({
           {/* Continue Button with Fireworks Effect */}
           <div className={styles.buttonContainer}>
             <button
+              type="button"
               className={`${styles.continueButton} ${showFireworks ? styles.fireworksActive : ''}`}
               onClick={handleContinueClick}
               aria-label="Continue to dashboard"
               disabled={isPreparing}
+              autoFocus={!isPreparing}
             >
               <span className={styles.buttonText}>
                 {isPreparing ? "Preparing dashboard..." : "Continue"}

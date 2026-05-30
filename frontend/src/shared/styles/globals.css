@@ -17,6 +17,8 @@
 
 /* Framework Overrides & Global Essential */
 @import "./overrides.css"; /* Framework overrides */
+@import "./thin-orange-scrollbar.css";
+@import "./icon-close-button.css";
 
 /* 
   Removed responsive.css from critical path - it will be loaded lazily

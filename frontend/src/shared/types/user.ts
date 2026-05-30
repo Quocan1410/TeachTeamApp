@@ -12,6 +12,7 @@ export interface User {
   firstName: string;
   lastName: string;
   userType: UserType;
+  honorific?: string | null;
   isBlocked: boolean;
   avatarUrl?: string | null;
   theme?: "light" | "dark";
@@ -37,6 +38,7 @@ export interface SignupData {
   firstName: string;
   lastName: string;
   userType: UserType;
+  honorific?: string;
 }
 
 export interface SigninData {

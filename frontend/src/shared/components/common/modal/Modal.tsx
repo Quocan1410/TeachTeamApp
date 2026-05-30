@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
+import CloseIcon from "@/shared/components/common/icons/CloseIcon";
 import styles from "./Modal.module.css";
 
 interface ModalProps {
@@ -82,11 +83,12 @@ const Modal: React.FC<ModalProps> = ({
         style={{ maxWidth }}
       >
         <button
+          type="button"
           onClick={handleClose}
-          className={styles.modalClose}
+          className={`${styles.modalClose} iconCloseHit`}
           aria-label="Close modal"
         >
-          ✕
+          <CloseIcon size={14} />
         </button>
         {children}
       </div>

@@ -43,9 +43,8 @@ export default function AdminLogin() {
             });
 
             if (data.adminLogin.success) {
-                // Store token in localStorage
-                localStorage.setItem("admin-token", data.adminLogin.token);
-                localStorage.setItem(
+                sessionStorage.setItem("admin-token", data.adminLogin.token);
+                sessionStorage.setItem(
                     "admin-user",
                     JSON.stringify(data.adminLogin.user)
                 );

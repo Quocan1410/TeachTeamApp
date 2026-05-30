@@ -19,6 +19,7 @@ import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import AdminNotificationBell from "../AdminNotificationBell/AdminNotificationBell";
 import { getUserInitials, hasCustomAvatar } from "@/lib/avatarUtils";
 import { useProtectedAvatar } from "@/hooks/useProtectedAvatar";
+import { getUserDisplayName } from "@/shared/utils/personDisplayName";
 import styles from "./AdminHeader.module.css";
 
 interface AdminUser {
@@ -98,6 +99,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onLogout }) => {
     const avatarSrc = hasCustomAvatar(user.avatarUrl)
         ? protectedAvatarUrl
         : null;
+    const displayName = getUserDisplayName(user);
 
     return (
         <header
@@ -166,7 +168,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onLogout }) => {
                                     {avatarSrc ? (
                                         <Image
                                             src={avatarSrc}
-                                            alt={user.fullName}
+                                            alt={displayName}
                                             width={40}
                                             height={40}
                                             className={styles.userAvatarImage}
@@ -180,8 +182,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onLogout }) => {
                                 </div>
                                 <div className={styles.userInfo}>
                                     <span className={styles.userName}>
-                                        {user.fullName ||
-                                            `${user.firstName} ${user.lastName}`}
+                                        {displayName}
                                     </span>
                                     <span className={styles.userRole}>
                                         Admin
@@ -202,7 +203,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onLogout }) => {
                                             {avatarSrc ? (
                                                 <Image
                                                     src={avatarSrc}
-                                                    alt={user.fullName}
+                                                    alt={displayName}
                                                     width={56}
                                                     height={56}
                                                     className={
@@ -228,8 +229,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onLogout }) => {
                                                     styles.dropdownUserName
                                                 }
                                             >
-                                                {user.fullName ||
-                                                    `${user.firstName} ${user.lastName}`}
+                                                {displayName}
                                             </h3>
                                             <p
                                                 className={

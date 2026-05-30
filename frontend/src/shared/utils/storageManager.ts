@@ -1,5 +1,4 @@
-// Enhanced localStorage manager with validation, error handling and fallback mechanisms
-// Optimized for assignment requirements - no external dependencies
+// Session-scoped storage (tab session), not localStorage.
 
 interface StorageData<T> {
   version: number;
@@ -11,77 +10,69 @@ class StorageManager {
   private static readonly CURRENT_VERSION = 1;
   private static fallbackStorage = new Map<string, string>();
 
-  static isAvailable(): boolean {
+  private static getStore(): Storage | null {
+    if (typeof window === "undefined") return null;
     try {
-      const test = "__localStorage_test__";
-      localStorage.setItem(test, test);
-      localStorage.removeItem(test);
-      return true;
+      const test = "__session_storage_test__";
+      sessionStorage.setItem(test, test);
+      sessionStorage.removeItem(test);
+      return sessionStorage;
     } catch {
-      console.warn("localStorage not available, using fallback storage");
-      return false;
+      return null;
     }
+  }
+
+  static isAvailable(): boolean {
+    return this.getStore() !== null;
   }
 
   static setItem(key: string, value: string): void {
     try {
-      if (this.isAvailable()) {
-        localStorage.setItem(key, value);
-        this.trackUsage("write", key, true);
+      const store = this.getStore();
+      if (store) {
+        store.setItem(key, value);
       } else {
         this.fallbackStorage.set(key, value);
-        this.trackUsage("write", key, false);
       }
     } catch (e) {
       console.error(`Storage error writing key '${key}':`, e);
       this.fallbackStorage.set(key, value);
-      this.trackUsage("write", key, false);
     }
   }
 
   static getItem(key: string): string | null {
     try {
-      if (this.isAvailable()) {
-        const result = localStorage.getItem(key);
-        this.trackUsage("read", key, true);
-        return result;
-      } else {
-        const result = this.fallbackStorage.get(key) || null;
-        this.trackUsage("read", key, false);
-        return result;
+      const store = this.getStore();
+      if (store) {
+        return store.getItem(key);
       }
+      return this.fallbackStorage.get(key) || null;
     } catch (e) {
       console.error(`Storage error reading key '${key}':`, e);
-      const result = this.fallbackStorage.get(key) || null;
-      this.trackUsage("read", key, false);
-      return result;
+      return this.fallbackStorage.get(key) || null;
     }
   }
 
   static removeItem(key: string): void {
     try {
-      if (this.isAvailable()) {
-        localStorage.removeItem(key);
-        this.trackUsage("delete", key, true);
+      const store = this.getStore();
+      if (store) {
+        store.removeItem(key);
       } else {
         this.fallbackStorage.delete(key);
-        this.trackUsage("delete", key, false);
       }
     } catch (e) {
       console.error(`Storage error removing key '${key}':`, e);
       this.fallbackStorage.delete(key);
-      this.trackUsage("delete", key, false);
     }
   }
 
-  // Versioned storage for complex data
   static setVersionedItem<T>(key: string, data: T): void {
     const versionedData: StorageData<T> = {
       version: this.CURRENT_VERSION,
       data,
       timestamp: Date.now(),
     };
-
     this.setItem(key, JSON.stringify(versionedData));
   }
 
@@ -91,13 +82,11 @@ class StorageManager {
       if (!item) return null;
 
       const versionedData: StorageData<T> = JSON.parse(item);
-
-      // Check version compatibility
       if (versionedData.version !== this.CURRENT_VERSION) {
-        console.warn(`Data version mismatch for ${key}, migrating...`);
-        return this.migrateData(key, versionedData);
+        const migratedData = versionedData.data as T;
+        this.setVersionedItem(key, migratedData);
+        return migratedData;
       }
-
       return versionedData.data;
     } catch (e) {
       console.error(`Error reading versioned data for ${key}:`, e);
@@ -105,51 +94,20 @@ class StorageManager {
     }
   }
 
-  private static migrateData<T>(
-    key: string,
-    oldData: StorageData<unknown>
-  ): T | null {
-    try {
-      // Simple migration - for now just return data as-is and update version
-      const migratedData = oldData.data as T;
-      this.setVersionedItem(key, migratedData);
-      return migratedData;
-    } catch (e) {
-      console.error(`Migration failed for ${key}:`, e);
-      this.removeItem(key);
-      return null;
-    }
-  }
-
-  // Simple logging - no external analytics per assignment requirements
-  private static trackUsage(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _operation: "read" | "write" | "delete",
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _key: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _success: boolean
-  ): void {
-    // Removed debug logging for cleaner console output
-    // Parameters prefixed with underscore to indicate they're unused but required for interface
-  }
-
-  // Storage health monitoring
   static checkStorageHealth(): void {
     if (!this.isAvailable()) return;
-
     try {
       let total = 0;
-      for (const key in localStorage) {
-        if (localStorage.hasOwnProperty(key)) {
-          total += localStorage[key].length + key.length;
+      const store = this.getStore();
+      if (!store) return;
+      for (let i = 0; i < store.length; i++) {
+        const key = store.key(i);
+        if (key) {
+          total += (store.getItem(key)?.length ?? 0) + key.length;
         }
       }
-
-      const usage = total / (5 * 1024 * 1024); // Assume 5MB limit
-      if (usage > 0.8) {
-        // 80% full
-        console.warn("localStorage is nearly full, consider cleanup");
+      if (total / (5 * 1024 * 1024) > 0.8) {
+        console.warn("sessionStorage is nearly full, consider cleanup");
       }
     } catch (e) {
       console.error("Error checking storage health:", e);

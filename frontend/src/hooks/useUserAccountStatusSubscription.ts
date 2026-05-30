@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 import { UserAccountEvent } from "@/lib/graphql-subscriptions";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
-import { AuthService } from "@/shared/services/authService";
 
 interface UseUserAccountStatusSubscriptionOptions {
   onAccountBlocked?: (event: UserAccountEvent) => void;
@@ -68,10 +67,9 @@ export function useUserAccountStatusSubscription({
       }
 
       // Send connection init message
-      const token = AuthService.getToken();
       const initMessage = {
         type: "connection_init",
-        payload: token ? { authorization: `Bearer ${token}` } : {},
+        payload: {},
       };
       
       try {

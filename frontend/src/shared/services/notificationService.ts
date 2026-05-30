@@ -3,17 +3,10 @@ import { env } from "@/lib/env";
 
 const notificationAPI = axios.create({
   baseURL: `${env.apiEndpoint}/notifications`,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
-});
-
-notificationAPI.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
 });
 
 export type NotificationType =

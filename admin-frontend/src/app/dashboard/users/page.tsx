@@ -20,6 +20,8 @@ import {
     MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import styles from "./users-management.module.css";
+import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
+import { getUserDisplayName } from "@/shared/utils/personDisplayName";
 
 interface User {
     id: number;
@@ -35,13 +37,14 @@ interface User {
 export default function UsersManagement() {
     const [selectedFilter, setSelectedFilter] = useState("all");
     const [searchTerm, setSearchTerm] = useState("");
+    const debouncedSearchTerm = useDebouncedValue(searchTerm, 320);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [userToDelete, setUserToDelete] = useState<User | null>(null);
     const [currentUser, setCurrentUser] = useState<User | null>(null);
 
     // Get current user from localStorage
     useEffect(() => {
-        const userData = localStorage.getItem("admin-user");
+        const userData = sessionStorage.getItem("admin-user");
         if (userData) {
             setCurrentUser(JSON.parse(userData));
         }
@@ -89,8 +92,12 @@ export default function UsersManagement() {
             selectedFilter === user.userType.toLowerCase();
 
         const matchesSearch =
-            user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchTerm.toLowerCase());
+            user.fullName
+                .toLowerCase()
+                .includes(debouncedSearchTerm.toLowerCase()) ||
+            user.email
+                .toLowerCase()
+                .includes(debouncedSearchTerm.toLowerCase());
 
         return matchesFilter && matchesSearch;
     });
@@ -363,7 +370,7 @@ export default function UsersManagement() {
                                                               styles.userName
                                                           }
                                                       >
-                                                          {user.fullName}
+                                                          {getUserDisplayName(user)}
                                                       </div>
                                                       <div
                                                           className={
@@ -539,7 +546,7 @@ export default function UsersManagement() {
                             <div className={styles.modalContent}>
                                 <p className={styles.modalText}>
                                     Are you sure you want to delete{" "}
-                                    <strong>{userToDelete.fullName}</strong>?
+                                    <strong>{getUserDisplayName(userToDelete)}</strong>?
                                     This action cannot be undone.
                                 </p>
                             </div>

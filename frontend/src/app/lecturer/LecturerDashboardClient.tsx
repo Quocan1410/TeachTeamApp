@@ -18,9 +18,13 @@ import DashboardHeader from "@/modules/lecturer/components/dashboard-header/Dash
 import DashboardTabs from "@/modules/lecturer/components/dashboard-tabs/DashboardTabs";
 import ApplicationFilters from "@/modules/lecturer/components/application-filters/ApplicationFilters";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import styles from "./LecturerPage.module.css";
 import { useCandidateBlockingSubscription } from "@/hooks/useCandidateBlockingSubscription";
+import { useApplicationRealtime } from "@/shared/hooks/useApplicationRealtime";
+import type { ApplicationUpdatedPayload } from "@/shared/socket/applicationEvents";
+import { formatCandidateDisplayName } from "@/shared/utils/personDisplayName";
+import LecturerApplicationChatPanel from "@/modules/lecturer/components/application-chat/LecturerApplicationChatPanel";
 
 const KanbanBoard = dynamic(
   () => import("@/modules/lecturer/components/kanban-board/KanbanBoard"),
@@ -66,8 +70,15 @@ const convertToLegacyApplication = (
     id: appResponse.id.toString(),
     userId: appResponse.candidateId.toString(),
     email: appResponse.candidate?.email || "",
-    fullName:
-      `${appResponse.candidate?.firstName || ""} ${appResponse.candidate?.lastName || ""}`.trim(),
+    fullName: formatCandidateDisplayName(
+      {
+        firstName: appResponse.candidate?.firstName,
+        lastName: appResponse.candidate?.lastName,
+        email: appResponse.candidate?.email,
+        userType: "candidate",
+      },
+      "Applicant"
+    ),
     courses: [appResponse.course.courseCode],
     availability,
     skills: appResponse.skills
@@ -75,11 +86,7 @@ const convertToLegacyApplication = (
       : [],
     academicCredentials: appResponse.experience || "",
     dateApplied: appResponse.appliedAt,
-    status: appResponse.status as
-      | "pending"
-      | "shortlisted"
-      | "selected"
-      | "rejected",
+    status: appResponse.status as "pending" | "selected" | "rejected",
     selected: appResponse.status === "selected",
     comment: appResponse.comment || "",
     rank: appResponse.rank,
@@ -99,6 +106,7 @@ const convertToLegacyApplication = (
         : undefined,
     rankedForCourse: appResponse.rankedForCourse,
     isBlocked: appResponse.candidate?.isBlocked || false,
+    isWithdrawn: appResponse.isWithdrawn || false,
   };
 };
 
@@ -135,6 +143,7 @@ const convertToLegacyStatistics = (stats: unknown) => {
 
 const LecturerDashboardInner: React.FC = () => {
   // Authentication
+  const router = useRouter();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { lecturerName } = useLecturerAuth();
 
@@ -186,6 +195,34 @@ const LecturerDashboardInner: React.FC = () => {
     loadApplications,
     handleSelectApplication: rawHandleSelectApplication,
   } = useApplicationManagement();
+
+  const handleApplicationRealtimeUpdate = useCallback(
+    (payload: ApplicationUpdatedPayload) => {
+      void loadApplications();
+      if (
+        rawSelectedApplication &&
+        payload.application.id === rawSelectedApplication.id
+      ) {
+        setRawSelectedApplication(payload.application);
+        setComment(payload.application.comment || "");
+      }
+    },
+    [
+      loadApplications,
+      rawSelectedApplication,
+      setRawSelectedApplication,
+      setComment,
+    ]
+  );
+
+  useApplicationRealtime({
+    enabled:
+      !authLoading &&
+      isAuthenticated &&
+      user?.userType === "lecturer" &&
+      isInitialized,
+    onApplicationUpdated: handleApplicationRealtimeUpdate,
+  });
 
   // Memoize the callback function to prevent excessive re-initializations
   const onCandidateBlocked = useCallback(
@@ -309,15 +346,14 @@ const LecturerDashboardInner: React.FC = () => {
     if (authLoading) return;
 
     if (!isAuthenticated || !user) {
-      redirect("/signin");
+      router.replace("/signin");
       return;
     }
 
     if (user.userType !== "lecturer") {
-      redirect(user.userType === "candidate" ? "/tutor" : "/");
-      return;
+      router.replace(user.userType === "candidate" ? "/tutor" : "/");
     }
-  }, [user, isAuthenticated, authLoading]);
+  }, [user, isAuthenticated, authLoading, router]);
 
   // Load available courses and extract skills
   const loadCourses = useCallback(async () => {
@@ -366,20 +402,6 @@ const LecturerDashboardInner: React.FC = () => {
       loadCourses();
     }
   }, [isInitialized, loadCourses]);
-
-  // Add a periodic refresh to detect course changes
-  useEffect(() => {
-    if (!isInitialized) return;
-
-    const refreshInterval = setInterval(() => {
-      loadCourses();
-      loadApplications();
-    }, 60000);
-
-    return () => clearInterval(refreshInterval);
-  }, [isInitialized, loadCourses, loadApplications]);
-
-
 
   // Extract all unique skills from applications
   useEffect(() => {
@@ -454,48 +476,6 @@ const LecturerDashboardInner: React.FC = () => {
     }
   };
 
-  // Application actions (simplified - using new backend)
-  const handleSaveComment = async () => {
-    if (!rawSelectedApplication) return;
-
-    try {
-      const response = await ApplicationService.updateApplicationComment(
-        rawSelectedApplication.id,
-        comment
-      );
-
-      if (response.success) {
-        showToast("Comment saved successfully", "success");
-        await Promise.all([loadApplications(), loadCourses()]);
-      } else {
-        showToast(response.message || "Failed to save comment", "error");
-      }
-    } catch (error) {
-      console.error("💾 Error saving comment:", error);
-      showToast("Error saving comment", "error");
-    }
-  };
-
-  const handleDeleteComment = async () => {
-    if (!rawSelectedApplication) return;
-
-    try {
-      const response = await ApplicationService.deleteApplicationComment(
-        rawSelectedApplication.id
-      );
-
-      if (response.success) {
-        setComment("");
-        showToast("Comment deleted", "success");
-        await Promise.all([loadApplications(), loadCourses()]);
-      } else {
-        showToast(response.message || "Failed to delete comment", "error");
-      }
-    } catch {
-      showToast("Error deleting comment", "error");
-    }
-  };
-
   const handleSelectApplicantButton = async (selectedCourses: string[]) => {
     let targetApplication: ApplicationResponse | null = rawSelectedApplication;
 
@@ -540,7 +520,7 @@ const LecturerDashboardInner: React.FC = () => {
 
   const handleMoveStatus = async (
     app: ApplicationResponse,
-    status: "pending" | "shortlisted" | "selected" | "rejected"
+    status: "pending" | "selected" | "rejected"
   ) => {
     try {
       const response = await ApplicationService.updateApplicationStatus(
@@ -629,17 +609,11 @@ const LecturerDashboardInner: React.FC = () => {
       return;
     }
 
-    if (!selectedApplication.comment || !comment.trim()) {
+    if (!selectedApplication.comment?.trim()) {
       showToast(
-        "Please add and save a comment before adding to ranking",
+        "Please send feedback in the correspondence panel before adding to ranking.",
         "error"
       );
-      return;
-    }
-
-    const hasUnsavedComment = comment !== (selectedApplication.comment || "");
-    if (hasUnsavedComment) {
-      showToast("Please save your comment before adding to ranking", "error");
       return;
     }
 
@@ -903,16 +877,23 @@ const LecturerDashboardInner: React.FC = () => {
                   <div className={styles.applicantDetailsSection}>
                     <ApplicantDetails
                       application={selectedApplication}
-                      comment={comment}
-                      setComment={setComment}
-                      onSaveComment={handleSaveComment}
-                      onDeleteComment={handleDeleteComment}
                       onSelectApplicant={handleSelectApplicantButton}
                       onUnselectApplicant={handleUnselectApplicant}
                       onAddToRanking={handleAddToRanking}
                       showToast={showToast}
                       courses={fullCourseData}
                     />
+                    {rawSelectedApplication && (
+                      <LecturerApplicationChatPanel
+                        application={rawSelectedApplication}
+                        onApplicationUpdated={(app) => {
+                          setRawSelectedApplication(app);
+                          setComment(app.comment || "");
+                          void loadApplications();
+                        }}
+                        showToast={showToast}
+                      />
+                    )}
                   </div>
                 </div>
               </div>

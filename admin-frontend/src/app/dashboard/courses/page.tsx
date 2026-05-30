@@ -9,6 +9,7 @@ import {
 } from "@apollo/client";
 import Toast from "@/shared/components/common/Toast/Toast";
 import { useToast } from "@/shared/hooks/useToast";
+import { formatLecturerDisplayName } from "@/shared/utils/personDisplayName";
 import {
     GET_ALL_COURSES,
     GET_UNASSIGNED_LECTURERS,
@@ -31,6 +32,7 @@ import {
     MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import styles from "./courses-management.module.css";
+import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 
 interface Course {
     id: number;
@@ -83,6 +85,7 @@ export default function CoursesManagement() {
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const debouncedSearchTerm = useDebouncedValue(searchTerm, 320);
     const [formData, setFormData] = useState<CourseFormData>({
         courseCode: "",
         courseName: "",
@@ -236,11 +239,13 @@ export default function CoursesManagement() {
         (course: Course) =>
             course.courseCode
                 .toLowerCase()
-                .includes(searchTerm.toLowerCase()) ||
+                .includes(debouncedSearchTerm.toLowerCase()) ||
             course.courseName
                 .toLowerCase()
-                .includes(searchTerm.toLowerCase()) ||
-            course.semester.toLowerCase().includes(searchTerm.toLowerCase())
+                .includes(debouncedSearchTerm.toLowerCase()) ||
+            course.semester
+                .toLowerCase()
+                .includes(debouncedSearchTerm.toLowerCase())
     );
 
     const resetForm = () => {
@@ -564,7 +569,12 @@ export default function CoursesManagement() {
                                                             }
                                                         >
                                                             {assignment.lecturer ? (
-                                                                `${assignment.lecturer.firstName} ${assignment.lecturer.lastName}`
+                                                                formatLecturerDisplayName(
+                                                                    {
+                                                                        ...assignment.lecturer,
+                                                                        userType: "lecturer",
+                                                                    }
+                                                                )
                                                             ) : (
                                                                 <span className="text-red-500 italic">
                                                                     Lecturer not
@@ -1021,8 +1031,10 @@ export default function CoursesManagement() {
                                                             styles.lecturerName
                                                         }
                                                     >
-                                                        {lecturer.firstName}{" "}
-                                                        {lecturer.lastName}
+                                                        {formatLecturerDisplayName({
+                                                            ...lecturer,
+                                                            userType: "lecturer",
+                                                        })}
                                                     </p>
                                                     <p
                                                         className={

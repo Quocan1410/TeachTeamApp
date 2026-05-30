@@ -48,10 +48,8 @@ const wsClient = createClient({
     if (typeof window === "undefined") {
       return {};
     }
-    const adminToken = localStorage.getItem("admin-token");
-    const appToken = localStorage.getItem("token");
-    const token = adminToken || appToken;
-    return token ? { authorization: `Bearer ${token}` } : {};
+    const adminToken = sessionStorage.getItem("admin-token");
+    return adminToken ? { authorization: `Bearer ${adminToken}` } : {};
   },
   on: {
     error: (error: unknown) => {
@@ -116,7 +114,6 @@ export const adminClient = new ApolloClient({
       errorPolicy: "all",
     },
   },
-  // Add connection to devtools for debugging
   connectToDevTools: process.env.NODE_ENV === "development",
 });
 

@@ -12,6 +12,24 @@ import { NotificationService } from "../services/NotificationService";
 import { NotificationType } from "../entities/Notification";
 import { assertCourseAcceptsApplications, getCourseApplicationWindow } from "../utils/courseDeadline";
 import { ApplicationDraft } from "../entities/ApplicationDraft";
+import { notifyApplicationUpdated } from "../socket/applicationEvents";
+import {
+    isAllowedReactionEmoji,
+    isReactableMessageId,
+    normalizeMessageReactions,
+    toggleUserReaction,
+} from "../utils/messageReactions";
+import {
+    appendCandidateMessage,
+    appendLecturerMessage,
+    deleteCorrespondenceMessage,
+    syncLecturerCommentMessage,
+    updateCandidateMessage,
+} from "../utils/correspondenceMessages";
+import {
+    respondIfWithdrawn,
+    WITHDRAWN_REAPPLY_MESSAGE,
+} from "../utils/applicationGuards";
 
 export class ApplicationController {
     private applicationRepository = AppDataSource.getRepository(Application);
@@ -102,9 +120,15 @@ export class ApplicationController {
                 });
 
             if (existingApplication) {
+                const message = existingApplication.isWithdrawn
+                    ? WITHDRAWN_REAPPLY_MESSAGE
+                    : `You have already applied for ${role.roleName} role in ${course.courseCode}`;
                 res.status(409).json({
                     success: false,
-                    message: `You have already applied for ${role.roleName} role in ${course.courseCode}`,
+                    message,
+                    code: existingApplication.isWithdrawn
+                        ? "APPLICATION_WITHDRAWN"
+                        : "DUPLICATE_APPLICATION",
                 });
                 return;
             }
@@ -144,6 +168,22 @@ export class ApplicationController {
                 },
             });
 
+            await NotificationService.create({
+                userId: candidate.id,
+                type: NotificationType.APPLICATION_SUBMITTED,
+                title: "Application submitted",
+                message: `Your ${role.roleName} application for ${course.courseCode} was submitted and is pending review`,
+                link: "/tutor",
+                metadata: {
+                    applicationId: savedApplication.id,
+                    courseId,
+                    candidateId: candidate.id,
+                    status: ApplicationStatus.PENDING,
+                },
+            });
+
+            void notifyApplicationUpdated(savedApplication.id, "created");
+
             res.status(201).json({
                 success: true,
                 message: "Application submitted successfully",
@@ -168,7 +208,13 @@ export class ApplicationController {
 
             const applications = await this.applicationRepository.find({
                 where: { candidateId },
-                relations: ["course", "role"],
+                relations: [
+                    "course",
+                    "course.courseAssignments",
+                    "course.courseAssignments.lecturer",
+                    "role",
+                    "commentedByUser",
+                ],
                 order: { appliedAt: "DESC" },
             });
 
@@ -178,6 +224,472 @@ export class ApplicationController {
             });
         } catch (error) {
             console.error("Error fetching candidate applications:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal server error",
+            });
+        }
+    }
+
+    async updateCandidateResponse(
+        req: AuthenticatedRequest,
+        res: Response
+    ): Promise<void> {
+        try {
+            const { id } = req.params;
+            const candidateId = req.user?.userId;
+            if (!candidateId) {
+                res.status(401).json({
+                    success: false,
+                    message: "Authentication required",
+                });
+                return;
+            }
+            const responseText =
+                typeof req.body.response === "string" ? req.body.response.trim() : "";
+            const replyToMessageId =
+                typeof req.body.replyToMessageId === "string"
+                    ? req.body.replyToMessageId
+                    : null;
+
+            if (responseText.length === 0) {
+                res.status(400).json({
+                    success: false,
+                    message: "Response cannot be empty",
+                });
+                return;
+            }
+
+            if (responseText.length > 3000) {
+                res.status(400).json({
+                    success: false,
+                    message: "Response must be under 3000 characters",
+                });
+                return;
+            }
+
+            const application = await this.applicationRepository.findOne({
+                where: { id: parseInt(id, 10), candidateId },
+                relations: ["course", "role"],
+            });
+
+            if (!application) {
+                res.status(404).json({
+                    success: false,
+                    message: "Application not found",
+                });
+                return;
+            }
+
+            if (respondIfWithdrawn(application, res)) {
+                return;
+            }
+
+            appendCandidateMessage(
+                application,
+                candidateId,
+                responseText,
+                replyToMessageId
+            );
+            const updatedApplication = await this.applicationRepository.save(
+                application
+            );
+
+            await NotificationService.notifyLecturersForCourse(application.courseId, {
+                type: NotificationType.APPLICATION_RESPONSE,
+                title: "Candidate sent more details",
+                message: `Candidate sent additional details for ${application.role.roleName} in ${application.course.courseCode}`,
+                link: "/lecturer",
+                metadata: {
+                    applicationId: application.id,
+                    candidateId,
+                    courseId: application.courseId,
+                },
+            });
+
+            void notifyApplicationUpdated(application.id, "candidate_response");
+
+            res.status(200).json({
+                success: true,
+                message: "Response sent successfully",
+                data: updatedApplication,
+            });
+        } catch (error) {
+            console.error("Error updating candidate response:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal server error",
+            });
+        }
+    }
+
+    async deleteCandidateResponse(
+        req: AuthenticatedRequest,
+        res: Response
+    ): Promise<void> {
+        try {
+            const { id } = req.params;
+            const candidateId = req.user?.userId;
+            if (!candidateId) {
+                res.status(401).json({
+                    success: false,
+                    message: "Authentication required",
+                });
+                return;
+            }
+
+            const application = await this.applicationRepository.findOne({
+                where: { id: parseInt(id, 10), candidateId },
+                relations: [
+                    "course",
+                    "course.courseAssignments",
+                    "course.courseAssignments.lecturer",
+                    "role",
+                    "commentedByUser",
+                ],
+            });
+
+            if (!application) {
+                res.status(404).json({
+                    success: false,
+                    message: "Application not found",
+                });
+                return;
+            }
+
+            if (respondIfWithdrawn(application, res)) {
+                return;
+            }
+
+            const messageId =
+                typeof req.body.messageId === "string"
+                    ? req.body.messageId.trim()
+                    : typeof req.query.messageId === "string"
+                      ? req.query.messageId.trim()
+                      : "";
+
+            if (!messageId) {
+                res.status(400).json({
+                    success: false,
+                    message: "messageId is required",
+                });
+                return;
+            }
+
+            const deleted = deleteCorrespondenceMessage(
+                application,
+                candidateId,
+                messageId
+            );
+
+            if (!deleted) {
+                res.status(404).json({
+                    success: false,
+                    message: "Message not found",
+                });
+                return;
+            }
+
+            const updatedApplication = await this.applicationRepository.save(
+                application
+            );
+
+            void notifyApplicationUpdated(
+                application.id,
+                "candidate_response"
+            );
+
+            res.status(200).json({
+                success: true,
+                message: "Message deleted",
+                data: updatedApplication,
+            });
+        } catch (error) {
+            console.error("Error deleting candidate response:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal server error",
+            });
+        }
+    }
+
+    async editCorrespondenceMessage(
+        req: AuthenticatedRequest,
+        res: Response
+    ): Promise<void> {
+        try {
+            const { id } = req.params;
+            const candidateId = req.user?.userId;
+            if (!candidateId) {
+                res.status(401).json({
+                    success: false,
+                    message: "Authentication required",
+                });
+                return;
+            }
+            const messageId =
+                typeof req.body.messageId === "string"
+                    ? req.body.messageId.trim()
+                    : "";
+            const body =
+                typeof req.body.response === "string"
+                    ? req.body.response.trim()
+                    : "";
+
+            if (!messageId) {
+                res.status(400).json({
+                    success: false,
+                    message: "messageId is required",
+                });
+                return;
+            }
+
+            if (body.length === 0) {
+                res.status(400).json({
+                    success: false,
+                    message: "Response cannot be empty",
+                });
+                return;
+            }
+
+            if (body.length > 3000) {
+                res.status(400).json({
+                    success: false,
+                    message: "Response must be under 3000 characters",
+                });
+                return;
+            }
+
+            const application = await this.applicationRepository.findOne({
+                where: { id: parseInt(id, 10), candidateId },
+                relations: [
+                    "course",
+                    "course.courseAssignments",
+                    "course.courseAssignments.lecturer",
+                    "role",
+                    "commentedByUser",
+                ],
+            });
+
+            if (!application) {
+                res.status(404).json({
+                    success: false,
+                    message: "Application not found",
+                });
+                return;
+            }
+
+            if (respondIfWithdrawn(application, res)) {
+                return;
+            }
+
+            const updated = updateCandidateMessage(
+                application,
+                candidateId,
+                messageId,
+                body
+            );
+
+            if (!updated) {
+                res.status(400).json({
+                    success: false,
+                    message:
+                        "Message not found or edit window expired (2 minutes)",
+                });
+                return;
+            }
+
+            const saved = await this.applicationRepository.save(application);
+            void notifyApplicationUpdated(application.id, "candidate_response");
+
+            res.status(200).json({
+                success: true,
+                message: "Message updated",
+                data: saved,
+            });
+        } catch (error) {
+            console.error("Error editing correspondence message:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal server error",
+            });
+        }
+    }
+
+    async withdrawApplication(
+        req: AuthenticatedRequest,
+        res: Response
+    ): Promise<void> {
+        try {
+            const { id } = req.params;
+            const candidateId = req.user?.userId;
+
+            const application = await this.applicationRepository.findOne({
+                where: { id: parseInt(id, 10), candidateId },
+                relations: ["course", "role"],
+            });
+
+            if (!application) {
+                res.status(404).json({
+                    success: false,
+                    message: "Application not found",
+                });
+                return;
+            }
+
+            if (application.isWithdrawn) {
+                res.status(400).json({
+                    success: false,
+                    message: "Application already withdrawn",
+                });
+                return;
+            }
+
+            application.status = ApplicationStatus.REJECTED;
+            application.isWithdrawn = true;
+            application.withdrawnAt = new Date();
+
+            const updatedApplication = await this.applicationRepository.save(
+                application
+            );
+
+            await NotificationService.notifyLecturersForCourse(application.courseId, {
+                type: NotificationType.APPLICATION_WITHDRAWN,
+                title: "Application withdrawn",
+                message: `A candidate withdrew ${application.role.roleName} application in ${application.course.courseCode}`,
+                link: "/lecturer",
+                metadata: {
+                    applicationId: application.id,
+                    candidateId,
+                    courseId: application.courseId,
+                },
+            });
+
+            void notifyApplicationUpdated(application.id, "withdrawn");
+
+            res.status(200).json({
+                success: true,
+                message: "Application withdrawn successfully",
+                data: updatedApplication,
+            });
+        } catch (error) {
+            console.error("Error withdrawing application:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal server error",
+            });
+        }
+    }
+
+    async toggleMessageReaction(
+        req: AuthenticatedRequest,
+        res: Response
+    ): Promise<void> {
+        try {
+            const { id } = req.params;
+            const messageId =
+                typeof req.body.messageId === "string"
+                    ? req.body.messageId.trim()
+                    : "";
+            const emoji =
+                typeof req.body.emoji === "string" ? req.body.emoji.trim() : "";
+            const userId = req.user?.userId;
+            const userType = req.user?.userType;
+
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    message: "Authentication required",
+                });
+                return;
+            }
+
+            if (!isAllowedReactionEmoji(emoji)) {
+                res.status(400).json({
+                    success: false,
+                    message: "Invalid reaction",
+                });
+                return;
+            }
+
+            const application = await this.applicationRepository.findOne({
+                where: { id: parseInt(id, 10) },
+                relations: ["course", "role"],
+            });
+
+            if (!application) {
+                res.status(404).json({
+                    success: false,
+                    message: "Application not found",
+                });
+                return;
+            }
+
+            if (userType === UserType.CANDIDATE) {
+                if (application.candidateId !== userId) {
+                    res.status(403).json({
+                        success: false,
+                        message: "You don't have access to this application",
+                    });
+                    return;
+                }
+            } else if (userType === UserType.LECTURER) {
+                const courseAssignment =
+                    await this.courseAssignmentRepository.findOne({
+                        where: {
+                            lecturerId: userId,
+                            courseId: application.courseId,
+                        },
+                    });
+                if (!courseAssignment) {
+                    res.status(403).json({
+                        success: false,
+                        message: "You don't have access to this application",
+                    });
+                    return;
+                }
+            } else {
+                res.status(403).json({
+                    success: false,
+                    message: "Not allowed",
+                });
+                return;
+            }
+
+            if (respondIfWithdrawn(application, res)) {
+                return;
+            }
+
+            if (!isReactableMessageId(application, messageId)) {
+                res.status(400).json({
+                    success: false,
+                    message: "This message cannot be reacted to",
+                });
+                return;
+            }
+
+            const reactions = normalizeMessageReactions(
+                application.messageReactions
+            );
+            application.messageReactions = toggleUserReaction(
+                reactions,
+                messageId,
+                emoji,
+                userId
+            );
+
+            const updatedApplication = await this.applicationRepository.save(
+                application
+            );
+
+            void notifyApplicationUpdated(application.id, "reaction");
+
+            res.status(200).json({
+                success: true,
+                data: updatedApplication,
+            });
+        } catch (error) {
+            console.error("Error toggling message reaction:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -466,8 +978,12 @@ export class ApplicationController {
                         (app) => app.status === ApplicationStatus.SELECTED
                     ).length,
                     rejected: applications.filter(
-                        (app) => app.status === ApplicationStatus.REJECTED
+                        (app) =>
+                            app.status === ApplicationStatus.REJECTED &&
+                            !app.isWithdrawn
                     ).length,
+                    withdrawn: applications.filter((app) => app.isWithdrawn)
+                        .length,
                 },
                 skillFrequency: this.calculateSkillFrequency(applications),
                 availabilityDistribution:
@@ -527,56 +1043,80 @@ export class ApplicationController {
                 return;
             }
 
-            // If selecting an application, check if positions are available
-            if (status === ApplicationStatus.SELECTED) {
-                // Get the course to check max positions
-                const course = application.course;
-
-                // Count currently selected applications for this role in this course
-                const selectedCount = await this.applicationRepository.count({
-                    where: {
-                        courseId: application.courseId,
-                        status: ApplicationStatus.SELECTED,
-                        role: { roleName: application.role.roleName },
-                    },
-                    relations: ["role"],
-                });
-
-                // Check if positions are available
-                const maxPositions =
-                    application.role.roleName === "tutor"
-                        ? course.maxTutors
-                        : course.maxLabAssistants;
-
-                if (selectedCount >= maxPositions) {
-                    res.status(400).json({
-                        success: false,
-                        message: `No positions available for ${application.role.roleName} role in ${course.courseCode}. All ${maxPositions} positions are filled.`,
-                    });
-                    return;
-                }
+            if (respondIfWithdrawn(application, res)) {
+                return;
             }
 
-            // Update application status
-            application.status = status;
-            const updatedApplication = await this.applicationRepository.save(
-                application
-            );
+            let updatedApplication: Application;
 
-            // If selected, create SelectedCandidate record
             if (status === ApplicationStatus.SELECTED) {
-                const existingSelection =
-                    await this.selectedCandidateRepository.findOne({
-                        where: { applicationId: application.id },
-                    });
+                updatedApplication = await AppDataSource.transaction(
+                    async (manager) => {
+                        const lockedApp = await manager.findOne(Application, {
+                            where: { id: application.id },
+                            relations: ["course", "role", "candidate"],
+                            lock: { mode: "pessimistic_write" },
+                        });
 
-                if (!existingSelection) {
-                    const selection = this.selectedCandidateRepository.create({
-                        applicationId: application.id,
-                        selectedById: lecturerId,
-                    });
-                    await this.selectedCandidateRepository.save(selection);
-                }
+                        if (!lockedApp) {
+                            throw new Error("APPLICATION_NOT_FOUND");
+                        }
+
+                        if (lockedApp.isWithdrawn) {
+                            throw new Error("APPLICATION_WITHDRAWN");
+                        }
+
+                        const course = await manager.findOne(Course, {
+                            where: { id: lockedApp.courseId },
+                            lock: { mode: "pessimistic_write" },
+                        });
+
+                        if (!course) {
+                            throw new Error("COURSE_NOT_FOUND");
+                        }
+
+                        const selectedCount = await manager.count(Application, {
+                            where: {
+                                courseId: lockedApp.courseId,
+                                roleId: lockedApp.roleId,
+                                status: ApplicationStatus.SELECTED,
+                            },
+                        });
+
+                        const maxPositions =
+                            lockedApp.role.roleName === "tutor"
+                                ? course.maxTutors
+                                : course.maxLabAssistants;
+
+                        if (selectedCount >= maxPositions) {
+                            throw new Error("QUOTA_FULL");
+                        }
+
+                        lockedApp.status = status;
+                        const saved = await manager.save(lockedApp);
+
+                        const existingSelection = await manager.findOne(
+                            SelectedCandidate,
+                            { where: { applicationId: lockedApp.id } }
+                        );
+
+                        if (!existingSelection && lecturerId) {
+                            await manager.save(
+                                manager.create(SelectedCandidate, {
+                                    applicationId: lockedApp.id,
+                                    selectedById: lecturerId,
+                                })
+                            );
+                        }
+
+                        return saved;
+                    }
+                );
+            } else {
+                application.status = status;
+                updatedApplication = await this.applicationRepository.save(
+                    application
+                );
             }
 
             const statusNotificationMap: Partial<
@@ -619,12 +1159,32 @@ export class ApplicationController {
                 });
             }
 
+            void notifyApplicationUpdated(application.id, "status");
+
             res.status(200).json({
                 success: true,
                 message: "Application status updated successfully",
                 data: updatedApplication,
             });
         } catch (error) {
+            const code =
+                error instanceof Error ? error.message : "UNKNOWN";
+            if (code === "QUOTA_FULL") {
+                res.status(400).json({
+                    success: false,
+                    message:
+                        "No positions available for this role. All slots are filled.",
+                });
+                return;
+            }
+            if (code === "APPLICATION_WITHDRAWN") {
+                res.status(400).json({
+                    success: false,
+                    message: WITHDRAWN_REAPPLY_MESSAGE,
+                    code: "APPLICATION_WITHDRAWN",
+                });
+                return;
+            }
             console.error("Error updating application status:", error);
             res.status(500).json({
                 success: false,
@@ -793,8 +1353,15 @@ export class ApplicationController {
     ): Promise<void> {
         try {
             const { id } = req.params;
-            const { comment } = req.body;
+            const { comment, replyToMessageId } = req.body;
             const lecturerId = req.user?.userId;
+            if (!lecturerId) {
+                res.status(401).json({
+                    success: false,
+                    message: "Authentication required",
+                });
+                return;
+            }
 
             const application = await this.applicationRepository.findOne({
                 where: { id: parseInt(id) },
@@ -826,10 +1393,27 @@ export class ApplicationController {
                 return;
             }
 
-            // Update comment
-            application.comment = comment || "";
-            application.commentedBy = lecturerId;
-            application.commentedAt = new Date();
+            if (respondIfWithdrawn(application, res)) {
+                return;
+            }
+
+            // Append lecturer message to correspondence thread
+            const commentText =
+                typeof comment === "string" ? comment.trim() : "";
+            if (!commentText) {
+                res.status(400).json({
+                    success: false,
+                    message: "Comment cannot be empty",
+                });
+                return;
+            }
+
+            appendLecturerMessage(
+                application,
+                lecturerId,
+                commentText,
+                typeof replyToMessageId === "string" ? replyToMessageId : null
+            );
 
             const updatedApplication = await this.applicationRepository.save(
                 application
@@ -848,6 +1432,8 @@ export class ApplicationController {
                     },
                 });
             }
+
+            void notifyApplicationUpdated(application.id, "comment");
 
             res.status(200).json({
                 success: true,
@@ -870,6 +1456,13 @@ export class ApplicationController {
         try {
             const { id } = req.params;
             const lecturerId = req.user?.userId;
+            if (!lecturerId) {
+                res.status(401).json({
+                    success: false,
+                    message: "Authentication required",
+                });
+                return;
+            }
 
             const application = await this.applicationRepository.findOne({
                 where: { id: parseInt(id) },
@@ -901,14 +1494,17 @@ export class ApplicationController {
                 return;
             }
 
-            // Clear comment
-            application.comment = "";
-            application.commentedBy = undefined;
-            application.commentedAt = undefined;
+            if (respondIfWithdrawn(application, res)) {
+                return;
+            }
+
+            syncLecturerCommentMessage(application, lecturerId, "");
 
             const updatedApplication = await this.applicationRepository.save(
                 application
             );
+
+            void notifyApplicationUpdated(application.id, "comment_removed");
 
             res.status(200).json({
                 success: true,
@@ -964,6 +1560,10 @@ export class ApplicationController {
                 return;
             }
 
+            if (respondIfWithdrawn(application, res)) {
+                return;
+            }
+
             // Verify application is selected
             if (application.status !== ApplicationStatus.SELECTED) {
                 res.status(400).json({
@@ -983,6 +1583,8 @@ export class ApplicationController {
             const updatedApplication = await this.applicationRepository.save(
                 application
             );
+
+            void notifyApplicationUpdated(application.id, "rank");
 
             res.status(200).json({
                 success: true,
@@ -1047,6 +1649,8 @@ export class ApplicationController {
                 application
             );
 
+            void notifyApplicationUpdated(application.id, "rank");
+
             res.status(200).json({
                 success: true,
                 message: "Application ranking updated successfully",
@@ -1109,6 +1713,8 @@ export class ApplicationController {
             const updatedApplication = await this.applicationRepository.save(
                 application
             );
+
+            void notifyApplicationUpdated(application.id, "rank");
 
             res.status(200).json({
                 success: true,
@@ -1230,47 +1836,6 @@ export class ApplicationController {
             });
         } catch (error) {
             console.error("updateLecturerNotes error:", error);
-            res.status(500).json({
-                success: false,
-                message: "Internal server error",
-            });
-        }
-    }
-
-    // Test endpoint for debugging course validation
-    async testCourseValidation(
-        req: AuthenticatedRequest,
-        res: Response
-    ): Promise<void> {
-        try {
-            const { selectedCourses } = req.body;
-
-
-
-            // Test the regex validation
-            const testResults = selectedCourses?.map((course: string) => ({
-                course,
-                courseType: typeof course,
-                trimmed: course?.trim(),
-                regexTest: course
-                    ? /^[A-Z]{4}\d{4}$/.test(course.trim())
-                    : false,
-                isValid:
-                    course &&
-                    typeof course === "string" &&
-                    /^[A-Z]{4}\d{4}$/.test(course.trim()),
-            }));
-
-            res.status(200).json({
-                success: true,
-                data: {
-                    input: selectedCourses,
-                    testResults,
-                    message: "Course validation test completed",
-                },
-            });
-        } catch (error) {
-            console.error("Error in test course validation:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",

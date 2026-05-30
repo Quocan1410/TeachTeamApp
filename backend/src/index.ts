@@ -12,7 +12,8 @@ import announcementRoutes from "./routes/announcement-routes";
 import databaseRoutes from "./routes/database-routes";
 import notificationRoutes from "./routes/notification-routes";
 import publicRoutes from "./routes/public-routes";
-import { getMelbourneTimestamp } from "./utils/dateUtils";
+import cookieParser from "cookie-parser";
+import { getAppTimestamp, getAppTimezoneLabel } from "./utils/appTime";
 import path from "path";
 import { ensureAvatarUploadDir } from "./utils/avatarUtils";
 import { corsOptions } from "./config/corsConfig";
@@ -31,6 +32,7 @@ const PORT = process.env.BACKEND_PORT || process.env.PORT || 5000;
 const isProduction = process.env.NODE_ENV === "production";
 
 app.use(helmet());
+app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(generalRateLimiter);
 app.use(express.json({ limit: "1mb" }));
@@ -50,8 +52,8 @@ app.get("/health", (_req, res) => {
     res.json({
         status: "OK",
         message: "Teaching Tutor Backend API is running",
-        timestamp: getMelbourneTimestamp(),
-        timezone: "Australia/Melbourne (AEST/AEDT)",
+        timestamp: getAppTimestamp(),
+        timezone: getAppTimezoneLabel(),
     });
 });
 
@@ -70,15 +72,15 @@ app.get("/db-test", devOpsGuard, async (_req, res) => {
                 isEmpty: isEmpty,
                 status: isEmpty ? "EMPTY - needs data" : "HAS DATA",
             },
-            timestamp: getMelbourneTimestamp(),
-            timezone: "Australia/Melbourne (AEST/AEDT)",
+            timestamp: getAppTimestamp(),
+            timezone: getAppTimezoneLabel(),
         });
     } catch (error) {
         res.status(500).json({
             success: false,
             error: error instanceof Error ? error.message : "Unknown error",
-            timestamp: getMelbourneTimestamp(),
-            timezone: "Australia/Melbourne (AEST/AEDT)",
+            timestamp: getAppTimestamp(),
+            timezone: getAppTimezoneLabel(),
         });
     }
 });
@@ -91,15 +93,15 @@ app.post("/db-reset", devOpsGuard, async (_req, res) => {
         res.json({
             success: true,
             message: "Database reset completed successfully",
-            timestamp: getMelbourneTimestamp(),
-            timezone: "Australia/Melbourne (AEST/AEDT)",
+            timestamp: getAppTimestamp(),
+            timezone: getAppTimezoneLabel(),
         });
     } catch (error) {
         res.status(500).json({
             success: false,
             error: error instanceof Error ? error.message : "Unknown error",
-            timestamp: getMelbourneTimestamp(),
-            timezone: "Australia/Melbourne (AEST/AEDT)",
+            timestamp: getAppTimestamp(),
+            timezone: getAppTimezoneLabel(),
         });
     }
 });
@@ -125,7 +127,7 @@ const startServer = async () => {
         });
     } catch (error) {
         console.error("Failed to start server:", error);
-        console.warn("Starting server anyway for debugging purposes");
+        console.warn("Starting server without a verified database connection");
         initSocketServer(httpServer);
 
         httpServer.listen(PORT, () => {

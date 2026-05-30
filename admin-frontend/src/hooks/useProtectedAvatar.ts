@@ -27,7 +27,7 @@ export function useProtectedAvatar(
 
             const token =
                 typeof window !== "undefined"
-                    ? localStorage.getItem("admin-token")
+                    ? sessionStorage.getItem("admin-token")
                     : null;
             if (!token) {
                 setObjectUrl(null);

@@ -150,6 +150,12 @@ export default function SignInForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Modal is open — ignore Enter / stray submits so login is not run twice.
+    if (showLoginSuccess) {
+      return;
+    }
+
     setIsLoading(true);
     setApiError("");
 
@@ -164,8 +170,7 @@ export default function SignInForm() {
       if (response.success && response.data) {
         
         // Use auth context to login - ensure token exists
-        const token = response.data.token || "";
-        login(response.data.user, token);
+        login(response.data.user);
         
         // Store user data and show success modal
         const nextPath = getRedirectPath(response.data.user);
@@ -191,17 +196,20 @@ export default function SignInForm() {
   };
 
   const handleLoginSuccessModalHide = () => {
-    if (!isDashboardReady) return;
-    const destination = redirectPath || (loggedInUser ? getRedirectPath(loggedInUser) : "/");
+    const destination =
+      redirectPath || (loggedInUser ? getRedirectPath(loggedInUser) : "/");
     setShowLoginSuccess(false);
     router.replace(destination);
-
   };
 
   return (
     <>
       <div className={styles.formContainer}>
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <form
+          onSubmit={handleSubmit}
+          className={styles.form}
+          aria-hidden={showLoginSuccess}
+        >
           <h2 className={styles.title}>Welcome Back</h2>
 
           {successMessage && (
@@ -225,6 +233,7 @@ export default function SignInForm() {
               className={`${styles.inputField} ${errors.email ? styles.inputError : ""}`}
               placeholder="Email Address"
               required
+              disabled={showLoginSuccess}
             />
             {errors.email && (
               <div className={styles.errorMessage}>
@@ -242,6 +251,7 @@ export default function SignInForm() {
               className={`${styles.inputField} ${errors.password ? styles.inputError : ""}`}
               placeholder="Password"
               required
+              disabled={showLoginSuccess}
             />
             <button
               type="button"
@@ -289,7 +299,7 @@ export default function SignInForm() {
           <button
             type="submit"
             className={`${styles.submitButton} ${isLoading ? styles.loading : ""}`}
-            disabled={isLoading}
+            disabled={isLoading || showLoginSuccess}
           >
             {isLoading ? "Signing In..." : "Sign In"}
           </button>

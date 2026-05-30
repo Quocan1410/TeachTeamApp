@@ -3,18 +3,10 @@ import { env } from "@/lib/env";
 
 const applicationAPI = axios.create({
   baseURL: `${env.apiEndpoint}/applications`,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
-});
-
-// Add token to requests if available
-applicationAPI.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
 });
 
 // Types for API responses
@@ -63,7 +55,7 @@ export interface ApplicationResponse {
   candidateId: number;
   courseId: number;
   roleId: number;
-  status: "pending" | "shortlisted" | "selected" | "rejected";
+  status: "pending" | "selected" | "rejected";
   availability: { type: string };
   skills?: string;
   experience?: string;
@@ -78,6 +70,20 @@ export interface ApplicationResponse {
   rankedBy?: number;
   rankedAt?: string;
   rankedForCourse?: string;
+  candidateResponse?: string | null;
+  candidateRespondedAt?: string | null;
+  isWithdrawn?: boolean;
+  withdrawnAt?: string | null;
+  messageReactions?: Record<string, Record<string, number[]>> | null;
+  correspondenceMessages?: Array<{
+    id: string;
+    authorRole: "candidate" | "lecturer";
+    authorId: number;
+    body: string;
+    createdAt: string;
+    editedAt?: string | null;
+    replyToMessageId?: string | null;
+  }> | null;
   // Relationships
   course: Course;
   role: Role;
@@ -86,13 +92,17 @@ export interface ApplicationResponse {
     firstName: string;
     lastName: string;
     email: string;
+    honorific?: string | null;
     isBlocked: boolean;
+    avatarUrl?: string | null;
   };
   commentedByUser?: {
     id: number;
     firstName: string;
     lastName: string;
     email: string;
+    honorific?: string | null;
+    avatarUrl?: string | null;
   };
   rankedByUser?: {
     id: number;
@@ -106,7 +116,12 @@ export interface ApplicationStatistics {
   totalApplications: number;
   applicationsByRole: { tutor: number; lab_assistant: number };
   applicationsByCourse: Array<{ course: string; count: number }>;
-  applicationsByStatus: { pending: number; selected: number; rejected: number };
+  applicationsByStatus: {
+    pending: number;
+    selected: number;
+    rejected: number;
+    withdrawn?: number;
+  };
   skillFrequency: Array<{ skill: string; frequency: number }>;
   availabilityDistribution: { partTime: number; fullTime: number };
 }
@@ -261,7 +276,7 @@ export class ApplicationService {
   // CR Part: Update application status
   static async updateApplicationStatus(
     applicationId: number,
-    status: "pending" | "shortlisted" | "selected" | "rejected",
+    status: "pending" | "selected" | "rejected",
     comment?: string,
     selectedCourses?: string[]
   ): Promise<ApiResponse<ApplicationResponse>> {
@@ -294,11 +309,13 @@ export class ApplicationService {
   // Comment management methods
   static async updateApplicationComment(
     applicationId: number,
-    comment: string
+    comment: string,
+    replyToMessageId?: string | null
   ): Promise<ApiResponse<ApplicationResponse>> {
     try {
       const response = await applicationAPI.put(`/${applicationId}/comment`, {
         comment,
+        replyToMessageId: replyToMessageId ?? undefined,
       });
       return response.data;
     } catch (error: unknown) {
@@ -433,23 +450,114 @@ export class ApplicationService {
     }
   }
 
-  // Test method for debugging course validation
-  static async testCourseValidation(
-    selectedCourses: string[]
-  ): Promise<ApiResponse<unknown>> {
+  static async updateCandidateResponse(
+    applicationId: number,
+    response: string,
+    replyToMessageId?: string | null
+  ): Promise<ApiResponse<ApplicationResponse>> {
     try {
-      const response = await applicationAPI.post("/test-course-validation", {
-        selectedCourses,
-      });
-      return response.data;
+      const apiResponse = await applicationAPI.put(
+        `/${applicationId}/candidate-response`,
+        {
+          response,
+          replyToMessageId: replyToMessageId ?? undefined,
+        }
+      );
+      return apiResponse.data;
     } catch (error: unknown) {
-      const axiosError = error as AxiosError<ApiResponse<unknown>>;
+      const axiosError = error as AxiosError<ApiResponse<ApplicationResponse>>;
       if (axiosError.response?.data) {
         return axiosError.response.data;
       }
       return {
         success: false,
-        message: "Network error occurred during course validation test.",
+        message: "Network error occurred while sending response.",
+      };
+    }
+  }
+
+  static async deleteCandidateResponse(
+    applicationId: number,
+    messageId: string
+  ): Promise<ApiResponse<ApplicationResponse>> {
+    try {
+      const apiResponse = await applicationAPI.delete(
+        `/${applicationId}/candidate-response`,
+        { data: { messageId } }
+      );
+      return apiResponse.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<ApiResponse<ApplicationResponse>>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Network error occurred while deleting message.",
+      };
+    }
+  }
+
+  static async editCorrespondenceMessage(
+    applicationId: number,
+    messageId: string,
+    response: string
+  ): Promise<ApiResponse<ApplicationResponse>> {
+    try {
+      const apiResponse = await applicationAPI.patch(
+        `/${applicationId}/candidate-response`,
+        { messageId, response }
+      );
+      return apiResponse.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<ApiResponse<ApplicationResponse>>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Network error occurred while updating message.",
+      };
+    }
+  }
+
+  static async withdrawApplication(
+    applicationId: number
+  ): Promise<ApiResponse<ApplicationResponse>> {
+    try {
+      const apiResponse = await applicationAPI.put(`/${applicationId}/withdraw`);
+      return apiResponse.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<ApiResponse<ApplicationResponse>>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Network error occurred while withdrawing application.",
+      };
+    }
+  }
+
+  static async toggleMessageReaction(
+    applicationId: number,
+    messageId: string,
+    emoji: string
+  ): Promise<ApiResponse<ApplicationResponse>> {
+    try {
+      const apiResponse = await applicationAPI.put(
+        `/${applicationId}/message-reactions`,
+        { messageId, emoji }
+      );
+      return apiResponse.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<ApiResponse<ApplicationResponse>>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Network error occurred while updating reaction.",
       };
     }
   }

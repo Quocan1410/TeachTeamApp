@@ -1,0 +1,14 @@
+/* Square hit target with optically centered close icon */
+.iconCloseHit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 0;
+  flex-shrink: 0;
+}
+
+.iconCloseHit svg {
+  display: block;
+  flex-shrink: 0;
+}

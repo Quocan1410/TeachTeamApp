@@ -20,31 +20,10 @@ export const ADMIN_LOGIN = gql`
     }
 `;
 
-export const ADMIN_LOGOUT = gql`
-    mutation AdminLogout {
-        adminLogout
-    }
-`;
-
 // User Queries
 export const GET_ALL_USERS = gql`
     query GetAllUsers {
         getAllUsers {
-            id
-            email
-            firstName
-            lastName
-            userType
-            isBlocked
-            createdAt
-            fullName
-        }
-    }
-`;
-
-export const GET_USERS_BY_TYPE = gql`
-    query GetUsersByType($userType: UserType!) {
-        getUsersByType(userType: $userType) {
             id
             email
             firstName
@@ -65,44 +44,6 @@ export const GET_USER_STATS = gql`
             totalLecturers
             totalAdmins
             blockedUsers
-        }
-    }
-`;
-
-export const GET_USER_BY_ID = gql`
-    query GetUserById($id: Int!) {
-        getUserById(id: $id) {
-            id
-            email
-            firstName
-            lastName
-            userType
-            isBlocked
-            createdAt
-            fullName
-            courseAssignments {
-                id
-                course {
-                    id
-                    courseCode
-                    courseName
-                }
-                assignedAt
-            }
-            applications {
-                id
-                status
-                course {
-                    id
-                    courseCode
-                    courseName
-                }
-                role {
-                    id
-                    roleName
-                }
-                appliedAt
-            }
         }
     }
 `;
@@ -179,68 +120,6 @@ export const GET_ALL_COURSES = gql`
                     lastName
                 }
             }
-        }
-    }
-`;
-
-export const GET_COURSE_BY_ID = gql`
-    query GetCourseById($id: Int!) {
-        getCourseById(id: $id) {
-            id
-            courseCode
-            courseName
-            semester
-            description
-            maxTutors
-            maxLabAssistants
-            createdAt
-            displayName
-            courseAssignments {
-                id
-                lecturer {
-                    id
-                    firstName
-                    lastName
-                    email
-                }
-                assignedAt
-            }
-            applications {
-                id
-                status
-                candidate {
-                    id
-                    firstName
-                    lastName
-                    email
-                }
-                role {
-                    id
-                    roleName
-                }
-                appliedAt
-            }
-        }
-    }
-`;
-
-export const GET_ALL_COURSE_ASSIGNMENTS = gql`
-    query GetAllCourseAssignments {
-        getAllCourseAssignments {
-            id
-            lecturer {
-                id
-                firstName
-                lastName
-                email
-            }
-            course {
-                id
-                courseCode
-                courseName
-                semester
-            }
-            assignedAt
         }
     }
 `;
@@ -468,12 +347,6 @@ export const GET_MY_NOTIFICATIONS = gql`
                 metadata
             }
         }
-    }
-`;
-
-export const GET_UNREAD_NOTIFICATION_COUNT = gql`
-    query GetUnreadNotificationCount {
-        getUnreadNotificationCount
     }
 `;
 

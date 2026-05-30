@@ -14,13 +14,18 @@ import Toast from "@/shared/components/common/toast/toast";
 import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
 import { useToast } from "@/shared/hooks/useNotification";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import TutorHeroSection from "@/modules/tutor/components/hero-section/TutorHeroSection";
 import SearchFilters from "@/modules/tutor/components/search-filters/SearchFilters";
+import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
+import { useApplicationRealtime } from "@/shared/hooks/useApplicationRealtime";
+import { getApplicationApplyBlockMessage } from "@/shared/utils/applicationApplyBlock";
+import type { ApplicationUpdatedPayload } from "@/shared/socket/applicationEvents";
 
 import styles from "./TutorPage.module.css";
 
 const TutorDashboardPage: React.FC = () => {
+  const router = useRouter();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
 
   // Data state
@@ -29,7 +34,7 @@ const TutorDashboardPage: React.FC = () => {
   const [myApplications, setMyApplications] = useState<ApplicationResponse[]>(
     []
   );
-  const [isLoading, setIsLoading] = useState(true);
+  const [isDataLoading, setIsDataLoading] = useState(true);
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,6 +47,7 @@ const TutorDashboardPage: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<
     "all" | "applied" | "available" | "unavailable"
   >("all");
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 320);
 
   // Toast notifications
   const {
@@ -51,29 +57,32 @@ const TutorDashboardPage: React.FC = () => {
   } = useToast();
   const { toast: errorToast, showError, hideToast: hideError } = useToast();
 
-  // Authentication and authorization check
+  const isCandidate = user?.userType === "candidate";
+
+  // Authentication and authorization check (client navigation — not redirect())
   useEffect(() => {
     if (authLoading) return;
 
     if (!isAuthenticated || !user) {
-      redirect("/signin");
+      router.replace("/signin");
       return;
     }
 
-    // Check if user has candidate role (tutors are candidates)
     if (user.userType !== "candidate") {
-      redirect(user.userType === "lecturer" ? "/lecturer" : "/");
-      return;
+      router.replace(user.userType === "lecturer" ? "/lecturer" : "/");
     }
-  }, [user, isAuthenticated, authLoading]);
+  }, [user, isAuthenticated, authLoading, router]);
 
   // Load initial data
   useEffect(() => {
     const loadData = async () => {
-      if (!user) return;
+      if (!user || user.userType !== "candidate") {
+        setIsDataLoading(false);
+        return;
+      }
 
       try {
-        setIsLoading(true);
+        setIsDataLoading(true);
 
         // Load courses, roles, and user's applications in parallel
         const [coursesResponse, applicationsResponse] = await Promise.all([
@@ -101,11 +110,11 @@ const TutorDashboardPage: React.FC = () => {
         console.error("Error loading data:", error);
         showError("Failed to load dashboard data. Please try again.");
       } finally {
-        setIsLoading(false);
+        setIsDataLoading(false);
       }
     };
 
-    loadData();
+    void loadData();
   }, [user, showError]);
 
   // Function to refresh course data (useful after application status changes)
@@ -121,52 +130,58 @@ const TutorDashboardPage: React.FC = () => {
     }
   };
 
-  // Periodic refresh to detect application status changes
-  useEffect(() => {
-    if (!user || isLoading) return;
+  const refreshApplicationsAndCourses = React.useCallback(async () => {
+    try {
+      const [coursesResponse, applicationsResponse] = await Promise.all([
+        ApplicationService.getCoursesAndRoles(),
+        ApplicationService.getMyCandidateApplications(),
+      ]);
 
-    // Refresh course and application data every 30 seconds to detect status changes
-    const refreshInterval = setInterval(async () => {
-      try {
-        const [coursesResponse, applicationsResponse] = await Promise.all([
-          ApplicationService.getCoursesAndRoles(),
-          ApplicationService.getMyCandidateApplications(),
-        ]);
-
-        if (coursesResponse.success && coursesResponse.data) {
-          setCourses(coursesResponse.data.courses);
-        }
-
-        if (applicationsResponse.success && applicationsResponse.data) {
-          const newApplications = applicationsResponse.data;
-
-          // Check if any application status changed from pending to selected
-          const statusChanges = newApplications.filter((newApp) => {
-            const oldApp = myApplications.find((app) => app.id === newApp.id);
-            return (
-              oldApp &&
-              oldApp.status === "pending" &&
-              newApp.status === "selected"
-            );
-          });
-
-          if (statusChanges.length > 0) {
-            statusChanges.forEach((app) => {
-              showSuccess(
-                `Congratulations! You've been selected for ${app.course?.courseCode}!`
-              );
-            });
-          }
-
-          setMyApplications(newApplications);
-        }
-      } catch (error) {
-        console.error("Error during periodic refresh:", error);
+      if (coursesResponse.success && coursesResponse.data) {
+        setCourses(coursesResponse.data.courses);
       }
-    }, 30000); // Refresh every 30 seconds
 
-    return () => clearInterval(refreshInterval);
-  }, [user, isLoading, myApplications, showSuccess]);
+      if (applicationsResponse.success && applicationsResponse.data) {
+        setMyApplications(applicationsResponse.data);
+      }
+    } catch (error) {
+      console.error("Error refreshing tutor dashboard data:", error);
+    }
+  }, []);
+
+  const handleApplicationRealtimeUpdate = React.useCallback(
+    (payload: ApplicationUpdatedPayload) => {
+      const { application, reason } = payload;
+
+      setMyApplications((prev) => {
+        const index = prev.findIndex((item) => item.id === application.id);
+        if (index === -1) {
+          return reason === "created" ? [application, ...prev] : prev;
+        }
+        const next = [...prev];
+        next[index] = application;
+        return next;
+      });
+
+      if (reason === "status" && application.status === "selected") {
+        showSuccess(
+          `Congratulations! You've been selected for ${application.course?.courseCode}!`
+        );
+      }
+
+      void refreshApplicationsAndCourses();
+    },
+    [refreshApplicationsAndCourses, showSuccess]
+  );
+
+  useApplicationRealtime({
+    enabled:
+      !authLoading &&
+      isAuthenticated &&
+      isCandidate &&
+      !isDataLoading,
+    onApplicationUpdated: handleApplicationRealtimeUpdate,
+  });
 
   // Calculate comprehensive statistics
   const getComprehensiveStats = () => {
@@ -351,21 +366,21 @@ const TutorDashboardPage: React.FC = () => {
       let searchScore = 0;
       let matchesSearch = true;
 
-      if (searchQuery.trim()) {
-        // Split search query into terms and clean them
-        const searchTerms = searchQuery
+      if (debouncedSearchQuery.trim()) {
+        const searchTerms = debouncedSearchQuery
           .trim()
           .split(/\s+/)
           .filter((term) => term.length > 0);
 
         searchScore = calculateSearchScore(course, searchTerms);
 
-        // Only show courses with some relevance and available positions
-        matchesSearch = searchScore > 0.3 && hasAvailablePositions;
+        // Only show courses with enough relevance when searching.
+        // Availability filtering is handled by active filter logic below.
+        matchesSearch = searchScore > 0.3;
       } else {
-        // No search query - show all courses with available positions
-        matchesSearch = hasAvailablePositions;
-        searchScore = hasAvailablePositions ? 1 : 0;
+        // No search query - keep all courses, then apply active filter.
+        matchesSearch = true;
+        searchScore = 1;
       }
 
       let matchesFilter = true;
@@ -401,7 +416,7 @@ const TutorDashboardPage: React.FC = () => {
       .map((item) => item.course);
   }, [
     courses,
-    searchQuery,
+    debouncedSearchQuery,
     activeFilter,
     hasAppliedToCourse,
     calculateSearchScore,
@@ -419,9 +434,7 @@ const TutorDashboardPage: React.FC = () => {
     );
 
     if (existingApplication) {
-      showError(
-        `You have already applied for ${role.roleName} position in ${course.courseCode}.`
-      );
+      showError(getApplicationApplyBlockMessage(existingApplication));
       return;
     }
 
@@ -478,8 +491,11 @@ const TutorDashboardPage: React.FC = () => {
     }
   };
 
-  // Show loading while auth is being checked or data is loading
-  if (authLoading || isLoading) {
+  if (authLoading || !isAuthenticated || !user || !isCandidate) {
+    return <PageSkeleton variant="tutor" />;
+  }
+
+  if (isDataLoading) {
     return <PageSkeleton variant="tutor" />;
   }
 
@@ -527,29 +543,28 @@ const TutorDashboardPage: React.FC = () => {
         {/* Course Cards Grid - Modified to show 3 cards per row */}
         <div className="container mx-auto px-4 py-8">
           {filteredCourses.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600 text-lg">
-                {searchQuery || activeFilter !== "all"
+            <div className={styles.emptyStateCard}>
+              <p className={styles.emptyTitle}>
+                {debouncedSearchQuery || activeFilter !== "all"
                   ? "No courses match your current filters."
                   : "No courses available at the moment."}
               </p>
               {activeFilter === "available" && myApplications.length > 0 && (
-                <p className="text-gray-500 text-sm mt-2">
+                <p className={styles.emptySubtitle}>
                   You have applied to all available courses. Check the
                   &quot;Applied&quot; filter to see your applications.
                 </p>
               )}
               {activeFilter === "applied" && myApplications.length === 0 && (
-                <p className="text-gray-500 text-sm mt-2">
+                <p className={styles.emptySubtitle}>
                   You haven&apos;t applied to any courses yet. Check the
                   &quot;Available&quot; filter to see opportunities.
                 </p>
               )}
               {activeFilter === "unavailable" && (
-                <p className="text-gray-500 text-sm mt-2">
-                  All courses currently have available positions or you have
-                  already applied to them. Check the &quot;Available&quot;
-                  filter to see open opportunities.
+                <p className={styles.emptySubtitle}>
+                  Nice progress. There are no fully closed courses left for you
+                  right now, or you already applied for them.
                 </p>
               )}
             </div>

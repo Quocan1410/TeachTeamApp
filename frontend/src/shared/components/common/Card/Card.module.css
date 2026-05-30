@@ -1,7 +1,0 @@
-.card {
-  background-color: var(--color-bg-secondary);
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px -1px var(--color-shadow);
-  overflow: hidden;
-  transition: all 0.3s ease;
-}

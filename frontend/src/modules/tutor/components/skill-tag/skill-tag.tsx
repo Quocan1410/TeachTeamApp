@@ -1,4 +1,5 @@
 import React from "react";
+import CloseIcon from "@/shared/components/common/icons/CloseIcon";
 import styles from "./skill-tag.module.css";
 
 interface SkillTagProps {
@@ -12,11 +13,12 @@ const SkillTag: React.FC<SkillTagProps> = ({ skill, onRemove }) => {
       {skill}
       {onRemove && (
         <button
+          type="button"
           onClick={() => onRemove(skill)}
-          className={styles.skillTagRemove}
+          className={`${styles.skillTagRemove} iconCloseHit`}
           aria-label={`Remove skill ${skill}`}
         >
-          ×
+          <CloseIcon size={12} />
         </button>
       )}
     </div>

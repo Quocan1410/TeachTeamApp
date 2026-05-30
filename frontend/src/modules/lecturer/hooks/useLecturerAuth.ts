@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { redirect } from "next/navigation";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
+import { formatLecturerDisplayName } from "@/shared/utils/personDisplayName";
 
 export const useLecturerAuth = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -20,7 +21,17 @@ export const useLecturerAuth = () => {
       return;
     }
 
-    setLecturerName(`${user.firstName} ${user.lastName}` || "Lecturer");
+    setLecturerName(
+      formatLecturerDisplayName(
+        {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          userType: "lecturer",
+        },
+        "Lecturer"
+      )
+    );
     setCurrentLecturerId(user.id.toString());
   }, [user, isAuthenticated, isLoading]);
 

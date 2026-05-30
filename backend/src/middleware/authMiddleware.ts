@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { AppDataSource } from "../config/database";
 import { User } from "../entities/User";
 import { verifyAnyAppToken } from "../config/jwtConfig";
+import { getAuthTokenFromRequest } from "../utils/authCookie";
 
 interface JwtPayload {
     userId: number;
@@ -28,8 +29,7 @@ export const authenticateToken = async (
     res: Response,
     next: NextFunction
 ): Promise<void> => {
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(" ")[1]; // Bearer TOKEN
+    const token = getAuthTokenFromRequest(req);
 
     if (!token) {
         res.status(401).json({

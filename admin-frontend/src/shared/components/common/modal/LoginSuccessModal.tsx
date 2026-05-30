@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import styles from "./LoginSuccessModal.module.css";
+import { getUserDisplayName } from "@/shared/utils/personDisplayName";
 
 interface User {
   firstName: string;
@@ -58,8 +59,7 @@ export const LoginSuccessModal: React.FC<LoginSuccessModalProps> = ({
   }, [isVisible, duration, handleHide]);
 
   const getWelcomeMessage = () => {
-    const firstName = user.firstName || "Admin";
-    return `Welcome back, ${firstName}!`;
+    return `Welcome back, ${getUserDisplayName(user, "Admin")}!`;
   };
 
   if (!isVisible) {

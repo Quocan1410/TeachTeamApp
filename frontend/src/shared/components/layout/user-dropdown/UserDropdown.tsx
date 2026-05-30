@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getUserInitials } from "@/shared/utils/avatarUtils";
+import { getUserDisplayName, splitDisplayName } from "@/shared/utils/personDisplayName";
 import { useProtectedAvatar } from "@/shared/hooks/useProtectedAvatar";
 import styles from "./UserDropdown.module.css";
 
@@ -16,6 +17,7 @@ export interface UserDropdownProps {
     avatarNumber?: number;
     firstName?: string;
     lastName?: string;
+    userType?: string;
     hasCustomAvatar?: boolean;
   };
   onSignOut: () => void;
@@ -111,10 +113,17 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
     };
   }, []);
 
-  // Split name into parts for styling
-  const nameParts = user.fullName.split(" ");
-  const firstName = nameParts[0];
-  const lastName = nameParts.slice(1).join(" ");
+  // Split formatted display name for styling (honorific + rest)
+  const displayName =
+    user.firstName || user.lastName
+      ? getUserDisplayName({
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          userType: user.userType ?? user.role,
+        })
+      : user.fullName;
+  const { leading, rest } = splitDisplayName(displayName);
 
   return (
     <div className={styles.userDropdownContainer} ref={dropdownRef} data-testid="user-dropdown">
@@ -158,16 +167,17 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
             )}
             <div className={styles.userInfo}>
               <h3 className={styles.userName}>
-                <span className={styles.firstName}>{firstName}</span>
-                {lastName && (
-                  <span className={styles.lastName}> {lastName}</span>
-                )}
+                <span className={styles.firstName}>{leading}</span>
+                {rest ? (
+                  <span className={styles.lastName}> {rest}</span>
+                ) : null}
               </h3>
               <p className={styles.userEmail}>{user.email}</p>
               <div className={styles.userRole}>{getDisplayRole()}</div>
             </div>
             <button
-              className={styles.closeButton}
+              type="button"
+              className={`${styles.closeButton} iconCloseHit`}
               onClick={() => setIsOpen(false)}
               aria-label="Close dropdown"
             >

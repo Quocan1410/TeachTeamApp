@@ -135,6 +135,13 @@ export const validateSignupData = (data: any): ValidationResult => {
         errors.userType = "Invalid user type";
     }
 
+    if (data.honorific) {
+        const allowed = ["Mr.", "Ms.", "Mrs.", "Dr.", "Prof."];
+        if (!allowed.includes(String(data.honorific).trim())) {
+            errors.honorific = "Invalid title";
+        }
+    }
+
     return {
         isValid: Object.keys(errors).length === 0,
         errors,

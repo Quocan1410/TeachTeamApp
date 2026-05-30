@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { getMelbourneTimestamp } from "../utils/dateUtils";
+import { getAppTimestamp, getAppTimezoneLabel } from "../utils/appTime";
 import { devOpsGuard } from "../middleware/devOpsGuard";
 
 const router = Router();
@@ -26,8 +26,8 @@ router.get("/status", async (req: Request, res: Response) => {
                     ? "Database is empty or missing essential data"
                     : "Database is properly initialized",
             },
-            timestamp: getMelbourneTimestamp(),
-            timezone: "Australia/Melbourne (AEST/AEDT)",
+            timestamp: getAppTimestamp(),
+            timezone: getAppTimezoneLabel(),
         });
     } catch (error) {
         console.error("Error checking database status:", error);
@@ -35,8 +35,8 @@ router.get("/status", async (req: Request, res: Response) => {
             success: false,
             error: "Failed to check database status",
             message: error instanceof Error ? error.message : "Unknown error",
-            timestamp: getMelbourneTimestamp(),
-            timezone: "Australia/Melbourne (AEST/AEDT)",
+            timestamp: getAppTimestamp(),
+            timezone: getAppTimezoneLabel(),
         });
     }
 });
@@ -53,8 +53,8 @@ router.post("/reset", async (req: Request, res: Response) => {
         res.json({
             success: true,
             message: "Database reset completed successfully",
-            timestamp: getMelbourneTimestamp(),
-            timezone: "Australia/Melbourne (AEST/AEDT)",
+            timestamp: getAppTimestamp(),
+            timezone: getAppTimezoneLabel(),
         });
     } catch (error) {
         console.error("Database reset failed:", error);
@@ -62,8 +62,8 @@ router.post("/reset", async (req: Request, res: Response) => {
             success: false,
             error: "Database reset failed",
             message: error instanceof Error ? error.message : "Unknown error",
-            timestamp: getMelbourneTimestamp(),
-            timezone: "Australia/Melbourne (AEST/AEDT)",
+            timestamp: getAppTimestamp(),
+            timezone: getAppTimezoneLabel(),
         });
     }
 });
@@ -83,8 +83,8 @@ router.post("/auto-reset", async (req: Request, res: Response) => {
             message: wasReset
                 ? "Database was empty and has been reset with essential data"
                 : "Database was already properly initialized, no reset needed",
-            timestamp: getMelbourneTimestamp(),
-            timezone: "Australia/Melbourne (AEST/AEDT)",
+            timestamp: getAppTimestamp(),
+            timezone: getAppTimezoneLabel(),
         });
     } catch (error) {
         console.error("Auto-reset check failed:", error);
@@ -92,8 +92,8 @@ router.post("/auto-reset", async (req: Request, res: Response) => {
             success: false,
             error: "Auto-reset check failed",
             message: error instanceof Error ? error.message : "Unknown error",
-            timestamp: getMelbourneTimestamp(),
-            timezone: "Australia/Melbourne (AEST/AEDT)",
+            timestamp: getAppTimestamp(),
+            timezone: getAppTimezoneLabel(),
         });
     }
 });
@@ -110,8 +110,8 @@ router.post("/seed", async (req: Request, res: Response) => {
         res.json({
             success: true,
             message: "Essential data seeded successfully",
-            timestamp: getMelbourneTimestamp(),
-            timezone: "Australia/Melbourne (AEST/AEDT)",
+            timestamp: getAppTimestamp(),
+            timezone: getAppTimezoneLabel(),
         });
     } catch (error) {
         console.error("Seeding failed:", error);
@@ -119,8 +119,8 @@ router.post("/seed", async (req: Request, res: Response) => {
             success: false,
             error: "Seeding failed",
             message: error instanceof Error ? error.message : "Unknown error",
-            timestamp: getMelbourneTimestamp(),
-            timezone: "Australia/Melbourne (AEST/AEDT)",
+            timestamp: getAppTimestamp(),
+            timezone: getAppTimezoneLabel(),
         });
     }
 });

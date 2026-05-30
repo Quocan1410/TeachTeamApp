@@ -8,6 +8,7 @@ import {
 } from "@/shared/services/applicationService";
 import { availableSkills } from "@/modules/tutor/utils/skillOptions";
 import SkillTag from "@/modules/tutor/components/skill-tag/skill-tag";
+import ApplicationStatusBadge from "@/shared/components/common/application-status-badge/ApplicationStatusBadge";
 import styles from "./course-card.module.css";
 
 // Legacy interface
@@ -63,12 +64,13 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
   const hasApplied = legacyProps?.hasApplied || false;
 
   // Enhanced functionality: Check if user has applied for a specific role in this course
-  const getApplicationStatus = (roleId: number) => {
-    const application = myApplications.find(
+  const getApplicationForRole = (roleId: number) =>
+    myApplications.find(
       (app) => app.courseId === (course as Course).id && app.roleId === roleId
     );
-    return application?.status || null;
-  };
+
+  const getApplicationStatus = (roleId: number) =>
+    getApplicationForRole(roleId)?.status || null;
 
   // Enhanced functionality: Get suggested skills for this course
   const getSuggestedSkills = () => {
@@ -245,7 +247,8 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
               }
 
               return rolesToShow.map((role) => {
-                const applicationStatus = getApplicationStatus(role.id);
+                const application = getApplicationForRole(role.id);
+                const applicationStatus = application?.status || null;
                 // Always show total positions for display
                 const maxPositions =
                   role.roleName === "tutor"
@@ -311,64 +314,10 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
 
                     <div className={styles.roleAction}>
                       {applicationStatus ? (
-                        <span
-                          className={`${styles.statusBadge} ${styles[`status-${applicationStatus}`]}`}
-                        >
-                          <span className={styles.statusIcon}>
-                              {applicationStatus === "pending" && (
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              )}
-                              {applicationStatus === "selected" && (
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              )}
-                              {applicationStatus === "shortlisted" && (
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                </svg>
-                              )}
-                              {applicationStatus === "rejected" && (
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              )}
-                          </span>
-                          <span className={styles.statusText}>
-                            {applicationStatus.charAt(0).toUpperCase() +
-                              applicationStatus.slice(1)}
-                          </span>
-                        </span>
+                        <ApplicationStatusBadge
+                          status={applicationStatus}
+                          isWithdrawn={application?.isWithdrawn}
+                        />
                       ) : availablePositions! > 0 && applicationOpen ? (
                         <motion.button
                           type="button"

@@ -155,6 +155,10 @@ router.get("/avatar/image", authenticateToken, async (req, res) => {
     await authController.getMyAvatar(req, res);
 });
 
+router.get("/users/:userId/avatar", authenticateToken, async (req, res) => {
+    await authController.getUserAvatar(req, res);
+});
+
 router.post("/avatar", authenticateToken, (req, res) => {
     avatarUpload.single("avatar")(req, res, async (err) => {
         if (err) {

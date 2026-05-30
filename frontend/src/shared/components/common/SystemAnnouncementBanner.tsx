@@ -5,15 +5,16 @@ import {
   Announcement,
   AnnouncementService,
 } from "@/shared/services/announcementService";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
 
 export default function SystemAnnouncementBanner() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const load = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
+        if (!isAuthenticated) return;
         const res = await AnnouncementService.getActive();
         if (res.success && res.data?.length) {
           setAnnouncements(res.data);
@@ -23,7 +24,7 @@ export default function SystemAnnouncementBanner() {
       }
     };
     load();
-  }, []);
+  }, [isAuthenticated]);
 
   if (!announcements.length) return null;
 

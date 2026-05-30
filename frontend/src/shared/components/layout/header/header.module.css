@@ -168,6 +168,7 @@
   left: 0;
   width: 0;
   height: 2px;
+  border-radius: 999px;
   background-color: var(--color-primary);
   transition: width 0.3s ease;
   opacity: 0;

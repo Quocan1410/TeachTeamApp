@@ -1,0 +1,633 @@
+/* LinkedIn-style.
+   LinkedIn-style conversation chrome for the application detail panel.
+*/
+
+.chatHeader {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 1.25rem 0.85rem;
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.chatHeaderMain {
+  min-width: 0;
+  flex: 1;
+}
+
+.chatHeaderTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--color-text-primary);
+}
+
+.chatHeaderSubtitle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.28rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: var(--color-text-tertiary);
+}
+
+.chatHeaderDot {
+  opacity: 0.65;
+}
+
+.chatHeaderActions {
+  flex-shrink: 0;
+}
+
+.conversationShell {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-primary);
+}
+
+.threadScroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.85rem 1.15rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.submissionSection {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.dateDividerAppliedIntro {
+  margin-top: 0.2rem;
+  margin-bottom: 0.55rem;
+}
+
+.dateDividerSubmissionEnd {
+  margin-top: 0.85rem;
+  margin-bottom: 0;
+}
+
+.threadLog {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 0.65rem;
+}
+
+.dateDividerInThread {
+  margin-top: 0.15rem;
+  margin-bottom: 0.65rem;
+}
+
+.dateDivider {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0.65rem 0 0.75rem;
+  color: var(--color-text-tertiary);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.dateDivider::before,
+.dateDivider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: color-mix(in srgb, var(--color-border) 88%, transparent);
+}
+
+.messageRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.6rem 0.55rem;
+  margin: 0 -0.5rem;
+  position: relative;
+  border-radius: 0.45rem;
+  border: 1px solid transparent;
+  overflow: visible;
+  transition:
+    background 0.14s ease,
+    border-color 0.14s ease;
+}
+
+.messageRowInteractive:hover,
+.messageRowInteractive:focus-within {
+  background: color-mix(in srgb, var(--color-bg-secondary) 58%, transparent);
+  border-color: color-mix(in srgb, var(--color-border) 88%, transparent);
+}
+
+.messageContentWrap {
+  display: block;
+  max-width: 100%;
+  position: relative;
+}
+
+.messageContentWrap .messageBody {
+  margin: 0;
+}
+
+.messageToolbarSlot {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 8;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.15rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.14s ease;
+}
+
+.messageRowInteractive:hover .messageToolbarSlot,
+.messageRowInteractive:focus-within .messageToolbarSlot {
+  opacity: 1;
+  pointer-events: auto;
+}
+:global(.dark) .messageRowInteractive:hover,
+:global(.dark) .messageRowInteractive:focus-within {
+  background: color-mix(in srgb, #292524 88%, transparent);
+  border-color: color-mix(in srgb, #57534e 55%, transparent);
+}
+
+.messageRowHighlight {
+  margin: 0 -0.45rem;
+  padding: 0.55rem 0.45rem;
+  border-radius: 0.55rem;
+  background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+}
+
+:global(.dark) .messageRowHighlight {
+  background: color-mix(in srgb, #f97316 8%, transparent);
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: linear-gradient(145deg, #64748b, #475569);
+  user-select: none;
+}
+
+.avatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 999px;
+}
+
+.avatarYou {
+  background: linear-gradient(145deg, #6366f1, #4f46e5);
+}
+
+.avatarLecturer {
+  background: linear-gradient(145deg, #0ea5e9, #0284c7);
+}
+
+.messageMain {
+  position: relative;
+  min-width: 0;
+  flex: 1;
+  padding-right: 0.25rem;
+  overflow: visible;
+}
+
+.messageHead {
+  margin-bottom: 0.15rem;
+}
+
+.messageHeadMain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.35rem;
+  min-width: 0;
+}
+
+.messageRowPinned {
+  border-left: 2px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+  padding-left: 0.35rem;
+}
+
+.messageRow:global(.correspondenceMessageJumpTarget) {
+  animation: correspondenceJumpPulse 1.4s ease;
+}
+
+@keyframes correspondenceJumpPulse {
+  0% {
+    background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+:global(.dark) .messageRow:global(.correspondenceMessageJumpTarget) {
+  animation: correspondenceJumpPulseDark 1.4s ease;
+}
+
+@keyframes correspondenceJumpPulseDark {
+  0% {
+    background: color-mix(in srgb, #f97316 16%, transparent);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+.pinnedBadge {
+  font-size: 0.68rem;
+  line-height: 1;
+}
+
+.messageName {
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--color-text-primary);
+}
+
+.messageMeta {
+  font-size: 0.72rem;
+  line-height: 1.25;
+  color: var(--color-text-tertiary);
+}
+
+.editedLabel {
+  font-style: italic;
+}
+
+.threadEnd {
+  height: 0.25rem;
+}
+
+.messageBody {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--color-text-primary);
+  white-space: pre-wrap;
+}
+
+.messageReactions,
+.reactionTray {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.4rem;
+  padding: 0.15rem 0.3rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-bg-secondary) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 80%, transparent);
+}
+
+.reactionChip,
+.reactionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  min-height: 1.55rem;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-bg-primary) 88%, transparent);
+  font-size: 0.72rem;
+  line-height: 1;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.reactionChip:hover:not(:disabled),
+.reactionBtn:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+  color: var(--color-text-primary);
+}
+
+.reactionBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.reactionChipActive,
+.reactionBtnActive {
+  border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border));
+  background: color-mix(in srgb, var(--color-primary) 12%, var(--color-bg-primary));
+  color: var(--color-text-primary);
+}
+
+.reactionAddWrap {
+  position: relative;
+}
+
+.reactionAddBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.65rem;
+  height: 1.55rem;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--color-border) 85%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-bg-primary) 90%, transparent);
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+}
+
+.reactionAddBtn:hover:not(:disabled) {
+  color: var(--color-text-primary);
+  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+}
+
+.reactionPicker {
+  position: absolute;
+  bottom: calc(100% + 0.35rem);
+  left: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  padding: 0.35rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-primary);
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12);
+}
+
+.reactionPickerEmoji {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border: none;
+  border-radius: 0.45rem;
+  background: transparent;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.reactionPickerEmoji:hover,
+.reactionPickerEmojiActive {
+  background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+.reactionEmoji {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.reactionCount {
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.applicationBlock {
+  padding-bottom: 0.35rem;
+  margin-bottom: 0;
+}
+
+.applicationHeadline {
+  margin: 0 0 0.35rem;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+
+.applicationDetailLine {
+  margin: 0 0 0.45rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.applicationDetailLine:last-child {
+  margin-bottom: 0;
+}
+
+.applicationLabel {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.emptyThread {
+  margin: 0.75rem 0 0.5rem;
+  padding: 0.85rem 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--color-text-tertiary);
+}
+
+.closedNotice {
+  margin: 0.35rem 0 0.5rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.55rem;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--color-text-tertiary);
+  background: color-mix(in srgb, var(--color-bg-secondary) 80%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--color-border) 85%, transparent);
+}
+
+.composer {
+  flex-shrink: 0;
+  padding: 0.75rem 1.15rem 0.85rem;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+}
+
+.composerBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+  padding: 0.4rem 0.55rem;
+  border-radius: 0.45rem;
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-primary));
+  border: 1px solid color-mix(in srgb, var(--color-primary) 18%, var(--color-border));
+}
+
+.composerBannerText {
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+}
+
+.composerBannerClose {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  border-radius: 0.3rem;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.composerBannerClose:hover {
+  background: color-mix(in srgb, var(--color-border) 70%, transparent);
+  color: var(--color-text-secondary);
+}
+
+.composerEditHint {
+  margin: 0 0 0.4rem 2.95rem;
+  font-size: 0.7rem;
+  color: var(--color-text-tertiary);
+}
+
+.composerRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.composerAvatar {
+  margin-top: 0.15rem;
+}
+
+.composerField {
+  flex: 1;
+  min-width: 0;
+}
+
+.composerTextarea {
+  width: 100%;
+  min-height: 2.65rem;
+  max-height: 8rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--color-border) 92%, transparent);
+  border-radius: 0.65rem;
+  background: var(--color-bg-primary);
+  font-family: inherit;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--color-text-primary);
+  resize: vertical;
+  box-sizing: border-box;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.composerTextarea::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.composerTextarea:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+.composerActions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.55rem;
+}
+
+.composerBtn {
+  min-height: 2rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.composerBtnGhost {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-text-secondary);
+}
+
+.composerBtnGhost:hover:not(:disabled) {
+  color: var(--color-text-primary);
+  background: color-mix(in srgb, var(--color-bg-primary) 65%, transparent);
+}
+
+.composerBtnPrimary {
+  border: 1px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.composerBtnPrimary:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.composerBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.threadFooter {
+  padding: 0.35rem 0 0.15rem;
+  text-align: center;
+}
+
+.withdrawLink {
+  border: none;
+  background: none;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.withdrawLink:hover:not(:disabled) {
+  color: var(--color-text-secondary);
+}
+
+.withdrawLink:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.withdrawnNote {
+  margin: 0.5rem 0 0;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.55rem;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--color-text-tertiary);
+  background: color-mix(in srgb, var(--color-bg-secondary) 80%, transparent);
+}

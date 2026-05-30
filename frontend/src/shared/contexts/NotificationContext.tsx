@@ -203,22 +203,21 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   const markAsRead = useCallback(
     async (notificationId: string) => {
       const numericId = parseInt(notificationId, 10);
-      if (!Number.isNaN(numericId)) {
-        try {
-          const count = await apiMarkAsRead(numericId);
-          setUnreadCount(count);
-        } catch (error) {
-          console.error("Failed to mark notification as read:", error);
-        }
-      }
+      if (Number.isNaN(numericId)) return;
 
-      setNotifications((prev) =>
-        prev.map((notification) =>
-          notification.id === notificationId
-            ? { ...notification, read: true }
-            : notification
-        )
-      );
+      try {
+        const count = await apiMarkAsRead(numericId);
+        setUnreadCount(count);
+        setNotifications((prev) =>
+          prev.map((notification) =>
+            notification.id === notificationId
+              ? { ...notification, read: true }
+              : notification
+          )
+        );
+      } catch (error) {
+        console.error("Failed to mark notification as read:", error);
+      }
     },
     []
   );
@@ -227,30 +226,28 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     try {
       const count = await apiMarkAllAsRead();
       setUnreadCount(count);
+      setNotifications((prev) =>
+        prev.map((notification) => ({ ...notification, read: true }))
+      );
     } catch (error) {
       console.error("Failed to mark all notifications as read:", error);
     }
-
-    setNotifications((prev) =>
-      prev.map((notification) => ({ ...notification, read: true }))
-    );
   }, []);
 
   const removeNotification = useCallback(
     async (notificationId: string) => {
       const numericId = parseInt(notificationId, 10);
-      if (!Number.isNaN(numericId)) {
-        try {
-          const count = await apiDeleteNotification(numericId);
-          setUnreadCount(count);
-        } catch (error) {
-          console.error("Failed to delete notification:", error);
-        }
-      }
+      if (Number.isNaN(numericId)) return;
 
-      setNotifications((prev) =>
-        prev.filter((notification) => notification.id !== notificationId)
-      );
+      try {
+        const count = await apiDeleteNotification(numericId);
+        setUnreadCount(count);
+        setNotifications((prev) =>
+          prev.filter((notification) => notification.id !== notificationId)
+        );
+      } catch (error) {
+        console.error("Failed to delete notification:", error);
+      }
     },
     []
   );

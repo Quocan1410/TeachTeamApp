@@ -117,6 +117,11 @@ const ensureSchemaColumns = async (): Promise<void> => {
         "ALTER TABLE `users` ADD `theme` varchar(10) NOT NULL DEFAULT 'dark'"
     );
     await ensureColumn(
+        "users",
+        "honorific",
+        "ALTER TABLE `users` ADD `honorific` varchar(10) NULL"
+    );
+    await ensureColumn(
         "courses",
         "applicationDeadline",
         "ALTER TABLE `courses` ADD `applicationDeadline` datetime NULL"
@@ -126,6 +131,11 @@ const ensureSchemaColumns = async (): Promise<void> => {
         "lecturerNotes",
         "ALTER TABLE `applications` ADD `lecturerNotes` text NULL"
     );
+    await ensureColumn(
+        "applications",
+        "correspondenceMessages",
+        "ALTER TABLE `applications` ADD `correspondenceMessages` json NULL"
+    );
 };
 
 export const initializeDatabase = async () => {
@@ -133,8 +143,7 @@ export const initializeDatabase = async () => {
         await initializeDataSource();
         await ensureSchemaColumns();
 
-        const { runAllSeeds } = await import("../seeds");
-        await runAllSeeds();
+        // Data is loaded via /api/database reset or manual bootstrap — not on every start.
     } catch (error) {
         console.error("Error during database initialization:", error);
         throw error;

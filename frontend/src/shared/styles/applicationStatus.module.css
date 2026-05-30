@@ -1,0 +1,96 @@
+/* Shared application status badges — matches tutor course-card */
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 0.375rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+
+.statusIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.statusIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.statusText {
+  margin-left: 0.05rem;
+}
+
+.status-pending {
+  background-color: rgba(245, 158, 11, 0.14);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.28);
+}
+
+.status-shortlisted {
+  background-color: rgba(139, 92, 246, 0.14);
+  color: #7c3aed;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.status-selected {
+  background-color: rgba(16, 185, 129, 0.14);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.28);
+}
+
+.status-rejected {
+  background-color: rgba(239, 68, 68, 0.14);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.28);
+}
+
+.status-withdrawn {
+  background-color: rgba(107, 114, 128, 0.16);
+  color: #4b5563;
+  border: 1px solid rgba(107, 114, 128, 0.3);
+}
+
+:global(html.dark) .status-pending,
+:global(html[data-theme="dark"]) .status-pending {
+  background-color: rgba(245, 158, 11, 0.22);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.38);
+}
+
+:global(html.dark) .status-shortlisted,
+:global(html[data-theme="dark"]) .status-shortlisted {
+  background-color: rgba(167, 139, 250, 0.18);
+  color: #c4b5fd;
+  border-color: rgba(167, 139, 250, 0.32);
+}
+
+:global(html.dark) .status-selected,
+:global(html[data-theme="dark"]) .status-selected {
+  background-color: rgba(16, 185, 129, 0.22);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.38);
+}
+
+:global(html.dark) .status-rejected,
+:global(html[data-theme="dark"]) .status-rejected {
+  background-color: rgba(239, 68, 68, 0.22);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.38);
+}
+
+:global(html.dark) .status-withdrawn,
+:global(html[data-theme="dark"]) .status-withdrawn {
+  background-color: rgba(107, 114, 128, 0.24);
+  color: #9ca3af;
+  border-color: rgba(107, 114, 128, 0.4);
+}

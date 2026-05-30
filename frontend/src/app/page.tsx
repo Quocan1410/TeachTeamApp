@@ -9,6 +9,7 @@ import Modal from "@/shared/components/common/modal/Modal";
 import type { Lecturer } from "@/shared/types/lecturer";
 import HeroSection from "@/modules/home/components/hero-section/HeroSection";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
+import { useRouter } from "next/navigation";
 import { PublicService } from "@/shared/services/publicService";
 
 function lecturerAvatarIndex(contact: string, fallbackIndex: number): number {
@@ -24,8 +25,18 @@ export default function HomePage() {
   const [lecturersError, setLecturersError] = useState<string | null>(null);
   const [activeLecturer, setActiveLecturer] = useState<Lecturer | null>(null);
 
-  const { user, isAuthenticated } = useAuth();
+  const router = useRouter();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const userRole = user?.userType || null;
+
+  useEffect(() => {
+    if (authLoading || !isAuthenticated || !user) return;
+    if (user.userType === "candidate") {
+      router.replace("/tutor");
+    } else if (user.userType === "lecturer") {
+      router.replace("/lecturer");
+    }
+  }, [authLoading, isAuthenticated, user, router]);
 
   const loadLecturers = useCallback(async () => {
     setLecturersLoading(true);

@@ -8,6 +8,10 @@ import {
     GET_UNSELECTED_CANDIDATES,
 } from "@/lib/graphql/queries";
 import {
+    formatCandidateDisplayName,
+    formatLecturerDisplayName,
+} from "@/shared/utils/personDisplayName";
+import {
     DocumentChartBarIcon,
     UserGroupIcon,
     ExclamationTriangleIcon,
@@ -282,11 +286,9 @@ export default function ReportsPage() {
                                                                                     styles.candidateName
                                                                                 }
                                                                             >
-                                                                                {
-                                                                                    selection
-                                                                                        .candidate
-                                                                                        .fullName
-                                                                                }
+                                                                                {formatCandidateDisplayName(
+                                                                                    selection.candidate
+                                                                                )}
                                                                             </h4>
                                                                             <p
                                                                                 className={
@@ -345,11 +347,12 @@ export default function ReportsPage() {
                                                                         >
                                                                             Selected
                                                                             by:{" "}
-                                                                            {
-                                                                                selection
-                                                                                    .selectedBy
-                                                                                    .fullName
-                                                                            }
+                                                                            {formatLecturerDisplayName(
+                                                                                {
+                                                                                    ...selection.selectedBy,
+                                                                                    userType: "lecturer",
+                                                                                }
+                                                                            )}
                                                                         </p>
                                                                     </div>
                                                                 </div>
@@ -448,11 +451,9 @@ export default function ReportsPage() {
                                                                         styles.candidateName
                                                                     }
                                                                 >
-                                                                    {
-                                                                        candidateData
-                                                                            .candidate
-                                                                            .fullName
-                                                                    }
+                                                                    {formatCandidateDisplayName(
+                                                                        candidateData.candidate
+                                                                    )}
                                                                 </h3>
                                                                 <p
                                                                     className={
@@ -646,11 +647,9 @@ export default function ReportsPage() {
                                                                         styles.candidateName
                                                                     }
                                                                 >
-                                                                    {
-                                                                        candidateData
-                                                                            .candidate
-                                                                            .fullName
-                                                                    }
+                                                                    {formatCandidateDisplayName(
+                                                                        candidateData.candidate
+                                                                    )}
                                                                 </h3>
                                                                 <p
                                                                     className={

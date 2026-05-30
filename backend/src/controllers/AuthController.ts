@@ -19,7 +19,10 @@ import {
     getAvatarMimeType,
     resolveAvatarFilePath,
 } from "../utils/avatarUtils";
-import { signBackendToken } from "../config/jwtConfig";
+import {
+    clearAuthCookie,
+    setAuthCookie,
+} from "../utils/authCookie";
 
 interface AssignedCourse {
     id: number;
@@ -36,7 +39,8 @@ export class AuthController {
 
     async signup(req: Request, res: Response): Promise<void> {
         try {
-            const { email, password, firstName, lastName, userType } = req.body;
+            const { email, password, firstName, lastName, userType, honorific } =
+                req.body;
 
             // Automatically determine userType from email domain if not provided
             let finalUserType = userType;
@@ -102,6 +106,13 @@ export class AuthController {
             const saltRounds = 12;
             const hashedPassword = await bcrypt.hash(password, saltRounds);
 
+            const resolvedHonorific =
+                finalUserType === UserType.LECTURER
+                    ? "Dr."
+                    : typeof honorific === "string" && honorific.trim()
+                      ? honorific.trim()
+                      : "Mr.";
+
             // Create new user with the final userType
             const newUser = this.userRepository.create({
                 email,
@@ -109,6 +120,7 @@ export class AuthController {
                 firstName,
                 lastName,
                 userType: finalUserType as UserType,
+                honorific: resolvedHonorific,
             });
 
             // Save user to database
@@ -127,7 +139,7 @@ export class AuthController {
                 });
             }
 
-            const token = signBackendToken({
+            setAuthCookie(res, {
                 userId: savedUser.id,
                 email: savedUser.email,
                 userType: savedUser.userType,
@@ -141,7 +153,6 @@ export class AuthController {
                 message: "User registered successfully",
                 data: {
                     user: userWithoutPassword,
-                    token,
                 },
             });
         } catch (error) {
@@ -205,7 +216,7 @@ export class AuthController {
                 return;
             }
 
-            const token = signBackendToken({
+            setAuthCookie(res, {
                 userId: user.id,
                 email: user.email,
                 userType: user.userType,
@@ -218,7 +229,6 @@ export class AuthController {
                 message: "Login successful",
                 data: {
                     user: userWithoutPassword,
-                    token,
                 },
             });
         } catch (error) {
@@ -232,8 +242,7 @@ export class AuthController {
 
     async logout(req: Request, res: Response): Promise<void> {
         try {
-            // Since we're using JWTs, logout is handled on the client side
-            // by removing the token from storage
+            clearAuthCookie(res);
             res.status(200).json({
                 success: true,
                 message: "Logged out successfully",
@@ -602,6 +611,61 @@ export class AuthController {
             fs.createReadStream(filePath).pipe(res);
         } catch (error) {
             console.error("Get avatar error:", error);
+            res.status(500).json({
+                success: false,
+                message: "Failed to load avatar",
+            });
+        }
+    }
+
+    /** Avatar of another user (e.g. lecturer in correspondence) — requires login. */
+    async getUserAvatar(req: Request, res: Response): Promise<void> {
+        try {
+            const requesterId = (req as { user?: { userId?: number } }).user
+                ?.userId;
+            if (!requesterId) {
+                res.status(401).json({
+                    success: false,
+                    message: "User not authenticated",
+                });
+                return;
+            }
+
+            const targetUserId = parseInt(req.params.userId, 10);
+            if (!Number.isInteger(targetUserId) || targetUserId <= 0) {
+                res.status(400).json({
+                    success: false,
+                    message: "Invalid user id",
+                });
+                return;
+            }
+
+            const user = await this.userRepository.findOne({
+                where: { id: targetUserId },
+            });
+
+            if (!user?.avatarUrl) {
+                res.status(404).json({
+                    success: false,
+                    message: "No avatar uploaded",
+                });
+                return;
+            }
+
+            const filePath = resolveAvatarFilePath(user.avatarUrl);
+            if (!filePath) {
+                res.status(404).json({
+                    success: false,
+                    message: "Avatar file not found",
+                });
+                return;
+            }
+
+            res.setHeader("Content-Type", getAvatarMimeType(filePath));
+            res.setHeader("Cache-Control", "private, max-age=300");
+            fs.createReadStream(filePath).pipe(res);
+        } catch (error) {
+            console.error("Get user avatar error:", error);
             res.status(500).json({
                 success: false,
                 message: "Failed to load avatar",

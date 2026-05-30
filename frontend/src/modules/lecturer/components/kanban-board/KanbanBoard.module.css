@@ -83,6 +83,11 @@
   margin-top: 0.25rem;
 }
 
+.withdrawnTag {
+  color: #b45309;
+  font-weight: 600;
+}
+
 .cardActions {
   display: flex;
   flex-wrap: wrap;

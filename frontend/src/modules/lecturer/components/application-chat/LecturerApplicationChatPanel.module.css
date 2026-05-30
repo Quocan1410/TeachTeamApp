@@ -1,0 +1,89 @@
+.panel {
+  margin-top: 1.25rem;
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  border-radius: 12px;
+  background: var(--surface-elevated, #fff);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+}
+
+.header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(249, 115, 22, 0.15);
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #ea580c;
+}
+
+.title {
+  margin: 0.25rem 0 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.thread {
+  max-height: 320px;
+}
+
+.composer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(249, 115, 22, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 72px;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  font: inherit;
+}
+
+.replyHint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.composerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.primaryBtn,
+.secondaryBtn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primaryBtn {
+  background: #ea580c;
+  color: #fff;
+  border: none;
+}
+
+.primaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.secondaryBtn {
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}

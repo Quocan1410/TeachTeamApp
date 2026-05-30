@@ -12,3 +12,8 @@ textarea:focus {
   --tw-ring-inset-shadow: none !important;
   box-shadow: none !important;
 }
+
+/* Tutor applications: prevent smooth scroll yanking viewport on card click */
+html:has([data-applications-page]) {
+  scroll-behavior: auto !important;
+}

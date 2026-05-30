@@ -120,7 +120,9 @@ class StorageManager {
         key: string,
         success: boolean
     ): void {
-        // Removed debug logging for cleaner console output
+        void operation;
+        void key;
+        void success;
     }
 
     // Storage health monitoring

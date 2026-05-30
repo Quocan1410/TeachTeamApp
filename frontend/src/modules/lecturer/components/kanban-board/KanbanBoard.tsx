@@ -2,11 +2,11 @@
 
 import React from "react";
 import type { ApplicationResponse } from "@/shared/services/applicationService";
+import { formatCandidateDisplayName } from "@/shared/utils/personDisplayName";
 import styles from "./KanbanBoard.module.css";
 
 const COLUMNS = [
   { key: "pending", label: "Pending" },
-  { key: "shortlisted", label: "Shortlisted" },
   { key: "selected", label: "Selected" },
   { key: "rejected", label: "Rejected" },
 ] as const;
@@ -34,7 +34,12 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   onMoveStatus,
 }) => {
   const byStatus = (status: StatusKey) =>
-    applications.filter((a) => a.status === status);
+    applications.filter((a) => {
+      if (a.status !== status) return false;
+      if (status === "rejected" && a.isWithdrawn) return true;
+      if (status !== "rejected" && a.isWithdrawn) return false;
+      return true;
+    });
 
   return (
     <div className={styles.board}>
@@ -51,7 +56,10 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
             </div>
             <div className={styles.columnBody}>
               {items.map((app) => {
-                const name = `${app.candidate?.firstName ?? ""} ${app.candidate?.lastName ?? ""}`.trim();
+                const name = formatCandidateDisplayName(
+                  app.candidate ?? { userType: "candidate" },
+                  "Candidate"
+                );
                 const isSelected = selectedId === app.id;
                 const inCompare = compareIds.includes(app.id);
                 return (
@@ -64,6 +72,9 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     <div className={styles.cardName}>{name || "Candidate"}</div>
                     <div className={styles.cardMeta}>
                       {app.course.courseCode} · {app.role?.roleName}
+                      {app.isWithdrawn && (
+                        <span className={styles.withdrawnTag}> · Withdrawn</span>
+                      )}
                     </div>
                     <div className={styles.cardActions} onClick={(e) => e.stopPropagation()}>
                       <button
@@ -73,16 +84,19 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       >
                         {inCompare ? "✓ Compare" : "Compare"}
                       </button>
-                      {COLUMNS.filter((c) => c.key !== col.key).map((target) => (
-                        <button
-                          key={target.key}
-                          type="button"
-                          className={styles.miniBtn}
-                          onClick={() => onMoveStatus(app, target.key)}
-                        >
-                          → {target.label}
-                        </button>
-                      ))}
+                      {!app.isWithdrawn &&
+                        COLUMNS.filter((c) => c.key !== col.key).map(
+                          (target) => (
+                            <button
+                              key={target.key}
+                              type="button"
+                              className={styles.miniBtn}
+                              onClick={() => onMoveStatus(app, target.key)}
+                            >
+                              → {target.label}
+                            </button>
+                          )
+                        )}
                     </div>
                   </button>
                 );

@@ -2,6 +2,8 @@
 
 import React from "react";
 import type { ApplicationResponse } from "@/shared/services/applicationService";
+import CloseIcon from "@/shared/components/common/icons/CloseIcon";
+import { formatCandidateDisplayName } from "@/shared/utils/personDisplayName";
 import styles from "./ComparePanel.module.css";
 
 interface ComparePanelProps {
@@ -17,13 +19,21 @@ const ComparePanel: React.FC<ComparePanelProps> = ({ applications, onClose }) =>
       <div className={styles.panel} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
           <h2>Compare applicants ({applications.length}/3)</h2>
-          <button type="button" className={styles.closeBtn} onClick={onClose}>
-            ×
+          <button
+            type="button"
+            className={`${styles.closeBtn} iconCloseHit`}
+            onClick={onClose}
+            aria-label="Close compare panel"
+          >
+            <CloseIcon size={18} />
           </button>
         </div>
         <div className={styles.grid}>
           {applications.map((app) => {
-            const name = `${app.candidate?.firstName ?? ""} ${app.candidate?.lastName ?? ""}`.trim();
+            const name = formatCandidateDisplayName(
+              app.candidate ?? { userType: "candidate" },
+              "Candidate"
+            );
             return (
               <div key={app.id} className={styles.col}>
                 <h3>{name}</h3>

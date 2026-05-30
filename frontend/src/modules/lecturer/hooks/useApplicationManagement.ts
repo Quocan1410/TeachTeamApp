@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import {
   ApplicationService,
   ApplicationResponse,
@@ -20,6 +21,7 @@ export const useApplicationManagement = () => {
   const [selectedRankingCourse, setSelectedRankingCourse] =
     useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 320);
   const [roleTypeFilter, setRoleTypeFilter] = useState<string>("all");
   const [availabilityFilter, setAvailabilityFilter] = useState<string>("all");
   const [skillsFilter, setSkillsFilter] = useState<string>("");
@@ -44,7 +46,9 @@ export const useApplicationManagement = () => {
       // Build filters object
       const filters: ApplicationFilters = {};
 
-      if (searchQuery.trim()) filters.candidateName = searchQuery.trim();
+      if (debouncedSearchQuery.trim()) {
+        filters.candidateName = debouncedSearchQuery.trim();
+      }
       if (roleTypeFilter !== "all") filters.roleType = roleTypeFilter;
       if (availabilityFilter !== "all")
         filters.availability = availabilityFilter;
@@ -64,30 +68,11 @@ export const useApplicationManagement = () => {
             app.status === "selected" &&
             app.rank !== undefined &&
             app.rank !== null &&
-            app.rank > 0 // Only show applications with actual rank
-          // Temporarily remove rankedForCourse requirement to debug
-          // && app.rankedForCourse
+            app.rank > 0 &&
+            app.rankedForCourse
         );
 
-        // Sort ranked applications by rank for proper display
         ranked.sort((a, b) => (a.rank || 0) - (b.rank || 0));
-
-        // Available for debugging if needed
-        // const allSelectedApps = response.data
-        //   .filter((app) => app.status === "selected")
-        //   .map((app) => ({
-        //     id: app.id,
-        //     name: app.candidate?.firstName + " " + app.candidate?.lastName,
-        //     rank: app.rank,
-        //     rankType: typeof app.rank,
-        //     rankCheck:
-        //       app.rank !== undefined && app.rank !== null && app.rank > 0,
-        //     rankedForCourse: app.rankedForCourse,
-        //     status: app.status,
-        //   }));
-
-        // Applications loaded successfully
-
         setRankedApplications(ranked);
       } else {
         console.error("Failed to load applications:", response.message);
@@ -102,7 +87,7 @@ export const useApplicationManagement = () => {
       setIsLoading(false);
     }
   }, [
-    searchQuery,
+    debouncedSearchQuery,
     roleTypeFilter,
     availabilityFilter,
     skillsFilter,
@@ -150,7 +135,7 @@ export const useApplicationManagement = () => {
   }, [
     isInitialized,
     loadApplications,
-    searchQuery,
+    debouncedSearchQuery,
     roleTypeFilter,
     availabilityFilter,
     skillsFilter,

@@ -6,7 +6,7 @@ import { CourseAssignment } from "../entities/CourseAssignment";
 import { Application } from "../entities/Application";
 import { SelectedCandidate } from "../entities/SelectedCandidate";
 import { Notification } from "../entities/Notification";
-import { runAllSeeds } from "../seeds";
+import { runBootstrapSeed } from "../seeds";
 
 export class DatabaseResetService {
     /**
@@ -122,7 +122,7 @@ export class DatabaseResetService {
      */
     static async seedEssentialData(): Promise<void> {
         try {
-            await runAllSeeds();
+            await runBootstrapSeed();
         } catch (error) {
             console.error("Error seeding essential data:", error);
             throw error;

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AuthService } from "../services/authService";
 import { env } from "@/lib/env";
 
 export function useProtectedAvatar(
@@ -19,15 +18,9 @@ export function useProtectedAvatar(
         return;
       }
 
-      const token = AuthService.getToken();
-      if (!token) {
-        setObjectUrl(null);
-        return;
-      }
-
       try {
         const response = await fetch(`${env.apiEndpoint}/auth/avatar/image`, {
-          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
         });
 
         if (!response.ok) {

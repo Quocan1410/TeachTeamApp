@@ -10,7 +10,7 @@ export interface Application {
   skills: string[];
   academicCredentials: string;
   dateApplied: string; // ISO date string
-  status?: "pending" | "shortlisted" | "selected" | "rejected";
+  status?: "pending" | "selected" | "rejected";
   selected?: boolean; // Kept for compatibility, but status is preferred
   selectedBy?: string; // Lecturer User ID
   selectedDate?: string; // ISO date string
@@ -18,6 +18,7 @@ export interface Application {
   comment?: string; // Lecturer's comment
   rank?: number; // Lecturer's ranking
   isBlocked?: boolean; // Whether the candidate is blocked
+  isWithdrawn?: boolean;
 }
 
 
