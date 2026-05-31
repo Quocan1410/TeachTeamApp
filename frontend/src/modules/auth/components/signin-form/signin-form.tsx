@@ -35,12 +35,26 @@ export default function SignInForm() {
   const [redirectPath, setRedirectPath] = useState<string>("");
   const [isDashboardReady, setIsDashboardReady] = useState(false);
 
-  const getRedirectPath = (targetUser: User) =>
-    targetUser.userType === "lecturer"
-      ? "/lecturer"
-      : targetUser.userType === "candidate"
-        ? "/tutor"
-        : "/";
+  const getRedirectPath = (targetUser: User) => {
+    if (targetUser.userType === "admin") {
+      return (
+        process.env.NEXT_PUBLIC_ADMIN_APP_URL || "http://localhost:3001"
+      );
+    }
+    if (targetUser.userType === "lecturer") return "/lecturer";
+    if (targetUser.userType === "candidate") return "/tutor";
+    return "/";
+  };
+
+  const navigateAfterLogin = (destination: string) => {
+    if (/^https?:\/\//i.test(destination)) {
+      window.location.assign(destination);
+      return;
+    }
+    router.replace(destination);
+  };
+
+  const isExternalRedirect = (path: string) => /^https?:\/\//i.test(path);
 
   // Check for success message and email from signup redirect
   useEffect(() => {
@@ -67,11 +81,15 @@ export default function SignInForm() {
 
   useEffect(() => {
     if (isAuthLoading || !isAuthenticated || !user || showLoginSuccess) return;
-    router.replace(getRedirectPath(user));
+    navigateAfterLogin(getRedirectPath(user));
   }, [isAuthLoading, isAuthenticated, user, showLoginSuccess, router]);
 
   useEffect(() => {
     if (!showLoginSuccess || !redirectPath) return;
+    if (isExternalRedirect(redirectPath)) {
+      setIsDashboardReady(true);
+      return;
+    }
     let cancelled = false;
     setIsDashboardReady(false);
 
@@ -178,7 +196,11 @@ export default function SignInForm() {
         setIsDashboardReady(false);
         setLoggedInUser(response.data.user);
         setShowLoginSuccess(true);
-        void preloadDashboardRoute(nextPath);
+        if (!isExternalRedirect(nextPath)) {
+          void preloadDashboardRoute(nextPath);
+        } else {
+          setIsDashboardReady(true);
+        }
       } else {
         // Handle validation errors from backend
         if (response.errors) {
@@ -199,7 +221,7 @@ export default function SignInForm() {
     const destination =
       redirectPath || (loggedInUser ? getRedirectPath(loggedInUser) : "/");
     setShowLoginSuccess(false);
-    router.replace(destination);
+    navigateAfterLogin(destination);
   };
 
   return (
@@ -305,6 +327,11 @@ export default function SignInForm() {
           </button>
 
           <div className={styles.linkSection}>
+            <p className={styles.linkText}>
+              <Link href="/forgot-password" className={styles.link}>
+                Forgot password?
+              </Link>
+            </p>
             <p className={styles.linkText}>
               Don&apos;t have an account?{" "}
               <Link href="/signup" className={styles.link}>

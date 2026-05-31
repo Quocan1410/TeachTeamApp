@@ -3,6 +3,7 @@ import { User, UserType } from "../types/User";
 import { AppDataSource } from "../config/database";
 import bcrypt from "bcryptjs";
 import { signAdminToken } from "../config/jwtConfig";
+import { isCanonicalAdminEmail } from "../utils/adminConfig";
 
 @ObjectType()
 class LoginResponse {
@@ -42,11 +43,17 @@ export class AuthResolver {
                 };
             }
 
-            // Check if user is admin
             if (user.userType !== UserType.ADMIN) {
                 return {
                     success: false,
                     message: "Access denied. Admin privileges required.",
+                };
+            }
+
+            if (!isCanonicalAdminEmail(user.email)) {
+                return {
+                    success: false,
+                    message: "Access denied. Use the designated system admin account.",
                 };
             }
 

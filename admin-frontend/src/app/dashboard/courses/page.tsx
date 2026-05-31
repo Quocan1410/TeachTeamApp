@@ -42,6 +42,7 @@ interface Course {
     description?: string;
     maxTutors: number;
     maxLabAssistants: number;
+    applicationDeadline?: string | null;
     selectedTutors?: number;
     selectedLabAssistants?: number;
     availableTutors?: number;
@@ -76,7 +77,28 @@ interface CourseFormData {
     description: string;
     maxTutors: number;
     maxLabAssistants: number;
+    applicationDeadline: string;
 }
+
+const toDeadlineInputValue = (iso?: string | null) => {
+    if (!iso) return "";
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "";
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+
+const buildCourseInput = (form: CourseFormData) => ({
+    courseCode: form.courseCode,
+    courseName: form.courseName,
+    semester: form.semester,
+    description: form.description,
+    maxTutors: Number(form.maxTutors),
+    maxLabAssistants: Number(form.maxLabAssistants),
+    applicationDeadline: form.applicationDeadline
+        ? new Date(form.applicationDeadline).toISOString()
+        : null,
+});
 
 export default function CoursesManagement() {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -93,6 +115,7 @@ export default function CoursesManagement() {
         description: "",
         maxTutors: 0,
         maxLabAssistants: 0,
+        applicationDeadline: "",
     });
 
     // Toast hook
@@ -256,6 +279,7 @@ export default function CoursesManagement() {
             description: "",
             maxTutors: 0,
             maxLabAssistants: 0,
+            applicationDeadline: "",
         });
     };
 
@@ -264,11 +288,7 @@ export default function CoursesManagement() {
         try {
             await createCourse({
                 variables: {
-                    input: {
-                        ...formData,
-                        maxTutors: Number(formData.maxTutors),
-                        maxLabAssistants: Number(formData.maxLabAssistants),
-                    },
+                    input: buildCourseInput(formData),
                 },
             });
         } catch (error) {
@@ -284,11 +304,7 @@ export default function CoursesManagement() {
             await updateCourse({
                 variables: {
                     id: parseInt(selectedCourse.id.toString()),
-                    input: {
-                        ...formData,
-                        maxTutors: Number(formData.maxTutors),
-                        maxLabAssistants: Number(formData.maxLabAssistants),
-                    },
+                    input: buildCourseInput(formData),
                 },
             });
         } catch (error) {
@@ -345,6 +361,9 @@ export default function CoursesManagement() {
             description: course.description || "",
             maxTutors: course.maxTutors,
             maxLabAssistants: course.maxLabAssistants,
+            applicationDeadline: toDeadlineInputValue(
+                course.applicationDeadline
+            ),
         });
         setShowEditModal(true);
     };
@@ -722,6 +741,23 @@ export default function CoursesManagement() {
                                         placeholder="Course description..."
                                     />
                                 </div>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.formLabel}>
+                                        Application deadline
+                                    </label>
+                                    <input
+                                        type="datetime-local"
+                                        value={formData.applicationDeadline}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                applicationDeadline:
+                                                    e.target.value,
+                                            })
+                                        }
+                                        className={styles.formInput}
+                                    />
+                                </div>
                                 <div className={styles.formRow}>
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>
@@ -874,6 +910,23 @@ export default function CoursesManagement() {
                                         className={styles.formTextarea}
                                         rows={3}
                                         placeholder="Course description..."
+                                    />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.formLabel}>
+                                        Application deadline
+                                    </label>
+                                    <input
+                                        type="datetime-local"
+                                        value={formData.applicationDeadline}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                applicationDeadline:
+                                                    e.target.value,
+                                            })
+                                        }
+                                        className={styles.formInput}
                                     />
                                 </div>
                                 <div className={styles.formRow}>

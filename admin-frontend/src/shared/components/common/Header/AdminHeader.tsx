@@ -13,6 +13,7 @@ import {
     MoonIcon,
     ChevronDownIcon,
     DocumentChartBarIcon,
+    MegaphoneIcon,
 } from "@heroicons/react/24/outline";
 import { useTheme } from "../../../contexts/ThemeContext";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
@@ -23,11 +24,11 @@ import { getUserDisplayName } from "@/shared/utils/personDisplayName";
 import styles from "./AdminHeader.module.css";
 
 interface AdminUser {
-    firstName: string;
-    lastName: string;
+    firstName?: string;
+    lastName?: string;
     email: string;
     userType: string;
-    fullName: string;
+    fullName?: string;
     avatarUrl?: string | null;
 }
 
@@ -79,6 +80,11 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ user, onLogout }) => {
             name: "Reports",
             href: "/dashboard/reports",
             icon: DocumentChartBarIcon,
+        },
+        {
+            name: "Announcements",
+            href: "/dashboard/announcements",
+            icon: MegaphoneIcon,
         },
     ];
 

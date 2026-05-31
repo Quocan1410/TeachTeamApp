@@ -39,6 +39,9 @@ class CourseInput {
 
     @Field(() => Int)
     maxLabAssistants: number;
+
+    @Field({ nullable: true })
+    applicationDeadline?: Date;
 }
 
 @ObjectType()

@@ -5,6 +5,9 @@ import {
   SigninData,
   UpdateProfileData,
   User,
+  PasswordResetRequestData,
+  PasswordResetConfirmData,
+  PasswordResetResponse,
 } from "../types/user";
 import StorageManager from "../utils/storageManager";
 import { env } from "@/lib/env";
@@ -32,6 +35,48 @@ export class AuthService {
       return response.data;
     } catch (error: unknown) {
       const axiosError = error as AxiosError<AuthResponse>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Network error occurred. Please try again.",
+      };
+    }
+  }
+
+  static async forgotPassword(
+    email: string
+  ): Promise<PasswordResetResponse> {
+    try {
+      const response = await authAPI.post<PasswordResetResponse>(
+        "/forgot-password",
+        { email } satisfies PasswordResetRequestData
+      );
+      return response.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<PasswordResetResponse>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Network error occurred. Please try again.",
+      };
+    }
+  }
+
+  static async resetPassword(
+    data: PasswordResetConfirmData
+  ): Promise<PasswordResetResponse> {
+    try {
+      const response = await authAPI.post<PasswordResetResponse>(
+        "/reset-password",
+        data
+      );
+      return response.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<PasswordResetResponse>;
       if (axiosError.response?.data) {
         return axiosError.response.data;
       }

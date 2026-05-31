@@ -63,6 +63,13 @@ export class Course {
     })
     maxLabAssistants: number;
 
+    @Field({ nullable: true })
+    @Column({
+        type: "datetime",
+        nullable: true,
+    })
+    applicationDeadline?: Date | null;
+
     @Field()
     @CreateDateColumn()
     createdAt: Date;

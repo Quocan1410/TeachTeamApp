@@ -10,6 +10,7 @@ import { Notification } from "../entities/Notification";
 import { NotificationService } from "../services/NotificationService";
 import { ApplicationDraft } from "../entities/ApplicationDraft";
 import { Announcement } from "../entities/Announcement";
+import { PasswordResetToken } from "../entities/PasswordResetToken";
 import path from "path";
 import { reconcileOrphanAvatarFiles } from "../utils/avatarUtils";
 
@@ -35,6 +36,7 @@ export const AppDataSource = new DataSource({
         Notification,
         ApplicationDraft,
         Announcement,
+        PasswordResetToken,
     ],
     migrations: ["src/migrations/*.ts"],
     subscribers: ["src/subscribers/*.ts"],

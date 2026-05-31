@@ -37,7 +37,8 @@
         "clean:frontend": "cd frontend && rm -rf node_modules",
         "clean:backend": "cd backend && rm -rf node_modules",
         "clean:admin-frontend": "cd admin-frontend && rm -rf node_modules",
-        "clean:admin-backend": "cd admin-backend && rm -rf node_modules"
+        "clean:admin-backend": "cd admin-backend && rm -rf node_modules",
+        "db:reset": "cd backend && npm run db:reset"
     },
     "keywords": [
         "fullstack",

@@ -1,4 +1,6 @@
 import { UserType } from "../entities/User";
+import { getAdminEmail, isCanonicalAdminEmail } from "./adminConfig";
+import { validateNewPassword } from "./passwordRules";
 
 interface ValidationResult {
     isValid: boolean;
@@ -13,7 +15,7 @@ export const getUserTypeFromEmail = (email: string): UserType | null => {
         return UserType.CANDIDATE;
     } else if (emailLowercase.endsWith("@lecturer.edu.au")) {
         return UserType.LECTURER;
-    } else if (emailLowercase === "admin@admin.com") {
+    } else if (isCanonicalAdminEmail(emailLowercase)) {
         return UserType.ADMIN;
     }
 
@@ -44,8 +46,8 @@ export const validateEmailDomain = (email: string, expectedUserType?: UserType):
             };
         case UserType.ADMIN:
             return {
-                isValid: emailLowercase === "admin@admin.com",
-                expectedDomain: "admin@admin.com"
+                isValid: isCanonicalAdminEmail(emailLowercase),
+                expectedDomain: getAdminEmail(),
             };
         default:
             return { isValid: false };
@@ -140,6 +142,57 @@ export const validateSignupData = (data: any): ValidationResult => {
         if (!allowed.includes(String(data.honorific).trim())) {
             errors.honorific = "Invalid title";
         }
+    }
+
+    return {
+        isValid: Object.keys(errors).length === 0,
+        errors,
+    };
+};
+
+export const validateForgotPasswordEmail = (email: string): ValidationResult => {
+    const errors: Record<string, string> = {};
+
+    if (!email?.trim()) {
+        errors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        errors.email = "Please enter a valid email address";
+    } else {
+        const emailLower = email.trim().toLowerCase();
+        const domainOk =
+            emailLower.endsWith("@candidate.edu.au") ||
+            emailLower.endsWith("@lecturer.edu.au");
+        if (!domainOk) {
+            errors.email =
+                "Password reset is only available for @candidate.edu.au and @lecturer.edu.au accounts";
+        }
+    }
+
+    return {
+        isValid: Object.keys(errors).length === 0,
+        errors,
+    };
+};
+
+export const validateResetPasswordData = (data: {
+    token?: string;
+    password?: string;
+    confirmPassword?: string;
+}): ValidationResult => {
+    const errors: Record<string, string> = {};
+    if (!data.token?.trim()) {
+        errors.token = "Reset token is required";
+    }
+
+    const passwordError = validateNewPassword(data.password || "");
+    if (passwordError) {
+        errors.password = passwordError;
+    }
+
+    if (!data.confirmPassword) {
+        errors.confirmPassword = "Please confirm your password";
+    } else if (data.password !== data.confirmPassword) {
+        errors.confirmPassword = "Passwords do not match";
     }
 
     return {

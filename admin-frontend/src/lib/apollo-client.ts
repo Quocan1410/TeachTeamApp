@@ -3,8 +3,11 @@ import {
     InMemoryCache,
     createHttpLink,
     split,
+    from,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { onError } from "@apollo/client/link/error";
+import { clearAdminSession } from "@/lib/adminSession";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
@@ -21,6 +24,23 @@ const wsUrl =
 const httpLink = createHttpLink({
     uri: httpUrl,
     credentials: "include",
+});
+
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+    const unauthenticated = graphQLErrors?.some(
+        (err) =>
+            err.extensions?.code === "UNAUTHENTICATED" ||
+            /authentication required/i.test(err.message)
+    );
+    if (unauthenticated || (networkError && "statusCode" in networkError && networkError.statusCode === 401)) {
+        clearAdminSession();
+        if (
+            typeof window !== "undefined" &&
+            window.location.pathname !== "/"
+        ) {
+            window.location.href = "/";
+        }
+    }
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -90,11 +110,11 @@ const splitLink = split(
         );
     },
     wsLink,
-    authLink.concat(httpLink)
+    from([errorLink, authLink.concat(httpLink)])
 );
 
 const client = new ApolloClient({
-    link: splitLink,
+    link: from([errorLink, splitLink]),
     cache: new InMemoryCache({
         typePolicies: {
             CourseEvent: {

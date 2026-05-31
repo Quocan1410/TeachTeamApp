@@ -20,6 +20,12 @@ export const ADMIN_LOGIN = gql`
     }
 `;
 
+export const ADMIN_LOGOUT = gql`
+    mutation AdminLogout {
+        adminLogout
+    }
+`;
+
 // User Queries
 export const GET_ALL_USERS = gql`
     query GetAllUsers {
@@ -95,6 +101,7 @@ export const GET_ALL_COURSES = gql`
             description
             maxTutors
             maxLabAssistants
+            applicationDeadline
             selectedTutors
             selectedLabAssistants
             availableTutors
@@ -149,6 +156,7 @@ export const CREATE_COURSE = gql`
                 description
                 maxTutors
                 maxLabAssistants
+                applicationDeadline
             }
         }
     }
@@ -167,6 +175,7 @@ export const UPDATE_COURSE = gql`
                 description
                 maxTutors
                 maxLabAssistants
+                applicationDeadline
             }
         }
     }
@@ -374,6 +383,54 @@ export const DELETE_NOTIFICATION = gql`
         deleteNotification(id: $id) {
             success
             unreadCount
+        }
+    }
+`;
+
+// Announcements
+export const GET_ALL_ANNOUNCEMENTS = gql`
+    query GetAllAnnouncements {
+        getAllAnnouncements {
+            id
+            title
+            body
+            audience
+            startsAt
+            endsAt
+            isActive
+            createdAt
+            updatedAt
+        }
+    }
+`;
+
+export const CREATE_ANNOUNCEMENT = gql`
+    mutation CreateAnnouncement($input: AnnouncementInput!) {
+        createAnnouncement(input: $input) {
+            success
+            message
+            announcement {
+                id
+                title
+            }
+        }
+    }
+`;
+
+export const UPDATE_ANNOUNCEMENT = gql`
+    mutation UpdateAnnouncement($id: Int!, $input: AnnouncementInput!) {
+        updateAnnouncement(id: $id, input: $input) {
+            success
+            message
+        }
+    }
+`;
+
+export const DELETE_ANNOUNCEMENT = gql`
+    mutation DeleteAnnouncement($id: Int!) {
+        deleteAnnouncement(id: $id) {
+            success
+            message
         }
     }
 `;

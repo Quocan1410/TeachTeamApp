@@ -7,8 +7,10 @@ import { CourseAssignment } from "../types/CourseAssignment";
 import { Application } from "../types/Application";
 import { SelectedCandidate } from "../types/SelectedCandidate";
 import { Notification } from "../types/Notification";
+import { Announcement } from "../types/Announcement";
 import bcrypt from "bcryptjs";
 import path from "path";
+import { getAdminEmail, getAdminSeedPassword } from "../utils/adminConfig";
 
 // Load environment variables from root .env file
 config({ path: path.resolve(__dirname, "../../../.env") });
@@ -30,6 +32,7 @@ export const AppDataSource = new DataSource({
         Application,
         SelectedCandidate,
         Notification,
+        Announcement,
     ],
     // Connection options for Cloud MySQL
     extra: {
@@ -52,29 +55,45 @@ export const initializeDatabase = async () => {
 const seedAdminUser = async () => {
     try {
         const userRepository = AppDataSource.getRepository(User);
-
-        // Check if admin user already exists
+        const adminEmail = getAdminEmail();
         const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash("admin", saltRounds);
+        const hashedPassword = await bcrypt.hash(
+            getAdminSeedPassword(),
+            saltRounds
+        );
 
-        for (const adminEmail of ["admin@admin.com", "admin"]) {
-            const existingAdmin = await userRepository.findOne({
-                where: { email: adminEmail },
-            });
+        const allAdmins = await userRepository.find({
+            where: { userType: UserType.ADMIN },
+        });
 
-            if (!existingAdmin) {
-                const adminUser = userRepository.create({
-                    email: adminEmail,
-                    password: hashedPassword,
-                    firstName: "System",
-                    lastName: "Administrator",
-                    userType: UserType.ADMIN,
-                    isBlocked: false,
-                });
-
-                await userRepository.save(adminUser);
+        for (const row of allAdmins) {
+            if (row.email.toLowerCase() !== adminEmail) {
+                await userRepository.remove(row);
             }
         }
+
+        let admin = await userRepository.findOne({
+            where: { email: adminEmail },
+        });
+
+        if (!admin) {
+            admin = userRepository.create({
+                email: adminEmail,
+                password: hashedPassword,
+                firstName: "System",
+                lastName: "Administrator",
+                userType: UserType.ADMIN,
+                isBlocked: false,
+            });
+            await userRepository.save(admin);
+            return;
+        }
+
+        admin.userType = UserType.ADMIN;
+        admin.isBlocked = false;
+        if (!admin.firstName) admin.firstName = "System";
+        if (!admin.lastName) admin.lastName = "Administrator";
+        await userRepository.save(admin);
     } catch (error) {
         // Silent error handling for production
     }

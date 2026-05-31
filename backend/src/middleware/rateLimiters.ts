@@ -47,6 +47,17 @@ function isExemptFromGeneralRateLimit(req: Request): boolean {
 }
 
 /** Sign-in / sign-up only — mounted on those routes in user-auth-routes. */
+export const passwordResetRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: () => (isProductionRuntime() ? 10 : 100),
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+        success: false,
+        message: "Too many password reset attempts. Please try again later.",
+    },
+});
+
 export const authRateLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: () => (isProductionRuntime() ? 30 : 500),

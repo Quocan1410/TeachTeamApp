@@ -10,6 +10,7 @@ import { Notification, NotificationType } from "../entities/Notification";
 import { SelectedCandidate } from "../entities/SelectedCandidate";
 import { ApplicationDraft } from "../entities/ApplicationDraft";
 import { Announcement } from "../entities/Announcement";
+import { PasswordResetToken } from "../entities/PasswordResetToken";
 import { LECTURER_PRIMARY_MESSAGE_ID } from "../utils/correspondenceMessages";
 import type { MessageReactionsMap } from "../utils/messageReactions";
 
@@ -859,6 +860,7 @@ export async function seedBootstrapDataset(): Promise<void> {
 }
 
 export async function clearAllTables(): Promise<void> {
+    await AppDataSource.getRepository(PasswordResetToken).clear();
     await AppDataSource.getRepository(Notification).clear();
     await AppDataSource.getRepository(SelectedCandidate).clear();
     await AppDataSource.getRepository(ApplicationDraft).clear();

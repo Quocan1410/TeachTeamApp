@@ -18,6 +18,7 @@ import { CourseResolver } from "./resolvers/CourseResolver";
 import { ReportResolver } from "./resolvers/ReportResolver";
 import { SubscriptionResolver } from "./resolvers/SubscriptionResolver";
 import { NotificationResolver } from "./resolvers/NotificationResolver";
+import { AnnouncementResolver } from "./resolvers/AnnouncementResolver";
 import { resolveAdminFromContext, resolveWsUser } from "./utils/graphqlContext";
 import "./types/session";
 import path from "path";
@@ -75,6 +76,7 @@ async function startServer() {
                 ReportResolver,
                 SubscriptionResolver,
                 NotificationResolver,
+                AnnouncementResolver,
             ],
             validate: false,
             pubSub: require("./config/pubsub").pubsub,

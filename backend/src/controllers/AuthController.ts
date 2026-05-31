@@ -9,8 +9,11 @@ import { CourseAssignment } from "../entities/CourseAssignment";
 import {
     validateSignupData,
     validateSigninData,
+    validateForgotPasswordEmail,
+    validateResetPasswordData,
     getUserTypeFromEmail,
 } from "../utils/validation";
+import { PasswordResetService } from "../services/PasswordResetService";
 import { NotificationService } from "../services/NotificationService";
 import { NotificationType } from "../entities/Notification";
 import {
@@ -36,6 +39,7 @@ export class AuthController {
     private userRepository = AppDataSource.getRepository(User);
     private courseAssignmentRepository =
         AppDataSource.getRepository(CourseAssignment);
+    private passwordResetService = new PasswordResetService();
 
     async signup(req: Request, res: Response): Promise<void> {
         try {
@@ -75,6 +79,15 @@ export class AuthController {
                     });
                     return;
                 }
+            }
+
+            if (finalUserType === UserType.ADMIN) {
+                res.status(403).json({
+                    success: false,
+                    message:
+                        "Admin accounts cannot be created via signup. Sign in at the admin panel.",
+                });
+                return;
             }
 
             // Validate input data with userType now set
@@ -212,6 +225,16 @@ export class AuthController {
                 res.status(401).json({
                     success: false,
                     message: "Invalid email or password",
+                });
+                return;
+            }
+
+            if (user.userType === UserType.ADMIN) {
+                const adminPanelUrl =
+                    process.env.ADMIN_FRONTEND_URL || "http://localhost:3001";
+                res.status(403).json({
+                    success: false,
+                    message: `Admin accounts must sign in at the admin panel (${adminPanelUrl}).`,
                 });
                 return;
             }
@@ -689,6 +712,84 @@ export class AuthController {
             res.status(500).json({
                 success: false,
                 message: "Failed to load avatar",
+            });
+        }
+    }
+
+    async forgotPassword(req: Request, res: Response): Promise<void> {
+        try {
+            const { email } = req.body;
+            const validation = validateForgotPasswordEmail(email || "");
+            if (!validation.isValid) {
+                res.status(400).json({
+                    success: false,
+                    message: "",
+                    errors: validation.errors,
+                });
+                return;
+            }
+
+            const result = await this.passwordResetService.requestReset(email);
+            const payload: Record<string, unknown> = {
+                success: true,
+                message: result.message,
+            };
+            if (result.resetUrl) {
+                payload.resetUrl = result.resetUrl;
+            }
+            if (result.emailSent !== undefined) {
+                payload.emailSent = result.emailSent;
+            }
+
+            res.status(200).json(payload);
+        } catch (error) {
+            console.error("Forgot password error:", error);
+            res.status(500).json({
+                success: false,
+                message: "Unable to process password reset request",
+            });
+        }
+    }
+
+    async resetPassword(req: Request, res: Response): Promise<void> {
+        try {
+            const { token, password, confirmPassword } = req.body;
+            const validation = validateResetPasswordData({
+                token,
+                password,
+                confirmPassword,
+            });
+            if (!validation.isValid) {
+                res.status(400).json({
+                    success: false,
+                    message: "",
+                    errors: validation.errors,
+                });
+                return;
+            }
+
+            const result = await this.passwordResetService.resetPassword(
+                token,
+                password
+            );
+
+            if (!result.success) {
+                res.status(400).json({
+                    success: false,
+                    message: result.message,
+                });
+                return;
+            }
+
+            res.status(200).json({
+                success: true,
+                message: result.message,
+            });
+        } catch (error) {
+            console.error("Reset password error:", error);
+            res.status(500).json({
+                success: false,
+                message: "Unable to reset password",
             });
         }
     }

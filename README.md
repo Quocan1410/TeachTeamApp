@@ -1,173 +1,179 @@
 # TeachTeamApp
 
-Monorepo for hiring teaching assistants (tutors and lab assistants) at RMIT-style courses. One MySQL database, a public REST API + UI for candidates and lecturers, and an admin GraphQL stack for operations and reporting.
+Platform for hiring **tutors** and **lab assistants** on university-style courses (RMIT model): candidates apply, lecturers review and rank applicants, and a dedicated admin panel handles operations.
+
+| Component | Stack | Default port |
+|-----------|-------|--------------|
+| **frontend** | Next.js 15, React 19, Apollo Client, Socket.IO | 3000 |
+| **backend** | Express 5, TypeORM, MySQL, Socket.IO, JWT | 5000 |
+| **admin-frontend** | Next.js 15, GraphQL client | 3001 |
+| **admin-backend** | Apollo Server, TypeGraphQL, WebSocket subscriptions | 4002 |
+
+Full documentation: [docs/README.md](docs/README.md) (architecture, ERD, API, deployment).
 
 ---
 
-## Roles & features
+## Roles
 
-### Candidate (`@candidate.edu.au`)
+| Role | Sign-in | UI |
+|------|---------|-----|
+| **Candidate** (`@candidate.edu.au`) | REST `/api/auth` | http://localhost:3000 → `/tutor` |
+| **Lecturer** (`@lecturer.edu.au`) | REST `/api/auth` | http://localhost:3000 → `/lecturer` |
+| **Admin** (single account, `ADMIN_EMAIL`) | GraphQL `adminLogin` | http://localhost:3001 |
 
-Applies for **tutor** or **lab assistant** positions on published courses.
-
-| Capability | Description |
-|------------|-------------|
-| Register / sign in | Email must end with `@candidate.edu.au` |
-| Browse courses | View open roles and remaining slots per course |
-| Apply | Submit skills, motivation, availability (part/full time) per course + role |
-| Track applications | See status: pending, selected, or rejected |
-| Profile | Update name; upload avatar (authenticated endpoint) |
-| Notifications | In-app list; mark read / delete |
-| Live account alerts | WebSocket when admin blocks or deletes the account |
-
-**UI:** http://localhost:3000 → `/tutor` after login
+Admins **cannot** register via the main app; use the admin panel and GraphQL only.
 
 ---
 
-### Lecturer (`@lecturer.edu.au`)
+## Requirements
 
-Reviews applicants **only on assigned courses** (set by admin).
-
-| Capability | Description |
-|------------|-------------|
-| Register / sign in | Email must end with `@lecturer.edu.au` |
-| Assigned courses | See courses linked to this lecturer |
-| Applicant list | Filter by name, course, role, status, skills |
-| Select candidates | Mark applications selected (enforces `maxTutors` / `maxLabAssistants`) |
-| Comments | Add, edit, or remove feedback on selected applicants |
-| Rankings | Order selected candidates per course (after comment) |
-| Statistics | Dashboard metrics for assigned courses |
-| Notifications | e.g. new applications, candidate blocked |
-| Live updates | WebSocket when a candidate on their course is blocked |
-
-**UI:** http://localhost:3000 → `/lecturer` after login
-
-**Homepage:** Lecturers also appear on the public “Meet Our Lecturers” section via `GET /api/public/lecturers` (non-blocked only).
+- **Node.js** 18+
+- **MySQL** 8+
+- Root **`.env`** file (copy from `env.example`)
 
 ---
 
-### Admin (`admin@admin.com`)
-
-Full platform management via **admin UI + GraphQL** (not the main REST app).
-
-| Capability | Description |
-|------------|-------------|
-| Sign in | Admin-only GraphQL login |
-| Users | List all users; block / unblock / delete (not other admins) |
-| Courses | Create, update, delete courses; set tutor & lab caps |
-| Assign lecturers | Link lecturers to courses |
-| Reports | Selected per course, multi-course selections, unselected candidates |
-| Notifications | Admin notification center |
-| Real-time events | Subscriptions for user block/delete and course changes |
-
-Blocking a **candidate** auto-unselects their applications and notifies affected lecturers. Blocked users cannot sign in; blocked lecturers are hidden from the public homepage.
-
-**UI:** http://localhost:3001  
-**API:** http://localhost:4002/graphql
-
----
-
-## Position types (not user roles)
-
-Stored in table `roles` — what a candidate applies for:
-
-| `roleName` | Meaning |
-|------------|---------|
-| `tutor` | Tutorial / teaching support |
-| `lab_assistant` | Laboratory session support |
-
-Each course has limits: `maxTutors`, `maxLabAssistants`.
-
----
-
-## Quick start
-
-**Prerequisites:** Node.js 18+, MySQL, `.env` from `env.example`
+## Install & run locally
 
 ```bash
 npm run install
 cp env.example .env
-# Edit .env: DB credentials + generate unique secrets (see env.example header).
-# Never commit .env — only env.example is tracked.
+# Edit DB_* and secrets (openssl rand -hex 32)
+```
 
-npm run dev:windows        # frontend :3000 + backend :5000
-npm run dev:admin:windows  # admin UI :3001 + GraphQL :4002
+Create the MySQL database, then seed demo data:
+
+```bash
+cd backend && npm run db:reset
+```
+
+Main app (Windows):
+
+```bash
+npm run dev:windows
+```
+
+Admin stack (separate terminal):
+
+```bash
+npm run dev:admin:windows
 ```
 
 | Service | URL |
 |---------|-----|
-| Main UI | http://localhost:3000 |
+| Main app | http://localhost:3000 |
 | REST API | http://localhost:5000/api |
+| Health | http://localhost:5000/health |
+| Forgot password | http://localhost:3000/forgot-password |
 | Admin UI | http://localhost:3001 |
 | Admin GraphQL | http://localhost:4002/graphql |
 
----
-
-## 5-minute demo flow
-
-1. Open homepage → four lecturers loaded from the database.  
-2. Use your own local test users to validate candidate and lecturer flows.  
-3. In admin, test block/unblock workflows and verify UI/API behavior.
-
----
-
-## Dev seed data
-
-Seeds run on backend start and via `POST /api/database/seed` (idempotent).  
-**Reset (wipe + reseed):** `POST http://localhost:5000/api/database/reset`
-
-**Dataset (~15 candidates, ~35 applications):** pending / shortlisted / selected / rejected, lecturer notes, rankings.  
-**Extra seed data** via `completeDataset.ts`: application drafts, sample notifications, announcements.  
-**Reset to load everything:** `POST http://localhost:5000/api/database/reset`  
-Create your own local credentials for testing and keep real credentials out of docs.
-
----
-
-## Project layout
-
-```
-TeachTeamApp/
-├── frontend/          # Candidate & lecturer (Next.js)
-├── backend/           # REST API + seeds (Express, TypeORM)
-├── admin-frontend/    # Admin dashboard (Next.js)
-├── admin-backend/     # GraphQL + WebSocket (Apollo, TypeORM)
-└── env.example
-```
-
----
-
-## API overview
-
-**REST** (main backend)
-
-| Area | Endpoints |
-|------|-----------|
-| Public | `GET /api/public/lecturers` |
-| Auth | `/api/auth/signup`, `signin`, `profile`, `avatar` |
-| Applications | apply, my-applications, lecturer review, rank, comment |
-| Notifications | `/api/notifications` |
-| Dev ops | `/api/database/seed`, `reset`, `status` |
-
-**GraphQL** (admin backend): users, courses, assignments, reports, notifications, subscriptions.
-
----
-
-## Scripts
+Production build:
 
 ```bash
-npm run install
-npm run dev:windows
-npm run dev:admin:windows
 npm run build
 ```
 
 ---
 
-## Notes
+## Demo accounts
 
-- JWT auth; role checks on REST and admin resolvers.  
-- Avatars served through authenticated API routes (not public `/uploads`).  
-- Copy `env.example` → `.env`; use strong unique values for `*_JWT_SECRET`, `ADMIN_SESSION_SECRET`, and `DEV_OPS_SECRET` (see comments in `env.example`).
-- `NEXT_PUBLIC_*` variables are exposed to the browser — URLs only, never secrets.
-- CORS: set `ALLOWED_ORIGINS` to exact frontend origins (comma-separated).
-- Do not commit `.env` (gitignored).
+After `npm run db:reset` in `backend/`:
+
+| Role | Email | Password |
+|------|-------|----------|
+| **Admin** | `admin@admin.com` | Value of `ADMIN_PASSWORD` in `.env` (default `admin`) |
+| **Lecturer** | `jane.lecturer@lecturer.edu.au` | `Password123!` |
+| **Lecturer** | `marcus.lecturer@lecturer.edu.au` | `Password123!` |
+| **Candidate** | `alex.candidate@candidate.edu.au` | `Password123!` |
+| **Candidate** | `sam.candidate@candidate.edu.au` | `Password123!` |
+| **Candidate (blocked)** | `taylor.candidate@candidate.edu.au` | `Password123!` — test block/unblock in admin |
+
+More seed users: `backend/src/seeds/bootstrapDataset.ts`.
+
+---
+
+## Environment variables
+
+A single **root `.env`** is shared by backend, admin-backend, and Next.js (frontend loads `../.env`).
+
+See **`env.example`** for the full list. Important groups:
+
+- **DB_*** — MySQL
+- **BACKEND_JWT_SECRET**, **ADMIN_JWT_SECRET**, **ADMIN_SESSION_SECRET**
+- **ADMIN_EMAIL**, **ADMIN_PASSWORD** — single system admin
+- **SMTP_*** — optional; password reset emails (dev logs link if unset)
+- **FRONTEND_URL**, **ADMIN_FRONTEND_URL**, **ALLOWED_ORIGINS** — CORS
+- **NEXT_PUBLIC_*** — public browser URLs only (never secrets)
+
+---
+
+## Repository layout
+
+```
+TeachTeamApp/
+├── frontend/           # Candidates + lecturers
+├── backend/            # REST + Socket.IO
+├── admin-frontend/     # Admin dashboard
+├── admin-backend/      # Admin GraphQL
+├── docs/               # Architecture, ERD, API, deployment
+├── deploy/vps/         # Nginx + PM2 + production env template
+└── env.example
+```
+
+---
+
+## Production deployment
+
+**Recommended:** full stack on **VPS + domain** (Nginx, PM2, MySQL) — see [docs/deployment.md](docs/deployment.md).
+
+**Split hosting (free tiers / limits):**
+
+| Component | Suggested host |
+|-----------|----------------|
+| `frontend/` | Vercel — Root Directory: `frontend`, Next.js 15.2.9+ |
+| `backend/` | Render / Railway |
+| MySQL | Railway, PlanetScale, or MySQL on VPS |
+
+After deploy, set `NEXT_PUBLIC_*`, `FRONTEND_URL`, and `ALLOWED_ORIGINS` to your real URLs.
+
+---
+
+## API overview
+
+- **REST:** `GET /health`, `/api/public/*`, `/api/auth/*` (incl. forgot/reset password), `/api/applications/*`, `/api/notifications/*`, …
+- **GraphQL (admin):** users, courses, reports, announcements, subscriptions
+
+Full list: [docs/api-reference.md](docs/api-reference.md).
+
+---
+
+## Root scripts
+
+```bash
+npm run install
+npm run dev:windows          # frontend + backend
+npm run dev:admin:windows    # admin-frontend + admin-backend
+npm run build
+npm run db:reset             # wipe + reseed DB (from repo root)
+```
+
+---
+
+## Export documentation as PDF
+
+```bash
+# Requires pandoc: https://pandoc.org/
+pandoc docs/CONSOLIDATED.md -o docs/TeachTeamApp-Documentation.pdf --toc -V geometry:margin=1in
+```
+
+Or open `docs/CONSOLIDATED.md` in VS Code / GitHub and print to PDF.
+
+---
+
+## Security notes
+
+- Never commit `.env`.
+- Rotate all secrets in production; demo passwords are for development only.
+- Use Next.js **≥ 15.2.9** on Vercel to avoid CVE deploy blocks.
+- Configure **SMTP** for password reset emails in production.

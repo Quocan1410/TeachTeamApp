@@ -1,9 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import { useRouter } from "next/navigation";
 import { ADMIN_LOGIN } from "@/lib/graphql/queries";
+import {
+    ADMIN_TOKEN_KEY,
+    ADMIN_USER_KEY,
+    getStoredAdminUser,
+    isAdminUser,
+} from "@/lib/adminSession";
 import {
     LockClosedIcon,
     UserIcon,
@@ -32,6 +38,14 @@ export default function AdminLogin() {
     const router = useRouter();
     const [adminLogin] = useMutation(ADMIN_LOGIN);
 
+    useEffect(() => {
+        const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+        const stored = getStoredAdminUser();
+        if (token && stored && isAdminUser(stored)) {
+            router.replace("/dashboard");
+        }
+    }, [router]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
@@ -42,10 +56,13 @@ export default function AdminLogin() {
                 variables: { email, password },
             });
 
-            if (data.adminLogin.success) {
-                sessionStorage.setItem("admin-token", data.adminLogin.token);
+            if (
+                data.adminLogin.success &&
+                data.adminLogin.user?.userType?.toLowerCase() === "admin"
+            ) {
+                sessionStorage.setItem(ADMIN_TOKEN_KEY, data.adminLogin.token);
                 sessionStorage.setItem(
-                    "admin-user",
+                    ADMIN_USER_KEY,
                     JSON.stringify(data.adminLogin.user)
                 );
 
@@ -154,12 +171,10 @@ export default function AdminLogin() {
                         {loading ? "Signing in..." : "Sign in"}
                     </button>
 
-                    <div className={styles.credentialsHint}>
-                        <p className={styles.hintText}>
-                            Default credentials: <strong>admin</strong> /{" "}
-                            <strong>admin</strong>
-                        </p>
-                    </div>
+                    <p className={styles.hintText}>
+                        System administrator sign-in only. Use the account
+                        configured in <code>ADMIN_EMAIL</code>.
+                    </p>
                 </form>
             </div>
 

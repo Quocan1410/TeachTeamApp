@@ -102,7 +102,13 @@ export default function UsersManagement() {
         return matchesFilter && matchesSearch;
     });
 
+    const isAdminAccount = (userType: string) =>
+        userType?.toLowerCase() === "admin";
+
     const handleBlockToggle = async (user: User) => {
+        if (isAdminAccount(user.userType)) {
+            return;
+        }
         // Prevent admin from blocking themselves
         if (currentUser && user.id === currentUser.id) {
             return;
@@ -130,6 +136,9 @@ export default function UsersManagement() {
     };
 
     const handleDeleteClick = (user: User) => {
+        if (isAdminAccount(user.userType)) {
+            return;
+        }
         // Prevent admin from deleting themselves
         if (currentUser && user.id === currentUser.id) {
             return;
@@ -434,7 +443,10 @@ export default function UsersManagement() {
                                                           styles.actionsContainer
                                                       }
                                                   >
-                                                      {/* Block/Unblock Button */}
+                                                      {/* Block/Unblock Button — not for admin accounts */}
+                                                      {!isAdminAccount(
+                                                          user.userType
+                                                      ) && (
                                                       <button
                                                           onClick={() =>
                                                               handleBlockToggle(
@@ -485,10 +497,12 @@ export default function UsersManagement() {
                                                               />
                                                           )}
                                                       </button>
+                                                      )}
 
                                                       {/* Delete Button - Hide for current user and other admins */}
-                                                      {user.userType !==
-                                                          "ADMIN" &&
+                                                      {!isAdminAccount(
+                                                          user.userType
+                                                      ) &&
                                                           !(
                                                               currentUser &&
                                                               user.id ===

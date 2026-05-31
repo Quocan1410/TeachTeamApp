@@ -26,6 +26,7 @@
         "jsonwebtoken": "^9.0.2",
         "multer": "^2.1.1",
         "mysql2": "^3.14.1",
+        "nodemailer": "^8.0.10",
         "reflect-metadata": "^0.2.2",
         "socket.io": "^4.8.3",
         "typeorm": "^0.3.24"
@@ -40,6 +41,7 @@
         "@types/jsonwebtoken": "^9.0.9",
         "@types/multer": "^2.1.0",
         "@types/node": "^22.15.29",
+        "@types/nodemailer": "^8.0.0",
         "nodemon": "^3.1.10",
         "ts-node": "^10.9.2",
         "typescript": "^5.8.3"

@@ -2,7 +2,10 @@ import { Router } from "express";
 import { AuthController } from "../controllers/AuthController";
 import { authenticateToken } from "../middleware/authMiddleware";
 import { avatarUpload } from "../middleware/uploadMiddleware";
-import { authRateLimiter } from "../middleware/rateLimiters";
+import {
+    authRateLimiter,
+    passwordResetRateLimiter,
+} from "../middleware/rateLimiters";
 
 const router = Router();
 const authController = new AuthController();
@@ -144,6 +147,24 @@ router.post("/signin", authRateLimiter, validateRequestBody(["email", "password"
 router.post("/logout", async (req, res) => {
     await authController.logout(req, res);
 });
+
+router.post(
+    "/forgot-password",
+    passwordResetRateLimiter,
+    validateRequestBody(["email"]),
+    async (req, res) => {
+        await authController.forgotPassword(req, res);
+    }
+);
+
+router.post(
+    "/reset-password",
+    passwordResetRateLimiter,
+    validateRequestBody(["token", "password", "confirmPassword"]),
+    async (req, res) => {
+        await authController.resetPassword(req, res);
+    }
+);
 
 // Protected routes
 router.get("/profile", authenticateToken, async (req, res) => {

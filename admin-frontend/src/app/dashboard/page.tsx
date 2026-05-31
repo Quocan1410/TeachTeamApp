@@ -8,6 +8,8 @@ import {
     AcademicCapIcon,
     UserGroupIcon,
     ExclamationTriangleIcon,
+    DocumentChartBarIcon,
+    MegaphoneIcon,
 } from "@heroicons/react/24/outline";
 import styles from "./admin-dashboard.module.css";
 
@@ -255,6 +257,44 @@ export default function Dashboard() {
                                         </h4>
                                         <p className={styles.actionDescription}>
                                             CRUD courses and assign lecturers
+                                        </p>
+                                    </div>
+                                    <div className={styles.actionArrow}>→</div>
+                                </Link>
+                                <Link
+                                    href="/dashboard/reports"
+                                    className={styles.actionItem}
+                                >
+                                    <div className={styles.actionIcon}>
+                                        <DocumentChartBarIcon
+                                            className={styles.actionIconSvg}
+                                        />
+                                    </div>
+                                    <div className={styles.actionContent}>
+                                        <h4 className={styles.actionTitle}>
+                                            Reports
+                                        </h4>
+                                        <p className={styles.actionDescription}>
+                                            Selection analytics (read-only)
+                                        </p>
+                                    </div>
+                                    <div className={styles.actionArrow}>→</div>
+                                </Link>
+                                <Link
+                                    href="/dashboard/announcements"
+                                    className={styles.actionItem}
+                                >
+                                    <div className={styles.actionIcon}>
+                                        <MegaphoneIcon
+                                            className={styles.actionIconSvg}
+                                        />
+                                    </div>
+                                    <div className={styles.actionContent}>
+                                        <h4 className={styles.actionTitle}>
+                                            Announcements
+                                        </h4>
+                                        <p className={styles.actionDescription}>
+                                            Platform banners for main app
                                         </p>
                                     </div>
                                     <div className={styles.actionArrow}>→</div>

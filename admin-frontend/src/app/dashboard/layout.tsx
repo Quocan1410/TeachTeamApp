@@ -2,33 +2,47 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@apollo/client";
 import AdminHeader from "../../shared/components/common/Header/AdminHeader";
+import { ADMIN_LOGOUT } from "@/lib/graphql/queries";
+import {
+    ADMIN_TOKEN_KEY,
+    clearAdminSession,
+    getStoredAdminUser,
+    isAdminUser,
+    type StoredAdminUser,
+} from "@/lib/adminSession";
 
 export default function DashboardLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<StoredAdminUser | null>(null);
     const router = useRouter();
+    const [adminLogout] = useMutation(ADMIN_LOGOUT);
 
     useEffect(() => {
-        // Check if user is authenticated
-        const token = sessionStorage.getItem("admin-token");
-        const userData = sessionStorage.getItem("admin-user");
+        const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+        const stored = getStoredAdminUser();
 
-        if (!token || !userData) {
-            router.push("/");
+        if (!token || !stored || !isAdminUser(stored)) {
+            clearAdminSession();
+            router.replace("/");
             return;
         }
 
-        setUser(JSON.parse(userData));
+        setUser(stored);
     }, [router]);
 
-    const handleLogout = () => {
-        sessionStorage.removeItem("admin-token");
-        sessionStorage.removeItem("admin-user");
-        router.push("/");
+    const handleLogout = async () => {
+        try {
+            await adminLogout();
+        } catch {
+            /* session may already be invalid */
+        }
+        clearAdminSession();
+        router.replace("/");
     };
 
     if (!user) {
@@ -47,8 +61,6 @@ export default function DashboardLayout({
     return (
         <div className="min-h-screen bg-gray-50">
             <AdminHeader user={user} onLogout={handleLogout} />
-
-            {/* Main content with header padding */}
             <main className="pt-20">{children}</main>
         </div>
     );

@@ -46,6 +46,24 @@ export interface SigninData {
   password: string;
 }
 
+export interface PasswordResetRequestData {
+  email: string;
+}
+
+export interface PasswordResetConfirmData {
+  token: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface PasswordResetResponse {
+  success: boolean;
+  message: string;
+  resetUrl?: string;
+  emailSent?: boolean;
+  errors?: Record<string, string>;
+}
+
 export interface UpdateProfileData {
   firstName: string;
   lastName: string;
