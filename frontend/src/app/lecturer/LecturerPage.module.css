@@ -2,7 +2,8 @@
 .lecturerDashboard {
   width: 100%;
   min-height: calc(100vh - 160px);
-  padding-top: 6rem; /* Space for fixed header */
+  padding-top: 6rem;
+  /* Space for fixed header */
   padding-bottom: 2rem;
   background: linear-gradient(135deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 100%);
 }
@@ -41,10 +42,14 @@
 
 .revealFilters {
   animation-delay: 130ms;
+  position: relative;
+  z-index: 20;
 }
 
 .revealTabs {
   animation-delay: 220ms;
+  position: relative;
+  z-index: 1;
 }
 
 .revealContent {
@@ -56,6 +61,7 @@
     opacity: 0.35;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -155,17 +161,13 @@
   }
 }
 
-.applicantListSection,
-.applicantDetailsSection {
+.applicantListSection {
   background: var(--color-bg-surface);
   border-radius: 16px;
   border: 1px solid var(--color-border);
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   min-height: 600px;
-}
-
-.applicantListSection {
   display: flex;
   flex-direction: column;
 }
@@ -173,6 +175,18 @@
 .applicantDetailsSection {
   display: flex;
   flex-direction: column;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  overflow: visible;
+  min-height: 600px;
+}
+
+.applicantDetailsSection > * {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
 }
 
 /* Rankings Section */
@@ -267,20 +281,20 @@
   .lecturerDashboard {
     padding-top: 5rem;
   }
-  
+
   .lecturerDashboardContainer {
     padding-left: 1rem;
     padding-right: 1rem;
   }
-  
+
   .courseSelector {
     padding: 1rem;
   }
-  
+
   .applicationsGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .applicantListSection,
   .applicantDetailsSection {
     min-height: 400px;
@@ -288,6 +302,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .revealHeader,
   .revealFilters,
   .revealTabs,
@@ -303,7 +318,7 @@
   .courseSelector {
     padding: 0.75rem;
   }
-  
+
   .courseSelect {
     padding: 0.5rem 0.75rem;
     font-size: 0.875rem;

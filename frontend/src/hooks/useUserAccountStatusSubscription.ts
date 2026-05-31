@@ -165,18 +165,14 @@ export function useUserAccountStatusSubscription({
           default:
             break;
         }
-      } catch (error) {
-        console.error("Error parsing account subscription message:", error);
+      } catch {
+        // Ignore malformed subscription payloads.
       }
     };
 
-    ws.onerror = (error) => {
+    ws.onerror = () => {
       if (isCleanedUpRef.current) {
         return;
-      }
-
-      if (process.env.NODE_ENV === "development") {
-        console.warn("Account subscription WebSocket error:", error);
       }
 
       setTimeout(() => {

@@ -45,7 +45,13 @@ const RankedCandidates: React.FC<RankedCandidatesProps> = ({
         ? app.selectedForCourses.includes(selectedCourse)
         : app.courses.includes(selectedCourse);
     })
-    .filter((app) => app.rank !== undefined && app.rank !== null) // Only show ranked applications
+    .filter(
+      (app) =>
+        !app.isBlocked &&
+        app.rank !== undefined &&
+        app.rank !== null &&
+        app.rank > 0
+    )
     .sort((a, b) => (a.rank || 0) - (b.rank || 0)); // Sort by rank
 
   return (
@@ -108,7 +114,7 @@ const RankedCandidates: React.FC<RankedCandidatesProps> = ({
               : "Please select a course to view rankings."}
           </p>
           <p className={styles.emptyRankingsHelp}>
-            Select and add comments to applicants to start ranking.
+            Select shortlisted applicants to start ranking.
           </p>
         </div>
       ) : (

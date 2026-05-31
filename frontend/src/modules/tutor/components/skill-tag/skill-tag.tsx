@@ -15,7 +15,7 @@ const SkillTag: React.FC<SkillTagProps> = ({ skill, onRemove }) => {
         <button
           type="button"
           onClick={() => onRemove(skill)}
-          className={`${styles.skillTagRemove} iconCloseHit`}
+          className={`${styles.skillTagRemove} iconCloseHit iconCloseCircle`}
           aria-label={`Remove skill ${skill}`}
         >
           <CloseIcon size={12} />

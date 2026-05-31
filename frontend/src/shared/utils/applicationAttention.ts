@@ -1,7 +1,7 @@
 import type { ApplicationResponse } from "@/shared/services/applicationService";
 import { canCandidateSendCorrespondence } from "@/shared/utils/applicationTimeline";
 
-/** Lecturer left feedback and a new reply may be expected. */
+/** Lecturer reviewed the application and a new reply may be expected. */
 export function applicationNeedsReply(
   application: ApplicationResponse
 ): boolean {

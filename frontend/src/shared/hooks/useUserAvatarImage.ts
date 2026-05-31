@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { env } from "@/lib/env";
-import { hasCustomAvatar } from "../utils/avatarUtils";
+import { getAvatarCacheBuster, hasCustomAvatar } from "../utils/avatarUtils";
+import { fetchAvatarBlob } from "../utils/avatarFetchCache";
 
 /** Load another user's uploaded avatar (not the logged-in user's). */
 export function useUserAvatarImage(
@@ -22,17 +23,19 @@ export function useUserAvatarImage(
       }
 
       try {
-        const response = await fetch(
-          `${env.apiEndpoint}/auth/users/${userId}/avatar`,
-          { credentials: "include" }
+        const cacheBuster = getAvatarCacheBuster(avatarUrl);
+        const query = cacheBuster
+          ? `?v=${encodeURIComponent(cacheBuster)}`
+          : "";
+        const blob = await fetchAvatarBlob(
+          `${env.apiEndpoint}/auth/users/${userId}/avatar${query}`,
+          { credentials: "include", cache: "no-store" }
         );
 
-        if (!response.ok) {
+        if (!blob) {
           setObjectUrl(null);
           return;
         }
-
-        const blob = await response.blob();
         const url = URL.createObjectURL(blob);
         revoked = url;
         setObjectUrl(url);

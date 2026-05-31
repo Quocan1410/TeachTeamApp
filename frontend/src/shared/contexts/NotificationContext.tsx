@@ -37,7 +37,8 @@ interface NotificationContextType {
   notifications: Notification[];
   unreadCount: number;
   loading: boolean;
-  refreshNotifications: () => Promise<void>;
+  fetchError: string | null;
+  refreshNotifications: (options?: { force?: boolean }) => Promise<void>;
   addNotification: (
     notification: Omit<Notification, "id" | "timestamp" | "read">
   ) => void;
@@ -72,7 +73,7 @@ function mapStoredNotification(n: StoredNotification): Notification {
     title: n.title,
     message: n.message,
     timestamp: new Date(n.createdAt),
-    read: n.read,
+    read: Boolean(n.read),
     link: n.link,
     candidateId:
       typeof n.metadata?.candidateId === "number"
@@ -93,64 +94,116 @@ function mapStoredNotification(n: StoredNotification): Notification {
   };
 }
 
+function canReceiveNotifications(
+  user: { id: number; userType: string } | null | undefined
+): boolean {
+  return (
+    !!user &&
+    (user.userType === "candidate" || user.userType === "lecturer")
+  );
+}
+
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   children,
 }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { user, isAuthenticated } = useAuth();
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const userId = user?.id ?? null;
+  const userType = user?.userType;
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const inFlightRef = useRef(false);
   const lastFetchAtRef = useRef(0);
   const rateLimitedUntilRef = useRef(0);
+  const loadedForUserIdRef = useRef<number | null>(null);
 
-  const refreshNotifications = useCallback(async () => {
-    if (!isAuthenticated || !user?.id) {
-      setNotifications([]);
-      setUnreadCount(0);
-      return;
-    }
-
-    if (
-      user.userType !== "candidate" &&
-      user.userType !== "lecturer"
-    ) {
-      return;
-    }
-
-    const now = Date.now();
-    if (now < rateLimitedUntilRef.current) {
-      return;
-    }
-
-    if (inFlightRef.current || now - lastFetchAtRef.current < 5000) {
-      return;
-    }
-
-    inFlightRef.current = true;
-    lastFetchAtRef.current = now;
-
-    try {
-      setLoading(true);
-      const data = await fetchNotifications();
-      setNotifications(data.notifications.map(mapStoredNotification));
-      setUnreadCount(data.unreadCount);
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 429) {
-        rateLimitedUntilRef.current = Date.now() + 60_000;
+  const refreshNotifications = useCallback(
+    async (options?: { force?: boolean }) => {
+      if (authLoading) {
         return;
       }
-      console.error("Failed to load notifications:", error);
-    } finally {
-      inFlightRef.current = false;
-      setLoading(false);
-    }
-  }, [isAuthenticated, user?.id, user?.userType]);
+
+      if (
+        !isAuthenticated ||
+        userId == null ||
+        !canReceiveNotifications(
+          userType ? { id: userId, userType } : null
+        )
+      ) {
+        setNotifications([]);
+        setUnreadCount(0);
+        setFetchError(null);
+        loadedForUserIdRef.current = null;
+        return;
+      }
+
+      const activeUserId = userId;
+      const now = Date.now();
+      if (now < rateLimitedUntilRef.current) {
+        return;
+      }
+
+      const isInitialLoadForUser = loadedForUserIdRef.current !== activeUserId;
+      const shouldSkipDebounce =
+        options?.force || isInitialLoadForUser;
+
+      if (
+        !shouldSkipDebounce &&
+        (inFlightRef.current || now - lastFetchAtRef.current < 2000)
+      ) {
+        return;
+      }
+
+      inFlightRef.current = true;
+      lastFetchAtRef.current = now;
+
+      try {
+        setLoading(true);
+        setFetchError(null);
+        const data = await fetchNotifications();
+        setNotifications(data.notifications.map(mapStoredNotification));
+        setUnreadCount(data.unreadCount);
+        loadedForUserIdRef.current = activeUserId;
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 429) {
+          rateLimitedUntilRef.current = Date.now() + 60_000;
+          setFetchError("Too many requests. Try again in a moment.");
+          return;
+        }
+
+        const message =
+          axios.isAxiosError(error) && error.response?.status === 401
+            ? "Session expired. Please sign in again."
+            : "Could not load notifications.";
+
+        console.error("Failed to load notifications:", error);
+        setFetchError(message);
+      } finally {
+        inFlightRef.current = false;
+        setLoading(false);
+      }
+    },
+    [authLoading, isAuthenticated, userId, userType]
+  );
 
   useEffect(() => {
-    refreshNotifications();
+    void refreshNotifications();
   }, [refreshNotifications]);
+
+  useEffect(() => {
+    if (authLoading || !isAuthenticated) {
+      return;
+    }
+
+    const handleFocus = () => {
+      void refreshNotifications({ force: true });
+    };
+
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [authLoading, isAuthenticated, refreshNotifications]);
 
   useEffect(() => {
     if (pollRef.current) {
@@ -160,12 +213,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 
     if (
       isAuthenticated &&
-      user?.id &&
-      (user.userType === "candidate" || user.userType === "lecturer")
+      userId != null &&
+      canReceiveNotifications(userType ? { id: userId, userType } : null)
     ) {
       pollRef.current = setInterval(() => {
-        refreshNotifications();
-      }, 60000);
+        void refreshNotifications();
+      }, 120_000);
     }
 
     return () => {
@@ -173,7 +226,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         clearInterval(pollRef.current);
       }
     };
-  }, [isAuthenticated, user?.id, user?.userType, refreshNotifications]);
+  }, [isAuthenticated, userId, userType, refreshNotifications]);
 
   const addNotification = useCallback(
     (notificationData: Omit<Notification, "id" | "timestamp" | "read">) => {
@@ -189,8 +242,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
           (n) =>
             n.title === newNotification.title &&
             n.message === newNotification.message &&
-            Math.abs(n.timestamp.getTime() - newNotification.timestamp.getTime()) <
-              5000
+            Math.abs(
+              n.timestamp.getTime() - newNotification.timestamp.getTime()
+            ) < 5000
         );
         if (exists) return prev;
         return [newNotification, ...prev];
@@ -200,27 +254,24 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     []
   );
 
-  const markAsRead = useCallback(
-    async (notificationId: string) => {
-      const numericId = parseInt(notificationId, 10);
-      if (Number.isNaN(numericId)) return;
+  const markAsRead = useCallback(async (notificationId: string) => {
+    const numericId = parseInt(notificationId, 10);
+    if (Number.isNaN(numericId)) return;
 
-      try {
-        const count = await apiMarkAsRead(numericId);
-        setUnreadCount(count);
-        setNotifications((prev) =>
-          prev.map((notification) =>
-            notification.id === notificationId
-              ? { ...notification, read: true }
-              : notification
-          )
-        );
-      } catch (error) {
-        console.error("Failed to mark notification as read:", error);
-      }
-    },
-    []
-  );
+    try {
+      const count = await apiMarkAsRead(numericId);
+      setUnreadCount(count);
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification.id === notificationId
+            ? { ...notification, read: true }
+            : notification
+        )
+      );
+    } catch (error) {
+      console.error("Failed to mark notification as read:", error);
+    }
+  }, []);
 
   const markAllAsRead = useCallback(async () => {
     try {
@@ -234,33 +285,32 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     }
   }, []);
 
-  const removeNotification = useCallback(
-    async (notificationId: string) => {
-      const numericId = parseInt(notificationId, 10);
-      if (Number.isNaN(numericId)) return;
+  const removeNotification = useCallback(async (notificationId: string) => {
+    const numericId = parseInt(notificationId, 10);
+    if (Number.isNaN(numericId)) return;
 
-      try {
-        const count = await apiDeleteNotification(numericId);
-        setUnreadCount(count);
-        setNotifications((prev) =>
-          prev.filter((notification) => notification.id !== notificationId)
-        );
-      } catch (error) {
-        console.error("Failed to delete notification:", error);
-      }
-    },
-    []
-  );
+    try {
+      const count = await apiDeleteNotification(numericId);
+      setUnreadCount(count);
+      setNotifications((prev) =>
+        prev.filter((notification) => notification.id !== notificationId)
+      );
+    } catch (error) {
+      console.error("Failed to delete notification:", error);
+    }
+  }, []);
 
   const clearAllNotifications = useCallback(() => {
     setNotifications([]);
     setUnreadCount(0);
+    loadedForUserIdRef.current = null;
   }, []);
 
   const contextValue: NotificationContextType = {
     notifications,
     unreadCount,
     loading,
+    fetchError,
     refreshNotifications,
     addNotification,
     markAsRead,

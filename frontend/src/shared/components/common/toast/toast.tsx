@@ -203,7 +203,7 @@ const Toast: React.FC<ToastProps> = ({
             {showCloseButton && (
               <button
                 type="button"
-                className={`${styles.toastClose} iconCloseHit`}
+                className={`${styles.toastClose} iconCloseHit iconCloseCircle`}
                 onClick={onClose}
                 aria-label="Close toast"
               >

@@ -9,6 +9,7 @@ import {
 import { availableSkills } from "@/modules/tutor/utils/skillOptions";
 import SkillTag from "@/modules/tutor/components/skill-tag/skill-tag";
 import ApplicationStatusBadge from "@/shared/components/common/application-status-badge/ApplicationStatusBadge";
+import { resolveApplicationStatusDisplay } from "@/shared/utils/applicationStatus";
 import styles from "./course-card.module.css";
 
 // Legacy interface
@@ -249,6 +250,13 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
               return rolesToShow.map((role) => {
                 const application = getApplicationForRole(role.id);
                 const applicationStatus = application?.status || null;
+                const statusDisplay = application
+                  ? resolveApplicationStatusDisplay(
+                      application.status,
+                      application,
+                      "candidate"
+                    )
+                  : null;
                 // Always show total positions for display
                 const maxPositions =
                   role.roleName === "tutor"
@@ -317,6 +325,7 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
                         <ApplicationStatusBadge
                           status={applicationStatus}
                           isWithdrawn={application?.isWithdrawn}
+                          isReviewed={statusDisplay?.isReviewed}
                         />
                       ) : availablePositions! > 0 && applicationOpen ? (
                         <motion.button

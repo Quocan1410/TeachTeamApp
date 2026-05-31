@@ -72,6 +72,10 @@ export interface ApplicationResponse {
   rankedForCourse?: string;
   candidateResponse?: string | null;
   candidateRespondedAt?: string | null;
+  offerResponse?: "pending" | "accepted" | "declined" | null;
+  offerRespondedAt?: string | null;
+  reviewedAt?: string | null;
+  reviewedBy?: number | null;
   isWithdrawn?: boolean;
   withdrawnAt?: string | null;
   messageReactions?: Record<string, Record<string, number[]>> | null;
@@ -110,6 +114,8 @@ export interface ApplicationResponse {
     lastName: string;
     email: string;
   };
+  /** Lecturer has passed initial screening; not a final selection yet. */
+  isShortlisted?: boolean;
 }
 
 export interface ApplicationStatistics {
@@ -306,7 +312,61 @@ export class ApplicationService {
     }
   }
 
+  static async shortlistApplication(
+    applicationId: number
+  ): Promise<ApiResponse<ApplicationResponse>> {
+    try {
+      const response = await applicationAPI.post(`/${applicationId}/shortlist`);
+      return response.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<ApiResponse<ApplicationResponse>>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Network error occurred while shortlisting application.",
+      };
+    }
+  }
+
+  static async removeShortlist(
+    applicationId: number
+  ): Promise<ApiResponse<ApplicationResponse>> {
+    try {
+      const response = await applicationAPI.delete(`/${applicationId}/shortlist`);
+      return response.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<ApiResponse<ApplicationResponse>>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Network error occurred while removing shortlist.",
+      };
+    }
+  }
+
   // Comment management methods
+  static async markApplicationReviewed(
+    applicationId: number
+  ): Promise<ApiResponse<ApplicationResponse>> {
+    try {
+      const response = await applicationAPI.post(`/${applicationId}/review`);
+      return response.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<ApiResponse<ApplicationResponse>>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Network error occurred while marking application reviewed.",
+      };
+    }
+  }
+
   static async updateApplicationComment(
     applicationId: number,
     comment: string,
@@ -414,6 +474,24 @@ export class ApplicationService {
     }
   }
 
+  static async deleteBlockedApplication(
+    applicationId: number
+  ): Promise<ApiResponse<void>> {
+    try {
+      const response = await applicationAPI.delete(`/${applicationId}/blocked`);
+      return response.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<ApiResponse<void>>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Network error occurred while removing application.",
+      };
+    }
+  }
+
   static async getLecturerNotes(
     applicationId: number
   ): Promise<ApiResponse<{ lecturerNotes: string }>> {
@@ -447,6 +525,29 @@ export class ApplicationService {
       >;
       if (axiosError.response?.data) return axiosError.response.data;
       return { success: false, message: "Failed to save notes." };
+    }
+  }
+
+  static async respondToOffer(
+    applicationId: number,
+    decision: "accept" | "decline",
+    message: string
+  ): Promise<ApiResponse<ApplicationResponse>> {
+    try {
+      const apiResponse = await applicationAPI.post(
+        `/${applicationId}/offer-response`,
+        { decision, message }
+      );
+      return apiResponse.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<ApiResponse<ApplicationResponse>>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Network error occurred while responding to offer.",
+      };
     }
   }
 

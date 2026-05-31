@@ -29,6 +29,10 @@ interface ApplicationDetailPanelProps {
   onClose: () => void;
   onTogglePin: () => void;
   onToggleReaction: (messageId: ReactableMessageId, emoji: string) => void;
+  onOfferResponse: (
+    decision: "accept" | "decline",
+    message: string
+  ) => Promise<void>;
   hideSummary?: boolean;
   hideApplicationDetails?: boolean;
 }
@@ -46,6 +50,7 @@ const ApplicationDetailPanel: React.FC<ApplicationDetailPanelProps> = ({
   onClose,
   onTogglePin,
   onToggleReaction,
+  onOfferResponse,
   hideSummary = false,
 }) => {
   const [view, setView] = useState<DetailView>("overview");
@@ -136,6 +141,7 @@ const ApplicationDetailPanel: React.FC<ApplicationDetailPanelProps> = ({
                 onTogglePin={onTogglePin}
                 onClose={onClose}
                 onToggleReaction={onToggleReaction}
+                onOfferResponse={onOfferResponse}
               />
             </motion.div>
           )}

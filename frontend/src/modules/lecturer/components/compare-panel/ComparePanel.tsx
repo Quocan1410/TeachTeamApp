@@ -21,7 +21,7 @@ const ComparePanel: React.FC<ComparePanelProps> = ({ applications, onClose }) =>
           <h2>Compare applicants ({applications.length}/3)</h2>
           <button
             type="button"
-            className={`${styles.closeBtn} iconCloseHit`}
+            className={`${styles.closeBtn} iconCloseHit iconCloseCircle`}
             onClick={onClose}
             aria-label="Close compare panel"
           >

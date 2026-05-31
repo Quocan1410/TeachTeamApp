@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
+import { dedupeInFlight } from "@/shared/utils/inFlightRequest";
 import {
   ApplicationService,
   ApplicationResponse,
@@ -37,6 +38,31 @@ export const useApplicationManagement = () => {
   const [rankedApplications, setRankedApplications] = useState<
     ApplicationResponse[]
   >([]);
+  const skipFilterReloadRef = useRef(true);
+  const reloadDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const updateRankedFromApplications = useCallback((data: ApplicationResponse[]) => {
+    const ranked = data.filter(
+      (app) =>
+        !app.isWithdrawn &&
+        !app.candidate?.isBlocked &&
+        app.rank !== undefined &&
+        app.rank !== null &&
+        app.rank > 0 &&
+        app.rankedForCourse
+    );
+
+    ranked.sort((a, b) => (a.rank || 0) - (b.rank || 0));
+    setRankedApplications(ranked);
+  }, []);
+
+  const applyApplicationsResponse = useCallback(
+    (data: ApplicationResponse[]) => {
+      setApplications(data);
+      updateRankedFromApplications(data);
+    },
+    [updateRankedFromApplications]
+  );
 
   // Load applications with filters (CR Part)
   const loadApplications = useCallback(async () => {
@@ -56,24 +82,14 @@ export const useApplicationManagement = () => {
       if (selectedCourse !== "all") filters.courseCode = selectedCourse;
       if (statusFilter !== "all") filters.status = statusFilter;
 
-      const response =
-        await ApplicationService.getApplicationsForLecturer(filters);
+      const filterKey = JSON.stringify(filters);
+      const response = await dedupeInFlight(
+        `lecturer-applications:${filterKey}`,
+        () => ApplicationService.getApplicationsForLecturer(filters)
+      );
 
       if (response.success && response.data) {
-        setApplications(response.data);
-
-        // Update ranked applications - filter for applications with ranking data
-        const ranked = response.data.filter(
-          (app) =>
-            app.status === "selected" &&
-            app.rank !== undefined &&
-            app.rank !== null &&
-            app.rank > 0 &&
-            app.rankedForCourse
-        );
-
-        ranked.sort((a, b) => (a.rank || 0) - (b.rank || 0));
-        setRankedApplications(ranked);
+        applyApplicationsResponse(response.data);
       } else {
         console.error("Failed to load applications:", response.message);
         setApplications([]);
@@ -93,7 +109,36 @@ export const useApplicationManagement = () => {
     skillsFilter,
     selectedCourse,
     statusFilter,
+    applyApplicationsResponse,
   ]);
+
+  const scheduleLoadApplications = useCallback(() => {
+    if (reloadDebounceRef.current) {
+      clearTimeout(reloadDebounceRef.current);
+    }
+
+    reloadDebounceRef.current = setTimeout(() => {
+      reloadDebounceRef.current = null;
+      void loadApplications();
+    }, 800);
+  }, [loadApplications]);
+
+  const patchApplication = useCallback(
+    (updated: ApplicationResponse) => {
+      setApplications((prev) => {
+        const next = prev.map((app) =>
+          app.id === updated.id ? { ...app, ...updated } : app
+        );
+        updateRankedFromApplications(next);
+        return next;
+      });
+
+      setSelectedApplication((prev) =>
+        prev?.id === updated.id ? { ...prev, ...updated } : prev
+      );
+    },
+    [updateRankedFromApplications]
+  );
 
   // Load statistics (DI Part)
   const loadStatistics = useCallback(async () => {
@@ -127,11 +172,18 @@ export const useApplicationManagement = () => {
     initializeData();
   }, [loadApplications, loadStatistics]);
 
-  // Reload when filters change
+  // Reload when filters change (skip the run right after initial load)
   useEffect(() => {
-    if (isInitialized) {
-      loadApplications();
+    if (!isInitialized) {
+      return;
     }
+
+    if (skipFilterReloadRef.current) {
+      skipFilterReloadRef.current = false;
+      return;
+    }
+
+    void loadApplications();
   }, [
     isInitialized,
     loadApplications,
@@ -160,20 +212,29 @@ export const useApplicationManagement = () => {
           updatedSelectedApplication.candidate?.isBlocked;
         const hasStatusChanged =
           selectedApplication.status !== updatedSelectedApplication.status;
+        const hasReviewChanged =
+          selectedApplication.reviewedAt !== updatedSelectedApplication.reviewedAt;
 
-        // Sync selectedApplication with updated data
+        const mergedSelectedApplication =
+          selectedApplication.reviewedAt &&
+          !updatedSelectedApplication.reviewedAt
+            ? {
+                ...updatedSelectedApplication,
+                reviewedAt: selectedApplication.reviewedAt,
+                reviewedBy: selectedApplication.reviewedBy,
+              }
+            : updatedSelectedApplication;
 
-        // Update the selectedApplication if it's different OR if any important field has changed
         if (
-          updatedSelectedApplication !== selectedApplication ||
+          mergedSelectedApplication !== selectedApplication ||
           hasCommentChanged ||
           hasRankChanged ||
           hasBlockedStatusChanged ||
-          hasStatusChanged
+          hasStatusChanged ||
+          hasReviewChanged
         ) {
-          setSelectedApplication(updatedSelectedApplication);
-          // Always update the comment to match the latest comment from the updated application
-          setComment(updatedSelectedApplication.comment || "");
+          setSelectedApplication(mergedSelectedApplication);
+          setComment(mergedSelectedApplication.comment || "");
         }
       }
     }
@@ -185,7 +246,11 @@ export const useApplicationManagement = () => {
       try {
         const response = await ApplicationService.updateApplicationStatus(
           application.id,
-          application.status
+          application.status,
+          undefined,
+          application.status === "selected"
+            ? [application.course.courseCode]
+            : undefined
         );
 
         if (response.success) {
@@ -296,6 +361,8 @@ export const useApplicationManagement = () => {
 
     // Actions
     loadApplications,
+    scheduleLoadApplications,
+    patchApplication,
     loadStatistics,
     saveApplication,
     handleSelectApplication,

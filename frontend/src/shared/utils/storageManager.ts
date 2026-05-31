@@ -93,26 +93,6 @@ class StorageManager {
       return null;
     }
   }
-
-  static checkStorageHealth(): void {
-    if (!this.isAvailable()) return;
-    try {
-      let total = 0;
-      const store = this.getStore();
-      if (!store) return;
-      for (let i = 0; i < store.length; i++) {
-        const key = store.key(i);
-        if (key) {
-          total += (store.getItem(key)?.length ?? 0) + key.length;
-        }
-      }
-      if (total / (5 * 1024 * 1024) > 0.8) {
-        console.warn("sessionStorage is nearly full, consider cleanup");
-      }
-    } catch (e) {
-      console.error("Error checking storage health:", e);
-    }
-  }
 }
 
 export default StorageManager;

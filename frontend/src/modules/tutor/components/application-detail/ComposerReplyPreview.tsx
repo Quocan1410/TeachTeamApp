@@ -29,7 +29,7 @@ const ComposerReplyPreview: React.FC<ComposerReplyPreviewProps> = ({
       <span className={styles.headLabel}>Replying to {senderName}</span>
       <button
         type="button"
-        className={`${styles.dismiss} iconCloseHit`}
+        className={`${styles.dismiss} iconCloseHit iconCloseCircle`}
         onClick={onDismiss}
         aria-label="Cancel reply"
       >

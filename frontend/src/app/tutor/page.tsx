@@ -21,6 +21,12 @@ import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { useApplicationRealtime } from "@/shared/hooks/useApplicationRealtime";
 import { getApplicationApplyBlockMessage } from "@/shared/utils/applicationApplyBlock";
 import type { ApplicationUpdatedPayload } from "@/shared/socket/applicationEvents";
+import {
+  courseHasApplied,
+  getTutorDashboardStats,
+  isAvailableCourseForCandidate,
+  isClosedCourse,
+} from "@/modules/tutor/utils/tutorCourseAvailability";
 
 import styles from "./TutorPage.module.css";
 
@@ -183,46 +189,12 @@ const TutorDashboardPage: React.FC = () => {
     onApplicationUpdated: handleApplicationRealtimeUpdate,
   });
 
-  // Calculate comprehensive statistics
-  const getComprehensiveStats = () => {
-    const totalRoleCourseCombinations = courses.length * roles.length;
-    const appliedCombinations = myApplications.length;
-
-    // Calculate available opportunities (role-course combinations the user can apply for)
-    let availableOpportunities = 0;
-
-    courses.forEach((course) => {
-      roles.forEach((role) => {
-        const hasApplied = myApplications.some(
-          (app) => app.courseId === course.id && app.roleId === role.id
-        );
-
-        if (!hasApplied) {
-          availableOpportunities += 1; // Count each role-course combination as one opportunity
-        }
-      });
-    });
-
-    return {
-      totalCourses: courses.length,
-      totalApplications: myApplications.length,
-      availableOpportunities, // Number of role-course combinations user can still apply for
-      completionRate:
-        totalRoleCourseCombinations > 0
-          ? Math.round(
-              (appliedCombinations / totalRoleCourseCombinations) * 100
-            )
-          : 0,
-    };
-  };
-
-  const stats = getComprehensiveStats();
+  // Dashboard stats aligned with filter tabs (Available / Applied / Closed)
+  const stats = getTutorDashboardStats(courses, roles, myApplications);
 
   // Check if user has applied to any role in a course
   const hasAppliedToCourse = React.useCallback(
-    (courseId: number) => {
-      return myApplications.some((app) => app.courseId === courseId);
-    },
+    (courseId: number) => courseHasApplied(courseId, myApplications),
     [myApplications]
   );
 
@@ -355,14 +327,6 @@ const TutorDashboardPage: React.FC = () => {
   // Enhanced filter courses with smart search
   const filteredCourses = React.useMemo(() => {
     const coursesWithScores = courses.map((course) => {
-      const hasAvailablePositions =
-        (course.availableTutors !== undefined
-          ? course.availableTutors > 0
-          : course.maxTutors > 0) ||
-        (course.availableLabAssistants !== undefined
-          ? course.availableLabAssistants > 0
-          : course.maxLabAssistants > 0);
-
       let searchScore = 0;
       let matchesSearch = true;
 
@@ -373,12 +337,8 @@ const TutorDashboardPage: React.FC = () => {
           .filter((term) => term.length > 0);
 
         searchScore = calculateSearchScore(course, searchTerms);
-
-        // Only show courses with enough relevance when searching.
-        // Availability filtering is handled by active filter logic below.
         matchesSearch = searchScore > 0.3;
       } else {
-        // No search query - keep all courses, then apply active filter.
         matchesSearch = true;
         searchScore = 1;
       }
@@ -387,14 +347,17 @@ const TutorDashboardPage: React.FC = () => {
 
       switch (activeFilter) {
         case "available":
-          matchesFilter = !hasAppliedToCourse(course.id);
+          matchesFilter = isAvailableCourseForCandidate(
+            course,
+            roles,
+            myApplications
+          );
           break;
         case "applied":
           matchesFilter = hasAppliedToCourse(course.id);
           break;
         case "unavailable":
-          matchesFilter =
-            !hasAvailablePositions && !hasAppliedToCourse(course.id);
+          matchesFilter = isClosedCourse(course, roles);
           break;
         case "all":
         default:
@@ -416,6 +379,8 @@ const TutorDashboardPage: React.FC = () => {
       .map((item) => item.course);
   }, [
     courses,
+    roles,
+    myApplications,
     debouncedSearchQuery,
     activeFilter,
     hasAppliedToCourse,
@@ -503,9 +468,9 @@ const TutorDashboardPage: React.FC = () => {
     <>
       {/* Hero Section with improved statistics */}
       <TutorHeroSection
-        totalCourses={stats.totalCourses}
+        availableCourses={stats.availableCourses}
         userApplications={stats.totalApplications}
-        availableOpportunities={stats.availableOpportunities}
+        openPositions={stats.openPositions}
       />
 
       {/* Main Content */}
@@ -549,10 +514,10 @@ const TutorDashboardPage: React.FC = () => {
                   ? "No courses match your current filters."
                   : "No courses available at the moment."}
               </p>
-              {activeFilter === "available" && myApplications.length > 0 && (
+              {activeFilter === "available" && stats.availableCourses === 0 && (
                 <p className={styles.emptySubtitle}>
-                  You have applied to all available courses. Check the
-                  &quot;Applied&quot; filter to see your applications.
+                  No courses are open for new applications right now. Check
+                  &quot;Closed&quot; or &quot;Applied&quot; for other courses.
                 </p>
               )}
               {activeFilter === "applied" && myApplications.length === 0 && (
@@ -561,10 +526,11 @@ const TutorDashboardPage: React.FC = () => {
                   &quot;Available&quot; filter to see opportunities.
                 </p>
               )}
-              {activeFilter === "unavailable" && (
+              {activeFilter === "unavailable" &&
+                courses.filter((course) => isClosedCourse(course, roles))
+                  .length === 0 && (
                 <p className={styles.emptySubtitle}>
-                  Nice progress. There are no fully closed courses left for you
-                  right now, or you already applied for them.
+                  There are no closed courses right now.
                 </p>
               )}
             </div>

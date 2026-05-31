@@ -26,6 +26,10 @@ function normalizeHonorific(value?: string | null): Honorific | null {
   return VALID_HONORIFICS.has(trimmed) ? trimmed : null;
 }
 
+export function stripHonorificFromDisplayName(name: string): string {
+  return name.trim().replace(/^(Mr|Mrs|Ms|Miss|Dr|Prof)\.?\s+/i, "").trim();
+}
+
 export function joinPersonName(
   person: PersonLike,
   fallback = ""

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../config/database";
-import { Application, ApplicationStatus } from "../entities/Application";
+import { Application, ApplicationStatus, OfferResponse } from "../entities/Application";
 import { Course } from "../entities/Course";
 import { Role } from "../entities/Role";
 import { User, UserType } from "../entities/User";
@@ -22,25 +22,93 @@ import {
 import {
     appendCandidateMessage,
     appendLecturerMessage,
+    clearLecturerCorrespondence,
     deleteCorrespondenceMessage,
-    syncLecturerCommentMessage,
     updateCandidateMessage,
 } from "../utils/correspondenceMessages";
 import {
     respondIfWithdrawn,
+    respondIfCandidateBlocked,
+    respondIfCorrespondenceInactive,
     WITHDRAWN_REAPPLY_MESSAGE,
 } from "../utils/applicationGuards";
+import { appendDecisionAutoMessage } from "../utils/decisionCorrespondence";
+import { touchApplicationReviewed } from "../utils/applicationReview";
+import {
+    sanitizeApplicationForCandidate,
+    sanitizeApplicationsForCandidate,
+} from "../utils/candidateApplicationView";
 
 export class ApplicationController {
     private applicationRepository = AppDataSource.getRepository(Application);
+    private selectedCandidateRepository =
+        AppDataSource.getRepository(SelectedCandidate);
     private courseRepository = AppDataSource.getRepository(Course);
     private roleRepository = AppDataSource.getRepository(Role);
     private userRepository = AppDataSource.getRepository(User);
     private courseAssignmentRepository =
         AppDataSource.getRepository(CourseAssignment);
-    private selectedCandidateRepository =
-        AppDataSource.getRepository(SelectedCandidate);
     private draftRepository = AppDataSource.getRepository(ApplicationDraft);
+
+    private async attachShortlistFlags<T extends Application>(
+        applications: T[]
+    ): Promise<Array<T & { isShortlisted: boolean }>> {
+        if (applications.length === 0) {
+            return [];
+        }
+
+        const applicationIds = applications.map((application) => application.id);
+        const selections = await this.selectedCandidateRepository
+            .createQueryBuilder("selection")
+            .where("selection.applicationId IN (:...applicationIds)", {
+                applicationIds,
+            })
+            .getMany();
+
+        const shortlistedIds = new Set(
+            selections.map((selection) => selection.applicationId)
+        );
+
+        return applications.map((application) => ({
+            ...application,
+            isShortlisted: shortlistedIds.has(application.id),
+        }));
+    }
+
+    private readonly applicationDetailRelations = [
+        "course",
+        "course.courseAssignments",
+        "course.courseAssignments.lecturer",
+        "role",
+        "candidate",
+        "commentedByUser",
+    ] as const;
+
+    private async loadApplicationForResponse(
+        id: number
+    ): Promise<Application | null> {
+        return this.applicationRepository.findOne({
+            where: { id },
+            relations: [...this.applicationDetailRelations],
+        });
+    }
+
+    private async verifyLecturerCourseAccess(
+        lecturerId: number | undefined,
+        courseId: number
+    ): Promise<boolean> {
+        if (!lecturerId) return false;
+
+        const courseAssignment =
+            await this.courseAssignmentRepository.findOne({
+                where: {
+                    lecturerId,
+                    courseId,
+                },
+            });
+
+        return Boolean(courseAssignment);
+    }
 
     // PA Part C: Create new application
     async createApplication(
@@ -187,7 +255,7 @@ export class ApplicationController {
             res.status(201).json({
                 success: true,
                 message: "Application submitted successfully",
-                data: savedApplication,
+                data: sanitizeApplicationForCandidate(savedApplication),
             });
         } catch (error) {
             console.error("Error creating application:", error);
@@ -220,7 +288,7 @@ export class ApplicationController {
 
             res.status(200).json({
                 success: true,
-                data: applications,
+                data: sanitizeApplicationsForCandidate(applications),
             });
         } catch (error) {
             console.error("Error fetching candidate applications:", error);
@@ -285,6 +353,10 @@ export class ApplicationController {
                 return;
             }
 
+            if (respondIfCorrespondenceInactive(application, res)) {
+                return;
+            }
+
             appendCandidateMessage(
                 application,
                 candidateId,
@@ -312,10 +384,147 @@ export class ApplicationController {
             res.status(200).json({
                 success: true,
                 message: "Response sent successfully",
-                data: updatedApplication,
+                data: sanitizeApplicationForCandidate(updatedApplication),
             });
         } catch (error) {
             console.error("Error updating candidate response:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal server error",
+            });
+        }
+    }
+
+    async respondToOffer(
+        req: AuthenticatedRequest,
+        res: Response
+    ): Promise<void> {
+        try {
+            const { id } = req.params;
+            const candidateId = req.user?.userId;
+            if (!candidateId) {
+                res.status(401).json({
+                    success: false,
+                    message: "Authentication required",
+                });
+                return;
+            }
+
+            const decision =
+                req.body.decision === "accept"
+                    ? OfferResponse.ACCEPTED
+                    : req.body.decision === "decline"
+                      ? OfferResponse.DECLINED
+                      : null;
+
+            const messageText =
+                typeof req.body.message === "string"
+                    ? req.body.message.trim()
+                    : "";
+
+            if (!decision) {
+                res.status(400).json({
+                    success: false,
+                    message: "Decision must be accept or decline",
+                });
+                return;
+            }
+
+            if (!messageText) {
+                res.status(400).json({
+                    success: false,
+                    message: "Please include a message with your response",
+                });
+                return;
+            }
+
+            if (messageText.length > 3000) {
+                res.status(400).json({
+                    success: false,
+                    message: "Message must be under 3000 characters",
+                });
+                return;
+            }
+
+            const application = await this.applicationRepository.findOne({
+                where: { id: parseInt(id, 10), candidateId },
+                relations: ["course", "role"],
+            });
+
+            if (!application) {
+                res.status(404).json({
+                    success: false,
+                    message: "Application not found",
+                });
+                return;
+            }
+
+            if (respondIfWithdrawn(application, res)) {
+                return;
+            }
+
+            if (application.status !== ApplicationStatus.SELECTED) {
+                res.status(400).json({
+                    success: false,
+                    message: "Offer response is only available for selected applications",
+                });
+                return;
+            }
+
+            if (
+                application.offerResponse &&
+                application.offerResponse !== OfferResponse.PENDING
+            ) {
+                res.status(400).json({
+                    success: false,
+                    message: "You have already responded to this offer",
+                });
+                return;
+            }
+
+            appendCandidateMessage(application, candidateId, messageText);
+            application.offerResponse = decision;
+            application.offerRespondedAt = new Date();
+
+            const updatedApplication = await this.applicationRepository.save(
+                application
+            );
+
+            const decisionLabel =
+                decision === OfferResponse.ACCEPTED ? "accepted" : "declined";
+
+            await NotificationService.notifyLecturersForCourse(application.courseId, {
+                type: NotificationType.APPLICATION_RESPONSE,
+                title:
+                    decision === OfferResponse.ACCEPTED
+                        ? "Candidate accepted offer"
+                        : "Candidate declined offer",
+                message: `Candidate ${decisionLabel} the ${application.role.roleName} offer for ${application.course.courseCode}`,
+                link: "/lecturer",
+                metadata: {
+                    applicationId: application.id,
+                    candidateId,
+                    courseId: application.courseId,
+                    offerResponse: decision,
+                },
+            });
+
+            void notifyApplicationUpdated(application.id, "offer_response");
+
+            const responseApplication =
+                (await this.loadApplicationForResponse(updatedApplication.id)) ??
+                updatedApplication;
+
+            res.status(200).json({
+                success: true,
+                message:
+                    decision === OfferResponse.ACCEPTED
+                        ? "Offer accepted"
+                        : "Offer declined",
+                data: sanitizeApplicationForCandidate(responseApplication),
+            });
+        } catch (error) {
+            console.error("Error responding to offer:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -402,7 +611,7 @@ export class ApplicationController {
             res.status(200).json({
                 success: true,
                 message: "Message deleted",
-                data: updatedApplication,
+                data: sanitizeApplicationForCandidate(updatedApplication),
             });
         } catch (error) {
             console.error("Error deleting candidate response:", error);
@@ -505,7 +714,7 @@ export class ApplicationController {
             res.status(200).json({
                 success: true,
                 message: "Message updated",
-                data: saved,
+                data: sanitizeApplicationForCandidate(saved),
             });
         } catch (error) {
             console.error("Error editing correspondence message:", error);
@@ -570,7 +779,7 @@ export class ApplicationController {
             res.status(200).json({
                 success: true,
                 message: "Application withdrawn successfully",
-                data: updatedApplication,
+                data: sanitizeApplicationForCandidate(updatedApplication),
             });
         } catch (error) {
             console.error("Error withdrawing application:", error);
@@ -684,9 +893,14 @@ export class ApplicationController {
 
             void notifyApplicationUpdated(application.id, "reaction");
 
+            const responseApplication =
+                userType === UserType.CANDIDATE
+                    ? sanitizeApplicationForCandidate(updatedApplication)
+                    : updatedApplication;
+
             res.status(200).json({
                 success: true,
-                data: updatedApplication,
+                data: responseApplication,
             });
         } catch (error) {
             console.error("Error toggling message reaction:", error);
@@ -833,7 +1047,10 @@ export class ApplicationController {
             const queryBuilder = this.applicationRepository
                 .createQueryBuilder("application")
                 .leftJoinAndSelect("application.candidate", "candidate")
+                .leftJoinAndSelect("application.commentedByUser", "commentedByUser")
                 .leftJoinAndSelect("application.course", "course")
+                .leftJoinAndSelect("course.courseAssignments", "courseAssignment")
+                .leftJoinAndSelect("courseAssignment.lecturer", "courseLecturer")
                 .leftJoinAndSelect("application.role", "role")
                 .where("application.courseId IN (:...courseIds)", {
                     courseIds: assignedCourseIds,
@@ -885,12 +1102,12 @@ export class ApplicationController {
             queryBuilder.orderBy("application.appliedAt", "DESC");
 
             const applications = await queryBuilder.getMany();
-
-
+            const applicationsWithShortlist =
+                await this.attachShortlistFlags(applications);
 
             res.status(200).json({
                 success: true,
-                data: applications,
+                data: applicationsWithShortlist,
             });
         } catch (error) {
             console.error("Error fetching lecturer applications:", error);
@@ -1012,6 +1229,12 @@ export class ApplicationController {
             const { id } = req.params;
             const { status } = req.body;
             const lecturerId = req.user?.userId;
+            const previousStatus = (
+                await this.applicationRepository.findOne({
+                    where: { id: parseInt(id) },
+                    select: ["id", "status"],
+                })
+            )?.status;
 
             const application = await this.applicationRepository.findOne({
                 where: { id: parseInt(id) },
@@ -1050,6 +1273,36 @@ export class ApplicationController {
             let updatedApplication: Application;
 
             if (status === ApplicationStatus.SELECTED) {
+                if (application.status === ApplicationStatus.SELECTED) {
+                    updatedApplication = application;
+                } else {
+                    const existingSelection =
+                        await this.selectedCandidateRepository.findOne({
+                            where: { applicationId: application.id },
+                        });
+
+                    if (!existingSelection) {
+                        res.status(400).json({
+                            success: false,
+                            message:
+                                "Application must be shortlisted before final selection",
+                        });
+                        return;
+                    }
+
+                    if (
+                        !application.rank ||
+                        application.rank <= 0 ||
+                        !application.rankedForCourse
+                    ) {
+                        res.status(400).json({
+                            success: false,
+                            message:
+                                "Application must be ranked before final selection",
+                        });
+                        return;
+                    }
+
                 updatedApplication = await AppDataSource.transaction(
                     async (manager) => {
                         const lockedApp = await manager.findOne(Application, {
@@ -1075,13 +1328,21 @@ export class ApplicationController {
                             throw new Error("COURSE_NOT_FOUND");
                         }
 
-                        const selectedCount = await manager.count(Application, {
-                            where: {
+                        const selectedCount = await manager
+                            .createQueryBuilder(Application, "application")
+                            .where("application.courseId = :courseId", {
                                 courseId: lockedApp.courseId,
+                            })
+                            .andWhere("application.roleId = :roleId", {
                                 roleId: lockedApp.roleId,
+                            })
+                            .andWhere("application.status = :status", {
                                 status: ApplicationStatus.SELECTED,
-                            },
-                        });
+                            })
+                            .andWhere("application.id != :applicationId", {
+                                applicationId: lockedApp.id,
+                            })
+                            .getCount();
 
                         const maxPositions =
                             lockedApp.role.roleName === "tutor"
@@ -1112,8 +1373,20 @@ export class ApplicationController {
                         return saved;
                     }
                 );
+                }
             } else {
                 application.status = status;
+
+                if (status === ApplicationStatus.REJECTED) {
+                    await this.selectedCandidateRepository.delete({
+                        applicationId: application.id,
+                    });
+                    application.rank = null;
+                    application.rankedBy = null;
+                    application.rankedAt = null;
+                    application.rankedForCourse = null;
+                }
+
                 updatedApplication = await this.applicationRepository.save(
                     application
                 );
@@ -1161,10 +1434,52 @@ export class ApplicationController {
 
             void notifyApplicationUpdated(application.id, "status");
 
+            if (lecturerId && previousStatus !== undefined) {
+                if (
+                    updatedApplication.status === ApplicationStatus.SELECTED &&
+                    previousStatus !== ApplicationStatus.SELECTED
+                ) {
+                    appendDecisionAutoMessage(
+                        updatedApplication,
+                        lecturerId,
+                        "selected"
+                    );
+                    updatedApplication.offerResponse = OfferResponse.PENDING;
+                    updatedApplication.offerRespondedAt = null;
+                    updatedApplication =
+                        await this.applicationRepository.save(updatedApplication);
+                } else if (
+                    updatedApplication.status === ApplicationStatus.REJECTED &&
+                    previousStatus !== ApplicationStatus.REJECTED
+                ) {
+                    appendDecisionAutoMessage(
+                        updatedApplication,
+                        lecturerId,
+                        "rejected"
+                    );
+                    updatedApplication.offerResponse = null;
+                    updatedApplication.offerRespondedAt = null;
+                    updatedApplication =
+                        await this.applicationRepository.save(updatedApplication);
+                } else if (
+                    updatedApplication.status === ApplicationStatus.PENDING &&
+                    previousStatus === ApplicationStatus.SELECTED
+                ) {
+                    updatedApplication.offerResponse = null;
+                    updatedApplication.offerRespondedAt = null;
+                    updatedApplication =
+                        await this.applicationRepository.save(updatedApplication);
+                }
+            }
+
+            const responseApplication =
+                (await this.loadApplicationForResponse(updatedApplication.id)) ??
+                updatedApplication;
+
             res.status(200).json({
                 success: true,
                 message: "Application status updated successfully",
-                data: updatedApplication,
+                data: responseApplication,
             });
         } catch (error) {
             const code =
@@ -1397,6 +1712,14 @@ export class ApplicationController {
                 return;
             }
 
+            if (respondIfCandidateBlocked(application, res)) {
+                return;
+            }
+
+            if (respondIfCorrespondenceInactive(application, res)) {
+                return;
+            }
+
             // Append lecturer message to correspondence thread
             const commentText =
                 typeof comment === "string" ? comment.trim() : "";
@@ -1435,10 +1758,14 @@ export class ApplicationController {
 
             void notifyApplicationUpdated(application.id, "comment");
 
+            const responseApplication =
+                (await this.loadApplicationForResponse(updatedApplication.id)) ??
+                updatedApplication;
+
             res.status(200).json({
                 success: true,
                 message: "Comment updated successfully",
-                data: updatedApplication,
+                data: responseApplication,
             });
         } catch (error) {
             console.error("Error updating application comment:", error);
@@ -1498,7 +1825,11 @@ export class ApplicationController {
                 return;
             }
 
-            syncLecturerCommentMessage(application, lecturerId, "");
+            if (respondIfCandidateBlocked(application, res)) {
+                return;
+            }
+
+            clearLecturerCorrespondence(application);
 
             const updatedApplication = await this.applicationRepository.save(
                 application
@@ -1506,10 +1837,14 @@ export class ApplicationController {
 
             void notifyApplicationUpdated(application.id, "comment_removed");
 
+            const responseApplication =
+                (await this.loadApplicationForResponse(updatedApplication.id)) ??
+                updatedApplication;
+
             res.status(200).json({
                 success: true,
                 message: "Comment deleted successfully",
-                data: updatedApplication,
+                data: responseApplication,
             });
         } catch (error) {
             console.error("Error deleting application comment:", error);
@@ -1564,12 +1899,29 @@ export class ApplicationController {
                 return;
             }
 
-            // Verify application is selected
-            if (application.status !== ApplicationStatus.SELECTED) {
+            // Verify application is shortlisted before ranking
+            const isShortlisted = await this.selectedCandidateRepository.findOne(
+                {
+                    where: { applicationId: application.id },
+                }
+            );
+
+            if (
+                !isShortlisted &&
+                application.status !== ApplicationStatus.SELECTED
+            ) {
                 res.status(400).json({
                     success: false,
                     message:
-                        "Application must be selected before adding to ranking",
+                        "Application must be shortlisted before adding to ranking",
+                });
+                return;
+            }
+
+            if (application.status === ApplicationStatus.REJECTED) {
+                res.status(400).json({
+                    success: false,
+                    message: "Declined applications cannot be ranked",
                 });
                 return;
             }
@@ -1730,6 +2082,84 @@ export class ApplicationController {
         }
     }
 
+    async markApplicationReviewed(
+        req: AuthenticatedRequest,
+        res: Response
+    ): Promise<void> {
+        try {
+            const { id } = req.params;
+            const lecturerId = req.user?.userId;
+            if (!lecturerId) {
+                res.status(401).json({
+                    success: false,
+                    message: "Authentication required",
+                });
+                return;
+            }
+
+            const application = await this.applicationRepository.findOne({
+                where: { id: parseInt(id, 10) },
+                relations: ["course", "role", "candidate"],
+            });
+
+            if (!application) {
+                res.status(404).json({
+                    success: false,
+                    message: "Application not found",
+                });
+                return;
+            }
+
+            const courseAssignment =
+                await this.courseAssignmentRepository.findOne({
+                    where: {
+                        lecturerId,
+                        courseId: application.courseId,
+                    },
+                });
+
+            if (!courseAssignment) {
+                res.status(403).json({
+                    success: false,
+                    message: "You don't have access to this application",
+                });
+                return;
+            }
+
+            if (respondIfWithdrawn(application, res)) {
+                return;
+            }
+
+            const newlyReviewed = touchApplicationReviewed(
+                application,
+                lecturerId
+            );
+
+            if (newlyReviewed) {
+                await this.applicationRepository.save(application);
+                void notifyApplicationUpdated(application.id, "reviewed");
+            }
+
+            const responseApplication =
+                (await this.loadApplicationForResponse(application.id)) ??
+                application;
+
+            res.status(200).json({
+                success: true,
+                message: newlyReviewed
+                    ? "Application marked as reviewed"
+                    : "Application already reviewed",
+                data: responseApplication,
+            });
+        } catch (error) {
+            console.error("Error marking application reviewed:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal server error",
+            });
+        }
+    }
+
     async getLecturerNotes(
         req: AuthenticatedRequest,
         res: Response
@@ -1836,6 +2266,233 @@ export class ApplicationController {
             });
         } catch (error) {
             console.error("updateLecturerNotes error:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal server error",
+            });
+        }
+    }
+
+    async deleteBlockedApplication(
+        req: AuthenticatedRequest,
+        res: Response
+    ): Promise<void> {
+        try {
+            const { id } = req.params;
+            const lecturerId = req.user?.userId;
+
+            const application = await this.applicationRepository.findOne({
+                where: { id: parseInt(id, 10) },
+                relations: ["course", "role", "candidate"],
+            });
+
+            if (!application) {
+                res.status(404).json({
+                    success: false,
+                    message: "Application not found",
+                });
+                return;
+            }
+
+            const courseAssignment =
+                await this.courseAssignmentRepository.findOne({
+                    where: {
+                        lecturerId,
+                        courseId: application.courseId,
+                    },
+                });
+
+            if (!courseAssignment) {
+                res.status(403).json({
+                    success: false,
+                    message: "You don't have access to this application",
+                });
+                return;
+            }
+
+            if (!application.candidate?.isBlocked) {
+                res.status(400).json({
+                    success: false,
+                    message:
+                        "Only applications from blocked candidates can be removed",
+                });
+                return;
+            }
+
+            await this.applicationRepository.remove(application);
+
+            res.status(200).json({
+                success: true,
+                message: "Blocked application removed successfully",
+            });
+        } catch (error) {
+            console.error("Error deleting blocked application:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal server error",
+            });
+        }
+    }
+
+    async shortlistApplication(
+        req: AuthenticatedRequest,
+        res: Response
+    ): Promise<void> {
+        try {
+            const { id } = req.params;
+            const lecturerId = req.user?.userId;
+
+            const application = await this.applicationRepository.findOne({
+                where: { id: parseInt(id) },
+                relations: ["course", "role", "candidate"],
+            });
+
+            if (!application) {
+                res.status(404).json({
+                    success: false,
+                    message: "Application not found",
+                });
+                return;
+            }
+
+            const hasAccess = await this.verifyLecturerCourseAccess(
+                lecturerId,
+                application.courseId
+            );
+            if (!hasAccess) {
+                res.status(403).json({
+                    success: false,
+                    message: "You don't have access to this application",
+                });
+                return;
+            }
+
+            if (respondIfWithdrawn(application, res)) {
+                return;
+            }
+
+            if (application.candidate?.isBlocked) {
+                res.status(400).json({
+                    success: false,
+                    message: "Blocked candidates cannot be shortlisted",
+                });
+                return;
+            }
+
+            if (application.status !== ApplicationStatus.PENDING) {
+                res.status(400).json({
+                    success: false,
+                    message:
+                        "Only pending applications can be shortlisted at screening",
+                });
+                return;
+            }
+
+            const existingSelection =
+                await this.selectedCandidateRepository.findOne({
+                    where: { applicationId: application.id },
+                });
+
+            if (!existingSelection && lecturerId) {
+                await this.selectedCandidateRepository.save(
+                    this.selectedCandidateRepository.create({
+                        applicationId: application.id,
+                        selectedById: lecturerId,
+                    })
+                );
+            }
+
+            const updatedApplication = await this.applicationRepository.findOne({
+                where: { id: application.id },
+                relations: ["course", "role", "candidate"],
+            });
+
+            void notifyApplicationUpdated(application.id, "status");
+
+            res.status(200).json({
+                success: true,
+                message: "Application shortlisted successfully",
+                data: {
+                    ...updatedApplication,
+                    isShortlisted: true,
+                },
+            });
+        } catch (error) {
+            console.error("Error shortlisting application:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal server error",
+            });
+        }
+    }
+
+    async removeShortlist(
+        req: AuthenticatedRequest,
+        res: Response
+    ): Promise<void> {
+        try {
+            const { id } = req.params;
+            const lecturerId = req.user?.userId;
+
+            const application = await this.applicationRepository.findOne({
+                where: { id: parseInt(id) },
+                relations: ["course", "role", "candidate"],
+            });
+
+            if (!application) {
+                res.status(404).json({
+                    success: false,
+                    message: "Application not found",
+                });
+                return;
+            }
+
+            const hasAccess = await this.verifyLecturerCourseAccess(
+                lecturerId,
+                application.courseId
+            );
+            if (!hasAccess) {
+                res.status(403).json({
+                    success: false,
+                    message: "You don't have access to this application",
+                });
+                return;
+            }
+
+            if (application.status === ApplicationStatus.SELECTED) {
+                res.status(400).json({
+                    success: false,
+                    message:
+                        "Revoke final selection before removing this shortlist",
+                });
+                return;
+            }
+
+            await this.selectedCandidateRepository.delete({
+                applicationId: application.id,
+            });
+
+            application.rank = null;
+            application.rankedBy = null;
+            application.rankedAt = null;
+            application.rankedForCourse = null;
+
+            const updatedApplication = await this.applicationRepository.save(
+                application
+            );
+
+            void notifyApplicationUpdated(application.id, "status");
+
+            res.status(200).json({
+                success: true,
+                message: "Application removed from shortlist",
+                data: {
+                    ...updatedApplication,
+                    isShortlisted: false,
+                },
+            });
+        } catch (error) {
+            console.error("Error removing shortlist:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",

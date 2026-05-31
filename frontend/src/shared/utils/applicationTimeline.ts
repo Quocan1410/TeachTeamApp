@@ -41,26 +41,6 @@ export function buildApplicationTimeline(
     });
   }
 
-  if (application.status === "selected") {
-    items.push({
-      id: "decision-selected",
-      kind: "system",
-      title: "Final decision: Selected",
-      body: "The lecturer recorded a positive outcome for this application.",
-      at: application.updatedAt,
-    });
-  }
-
-  if (application.status === "rejected") {
-    items.push({
-      id: "decision-rejected",
-      kind: "system",
-      title: "Final decision: Not selected",
-      body: "The lecturer recorded the outcome for this intake.",
-      at: application.updatedAt,
-    });
-  }
-
   if (application.isWithdrawn) {
     items.push({
       id: "withdrawn",
@@ -76,12 +56,10 @@ export function buildApplicationTimeline(
   );
 }
 
-export function canCandidateSendCorrespondence(
-  application: ApplicationResponse
-): boolean {
-  if (application.isWithdrawn) return false;
-  if (application.status === "selected" || application.status === "rejected") {
-    return false;
-  }
-  return application.status === "pending";
-}
+export {
+  canCandidateSendCorrespondence,
+  canLecturerSendCorrespondence,
+  candidateOfferPending,
+  getCorrespondenceClosedNotice,
+  isCorrespondenceInactive,
+} from "./correspondencePolicy";

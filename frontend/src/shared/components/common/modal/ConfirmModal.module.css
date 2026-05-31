@@ -1,0 +1,180 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(8, 10, 16, 0.55);
+  backdrop-filter: blur(6px);
+  animation: fadeIn 0.18s ease-out;
+}
+
+.panel {
+  width: 100%;
+  max-width: 19.5rem;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 color-mix(in srgb, white 6%, transparent);
+  padding: 1.15rem 1.15rem 1rem;
+  text-align: center;
+  animation: riseIn 0.22s ease-out;
+}
+
+:global(.dark) .panel,
+:global(html[data-theme="dark"]) .panel {
+  border-color: color-mix(in srgb, var(--color-primary) 22%, var(--color-border));
+  background:
+    radial-gradient(
+      ellipse 120% 80% at 50% -30%,
+      color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-secondary)),
+      var(--color-bg-secondary) 70%
+    ),
+    var(--color-bg-secondary);
+}
+
+.iconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  margin: 0 auto 0.65rem;
+  border-radius: 999px;
+}
+
+.iconWrap svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.iconWrapDefault {
+  background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+  color: var(--color-primary);
+}
+
+.iconWrapDanger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+}
+
+.title {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.message {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--color-text-tertiary);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.actionsSplit {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.95rem;
+}
+
+.cancelBtn,
+.confirmBtn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.52rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.12s ease;
+}
+
+.actionsSplit .cancelBtn,
+.actionsSplit .confirmBtn {
+  flex: 1;
+  min-width: 0;
+}
+
+.cancelBtn {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid color-mix(in srgb, var(--color-border) 90%, transparent);
+}
+
+.cancelBtnSplit {
+  background: color-mix(in srgb, var(--color-bg-primary) 55%, transparent);
+}
+
+.cancelBtn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-bg-primary) 70%, transparent);
+  border-color: var(--color-border);
+}
+
+.confirmBtn {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.confirmBtnSplit {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+}
+
+.confirmBtn:hover:not(:disabled) {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.confirmBtnDanger {
+  background: #dc2626;
+}
+
+.confirmBtnDanger:hover:not(:disabled) {
+  background: #b91c1c;
+  filter: none;
+}
+
+.cancelBtn:disabled,
+.confirmBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

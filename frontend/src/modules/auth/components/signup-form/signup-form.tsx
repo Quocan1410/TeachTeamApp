@@ -14,7 +14,19 @@ import { AuthService } from "../../../../shared/services/authService";
 import { UserType } from "../../../../shared/types/user";
 import { useAuth } from "../../hooks/useAuth";
 import EmailAutocomplete from "../email-autocomplete/email-autocomplete";
+import AppSelect from "@/shared/components/common/app-select/AppSelect";
 import styles from "./signup-form.module.css";
+
+const TITLE_PLACEHOLDER = "";
+
+const CANDIDATE_HONORIFIC_OPTIONS = [
+  { value: TITLE_PLACEHOLDER, label: "Title", isDefault: true },
+  { value: "Mr.", label: "Mr." },
+  { value: "Ms.", label: "Ms." },
+  { value: "Mrs.", label: "Mrs." },
+];
+
+type CandidateHonorific = "Mr." | "Ms." | "Mrs." | "";
 
 export default function SignUpForm() {
   const router = useRouter();
@@ -24,7 +36,7 @@ export default function SignUpForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState<"tutor" | "lecturer">("tutor");
-  const [honorific, setHonorific] = useState<"Mr." | "Ms." | "Mrs.">("Mr.");
+  const [honorific, setHonorific] = useState<CandidateHonorific>(TITLE_PLACEHOLDER);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -87,6 +99,11 @@ export default function SignUpForm() {
       } else {
         newErrors.fullName = "Full name can only contain letters, apostrophes and hyphens";
       }
+    }
+
+    // Validate title for candidates
+    if (role === "tutor" && !honorific) {
+      newErrors.honorific = "Please select a title";
     }
 
     // Validate email
@@ -154,7 +171,10 @@ export default function SignUpForm() {
         firstName,
         lastName,
         userType,
-        honorific: userType === UserType.CANDIDATE ? honorific : "Dr.",
+        honorific:
+          userType === UserType.CANDIDATE
+            ? (honorific as CandidateHonorific)
+            : "Dr.",
       };
 
       // Call the signup API
@@ -213,19 +233,27 @@ export default function SignUpForm() {
 
         {role === "tutor" && (
           <div className={styles.inputContainer}>
-            <select
+            <AppSelect
               id="honorific"
               value={honorific}
-              onChange={(e) =>
-                setHonorific(e.target.value as "Mr." | "Ms." | "Mrs.")
-              }
-              className={styles.inputField}
+              onChange={(value) => {
+                setHonorific(value as CandidateHonorific);
+                if (errors.honorific) {
+                  setErrors((prev) => ({ ...prev, honorific: "" }));
+                }
+                if (apiError) {
+                  setApiError("");
+                }
+              }}
+              options={CANDIDATE_HONORIFIC_OPTIONS}
+              variant="pill"
+              hasError={!!errors.honorific}
+              className={styles.titleSelect}
               aria-label="Title"
-            >
-              <option value="Mr.">Mr.</option>
-              <option value="Ms.">Ms.</option>
-              <option value="Mrs.">Mrs.</option>
-            </select>
+            />
+            {errors.honorific && (
+              <div className={styles.errorMessage}>{errors.honorific}</div>
+            )}
           </div>
         )}
 

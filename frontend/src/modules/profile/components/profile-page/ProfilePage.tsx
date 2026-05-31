@@ -13,13 +13,15 @@ import {
   getUserInitials,
   hasCustomAvatar,
 } from "../../../../shared/utils/avatarUtils";
+import { clearAvatarFetchCache } from "../../../../shared/utils/avatarFetchCache";
 import { useProtectedAvatar } from "../../../../shared/hooks/useProtectedAvatar";
-import { getUserDisplayName } from "@/shared/utils/personDisplayName";
+import { getUserDisplayName, type Honorific } from "@/shared/utils/personDisplayName";
 import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
 import styles from "./ProfilePage.module.css";
 
 export const ProfilePage: React.FC = () => {
   const { user: contextUser, updateUser, isLoading: authLoading } = useAuth();
+  const contextUserId = contextUser?.id ?? null;
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [assignedCourses, setAssignedCourses] = useState<AssignedCourse[]>([]);
@@ -34,7 +36,11 @@ export const ProfilePage: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [profileMessage, setProfileMessage] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [editForm, setEditForm] = useState({ firstName: "", lastName: "" });
+  const [editForm, setEditForm] = useState({
+    firstName: "",
+    lastName: "",
+    honorific: "Mr." as Honorific,
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const protectedAvatarUrl = useProtectedAvatar(
     !!user && hasCustomAvatar(user.avatarUrl),
@@ -47,14 +53,18 @@ export const ProfilePage: React.FC = () => {
     if (!savedUser) {
       router.replace("/signin");
     }
-  }, [authLoading, contextUser, router]);
+  }, [authLoading, contextUserId, contextUser, router]);
 
   useEffect(() => {
-    const loadProfile = async () => {
-      const savedUser = contextUser || AuthService.getUser();
+    if (authLoading || !contextUserId) {
+      return;
+    }
 
-      if (!savedUser) {
-        // Redirect effect handles unauthenticated state.
+    let cancelled = false;
+
+    const loadProfile = async () => {
+      const savedUser = AuthService.getUser();
+      if (!savedUser || savedUser.id !== contextUserId) {
         return;
       }
 
@@ -68,6 +78,8 @@ export const ProfilePage: React.FC = () => {
               ApplicationService.getCoursesAndRoles(),
               ApplicationService.getMyCandidateApplications(),
             ]);
+
+          if (cancelled) return;
 
           if (profileResponse.success && profileResponse.data?.user) {
             setUser(profileResponse.data.user);
@@ -102,6 +114,8 @@ export const ProfilePage: React.FC = () => {
           }
         } else {
           const profileResponse = await AuthService.getProfile();
+          if (cancelled) return;
+
           if (profileResponse.success && profileResponse.data) {
             setUser(profileResponse.data.user);
             updateUser(profileResponse.data.user);
@@ -115,16 +129,22 @@ export const ProfilePage: React.FC = () => {
           }
         }
       } catch (apiError) {
-        console.error("Failed to load profile data:", apiError);
+        if (!cancelled) {
+          console.error("Failed to load profile data:", apiError);
+        }
       } finally {
-        setIsLoading(false);
+        if (!cancelled) {
+          setIsLoading(false);
+        }
       }
     };
 
-    if (!authLoading) {
-      loadProfile();
-    }
-  }, [authLoading, contextUser, updateUser]);
+    void loadProfile();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [authLoading, contextUserId, updateUser]);
 
   const avatarUrl = user?.avatarUrl;
 
@@ -172,6 +192,9 @@ export const ProfilePage: React.FC = () => {
     setEditForm({
       firstName: user.firstName,
       lastName: user.lastName,
+      honorific:
+        (user.honorific as Honorific) ||
+        (user.userType === UserType.LECTURER ? "Dr." : "Mr."),
     });
     setFieldErrors({});
     setProfileMessage("");
@@ -240,6 +263,7 @@ export const ProfilePage: React.FC = () => {
     try {
       const response = await AuthService.uploadAvatar(file);
       if (response.success && response.data?.user) {
+        clearAvatarFetchCache();
         setUser(response.data.user);
         updateUser(response.data.user);
         AuthService.saveUser(response.data.user);
@@ -299,7 +323,17 @@ export const ProfilePage: React.FC = () => {
         ? getUserAvatarSrc(user)
         : "");
   const displayInitials = user
-    ? getUserInitials(user.firstName, user.lastName, user.email)
+    ? getUserInitials(
+        user.firstName,
+        user.lastName,
+        user.email,
+        getUserDisplayName({
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          userType: user.userType,
+        })
+      )
     : "?";
 
   if (authLoading || isLoading) {
@@ -408,6 +442,7 @@ export const ProfilePage: React.FC = () => {
                 lastName: user.lastName,
                 email: user.email,
                 userType: user.userType,
+                honorific: user.honorific,
               })}
             </h1>
             <div className={styles.userRole}>
@@ -597,7 +632,52 @@ export const ProfilePage: React.FC = () => {
                     <span className={styles.infoValue}>{user.lastName}</span>
                   )}
                 </div>
-                <div className={`${styles.infoItem} ${styles.infoItemFull}`}>
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>Title</span>
+                  {isEditing ? (
+                    <>
+                      <select
+                        id="profile-honorific"
+                        className={`${styles.formInput} ${
+                          fieldErrors.honorific ? styles.formInputError : ""
+                        }`}
+                        value={editForm.honorific}
+                        onChange={(e) =>
+                          setEditForm((prev) => ({
+                            ...prev,
+                            honorific: e.target.value as Honorific,
+                          }))
+                        }
+                        disabled={isSaving}
+                        aria-label="Title"
+                      >
+                        {user.userType === UserType.LECTURER ? (
+                          <>
+                            <option value="Dr.">Dr.</option>
+                            <option value="Prof.">Prof.</option>
+                          </>
+                        ) : (
+                          <>
+                            <option value="Mr.">Mr.</option>
+                            <option value="Ms.">Ms.</option>
+                            <option value="Mrs.">Mrs.</option>
+                          </>
+                        )}
+                      </select>
+                      {fieldErrors.honorific && (
+                        <span className={styles.fieldError}>
+                          {fieldErrors.honorific}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <span className={styles.infoValue}>
+                      {user.honorific ||
+                        (user.userType === UserType.LECTURER ? "Dr." : "Mr.")}
+                    </span>
+                  )}
+                </div>
+                <div className={styles.infoItem}>
                   <span className={styles.infoLabel}>Email</span>
                   <span className={styles.infoValue}>{user.email}</span>
                   {isEditing && (

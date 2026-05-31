@@ -93,8 +93,14 @@ export function getCorrespondenceMessages(
   const stored = parseCorrespondenceMessages(
     application.correspondenceMessages
   );
-  if (stored.length > 0) return stored;
-  return buildFromLegacy(application);
+  const messages =
+    stored.length > 0 ? stored : buildFromLegacy(application);
+  const appliedMs = new Date(application.appliedAt).getTime();
+  if (Number.isNaN(appliedMs)) return messages;
+
+  return messages.filter(
+    (message) => new Date(message.createdAt).getTime() >= appliedMs
+  );
 }
 
 export function canEditCandidateMessage(message: CorrespondenceMessage): boolean {

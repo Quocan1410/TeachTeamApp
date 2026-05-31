@@ -164,6 +164,13 @@ router.get(
 );
 
 // Status update with comprehensive validation
+router.post(
+    "/:id/offer-response",
+    authenticateToken,
+    requireUserType(["candidate"]),
+    applicationController.respondToOffer.bind(applicationController)
+);
+
 router.put(
     "/:id/status",
     authenticateToken,
@@ -172,6 +179,22 @@ router.put(
     validateStatusUpdate,
     validateLecturerApplicationAccess,
     applicationController.updateApplicationStatus.bind(applicationController)
+);
+
+router.post(
+    "/:id/shortlist",
+    authenticateToken,
+    requireUserType(["lecturer"]),
+    validateLecturerApplicationAccess,
+    applicationController.shortlistApplication.bind(applicationController)
+);
+
+router.delete(
+    "/:id/shortlist",
+    authenticateToken,
+    requireUserType(["lecturer"]),
+    validateLecturerApplicationAccess,
+    applicationController.removeShortlist.bind(applicationController)
 );
 
 // Comment submission endpoints
@@ -230,6 +253,22 @@ router.delete(
     applicationController.removeApplicationFromRanking.bind(
         applicationController
     )
+);
+
+router.delete(
+    "/:id/blocked",
+    authenticateToken,
+    requireUserType(["lecturer"]),
+    validateLecturerApplicationAccess,
+    applicationController.deleteBlockedApplication.bind(applicationController)
+);
+
+router.post(
+    "/:id/review",
+    authenticateToken,
+    requireUserType(["lecturer"]),
+    validateLecturerApplicationAccess,
+    applicationController.markApplicationReviewed.bind(applicationController)
 );
 
 router.get(

@@ -20,6 +20,7 @@ interface ApplicantDetailsProps {
   onSelectApplicant: (selectedCourses: string[]) => Promise<void>;
   onUnselectApplicant: () => Promise<void>;
   onAddToRanking: () => Promise<void>;
+  onRemoveBlockedApplication?: () => Promise<void>;
   showToast: (message: string, type?: "success" | "error" | "info") => void;
   title?: string;
   courses?: Course[];
@@ -30,12 +31,14 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
   onSelectApplicant,
   onUnselectApplicant,
   onAddToRanking,
+  onRemoveBlockedApplication,
   showToast,
   title = "Applicant Details",
   courses = [],
 }) => {
   const [lecturerNotes, setLecturerNotes] = useState("");
   const [notesSaving, setNotesSaving] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
 
   // Note: Course selection logic removed since there's only one course
 
@@ -107,14 +110,18 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
       showToast("Applicant is already added to ranking", "info");
       return;
     }
-    if (!application.comment?.trim()) {
-      showToast(
-        "Please send feedback in the correspondence panel before adding to ranking.",
-        "error"
-      );
-      return;
-    }
     onAddToRanking();
+  };
+
+  const handleRemoveBlockedClick = async () => {
+    if (!application?.isBlocked || !onRemoveBlockedApplication) return;
+
+    try {
+      setIsRemoving(true);
+      await onRemoveBlockedApplication();
+    } finally {
+      setIsRemoving(false);
+    }
   };
 
   return (
@@ -129,6 +136,32 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
         >
+          {application.isBlocked && (
+            <div className={styles.blockedWarning}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={styles.warningIcon}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+              <div>
+                <strong>Candidate unavailable</strong>
+                <p>
+                  This applicant was blocked by an administrator. You can remove
+                  their application from your list when you no longer need it.
+                </p>
+              </div>
+            </div>
+          )}
+
           <div className={styles.actionButtonsContainer}>
             <div>
               <h2 className={styles.applicantNameLarge}>
@@ -187,7 +220,17 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
             </div>
 
             <div className={styles.buttonGroup}>
-              {application.selected ? (
+              {application.isBlocked ? (
+                <button
+                  type="button"
+                  onClick={handleRemoveBlockedClick}
+                  disabled={isRemoving || !onRemoveBlockedApplication}
+                  className={`${styles.actionButton} ${styles.removeBlockedButton}`}
+                  title="Remove this application from your list"
+                >
+                  {isRemoving ? "Removing..." : "Remove Application"}
+                </button>
+              ) : application.selected ? (
                 <>
                   <button
                     onClick={onUnselectApplicant}
@@ -247,87 +290,41 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
           </div>
 
           <div className={styles.section}>
-            <h4 className={styles.sectionTitle}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className={styles.sectionIcon}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                />
-              </svg>
-              Course Applications
-            </h4>
-            <div className={styles.coursesContainer}>
+            <h4 className={styles.sectionTitle}>Course Applications</h4>
+            <div className={styles.compactCourseList}>
               {application.courses.map((courseCode) => {
-                // Use embedded course information from the extended application object
                 const extendedApp = application as TutorApplication & {
                   course?: {
                     courseCode: string;
                     courseName: string;
                     semester: string;
                   };
-                  role?: {
-                    roleName: string;
-                  };
+                  role?: { roleName: string };
                 };
-
-                // Find course data with position information
                 const courseData = courses.find(
                   (course) => course.courseCode === courseCode
                 );
                 const roleName = extendedApp.role?.roleName;
+                const isSelected =
+                  application.selectedForCourses?.includes(courseCode);
 
                 return (
-                  <div key={courseCode} className={styles.courseCard}>
-                    <div className={styles.courseCode}>{courseCode}</div>
-                    <div className={styles.courseName}>
+                  <div key={courseCode} className={styles.compactCourseRow}>
+                    <span className={styles.courseCode}>{courseCode}</span>
+                    <span className={styles.compactCourseName}>
                       {extendedApp.course?.courseName || "Course not found"}
-                    </div>
-
-                    {/* Position Information */}
+                    </span>
                     {courseData && roleName && (
-                      <div className={styles.positionInfo}>
-                        {roleName === "tutor" && (
-                          <span className={styles.positionBadge}>
-                            Tutors:{" "}
-                            {(courseData.maxTutors ?? 0) -
-                              (courseData.availableTutors ?? 0)}
-                            /{courseData.maxTutors ?? 0}
-                          </span>
-                        )}
-                        {roleName === "lab_assistant" && (
-                          <span className={styles.positionBadge}>
-                            Lab Assistants:{" "}
-                            {(courseData.maxLabAssistants ?? 0) -
-                              (courseData.availableLabAssistants ?? 0)}
-                            /{courseData.maxLabAssistants ?? 0}
-                          </span>
-                        )}
-                      </div>
+                      <span className={styles.positionBadge}>
+                        {roleName === "tutor"
+                          ? `Tutors ${(courseData.maxTutors ?? 0) - (courseData.availableTutors ?? 0)}/${courseData.maxTutors ?? 0}`
+                          : `Lab ${(courseData.maxLabAssistants ?? 0) - (courseData.availableLabAssistants ?? 0)}/${courseData.maxLabAssistants ?? 0}`}
+                      </span>
                     )}
-
-                    {application.selectedForCourses?.includes(courseCode) && (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className={styles.courseSelectedIcon}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                    {isSelected && (
+                      <span className={styles.compactSelectedMark} title="Selected">
+                        ✓
+                      </span>
                     )}
                   </div>
                 );
@@ -336,45 +333,28 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
           </div>
 
           <div className={styles.section}>
-            <h4 className={styles.sectionTitle}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className={styles.sectionIcon}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
-              Experience & Skills
-            </h4>
-            <div className={styles.experienceSkillsGrid}>
-              <div className={styles.previousRolesSection}>
-                <h5 className={styles.subsectionTitle}>Previous Roles</h5>
+            <h4 className={styles.sectionTitle}>Experience & Skills</h4>
+            <div className={styles.compactMetaGrid}>
+              <div className={styles.compactMetaBlock}>
+                <span className={styles.compactLabel}>Previous roles</span>
                 {application.previousRoles &&
                 application.previousRoles.length > 0 ? (
-                  <ul className={styles.rolesList}>
+                  <div className={styles.inlineTags}>
                     {application.previousRoles.map((role, index) => (
-                      <li key={index} className={styles.roleItem}>
+                      <span key={index} className={styles.inlineTag}>
                         {role}
-                      </li>
+                      </span>
                     ))}
-                  </ul>
+                  </div>
                 ) : (
-                  <p className={styles.emptyList}>No previous roles listed</p>
+                  <span className={styles.emptyInline}>None listed</span>
                 )}
               </div>
-
-              <div className={styles.skillsSection}>
-                <h5 className={styles.subsectionTitle}>Skills</h5>
-                <div className={styles.skillsContainer}>
+              <div className={styles.compactMetaBlock}>
+                <span className={styles.compactLabel}>Skills</span>
+                <div className={styles.inlineTags}>
                   {application.skills.map((skill, index) => (
-                    <span key={index} className={styles.skillTag}>
+                    <span key={index} className={styles.inlineTag}>
                       {skill}
                     </span>
                   ))}
@@ -384,40 +364,16 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
           </div>
 
           <div className={styles.section}>
-            <h4 className={styles.sectionTitle}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className={styles.sectionIcon}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 14l9-5-9-5-9 5 9 5z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="m12 14 6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
-                />
-              </svg>
-              Academic Background
-            </h4>
-            <div className={styles.academicText}>
+            <h4 className={styles.sectionTitle}>Academic Background</h4>
+            <p className={styles.academicText}>
               {application.academicCredentials ||
                 "No academic credentials provided"}
-            </div>
+            </p>
           </div>
 
           <div className={styles.section}>
-            <h4 className={styles.sectionTitle}>Private lecturer notes</h4>
-            <p style={{ fontSize: "0.8rem", opacity: 0.7, marginBottom: "0.5rem" }}>
-              Only you can see these — not sent to the candidate.
-            </p>
+            <h4 className={styles.sectionTitle}>Private notes</h4>
+            <p className={styles.notesHint}>Only visible to you.</p>
             <textarea
               value={lecturerNotes}
               onChange={(e) => setLecturerNotes(e.target.value)}
@@ -447,8 +403,7 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
                   }
                 }}
                 disabled={notesSaving}
-                className={`${styles.actionButton} ${styles.addToRankingButton}`}
-                style={{ fontSize: "0.875rem" }}
+                className={`${styles.actionButton} ${styles.addToRankingButton} ${styles.notesSaveBtn}`}
               >
                 {notesSaving ? "Saving…" : "Save private notes"}
               </button>

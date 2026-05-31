@@ -95,7 +95,7 @@ const validateSignupFields = (req: any, res: any, next: any) => {
 };
 
 const validateProfileFields = (req: any, res: any, next: any) => {
-    const { firstName, lastName } = req.body;
+    const { firstName, lastName, honorific } = req.body;
     const errors: Record<string, string> = {};
 
     if (!firstName || (typeof firstName === "string" && firstName.trim() === "")) {
@@ -112,6 +112,13 @@ const validateProfileFields = (req: any, res: any, next: any) => {
         errors.lastName = "Last name must be at least 1 character long";
     } else if (!/^[a-zA-Z\s]+$/.test(lastName)) {
         errors.lastName = "Last name can only contain letters and spaces";
+    }
+
+    if (honorific !== undefined && honorific !== null && honorific !== "") {
+        const valid = ["Mr.", "Ms.", "Mrs.", "Dr.", "Prof."];
+        if (typeof honorific !== "string" || !valid.includes(honorific.trim())) {
+            errors.honorific = "Please choose a valid title";
+        }
     }
 
     if (Object.keys(errors).length > 0) {

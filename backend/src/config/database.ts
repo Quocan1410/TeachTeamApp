@@ -7,9 +7,11 @@ import { CourseAssignment } from "../entities/CourseAssignment";
 import { Application } from "../entities/Application";
 import { SelectedCandidate } from "../entities/SelectedCandidate";
 import { Notification } from "../entities/Notification";
+import { NotificationService } from "../services/NotificationService";
 import { ApplicationDraft } from "../entities/ApplicationDraft";
 import { Announcement } from "../entities/Announcement";
 import path from "path";
+import { reconcileOrphanAvatarFiles } from "../utils/avatarUtils";
 
 // Load environment variables from root .env file
 config({ path: path.resolve(__dirname, "../../../.env") });
@@ -136,17 +138,57 @@ const ensureSchemaColumns = async (): Promise<void> => {
         "correspondenceMessages",
         "ALTER TABLE `applications` ADD `correspondenceMessages` json NULL"
     );
+    await ensureColumn(
+        "applications",
+        "offerResponse",
+        "ALTER TABLE `applications` ADD `offerResponse` varchar(20) NULL"
+    );
+    await ensureColumn(
+        "applications",
+        "offerRespondedAt",
+        "ALTER TABLE `applications` ADD `offerRespondedAt` datetime NULL"
+    );
+    await ensureColumn(
+        "applications",
+        "reviewedAt",
+        "ALTER TABLE `applications` ADD `reviewedAt` datetime NULL"
+    );
+    await ensureColumn(
+        "applications",
+        "reviewedBy",
+        "ALTER TABLE `applications` ADD `reviewedBy` int NULL"
+    );
 };
 
 export const initializeDatabase = async () => {
     try {
         await initializeDataSource();
         await ensureSchemaColumns();
+        await syncNotificationsIfNeeded();
+        await syncOrphanAvatarsIfNeeded();
 
         // Data is loaded via /api/database reset or manual bootstrap — not on every start.
     } catch (error) {
         console.error("Error during database initialization:", error);
         throw error;
+    }
+};
+
+const syncNotificationsIfNeeded = async (): Promise<void> => {
+    const applicationCount = await AppDataSource.getRepository(Application).count();
+    if (applicationCount === 0) {
+        return;
+    }
+
+    await NotificationService.backfillFromApplications();
+};
+
+const syncOrphanAvatarsIfNeeded = async (): Promise<void> => {
+    const linked = await reconcileOrphanAvatarFiles(
+        AppDataSource.getRepository(User)
+    );
+    if (linked > 0) {
+        console.log(`Linked ${linked} orphaned avatar file(s) to user records.`);
     }
 };
 

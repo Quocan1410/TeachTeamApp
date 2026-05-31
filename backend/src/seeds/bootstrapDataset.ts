@@ -200,7 +200,7 @@ const COURSE_DEFS = [
         courseCode: "MARK1001",
         courseName: "Marketing Fundamentals",
         semester: "Semester 2 2026",
-        description: "Closing soon — urgent deadline",
+        description: "Consumer behaviour, campaigns, and market research",
         maxTutors: 2,
         maxLabAssistants: 1,
         deadlineDays: 3,
@@ -436,7 +436,7 @@ const APPLICATION_DEFS: SeedApplication[] = [
         status: ApplicationStatus.PENDING,
         availability: "Part Time",
         skills: "Accounting, Excel",
-        experience: "Submitted before deadline closed.",
+        experience: "PASS leader for introductory accounting.",
         motivation: "Support revision sessions.",
         lecturerEmail: "david.lecturer@lecturer.edu.au",
     },
@@ -508,15 +508,13 @@ const APPLICATION_DEFS: SeedApplication[] = [
         candidateEmail: "taylor.candidate@candidate.edu.au",
         courseCode: "MARK1001",
         roleName: "tutor",
-        status: ApplicationStatus.SELECTED,
+        status: ApplicationStatus.PENDING,
         availability: "Part Time",
         skills: "Marketing, presentation",
         experience: "Agency internship.",
         motivation: "Urgent intake — marketing labs.",
         lecturerEmail: "david.lecturer@lecturer.edu.au",
-        lecturerComment: "Selected before account block review.",
-        rank: 1,
-        rankedForCourse: "MARK1001",
+        lecturerComment: "Was ranked before account block — ranking cleared.",
     },
     {
         candidateEmail: "sam.candidate@candidate.edu.au",
@@ -633,6 +631,32 @@ export async function seedBootstrapDataset(): Promise<void> {
         }
     }
 
+    const alex = candidateByEmail.get("alex.candidate@candidate.edu.au");
+    const markCourse = courseByCode.get("MARK1001");
+    const labRoleId = labRole.id;
+
+    const notify = async (
+        userId: number,
+        type: NotificationType,
+        title: string,
+        message: string,
+        link: string,
+        read = false,
+        metadata?: Record<string, unknown>
+    ) => {
+        await notificationRepo.save(
+            notificationRepo.create({
+                userId,
+                type,
+                title,
+                message,
+                link,
+                read,
+                metadata,
+            })
+        );
+    };
+
     for (const def of APPLICATION_DEFS) {
         const candidate = candidateByEmail.get(def.candidateEmail);
         const course = courseByCode.get(def.courseCode);
@@ -642,14 +666,22 @@ export async function seedBootstrapDataset(): Promise<void> {
         const lecturer = def.lecturerEmail
             ? lecturerByEmail.get(def.lecturerEmail)
             : undefined;
-        const chatBase = addDays(now, -4);
-        let chatMinuteOffset = 90;
+        const appliedAt = addDays(now, -3);
+        let chatMinuteOffset = 30;
 
         const correspondenceMessages: Application["correspondenceMessages"] = [];
         const pushCorrespondence = (
-            message: NonNullable<Application["correspondenceMessages"]>[number]
+            message: Omit<
+                NonNullable<Application["correspondenceMessages"]>[number],
+                "createdAt"
+            > & { createdAt?: string }
         ) => {
-            correspondenceMessages.push(message);
+            correspondenceMessages.push({
+                ...message,
+                createdAt:
+                    message.createdAt ??
+                    addMinutes(appliedAt, chatMinuteOffset).toISOString(),
+            });
             chatMinuteOffset += 55;
         };
 
@@ -659,7 +691,6 @@ export async function seedBootstrapDataset(): Promise<void> {
                 authorRole: "lecturer",
                 authorId: lecturer.id,
                 body: def.lecturerComment,
-                createdAt: addMinutes(chatBase, chatMinuteOffset).toISOString(),
             });
         }
         if (def.candidateReply) {
@@ -668,7 +699,6 @@ export async function seedBootstrapDataset(): Promise<void> {
                 authorRole: "candidate",
                 authorId: candidate.id,
                 body: def.candidateReply,
-                createdAt: addMinutes(chatBase, chatMinuteOffset).toISOString(),
                 replyToMessageId: def.candidateReplyToMessageId ?? null,
             });
         }
@@ -681,7 +711,6 @@ export async function seedBootstrapDataset(): Promise<void> {
                         ? lecturer?.id ?? 0
                         : candidate.id,
                 body: extra.body,
-                createdAt: addMinutes(chatBase, chatMinuteOffset).toISOString(),
                 replyToMessageId: extra.replyToMessageId ?? null,
             });
         }
@@ -700,6 +729,7 @@ export async function seedBootstrapDataset(): Promise<void> {
             courseId: course.id,
             roleId: role.id,
             status: def.status,
+            appliedAt,
             isWithdrawn: Boolean(def.isWithdrawn),
             withdrawnAt: withdrawnAt ?? undefined,
             availability: { type: def.availability },
@@ -742,11 +772,47 @@ export async function seedBootstrapDataset(): Promise<void> {
                 })
             );
         }
+
+        if (lecturer) {
+            const candidateName =
+                `${candidate.firstName} ${candidate.lastName}`.trim();
+            const roleLabel =
+                def.roleName === "tutor" ? "tutor" : "lab assistant";
+            const metadata = {
+                courseId: course.id,
+                candidateId: candidate.id,
+                applicationId: application.id,
+            };
+            const courseAssignments = await assignmentRepo.find({
+                where: { courseId: course.id },
+            });
+
+            for (const assignment of courseAssignments) {
+                await notify(
+                    assignment.lecturerId,
+                    NotificationType.APPLICATION_SUBMITTED,
+                    "New application",
+                    `${candidateName} applied for ${def.courseCode} ${roleLabel}.`,
+                    "/lecturer",
+                    false,
+                    metadata
+                );
+
+                if (def.candidateReply) {
+                    await notify(
+                        assignment.lecturerId,
+                        NotificationType.APPLICATION_RESPONSE,
+                        "Candidate replied",
+                        `${candidate.firstName} sent additional details for ${def.courseCode}.`,
+                        "/lecturer",
+                        false,
+                        metadata
+                    );
+                }
+            }
+        }
     }
 
-    const alex = candidateByEmail.get("alex.candidate@candidate.edu.au");
-    const markCourse = courseByCode.get("MARK1001");
-    const labRoleId = labRole.id;
     if (alex && markCourse) {
         await draftRepo.save(
             draftRepo.create({
@@ -772,28 +838,6 @@ export async function seedBootstrapDataset(): Promise<void> {
         })
     );
 
-    const notify = async (
-        userId: number,
-        type: NotificationType,
-        title: string,
-        message: string,
-        link: string,
-        read = false
-    ) => {
-        await notificationRepo.save(
-            notificationRepo.create({
-                userId,
-                type,
-                title,
-                message,
-                link,
-                read,
-            })
-        );
-    };
-
-    const jane = lecturerByEmail.get("jane.lecturer@lecturer.edu.au");
-
     if (alex) {
         await notify(
             alex.id,
@@ -810,25 +854,6 @@ export async function seedBootstrapDataset(): Promise<void> {
             "You were selected for COMP9001 tutor role.",
             "/tutor/applications",
             true
-        );
-    }
-
-    if (jane) {
-        await notify(
-            jane.id,
-            NotificationType.APPLICATION_SUBMITTED,
-            "New application",
-            "A candidate applied for COSC2758 tutor.",
-            "/lecturer",
-            false
-        );
-        await notify(
-            jane.id,
-            NotificationType.APPLICATION_RESPONSE,
-            "Candidate replied",
-            "Alex sent availability for COSC2758.",
-            "/lecturer",
-            false
         );
     }
 }

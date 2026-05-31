@@ -165,7 +165,6 @@ export function useCandidateBlockingSubscription({
             break;
 
           case "error":
-            console.error("❌ Subscription error:", message.payload);
             if (!isCleanedUpRef.current) {
               setSubscriptionState((prev) => ({
                 ...prev,
@@ -189,23 +188,15 @@ export function useCandidateBlockingSubscription({
           default:
             break;
         }
-      } catch (error) {
-        console.error("❌ Error parsing WebSocket message:", error);
+      } catch {
+        // Ignore malformed subscription payloads.
       }
     };
 
-    ws.onerror = (error) => {
+    ws.onerror = () => {
       // Skip if effect was cleaned up (common in React Strict Mode)
       if (isCleanedUpRef.current) {
         return;
-      }
-
-      // Use a more informative error message but don't spam the console
-      if (process.env.NODE_ENV === "development") {
-        console.warn(
-          "⚠️ WebSocket connection issue (admin-backend may not be running):",
-          error
-        );
       }
 
       // Only update error state if the connection has been open for a reasonable time
@@ -224,19 +215,10 @@ export function useCandidateBlockingSubscription({
       }, 100);
     };
 
-    ws.onclose = (event) => {
+    ws.onclose = () => {
       // Skip if effect was cleaned up
       if (isCleanedUpRef.current) {
         return;
-      }
-
-      // Only log unexpected closures in development
-      if (process.env.NODE_ENV === "development" && event.code !== 1000) {
-        console.warn(
-          "🔌 WebSocket connection closed unexpectedly:",
-          event.code,
-          event.reason
-        );
       }
 
       setSubscriptionState((prev) => ({

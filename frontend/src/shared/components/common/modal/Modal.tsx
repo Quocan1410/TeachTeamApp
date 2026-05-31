@@ -85,7 +85,7 @@ const Modal: React.FC<ModalProps> = ({
         <button
           type="button"
           onClick={handleClose}
-          className={`${styles.modalClose} iconCloseHit`}
+          className={`${styles.modalClose} iconCloseHit iconCloseCircle`}
           aria-label="Close modal"
         >
           <CloseIcon size={14} />

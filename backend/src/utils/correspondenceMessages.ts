@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import type { Application } from "../entities/Application";
+import { touchApplicationReviewed } from "./applicationReview";
 
 export type CorrespondenceAuthorRole = "candidate" | "lecturer";
 
@@ -103,8 +104,18 @@ export function getCorrespondenceMessages(
     const stored = parseCorrespondenceMessages(
         application.correspondenceMessages
     );
-    if (stored.length > 0) return stored;
-    return buildCorrespondenceFromLegacy(application);
+    const messages =
+        stored.length > 0
+            ? stored
+            : buildCorrespondenceFromLegacy(application);
+    const appliedMs = application.appliedAt
+        ? new Date(application.appliedAt).getTime()
+        : NaN;
+    if (Number.isNaN(appliedMs)) return messages;
+
+    return messages.filter(
+        (message) => new Date(message.createdAt).getTime() >= appliedMs
+    );
 }
 
 export function syncLegacyCorrespondenceFields(
@@ -191,6 +202,7 @@ export function appendLecturerMessage(
     };
     messages.push(message);
     syncLegacyCorrespondenceFields(application, messages);
+    touchApplicationReviewed(application, lecturerId);
     return message;
 }
 
@@ -231,6 +243,7 @@ export function syncLecturerCommentMessage(
     }
 
     syncLegacyCorrespondenceFields(application, messages);
+    touchApplicationReviewed(application, lecturerId);
 }
 
 export function updateCandidateMessage(
@@ -285,6 +298,13 @@ export function deleteCorrespondenceMessage(
 
     syncLegacyCorrespondenceFields(application, next);
     return true;
+}
+
+export function clearLecturerCorrespondence(application: Application): void {
+    const messages = getCorrespondenceMessages(application).filter(
+        (m) => m.authorRole !== "lecturer"
+    );
+    syncLegacyCorrespondenceFields(application, messages);
 }
 
 export function canCandidateEditMessage(message: CorrespondenceMessage): boolean {

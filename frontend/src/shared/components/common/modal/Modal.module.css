@@ -87,19 +87,20 @@
   position: absolute;
   top: 20px;
   right: 20px;
-  width: 30px;
-  height: 30px;
+  width: 1.875rem;
+  height: 1.875rem;
+  min-width: 1.875rem;
+  min-height: 1.875rem;
   background-color: var(--color-primary);
   color: white;
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 10;
 }
 
 .modalClose:hover {
-  transform: rotate(90deg) scale(1.1);
   background-color: #e86207;
   box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
 }

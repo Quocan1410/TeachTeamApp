@@ -56,7 +56,7 @@ const ApplicationsHeroSection: React.FC<ApplicationsHeroSectionProps> = ({
             transition={{ duration: 0.45, delay: 0.32 }}
             aria-label="What you can do here"
           >
-            <li>Status &amp; feedback</li>
+            <li>Status &amp; review</li>
             <li>Send updates</li>
             <li>Withdraw safely</li>
           </motion.ul>

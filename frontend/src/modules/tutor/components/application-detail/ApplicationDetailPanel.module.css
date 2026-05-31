@@ -616,19 +616,26 @@
 
 .iconBtnPin,
 .iconBtnClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 2.15rem;
   height: 2.15rem;
+  min-width: 2.15rem;
+  min-height: 2.15rem;
   padding: 0;
   border: 1px solid var(--color-border);
-  border-radius: 999px;
+  border-radius: 50%;
+  aspect-ratio: 1;
+  box-sizing: border-box;
+  line-height: 0;
   background: var(--color-bg-primary);
   color: var(--color-text-tertiary);
   cursor: pointer;
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
-    color 0.2s ease,
-    transform 0.12s ease;
+    color 0.2s ease;
 }
 
 .iconBtnPin svg {
@@ -655,7 +662,6 @@
 }
 
 .iconBtnPinActive:active {
-  transform: scale(0.94);
   background: #ca8a04;
   border-color: #a16207;
 }
@@ -666,7 +672,6 @@
 }
 
 .iconBtnClose:active {
-  transform: scale(0.94);
   border-color: #ef4444;
   background: #ef4444;
   color: #fff;
@@ -1166,11 +1171,11 @@
   padding: 0.55rem 0.7rem;
   background: var(--color-bg-primary);
   color: var(--color-text-primary);
-  resize: vertical;
   font-family: inherit;
   font-size: 0.82rem;
   line-height: 1.45;
   box-sizing: border-box;
+  resize: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 

@@ -9,6 +9,7 @@ interface ChatConversationToolbarProps {
   onBack: () => void;
   onTogglePin: () => void;
   onClose: () => void;
+  showActions?: boolean;
 }
 
 const ChatConversationToolbar: React.FC<ChatConversationToolbarProps> = ({
@@ -16,6 +17,7 @@ const ChatConversationToolbar: React.FC<ChatConversationToolbarProps> = ({
   onBack,
   onTogglePin,
   onClose,
+  showActions = true,
 }) => (
   <header className={styles.toolbar}>
     <button
@@ -35,12 +37,14 @@ const ChatConversationToolbar: React.FC<ChatConversationToolbarProps> = ({
       </svg>
       <span>Overview</span>
     </button>
-    <ApplicationDetailHeroActions
-      isPinned={isPinned}
-      onTogglePin={onTogglePin}
-      onClose={onClose}
-      className={styles.actions}
-    />
+    {showActions ? (
+      <ApplicationDetailHeroActions
+        isPinned={isPinned}
+        onTogglePin={onTogglePin}
+        onClose={onClose}
+        className={styles.actions}
+      />
+    ) : null}
   </header>
 );
 

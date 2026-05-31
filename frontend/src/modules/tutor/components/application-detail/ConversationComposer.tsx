@@ -3,7 +3,10 @@
 import React from "react";
 import type { ApplicationResponse } from "@/shared/services/applicationService";
 import type { AvatarPerson } from "./conversationUtils";
-import { getCandidateAvatarPerson } from "./conversationUtils";
+import {
+  getCandidateAvatarPerson,
+  getLecturerComposerPerson,
+} from "./conversationUtils";
 import ConversationAvatar from "./ConversationAvatar";
 import ComposerReplyPreview from "./ComposerReplyPreview";
 import styles from "./ConversationPanel.module.css";
@@ -17,6 +20,7 @@ interface ConversationComposerProps {
   isDraftDirty: boolean;
   replyQuote?: ReplyQuotePreview | null;
   isEditing?: boolean;
+  viewerRole?: "candidate" | "lecturer";
   onDraftChange: (value: string) => void;
   onSend: () => void;
   onCancelDraft: () => void;
@@ -31,12 +35,24 @@ const ConversationComposer: React.FC<ConversationComposerProps> = ({
   isDraftDirty,
   replyQuote,
   isEditing,
+  viewerRole = "candidate",
   onDraftChange,
   onSend,
   onCancelDraft,
   onClearReply,
 }) => {
-  const avatarPerson = getCandidateAvatarPerson(application, authUser);
+  const avatarPerson =
+    viewerRole === "lecturer"
+      ? getLecturerComposerPerson(authUser)
+      : getCandidateAvatarPerson(application, authUser);
+  const composerId =
+    viewerRole === "lecturer" ? "lecturer-feedback" : "candidate-response";
+  const placeholder =
+    viewerRole === "lecturer"
+      ? "Write feedback for the candidate…"
+      : "Write a message...";
+  const editHint =
+    viewerRole === "lecturer" ? "Editing your feedback" : "Editing your message";
 
   return (
     <footer className={styles.composer} aria-label="Write a reply">
@@ -49,23 +65,25 @@ const ConversationComposer: React.FC<ConversationComposerProps> = ({
         />
       ) : null}
       {isEditing && (
-        <p className={styles.composerEditHint}>Editing your message</p>
+        <p className={styles.composerEditHint}>{editHint}</p>
       )}
       <div className={styles.composerRow}>
         <ConversationAvatar
           person={avatarPerson}
-          variant="you"
+          variant={viewerRole === "lecturer" ? "lecturer" : "you"}
           className={styles.composerAvatar}
         />
         <div className={styles.composerField}>
           <textarea
-            id="candidate-response"
+            id={composerId}
             className={styles.composerTextarea}
             value={draft}
             onChange={(e) => onDraftChange(e.target.value)}
-            placeholder="Write a message..."
+            placeholder={placeholder}
             rows={2}
-            aria-label="Your reply"
+            aria-label={
+              viewerRole === "lecturer" ? "Your feedback" : "Your reply"
+            }
           />
           {(isDraftDirty || draft.trim() || replyQuote || isEditing) && (
             <div className={styles.composerActions}>

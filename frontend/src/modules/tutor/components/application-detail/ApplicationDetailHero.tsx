@@ -2,7 +2,10 @@
 
 import React from "react";
 import type { ApplicationResponse } from "@/shared/services/applicationService";
-import { getApplicationStatusLabel } from "@/shared/utils/applicationStatus";
+import {
+  getApplicationStatusLabel,
+  resolveApplicationStatusDisplay,
+} from "@/shared/utils/applicationStatus";
 import { getCourseLecturerName } from "@/shared/utils/courseLecturer";
 import { formatApplicationApplicantDisplayName } from "@/shared/utils/personDisplayName";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
@@ -53,6 +56,11 @@ const ApplicationDetailHero: React.FC<ApplicationDetailHeroProps> = ({
   hideActions = false,
 }) => {
   const { user } = useAuth();
+  const statusDisplay = resolveApplicationStatusDisplay(
+    application.status,
+    application,
+    "candidate"
+  );
   const lecturerName = getCourseLecturerName(application.course);
   const applicantName = formatApplicationApplicantDisplayName(
     application,
@@ -141,7 +149,11 @@ const ApplicationDetailHero: React.FC<ApplicationDetailHeroProps> = ({
           >
             {getApplicationStatusLabel(
               application.status,
-              application.isWithdrawn
+              application.isWithdrawn,
+              false,
+              false,
+              false,
+              statusDisplay.isReviewed
             )}
           </span>
         </p>

@@ -1,6 +1,13 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import { AuthService } from "../../../shared/services/authService";
 import { User } from "../../../shared/types/user";
 
@@ -68,12 +75,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
   }, []);
 
-  const login = (loggedInUser: User) => {
+  const login = useCallback((loggedInUser: User) => {
     AuthService.saveUser(loggedInUser);
     setUser(loggedInUser);
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     setIsLoggingOut(true);
     try {
       await AuthService.logout();
@@ -85,22 +92,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoggingOut(false);
       window.location.replace("/signin");
     }
-  };
+  }, []);
 
-  const updateUser = (updatedUser: User) => {
+  const updateUser = useCallback((updatedUser: User) => {
     AuthService.saveUser(updatedUser);
     setUser(updatedUser);
-  };
+  }, []);
 
-  const value: AuthContextType = {
-    user,
-    isAuthenticated: !!user,
-    isLoading,
-    isLoggingOut,
-    login,
-    logout,
-    updateUser,
-  };
+  const value = useMemo<AuthContextType>(
+    () => ({
+      user,
+      isAuthenticated: !!user,
+      isLoading,
+      isLoggingOut,
+      login,
+      logout,
+      updateUser,
+    }),
+    [user, isLoading, isLoggingOut, login, logout, updateUser]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -21,7 +21,7 @@ const ApplicationDetailHeroActions: React.FC<ApplicationDetailHeroActionsProps> 
   <div className={`${styles.heroActions} ${className ?? ""}`}>
     <button
       type="button"
-      className={`${styles.iconBtnPin} iconCloseHit ${isPinned ? styles.iconBtnPinActive : ""}`}
+      className={`${styles.iconBtnPin} iconCloseHit iconCloseCircle ${isPinned ? styles.iconBtnPinActive : ""}`}
       onClick={(e) => {
         e.stopPropagation();
         onTogglePin();
@@ -34,7 +34,7 @@ const ApplicationDetailHeroActions: React.FC<ApplicationDetailHeroActionsProps> 
     </button>
     <button
       type="button"
-      className={`${styles.iconBtnClose} iconCloseHit`}
+      className={`${styles.iconBtnClose} iconCloseHit iconCloseCircle`}
       onClick={onClose}
       aria-label="Close details"
       title="Close"

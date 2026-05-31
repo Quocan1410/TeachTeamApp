@@ -5,8 +5,11 @@ import type { ApplicationResponse } from "@/shared/services/applicationService";
 import {
   buildApplicationTimeline,
   canCandidateSendCorrespondence,
+  candidateOfferPending,
+  getCorrespondenceClosedNotice,
   type ApplicationTimelineItem,
 } from "@/shared/utils/applicationTimeline";
+import OfferResponsePanel from "./OfferResponsePanel";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import {
   normalizeMessageReactions,
@@ -22,7 +25,8 @@ import ConversationApplicationBlock from "./ConversationApplicationBlock";
 import ConversationThread from "./ConversationThread";
 import ConversationComposer from "./ConversationComposer";
 import type { MessageAction } from "./ConversationMessageActions";
-import { formatDateDivider, resolveReplyQuote } from "./conversationUtils";
+import { resolveReplyQuote } from "./conversationUtils";
+import ConfirmModal from "@/shared/components/common/modal/ConfirmModal";
 import conversationStyles from "./ConversationPanel.module.css";
 import styles from "./ApplicationChatScreen.module.css";
 
@@ -40,6 +44,10 @@ interface ApplicationChatScreenProps {
   onTogglePin: () => void;
   onClose: () => void;
   onToggleReaction: (messageId: ReactableMessageId, emoji: string) => void;
+  onOfferResponse: (
+    decision: "accept" | "decline",
+    message: string
+  ) => Promise<void>;
 }
 
 const ApplicationChatScreen: React.FC<ApplicationChatScreenProps> = ({
@@ -56,6 +64,7 @@ const ApplicationChatScreen: React.FC<ApplicationChatScreenProps> = ({
   onTogglePin,
   onClose,
   onToggleReaction,
+  onOfferResponse,
 }) => {
   const { user } = useAuth();
   const [pinnedMessageId, setPinnedMessageId] = useState<string | null>(null);
@@ -64,12 +73,14 @@ const ApplicationChatScreen: React.FC<ApplicationChatScreenProps> = ({
   const [editingMessageId, setEditingMessageId] = useState<string | null>(
     null
   );
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   useEffect(() => {
     setPinnedMessageId(null);
     setReplyToMessageId(null);
     replyToMessageIdRef.current = null;
     setEditingMessageId(null);
+    setDeleteTargetId(null);
   }, [application.id]);
 
   useEffect(() => {
@@ -81,6 +92,8 @@ const ApplicationChatScreen: React.FC<ApplicationChatScreenProps> = ({
     [application]
   );
   const canCompose = canCandidateSendCorrespondence(application);
+  const closedNotice = getCorrespondenceClosedNotice(application);
+  const showOfferPanel = candidateOfferPending(application);
 
   const latestLecturerId = useMemo(() => {
     const lecturerItems = timeline.filter((i) => i.kind === "lecturer");
@@ -122,22 +135,20 @@ const ApplicationChatScreen: React.FC<ApplicationChatScreenProps> = ({
         return;
       }
       if (action === "delete" && item.kind === "candidate") {
-        if (window.confirm("Delete your message? This cannot be undone.")) {
-          onDeleteMessage(item.id);
-          if (editingMessageId === item.id) {
-            handleCancelDraft();
-          }
-        }
+        setDeleteTargetId(item.id);
       }
     },
-    [
-      application,
-      editingMessageId,
-      handleCancelDraft,
-      onDeleteMessage,
-      onDraftChange,
-    ]
+    [onDraftChange]
   );
+
+  const handleConfirmDeleteMessage = useCallback(() => {
+    if (!deleteTargetId) return;
+    onDeleteMessage(deleteTargetId);
+    if (editingMessageId === deleteTargetId) {
+      handleCancelDraft();
+    }
+    setDeleteTargetId(null);
+  }, [deleteTargetId, editingMessageId, handleCancelDraft, onDeleteMessage]);
 
   const authPerson = useMemo(
     () =>
@@ -218,13 +229,6 @@ const ApplicationChatScreen: React.FC<ApplicationChatScreenProps> = ({
               application={application}
               authUser={authPerson}
             />
-            <div
-              className={`${conversationStyles.dateDivider} ${conversationStyles.dateDividerSubmissionEnd}`}
-              role="separator"
-              aria-label={formatDateDivider(application.appliedAt)}
-            >
-              {formatDateDivider(application.appliedAt)}
-            </div>
           </section>
           <ConversationThread
             items={timeline}
@@ -239,10 +243,8 @@ const ApplicationChatScreen: React.FC<ApplicationChatScreenProps> = ({
             onMessageAction={handleMessageAction}
           />
 
-          {!canCompose && !application.isWithdrawn && (
-            <p className={conversationStyles.closedNotice}>
-              Correspondence is closed — a final decision has been recorded.
-            </p>
+          {!canCompose && closedNotice && (
+            <p className={conversationStyles.closedNotice}>{closedNotice}</p>
           )}
 
           {application.isWithdrawn && (
@@ -253,8 +255,32 @@ const ApplicationChatScreen: React.FC<ApplicationChatScreenProps> = ({
                 : "recently"}
             </p>
           )}
+        </div>
 
-          {canCompose && (
+        {showOfferPanel && (
+          <OfferResponsePanel
+            busy={busy}
+            onSubmit={onOfferResponse}
+          />
+        )}
+
+        {canCompose && (
+          <>
+            <ConversationComposer
+              application={application}
+              authUser={authPerson}
+              draft={draft}
+              busy={busy}
+              isDraftDirty={isDraftDirty}
+              replyQuote={replyQuotePreview}
+              isEditing={!!editingMessageId}
+              onDraftChange={onDraftChange}
+              onSend={handleSend}
+              onCancelDraft={handleCancelDraft}
+              onClearReply={() => {
+                setReplyToMessageId(null);
+              }}
+            />
             <div className={conversationStyles.threadFooter}>
               <button
                 type="button"
@@ -265,27 +291,20 @@ const ApplicationChatScreen: React.FC<ApplicationChatScreenProps> = ({
                 Withdraw application
               </button>
             </div>
-          )}
-        </div>
-
-        {canCompose && (
-          <ConversationComposer
-            application={application}
-            authUser={authPerson}
-            draft={draft}
-            busy={busy}
-            isDraftDirty={isDraftDirty}
-            replyQuote={replyQuotePreview}
-            isEditing={!!editingMessageId}
-            onDraftChange={onDraftChange}
-            onSend={handleSend}
-            onCancelDraft={handleCancelDraft}
-            onClearReply={() => {
-              setReplyToMessageId(null);
-            }}
-          />
+          </>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={deleteTargetId !== null}
+        title="Delete message?"
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        variant="danger"
+        busy={busy}
+        onConfirm={handleConfirmDeleteMessage}
+        onClose={() => setDeleteTargetId(null)}
+      />
     </div>
   );
 };

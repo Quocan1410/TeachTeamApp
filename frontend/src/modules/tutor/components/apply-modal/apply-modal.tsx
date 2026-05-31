@@ -395,7 +395,7 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
             <button
               type="button"
               onClick={onClose}
-              className={`${styles.applyModalClose} iconCloseHit`}
+              className={`${styles.applyModalClose} iconCloseHit iconCloseCircle`}
               disabled={isSubmitting}
               aria-label="Close"
             >

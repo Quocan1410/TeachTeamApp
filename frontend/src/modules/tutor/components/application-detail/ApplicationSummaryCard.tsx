@@ -8,7 +8,11 @@ import {
   formatAppliedDate,
   formatRoleLabel,
 } from "@/shared/utils/applicationFormat";
-import { formatApplicationApplicantDisplayName } from "@/shared/utils/personDisplayName";
+import {
+  formatApplicationApplicantDisplayName,
+  formatLecturerDisplayName,
+} from "@/shared/utils/personDisplayName";
+import { resolveApplicationStatusDisplay } from "@/shared/utils/applicationStatus";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import styles from "./ApplicationSummaryCard.module.css";
 
@@ -34,14 +38,46 @@ function RoleIcon({ roleName }: { roleName: string }) {
 interface ApplicationSummaryCardProps {
   application: ApplicationResponse;
   className?: string;
+  /** Lecturer detail panel: role-focused subtitle and screening actions */
+  variant?: "default" | "lecturer";
+  screeningActions?: React.ReactNode;
 }
 
 const ApplicationSummaryCard: React.FC<ApplicationSummaryCardProps> = ({
   application,
   className,
+  variant = "default",
+  screeningActions,
 }) => {
   const { user } = useAuth();
-  const lecturerName = getCourseLecturerName(application.course);
+  const isLecturerView = variant === "lecturer";
+  const statusDisplay = resolveApplicationStatusDisplay(
+    application.status,
+    application,
+    isLecturerView ? "lecturer" : "candidate"
+  );
+  const courseLecturerName = getCourseLecturerName(application.course);
+  const viewerLecturerName =
+    user?.userType === "lecturer"
+      ? formatLecturerDisplayName(
+          {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            userType: user.userType,
+          },
+          "You"
+        )
+      : null;
+  const lecturerName = isLecturerView
+    ? viewerLecturerName ?? courseLecturerName
+    : courseLecturerName;
+  const roleLabel = formatRoleLabel(application.role.roleName);
+  const subtitle = isLecturerView
+    ? statusDisplay.isCandidateBlocked
+      ? `${roleLabel} application · Candidate blocked by admin`
+      : `${roleLabel} application`
+    : application.course.description || "No description available.";
   const applicantName = formatApplicationApplicantDisplayName(
     application,
     user
@@ -77,13 +113,21 @@ const ApplicationSummaryCard: React.FC<ApplicationSummaryCardProps> = ({
             <ApplicationStatusBadge
               status={application.status}
               isWithdrawn={application.isWithdrawn}
+              isCandidateBlocked={statusDisplay.isCandidateBlocked}
+              isShortlisted={statusDisplay.isShortlisted}
+              isRanked={statusDisplay.isRanked}
+              isReviewed={statusDisplay.isReviewed}
             />
           </div>
         </div>
 
         <h2 className={styles.title}>{application.course.courseName}</h2>
-        <p className={styles.description}>
-          {application.course.description || "No description available."}
+        <p
+          className={`${styles.description} ${
+            isLecturerView ? styles.descriptionLecturer : ""
+          }`}
+        >
+          {subtitle}
         </p>
 
         <div className={styles.people}>
@@ -98,17 +142,26 @@ const ApplicationSummaryCard: React.FC<ApplicationSummaryCardProps> = ({
               ) : null}
             </div>
           </div>
-          <div className={styles.personRow}>
-            <span className={styles.personLabel}>Lecturer</span>
-            <div className={styles.personValue}>
-              <span className={styles.personName}>
-                {lecturerName ?? (
-                  <span className={styles.personMuted}>Not assigned yet</span>
-                )}
-              </span>
+          {!isLecturerView && (
+            <div className={styles.personRow}>
+              <span className={styles.personLabel}>Lecturer</span>
+              <div className={styles.personValue}>
+                <span className={styles.personName}>
+                  {lecturerName ?? (
+                    <span className={styles.personMuted}>Not assigned yet</span>
+                  )}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
+
+        {screeningActions ? (
+          <div className={styles.screeningBlock} aria-label="Screening">
+            <span className={styles.screeningLabel}>Screening</span>
+            {screeningActions}
+          </div>
+        ) : null}
 
         <div className={styles.rowBottom}>
           <div

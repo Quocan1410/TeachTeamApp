@@ -24,12 +24,14 @@
 
 .skillTagRemove {
   margin-left: 0.35rem;
-  width: 1.15rem;
-  height: 1.15rem;
-  transition: color 0.2s ease;
+  width: 1rem;
+  height: 1rem;
+  min-width: 1rem;
+  min-height: 1rem;
+  transition: color 0.2s ease, background 0.15s ease;
   background: none;
   border: none;
-  border-radius: 0.2rem;
+  border-radius: 50%;
   cursor: pointer;
   color: rgb(249, 115, 22);
 }

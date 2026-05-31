@@ -2,6 +2,12 @@
 
 import { useEffect, useState } from "react";
 
+const getAvatarCacheBuster = (avatarUrl?: string | null): string | undefined => {
+    if (!avatarUrl) return undefined;
+    const filename = avatarUrl.split("/").pop()?.trim();
+    return filename || undefined;
+};
+
 const getApiBase = (): string => {
     return (
         process.env.NEXT_PUBLIC_API_ENDPOINT ||
@@ -35,9 +41,20 @@ export function useProtectedAvatar(
             }
 
             try {
-                const response = await fetch(`${getApiBase()}/auth/avatar/image`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                const cacheBuster =
+                    typeof refreshKey === "string"
+                        ? getAvatarCacheBuster(refreshKey)
+                        : undefined;
+                const query = cacheBuster
+                    ? `?v=${encodeURIComponent(cacheBuster)}`
+                    : "";
+                const response = await fetch(
+                    `${getApiBase()}/auth/avatar/image${query}`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                        cache: "no-store",
+                    }
+                );
 
                 if (!response.ok) {
                     setObjectUrl(null);

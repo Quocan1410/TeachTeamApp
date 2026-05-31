@@ -12,6 +12,7 @@ export interface Application {
   dateApplied: string; // ISO date string
   status?: "pending" | "selected" | "rejected";
   selected?: boolean; // Kept for compatibility, but status is preferred
+  isShortlisted?: boolean;
   selectedBy?: string; // Lecturer User ID
   selectedDate?: string; // ISO date string
   selectedForCourses?: string[]; // Which specific courses if selected for multiple in one app
@@ -19,6 +20,9 @@ export interface Application {
   rank?: number; // Lecturer's ranking
   isBlocked?: boolean; // Whether the candidate is blocked
   isWithdrawn?: boolean;
+  avatarUrl?: string | null;
+  firstName?: string;
+  lastName?: string;
 }
 
 

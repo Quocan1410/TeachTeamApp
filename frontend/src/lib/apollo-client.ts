@@ -51,29 +51,6 @@ const wsClient = createClient({
     const adminToken = sessionStorage.getItem("admin-token");
     return adminToken ? { authorization: `Bearer ${adminToken}` } : {};
   },
-  on: {
-    error: (error: unknown) => {
-      // Reduce error logging to prevent console spam
-      if (process.env.NODE_ENV === "development") {
-        console.warn(
-          "WebSocket connection issue (admin-backend may not be running):",
-          error
-        );
-      }
-    },
-    closed: (event) => {
-      if (process.env.NODE_ENV === "development") {
-        const closeEvent = event as { code?: number; reason?: string };
-        if (closeEvent?.code !== 1000) {
-          console.warn(
-            "WebSocket connection closed unexpectedly:",
-            closeEvent?.code,
-            closeEvent?.reason
-          );
-        }
-      }
-    },
-  },
 });
 
 // WebSocket link for subscriptions

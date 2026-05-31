@@ -49,4 +49,5 @@ export interface SigninData {
 export interface UpdateProfileData {
   firstName: string;
   lastName: string;
+  honorific?: string;
 }

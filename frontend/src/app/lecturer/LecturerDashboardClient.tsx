@@ -8,7 +8,7 @@ import {
 } from "@/shared/services/applicationService";
 import { Application } from "@/shared/types/application";
 import ApplicantList from "@/modules/lecturer/components/applicant-list/applicant-list";
-import ApplicantDetails from "@/modules/lecturer/components/applicant-details/applicant-details";
+import LecturerApplicantDetailPanel from "@/modules/lecturer/components/applicant-detail/LecturerApplicantDetailPanel";
 import RankedCandidates from "@/modules/lecturer/components/ranked-candidates/ranked-candidates";
 import Toast from "@/shared/components/common/toast/toast";
 import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
@@ -17,6 +17,7 @@ import { useApplicationManagement } from "@/modules/lecturer/hooks/useApplicatio
 import DashboardHeader from "@/modules/lecturer/components/dashboard-header/DashboardHeader";
 import DashboardTabs from "@/modules/lecturer/components/dashboard-tabs/DashboardTabs";
 import ApplicationFilters from "@/modules/lecturer/components/application-filters/ApplicationFilters";
+import AppSelect from "@/shared/components/common/app-select/AppSelect";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import styles from "./LecturerPage.module.css";
@@ -24,21 +25,13 @@ import { useCandidateBlockingSubscription } from "@/hooks/useCandidateBlockingSu
 import { useApplicationRealtime } from "@/shared/hooks/useApplicationRealtime";
 import type { ApplicationUpdatedPayload } from "@/shared/socket/applicationEvents";
 import { formatCandidateDisplayName } from "@/shared/utils/personDisplayName";
-import LecturerApplicationChatPanel from "@/modules/lecturer/components/application-chat/LecturerApplicationChatPanel";
+import { useConfirmModal } from "@/shared/hooks/useConfirmModal";
 
-const KanbanBoard = dynamic(
-  () => import("@/modules/lecturer/components/kanban-board/KanbanBoard"),
-  { ssr: false }
-);
 const ApplicantStatsVisualization = dynamic(
   () =>
     import(
       "@/modules/lecturer/components/applicant-stats-visualization/applicant-stats-visualization"
     ),
-  { ssr: false }
-);
-const ComparePanel = dynamic(
-  () => import("@/modules/lecturer/components/compare-panel/ComparePanel"),
   { ssr: false }
 );
 const AdminApolloProvider = dynamic(
@@ -88,6 +81,7 @@ const convertToLegacyApplication = (
     dateApplied: appResponse.appliedAt,
     status: appResponse.status as "pending" | "selected" | "rejected",
     selected: appResponse.status === "selected",
+    isShortlisted: appResponse.isShortlisted ?? false,
     comment: appResponse.comment || "",
     rank: appResponse.rank,
     role: appResponse.role
@@ -107,6 +101,9 @@ const convertToLegacyApplication = (
     rankedForCourse: appResponse.rankedForCourse,
     isBlocked: appResponse.candidate?.isBlocked || false,
     isWithdrawn: appResponse.isWithdrawn || false,
+    avatarUrl: appResponse.candidate?.avatarUrl ?? null,
+    firstName: appResponse.candidate?.firstName,
+    lastName: appResponse.candidate?.lastName,
   };
 };
 
@@ -154,6 +151,8 @@ const LecturerDashboardInner: React.FC = () => {
     "success"
   );
 
+  const { ask, modal: confirmModal } = useConfirmModal();
+
   // Show toast function
   const showToast = useCallback(
     (message: string, type: "success" | "error" | "info" = "success") => {
@@ -193,12 +192,34 @@ const LecturerDashboardInner: React.FC = () => {
     sortBy,
     setSortBy,
     loadApplications,
+    scheduleLoadApplications,
+    patchApplication,
     handleSelectApplication: rawHandleSelectApplication,
   } = useApplicationManagement();
 
+  const handleApplicationDetailUpdated = useCallback(
+    (app: ApplicationResponse) => {
+      setRawSelectedApplication(app);
+      setComment(app.comment || "");
+      patchApplication(app);
+    },
+    [setRawSelectedApplication, setComment, patchApplication]
+  );
+
   const handleApplicationRealtimeUpdate = useCallback(
     (payload: ApplicationUpdatedPayload) => {
-      void loadApplications();
+      if (payload.reason === "reviewed") {
+        if (
+          rawSelectedApplication &&
+          payload.application.id === rawSelectedApplication.id
+        ) {
+          setRawSelectedApplication(payload.application);
+        }
+        patchApplication(payload.application);
+        return;
+      }
+
+      scheduleLoadApplications();
       if (
         rawSelectedApplication &&
         payload.application.id === rawSelectedApplication.id
@@ -208,7 +229,8 @@ const LecturerDashboardInner: React.FC = () => {
       }
     },
     [
-      loadApplications,
+      scheduleLoadApplications,
+      patchApplication,
       rawSelectedApplication,
       setRawSelectedApplication,
       setComment,
@@ -285,8 +307,8 @@ const LecturerDashboardInner: React.FC = () => {
             }, 100);
           }
         })
-        .catch((error) => {
-          console.error("❌ Failed to refresh applications:", error);
+        .catch(() => {
+          // Refresh failed silently; list will update on next load.
         });
     },
     [
@@ -325,7 +347,7 @@ const LecturerDashboardInner: React.FC = () => {
   const [courses, setCourses] = useState<Array<{ code: string; name: string }>>(
     []
   );
-  const [fullCourseData, setFullCourseData] = useState<
+  const [, setFullCourseData] = useState<
     Array<{
       courseCode: string;
       courseName: string;
@@ -337,9 +359,6 @@ const LecturerDashboardInner: React.FC = () => {
   >([]);
   const [availableSkills, setAvailableSkills] = useState<string[]>([]);
   const [skillsFilterArray, setSkillsFilterArray] = useState<string[]>([]);
-  const [viewMode, setViewMode] = useState<"list" | "kanban">("list");
-  const [compareIds, setCompareIds] = useState<number[]>([]);
-  const [showCompare, setShowCompare] = useState(false);
 
   // Authentication check
   useEffect(() => {
@@ -386,8 +405,7 @@ const LecturerDashboardInner: React.FC = () => {
           );
         }
       }
-    } catch (error) {
-      console.error("Error loading assigned courses:", error);
+    } catch {
       setCourses([]);
       setFullCourseData([]);
       showToast(
@@ -471,30 +489,165 @@ const LecturerDashboardInner: React.FC = () => {
 
     if (originalApp) {
       rawHandleSelectApplication(originalApp);
-    } else {
-      console.error("❌ Could not find original app in rawApplications");
     }
   };
 
-  const handleSelectApplicantButton = async (selectedCourses: string[]) => {
-    let targetApplication: ApplicationResponse | null = rawSelectedApplication;
+  const handleRemoveBlockedApplication = useCallback(
+    async (app?: Application) => {
+      const targetId =
+        app?.id ??
+        rawSelectedApplication?.id.toString() ??
+        selectedApplication?.id;
 
-    if (!targetApplication && selectedApplication) {
-      targetApplication =
-        rawApplications.find(
-          (rawApp) => rawApp.id.toString() === selectedApplication.id
-        ) || null;
-
-      if (targetApplication) {
-        rawHandleSelectApplication(targetApplication);
+      if (!targetId) {
+        showToast("No application selected", "error");
+        return;
       }
+
+      const numericId = parseInt(String(targetId), 10);
+      if (Number.isNaN(numericId)) {
+        showToast("Invalid application", "error");
+        return;
+      }
+
+      if (
+        !app?.isBlocked &&
+        !rawSelectedApplication?.candidate?.isBlocked &&
+        !selectedApplication?.isBlocked
+      ) {
+        showToast("Only blocked applications can be removed", "error");
+        return;
+      }
+
+      if (
+        !(await ask({
+          title: "Remove application?",
+          message: "Blocked account.",
+          confirmLabel: "Yes",
+          cancelLabel: "No",
+          variant: "danger",
+          actionsLayout: "split",
+        }))
+      ) {
+        return;
+      }
+
+      try {
+        const response =
+          await ApplicationService.deleteBlockedApplication(numericId);
+
+        if (response.success) {
+          showToast("Application removed", "success");
+          if (
+            rawSelectedApplication?.id === numericId ||
+            selectedApplication?.id === String(numericId)
+          ) {
+            setRawSelectedApplication(null);
+          }
+          await loadApplications();
+        } else {
+          showToast(response.message || "Failed to remove application", "error");
+        }
+      } catch {
+        showToast("Error removing application", "error");
+      }
+    },
+    [
+      loadApplications,
+      rawSelectedApplication,
+      selectedApplication,
+      setRawSelectedApplication,
+      showToast,
+      ask,
+    ]
+  );
+
+  const resolveTargetApplication = (): ApplicationResponse | null => {
+    if (rawSelectedApplication) return rawSelectedApplication;
+
+    if (!selectedApplication) return null;
+
+    return (
+      rawApplications.find(
+        (rawApp) => rawApp.id.toString() === selectedApplication.id
+      ) ?? null
+    );
+  };
+
+  const handleShortlistApplicant = async () => {
+    const targetApplication = resolveTargetApplication();
+    if (!targetApplication) {
+      showToast("No application found. Select an applicant from the list first.", "error");
+      return;
     }
 
-    if (!targetApplication) {
-      showToast(
-        "No application found. Please try selecting the applicant from the list first.",
-        "error"
+    try {
+      const response = await ApplicationService.shortlistApplication(
+        targetApplication.id
       );
+      if (response.success) {
+        showToast("Applicant shortlisted", "success");
+        await loadApplications();
+      } else {
+        showToast(response.message || "Failed to shortlist applicant", "error");
+      }
+    } catch {
+      showToast("Error shortlisting applicant", "error");
+    }
+  };
+
+  const handleDeclineApplicant = async () => {
+    const targetApplication = resolveTargetApplication();
+    if (!targetApplication) return;
+
+    const confirmed = await ask({
+      title: "Decline applicant?",
+      confirmLabel: "Yes",
+      cancelLabel: "No",
+      variant: "danger",
+      actionsLayout: "split",
+    });
+    if (!confirmed) return;
+
+    try {
+      const response = await ApplicationService.updateApplicationStatus(
+        targetApplication.id,
+        "rejected"
+      );
+      if (response.success) {
+        showToast("Application declined", "success");
+        await Promise.all([loadApplications(), loadCourses()]);
+      } else {
+        showToast(response.message || "Failed to decline application", "error");
+      }
+    } catch {
+      showToast("Error declining application", "error");
+    }
+  };
+
+  const handleRemoveShortlist = async () => {
+    const targetApplication = resolveTargetApplication();
+    if (!targetApplication) return;
+
+    try {
+      const response = await ApplicationService.removeShortlist(
+        targetApplication.id
+      );
+      if (response.success) {
+        showToast("Removed from shortlist", "success");
+        await loadApplications();
+      } else {
+        showToast(response.message || "Failed to remove shortlist", "error");
+      }
+    } catch {
+      showToast("Error removing shortlist", "error");
+    }
+  };
+
+  const handleConfirmSelection = async () => {
+    const targetApplication = resolveTargetApplication();
+    if (!targetApplication) {
+      showToast("No application found. Select an applicant from the list first.", "error");
       return;
     }
 
@@ -503,88 +656,56 @@ const LecturerDashboardInner: React.FC = () => {
         targetApplication.id,
         "selected",
         comment,
-        selectedCourses
+        [targetApplication.course.courseCode]
       );
 
       if (response.success) {
-        showToast("Applicant selected successfully", "success");
+        showToast("Final selection confirmed", "success");
         await Promise.all([loadApplications(), loadCourses()]);
       } else {
-        showToast(response.message || "Failed to select applicant", "error");
-      }
-    } catch (error) {
-      console.error("❌ Error in handleSelectApplicantButton:", error);
-      showToast("Error selecting applicant", "error");
-    }
-  };
-
-  const handleMoveStatus = async (
-    app: ApplicationResponse,
-    status: "pending" | "selected" | "rejected"
-  ) => {
-    try {
-      const response = await ApplicationService.updateApplicationStatus(
-        app.id,
-        status
-      );
-      if (response.success) {
-        showToast(`Moved to ${status}`, "success");
-        await loadApplications();
-        if (rawSelectedApplication?.id === app.id && response.data) {
-          rawHandleSelectApplication(response.data);
-        }
-      } else {
-        showToast(response.message || "Failed to update status", "error");
+        showToast(response.message || "Failed to confirm selection", "error");
       }
     } catch {
-      showToast("Error updating status", "error");
+      showToast("Error confirming selection", "error");
     }
   };
 
-  const handleToggleCompare = (app: ApplicationResponse) => {
-    setCompareIds((prev) => {
-      if (prev.includes(app.id)) {
-        return prev.filter((id) => id !== app.id);
-      }
-      if (prev.length >= 3) {
-        showToast("Compare up to 3 applicants at a time", "info");
-        return prev;
-      }
-      return [...prev, app.id];
-    });
-  };
-
-  const handleUnselectApplicant = async () => {
+  const handleRevokeSelection = async () => {
     if (!rawSelectedApplication) return;
 
     try {
-      if (selectedApplication?.rank && selectedApplication.rank > 0) {
-        const removeRankingResponse =
-          await ApplicationService.removeApplicationFromRanking(
-            parseInt(selectedApplication.id)
-          );
-
-        if (!removeRankingResponse.success) {
-          console.warn(
-            "Failed to remove from ranking:",
-            removeRankingResponse.message
-          );
-        }
-      }
-
       const response = await ApplicationService.updateApplicationStatus(
         rawSelectedApplication.id,
         "pending"
       );
 
       if (response.success) {
-        showToast("Applicant unselected and removed from ranking", "success");
+        showToast("Final selection revoked — applicant remains ranked", "success");
         await Promise.all([loadApplications(), loadCourses()]);
       } else {
-        showToast(response.message || "Failed to unselect applicant", "error");
+        showToast(response.message || "Failed to revoke selection", "error");
       }
     } catch {
-      showToast("Error unselecting applicant", "error");
+      showToast("Error revoking selection", "error");
+    }
+  };
+
+  const handleRemoveFromRankingDetail = async () => {
+    if (!rawSelectedApplication) return;
+
+    try {
+      const response = await ApplicationService.removeApplicationFromRanking(
+        rawSelectedApplication.id
+      );
+
+      if (response.success) {
+        showToast("Removed from ranking", "success");
+        await loadApplications();
+      } else {
+        showToast(response.message || "Failed to remove from ranking", "error");
+      }
+    } catch {
+      showToast("Error removing from ranking", "error");
     }
   };
 
@@ -592,9 +713,9 @@ const LecturerDashboardInner: React.FC = () => {
   const handleAddToRanking = async () => {
     if (!selectedApplication) return;
 
-    if (!selectedApplication.selected) {
+    if (!selectedApplication.isShortlisted && !selectedApplication.selected) {
       showToast(
-        "Please select the applicant before adding to ranking",
+        "Shortlist this applicant before adding to ranking",
         "error"
       );
       return;
@@ -606,14 +727,6 @@ const LecturerDashboardInner: React.FC = () => {
       selectedApplication.rank > 0
     ) {
       showToast("Applicant is already added to ranking", "info");
-      return;
-    }
-
-    if (!selectedApplication.comment?.trim()) {
-      showToast(
-        "Please send feedback in the correspondence panel before adding to ranking.",
-        "error"
-      );
       return;
     }
 
@@ -748,8 +861,7 @@ const LecturerDashboardInner: React.FC = () => {
       } else {
         showToast(response.message || "Failed to remove from ranking", "error");
       }
-    } catch (error) {
-      console.error("❌ Remove ranking error:", error);
+    } catch {
       showToast("Error removing from ranking", "error");
     }
   };
@@ -767,6 +879,14 @@ const LecturerDashboardInner: React.FC = () => {
   if (authLoading || !isInitialized) {
     return <PageSkeleton variant="lecturer" />;
   }
+
+  const rankingCourseOptions = [
+    { value: "", label: "Select an Assigned Course", isDefault: true },
+    ...courses.map((course) => ({
+      value: course.code,
+      label: `${course.code} - ${course.name}`,
+    })),
+  ];
 
   return (
     <div className={styles.lecturerDashboard}>
@@ -812,88 +932,33 @@ const LecturerDashboardInner: React.FC = () => {
           <div className={`${styles.dashboardContent} ${styles.revealContent}`}>
             {activeTab === "applications" && (
               <div className={styles.applicationsSection}>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "0.5rem",
-                    marginBottom: "1rem",
-                    flexWrap: "wrap",
-                    alignItems: "center",
-                  }}
-                >
-                  <button
-                    type="button"
-                    className={styles.courseSelect}
-                    onClick={() => setViewMode("list")}
-                    style={{
-                      fontWeight: viewMode === "list" ? 700 : 400,
-                    }}
-                  >
-                    List
-                  </button>
-                  <button
-                    type="button"
-                    className={styles.courseSelect}
-                    onClick={() => setViewMode("kanban")}
-                    style={{
-                      fontWeight: viewMode === "kanban" ? 700 : 400,
-                    }}
-                  >
-                    Kanban
-                  </button>
-                  {compareIds.length > 0 && (
-                    <button
-                      type="button"
-                      className={styles.courseSelect}
-                      onClick={() => setShowCompare(true)}
-                    >
-                      Compare ({compareIds.length})
-                    </button>
-                  )}
-                </div>
-
-                {viewMode === "kanban" && (
-                  <KanbanBoard
-                    applications={rawApplications}
-                    selectedId={rawSelectedApplication?.id ?? null}
-                    compareIds={compareIds}
-                    onSelect={rawHandleSelectApplication}
-                    onToggleCompare={handleToggleCompare}
-                    onMoveStatus={handleMoveStatus}
-                  />
-                )}
-
                 <div className={styles.applicationsGrid}>
-                  {viewMode === "list" && (
-                    <div className={styles.applicantListSection}>
-                      <ApplicantList
-                        applications={applications}
-                        selectedApplication={selectedApplication}
-                        onSelectApplication={handleSelectApplication}
-                      />
-                    </div>
-                  )}
+                  <div className={styles.applicantListSection}>
+                    <ApplicantList
+                      applications={applications}
+                      selectedApplication={selectedApplication}
+                      onSelectApplication={handleSelectApplication}
+                      onRemoveBlockedApplication={handleRemoveBlockedApplication}
+                    />
+                  </div>
 
                   <div className={styles.applicantDetailsSection}>
-                    <ApplicantDetails
-                      application={selectedApplication}
-                      onSelectApplicant={handleSelectApplicantButton}
-                      onUnselectApplicant={handleUnselectApplicant}
+                    <LecturerApplicantDetailPanel
+                      application={rawSelectedApplication}
+                      onApplicationUpdated={handleApplicationDetailUpdated}
+                      onApplicationChatUpdated={handleApplicationDetailUpdated}
+                      onShortlistApplicant={handleShortlistApplicant}
+                      onDeclineApplicant={handleDeclineApplicant}
+                      onRemoveShortlist={handleRemoveShortlist}
+                      onConfirmSelection={handleConfirmSelection}
+                      onRevokeSelection={handleRevokeSelection}
                       onAddToRanking={handleAddToRanking}
+                      onRemoveFromRanking={handleRemoveFromRankingDetail}
+                      onRemoveBlockedApplication={() =>
+                        handleRemoveBlockedApplication()
+                      }
                       showToast={showToast}
-                      courses={fullCourseData}
                     />
-                    {rawSelectedApplication && (
-                      <LecturerApplicationChatPanel
-                        application={rawSelectedApplication}
-                        onApplicationUpdated={(app) => {
-                          setRawSelectedApplication(app);
-                          setComment(app.comment || "");
-                          void loadApplications();
-                        }}
-                        showToast={showToast}
-                      />
-                    )}
                   </div>
                 </div>
               </div>
@@ -907,19 +972,13 @@ const LecturerDashboardInner: React.FC = () => {
                     View Rankings for:
                   </label>
                   {courses.length > 0 ? (
-                    <select
+                    <AppSelect
                       id="rankingsCourseSelect"
                       value={selectedRankingCourse}
-                      onChange={(e) => setSelectedRankingCourse(e.target.value)}
-                      className={styles.courseSelect}
-                    >
-                      <option value="">Select an Assigned Course</option>
-                      {courses.map((course) => (
-                        <option key={course.code} value={course.code}>
-                          {course.code} - {course.name}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={setSelectedRankingCourse}
+                      options={rankingCourseOptions}
+                      aria-label="Select course for rankings"
+                    />
                   ) : (
                     <div className={styles.noCourseMessage}>
                       <span className={styles.warningIcon}>⚠️</span>
@@ -950,15 +1009,6 @@ const LecturerDashboardInner: React.FC = () => {
         </div>
 
         {/* Toast Notifications */}
-        {showCompare && (
-          <ComparePanel
-            applications={rawApplications.filter((a) =>
-              compareIds.includes(a.id)
-            )}
-            onClose={() => setShowCompare(false)}
-          />
-        )}
-
         {toastMessage && (
           <Toast
             message={toastMessage}
@@ -971,6 +1021,8 @@ const LecturerDashboardInner: React.FC = () => {
             autoCloseDelay={3000}
           />
         )}
+
+        {confirmModal}
       </div>
   );
 };

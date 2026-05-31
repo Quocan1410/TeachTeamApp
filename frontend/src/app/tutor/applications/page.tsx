@@ -23,8 +23,10 @@ import Toast from "@/shared/components/common/toast/toast";
 import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
 import ApplicationsHeroSection from "@/modules/tutor/components/hero-section/ApplicationsHeroSection";
 import ApplicationStatusBadge from "@/shared/components/common/application-status-badge/ApplicationStatusBadge";
+import { resolveApplicationStatusDisplay } from "@/shared/utils/applicationStatus";
 import PinIcon from "@/shared/components/common/icons/PinIcon";
 import ApplicationDetailPanel from "@/modules/tutor/components/application-detail/ApplicationDetailPanel";
+import ConfirmModal from "@/shared/components/common/modal/ConfirmModal";
 import styles from "./ApplicationsPage.module.css";
 
 type ViewMode = "grid" | "list";
@@ -48,6 +50,7 @@ export default function TutorApplicationsPage() {
   const [busyId, setBusyId] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [withdrawTargetId, setWithdrawTargetId] = useState<number | null>(null);
   const { toast, showSuccess, showError, hideToast } = useToast();
   const { togglePin, isPinned } = usePinnedApplications();
   const selectedIdRef = useRef<number | null>(null);
@@ -226,8 +229,13 @@ export default function TutorApplicationsPage() {
         return;
       }
 
+      if (reason === "reviewed") {
+        showSuccess("Your application was reviewed.");
+        return;
+      }
+
       if (reason === "comment" && application.comment?.trim()) {
-        showSuccess("New feedback from your lecturer.");
+        showSuccess("New message from your lecturer.");
         return;
       }
 
@@ -278,6 +286,31 @@ export default function TutorApplicationsPage() {
       ...prev,
       [applicationId]: "",
     }));
+    setBusyId(null);
+  };
+
+  const respondToOffer = async (
+    applicationId: number,
+    decision: "accept" | "decline",
+    message: string
+  ) => {
+    setBusyId(applicationId);
+    const response = await ApplicationService.respondToOffer(
+      applicationId,
+      decision,
+      message
+    );
+    if (!response.success || !response.data) {
+      showError(response.message || "Failed to respond to offer");
+      setBusyId(null);
+      return;
+    }
+    setApplications((prev) =>
+      prev.map((item) => (item.id === applicationId ? response.data! : item))
+    );
+    showSuccess(
+      decision === "accept" ? "Offer accepted." : "Offer declined."
+    );
     setBusyId(null);
   };
 
@@ -348,14 +381,13 @@ export default function TutorApplicationsPage() {
     );
   };
 
-  const withdraw = async (applicationId: number) => {
-    if (
-      !window.confirm(
-        "Withdraw this application? You will not be able to undo this."
-      )
-    ) {
-      return;
-    }
+  const withdraw = (applicationId: number) => {
+    setWithdrawTargetId(applicationId);
+  };
+
+  const confirmWithdraw = async () => {
+    if (withdrawTargetId === null) return;
+    const applicationId = withdrawTargetId;
     setBusyId(applicationId);
     const response = await ApplicationService.withdrawApplication(applicationId);
     if (!response.success || !response.data) {
@@ -368,6 +400,7 @@ export default function TutorApplicationsPage() {
     );
     showSuccess("Application withdrawn.");
     setBusyId(null);
+    setWithdrawTargetId(null);
   };
 
   if (authLoading || loading) {
@@ -379,6 +412,11 @@ export default function TutorApplicationsPage() {
   const renderListCard = (application: ApplicationResponse) => {
     const isActive = hasSelection && selectedId === application.id;
     const pinned = isPinned(application.id);
+    const statusDisplay = resolveApplicationStatusDisplay(
+      application.status,
+      application,
+      "candidate"
+    );
 
     return (
       <button
@@ -414,6 +452,7 @@ export default function TutorApplicationsPage() {
               <ApplicationStatusBadge
                 status={application.status}
                 isWithdrawn={application.isWithdrawn}
+                isReviewed={statusDisplay.isReviewed}
               />
             </div>
           </div>
@@ -484,6 +523,18 @@ export default function TutorApplicationsPage() {
           onClose={hideToast}
           variant="toast"
           position="bottom-left"
+        />
+
+        <ConfirmModal
+          isOpen={withdrawTargetId !== null}
+          title="Withdraw application?"
+          message="This can't be undone."
+          confirmLabel="Withdraw"
+          cancelLabel="Cancel"
+          variant="danger"
+          busy={withdrawTargetId !== null && busyId === withdrawTargetId}
+          onConfirm={confirmWithdraw}
+          onClose={() => setWithdrawTargetId(null)}
         />
 
         {sortedApplications.length === 0 ? (
@@ -605,6 +656,9 @@ export default function TutorApplicationsPage() {
                         messageId,
                         emoji
                       )
+                    }
+                    onOfferResponse={(decision, message) =>
+                      respondToOffer(selectedApplication.id, decision, message)
                     }
                   />
                 </aside>

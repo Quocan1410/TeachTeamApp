@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CloseIcon from '@/shared/components/common/icons/CloseIcon';
+import AppSelect from '@/shared/components/common/app-select/AppSelect';
 import styles from './ApplicationFilters.module.css';
 
 interface ApplicationFiltersProps {
@@ -85,19 +86,19 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
   };
 
   const roleTypeOptions = [
-    { value: '', label: 'All Roles' },
+    { value: '', label: 'All Roles', isDefault: true },
     { value: 'tutor', label: 'Tutor (Tutorial)' },
     { value: 'lab_assistant', label: 'Lab Assistant' },
   ];
 
   const availabilityOptions = [
-    { value: '', label: 'All Availability' },
+    { value: '', label: 'All Availability', isDefault: true },
     { value: 'Full Time', label: 'Full Time' },
     { value: 'Part Time', label: 'Part Time' },
   ];
 
   const statusOptions = [
-    { value: '', label: 'All Statuses' },
+    { value: '', label: 'All Statuses', isDefault: true },
     { value: 'pending', label: 'Pending' },
     { value: 'selected', label: 'Selected' },
     { value: 'rejected', label: 'Rejected' },
@@ -110,50 +111,57 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
     { value: 'skills', label: 'Skill Count' },
   ];
 
-  return (
-    <div className={styles.filtersContainer}>
-      {/* Filter Header */}
-      <div className={styles.filtersHeader}>
-        <div className={styles.headerLeft}>
-          <h3 className={styles.filtersTitle}>
-            Candidate Filters
-            {activeFilterCount > 0 && (
-              <span className={styles.filterCount}>{activeFilterCount}</span>
-            )}
-          </h3>
-          <p className={styles.filtersSubtitle}>
-            Search and filter candidates by name, role, availability, and skills
-          </p>
-        </div>
-        
-        <div className={styles.headerActions}>
-          {activeFilterCount > 0 && (
-            <button
-              onClick={onClearFilters}
-              className={styles.clearButton}
-              title="Clear all filters"
-            >
-              Clear All
-            </button>
-          )}
-          
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className={`${styles.expandButton} ${isExpanded ? styles.expanded : ''}`}
-            title={isExpanded ? 'Collapse filters' : 'Expand filters'}
-          >
-            <span className={styles.expandIcon}>
-              {isExpanded ? '▲' : '▼'}
-            </span>
-            {isExpanded ? 'Fewer Filters' : 'More Filters'}
-          </button>
-        </div>
-      </div>
+  const courseOptions = [
+    { value: 'all', label: 'All Assigned Courses', isDefault: true },
+    ...courses.map((course) => ({
+      value: course.code,
+      label: `${course.code} - ${course.name}`,
+    })),
+  ];
 
-      {/* Quick Search - Always Visible */}
+  return (
+    <div
+      className={`${styles.filtersContainer} ${
+        isExpanded ? styles.filtersExpanded : ""
+      }`.trim()}
+    >
       <div className={styles.quickSearch}>
+        <div className={styles.quickSearchHead}>
+          <div className={styles.filterSectionTitle}>
+            <span className={styles.filterTitleText}>Filter</span>
+            <span className={styles.filterTitleLine} aria-hidden />
+          </div>
+          <div className={styles.quickSearchToolbar}>
+          {activeFilterCount > 0 && (
+            <>
+              <span className={styles.filterCountBadge}>
+                {activeFilterCount} filter{activeFilterCount === 1 ? "" : "s"}
+              </span>
+              <button
+                type="button"
+                onClick={onClearFilters}
+                className={styles.clearButton}
+                title="Clear all filters"
+              >
+                Clear all
+              </button>
+            </>
+          )}
+          <button
+            type="button"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className={`${styles.expandButton} ${isExpanded ? styles.expanded : ""}`}
+            title={isExpanded ? "Collapse filters" : "Expand filters"}
+          >
+            <span className={styles.expandIcon}>{isExpanded ? "▲" : "▼"}</span>
+            {isExpanded ? "Fewer filters" : "More filters"}
+          </button>
+          </div>
+        </div>
+
+        <div className={styles.quickSearchFields}>
         <div className={styles.searchGroup}>
-          <label htmlFor="candidateSearch" className={styles.searchLabel}>
+          <label htmlFor="candidateSearch" className={styles.fieldLabel}>
             Search by candidate name
           </label>
           <div className={styles.searchInputWrapper}>
@@ -169,7 +177,7 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
               <button
                 type="button"
                 onClick={() => onSearchChange('')}
-                className={`${styles.clearSearchButton} iconCloseHit`}
+                className={`${styles.clearSearchButton} iconCloseHit iconCloseCircle`}
                 title="Clear search"
                 aria-label="Clear search"
               >
@@ -180,28 +188,23 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
         </div>
 
         <div className={styles.courseGroup}>
-          <label htmlFor="courseSelect" className={styles.selectLabel}>
+          <label htmlFor="courseSelect" className={styles.fieldLabel}>
             Course
           </label>
           {courses.length > 0 ? (
-            <select
+            <AppSelect
               id="courseSelect"
               value={selectedCourse}
-              onChange={(e) => onCourseChange(e.target.value)}
-              className={styles.selectInput}
-            >
-              <option value="all">All Assigned Courses</option>
-              {courses.map((course) => (
-                <option key={course.code} value={course.code}>
-                  {course.code} - {course.name}
-                </option>
-              ))}
-            </select>
+              onChange={onCourseChange}
+              options={courseOptions}
+              aria-label="Filter by course"
+            />
           ) : (
             <div className={styles.noCoursesMessage}>
               Loading courses...
             </div>
           )}
+        </div>
         </div>
       </div>
 
@@ -218,110 +221,92 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
             {/* Session Type Filter */}
             <div className={styles.filterRow}>
               <div className={styles.filterGroup}>
-                <label htmlFor="roleTypeFilter" className={styles.filterLabel}>
+                <label htmlFor="roleTypeFilter" className={styles.fieldLabel}>
                   Session Type
                 </label>
-                <select
+                <AppSelect
                   id="roleTypeFilter"
                   value={roleTypeFilter}
-                  onChange={(e) => onRoleTypeChange(e.target.value)}
-                  className={styles.filterSelect}
-                >
-                  {roleTypeOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={onRoleTypeChange}
+                  options={roleTypeOptions}
+                  aria-label="Filter by session type"
+                />
               </div>
 
               <div className={styles.filterGroup}>
-                <label htmlFor="availabilityFilter" className={styles.filterLabel}>
+                <label htmlFor="availabilityFilter" className={styles.fieldLabel}>
                   Availability
                 </label>
-                <select
+                <AppSelect
                   id="availabilityFilter"
                   value={availabilityFilter}
-                  onChange={(e) => onAvailabilityChange(e.target.value)}
-                  className={styles.filterSelect}
-                >
-                  {availabilityOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={onAvailabilityChange}
+                  options={availabilityOptions}
+                  aria-label="Filter by availability"
+                />
               </div>
 
               <div className={styles.filterGroup}>
-                <label htmlFor="statusFilter" className={styles.filterLabel}>
+                <label htmlFor="statusFilter" className={styles.fieldLabel}>
                   Status
                 </label>
-                <select
+                <AppSelect
                   id="statusFilter"
                   value={statusFilter}
-                  onChange={(e) => onStatusFilterChange(e.target.value)}
-                  className={styles.filterSelect}
-                >
-                  {statusOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={onStatusFilterChange}
+                  options={statusOptions}
+                  aria-label="Filter by status"
+                />
               </div>
 
               <div className={styles.filterGroup}>
-                <label htmlFor="sortBy" className={styles.filterLabel}>
+                <label htmlFor="sortBy" className={styles.fieldLabel}>
                   Sort By
                 </label>
-                <select
+                <AppSelect
                   id="sortBy"
                   value={sortBy}
-                  onChange={(e) => onSortChange(e.target.value)}
-                  className={styles.filterSelect}
-                >
-                  {sortOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={onSortChange}
+                  options={sortOptions}
+                  aria-label="Sort applications"
+                />
               </div>
             </div>
 
             {/* Skills Filter */}
             <div className={styles.skillsSection}>
-              <div className={styles.skillsHeader}>
-                <label className={styles.filterLabel}>
-                  Filter by Skills
-                  {skillsFilter.length > 0 && (
-                    <span className={styles.skillsCount}>({skillsFilter.length} selected)</span>
-                  )}
-                </label>
-                
-                <div className={styles.skillsControls}>
-                  <div className={styles.skillSearchWrapper}>
-                    <input
-                      type="text"
-                      placeholder="Search skills..."
-                      value={skillSearchQuery}
-                      onChange={(e) => setSkillSearchQuery(e.target.value)}
-                      className={styles.skillSearchInput}
-                    />
+              <div className={styles.skillsFilterBlock}>
+                <div className={styles.skillsHeader}>
+                  <label className={styles.fieldLabel}>
+                    Filter by Skills
+                    {skillsFilter.length > 0 && (
+                      <span className={styles.skillsCount}>({skillsFilter.length} selected)</span>
+                    )}
+                  </label>
+
+                  <div className={styles.skillsControls}>
+                    <div className={styles.skillSearchWrapper}>
+                      <input
+                        type="text"
+                        placeholder="Search skills..."
+                        value={skillSearchQuery}
+                        onChange={(e) => setSkillSearchQuery(e.target.value)}
+                        className={styles.skillSearchInput}
+                      />
+                    </div>
+
+                    {skillsFilter.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => onSkillsFilterChange([])}
+                        className={styles.clearSkillsButton}
+                        title="Clear selected skills"
+                      >
+                        Clear Skills
+                      </button>
+                    )}
                   </div>
-                  
-                  {skillsFilter.length > 0 && (
-                    <button
-                      onClick={() => onSkillsFilterChange([])}
-                      className={styles.clearSkillsButton}
-                      title="Clear selected skills"
-                    >
-                      Clear Skills
-                    </button>
-                  )}
                 </div>
-              </div>
 
               <div className={styles.skillsGrid}>
                 {filteredSkills.map((skill) => (
@@ -347,52 +332,8 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
                   <p>No skills found matching &quot;{skillSearchQuery}&quot;</p>
                 </div>
               )}
-            </div>
-
-            {/* Active Filters Summary */}
-            {activeFilterCount > 0 && (
-              <div className={styles.activeFilters}>
-                <h4 className={styles.activeFiltersTitle}>Active Filters:</h4>
-                <div className={styles.activeFiltersList}>
-                  {searchQuery && (
-                    <span className={styles.activeFilter}>
-                      Name: &quot;{searchQuery}&quot;
-                      <button type="button" onClick={() => onSearchChange('')} className={`${styles.removeFilter} iconCloseHit`} aria-label="Remove name filter"><CloseIcon size={10} /></button>
-                    </span>
-                  )}
-                  {selectedCourse && (
-                    <span className={styles.activeFilter}>
-                      Course: {selectedCourse}
-                      <button type="button" onClick={() => onCourseChange('')} className={`${styles.removeFilter} iconCloseHit`} aria-label="Remove course filter"><CloseIcon size={10} /></button>
-                    </span>
-                  )}
-                  {roleTypeFilter && (
-                    <span className={styles.activeFilter}>
-                      Role: {roleTypeOptions.find(opt => opt.value === roleTypeFilter)?.label}
-                      <button type="button" onClick={() => onRoleTypeChange('')} className={`${styles.removeFilter} iconCloseHit`} aria-label="Remove role filter"><CloseIcon size={10} /></button>
-                    </span>
-                  )}
-                  {availabilityFilter && (
-                    <span className={styles.activeFilter}>
-                      Availability: {availabilityFilter}
-                      <button type="button" onClick={() => onAvailabilityChange('')} className={`${styles.removeFilter} iconCloseHit`} aria-label="Remove availability filter"><CloseIcon size={10} /></button>
-                    </span>
-                  )}
-                  {statusFilter && (
-                    <span className={styles.activeFilter}>
-                      Status: {statusOptions.find(opt => opt.value === statusFilter)?.label}
-                      <button type="button" onClick={() => onStatusFilterChange('')} className={`${styles.removeFilter} iconCloseHit`} aria-label="Remove status filter"><CloseIcon size={10} /></button>
-                    </span>
-                  )}
-                  {skillsFilter.map((skill) => (
-                    <span key={skill} className={styles.activeFilter}>
-                      Skill: {skill}
-                      <button type="button" onClick={() => handleSkillToggle(skill)} className={`${styles.removeFilter} iconCloseHit`} aria-label={`Remove skill ${skill}`}><CloseIcon size={10} /></button>
-                    </span>
-                  ))}
-                </div>
               </div>
-            )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

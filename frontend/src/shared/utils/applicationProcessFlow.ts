@@ -1,5 +1,9 @@
 import type { ApplicationResponse } from "@/shared/services/applicationService";
-import { getApplicationStatusLabel } from "@/shared/utils/applicationStatus";
+import {
+  applicationHasLecturerReview,
+  getApplicationStatusLabel,
+} from "@/shared/utils/applicationStatus";
+import { getCorrespondenceMessages } from "@/shared/utils/correspondenceMessages";
 
 export type ProcessNodeState =
   | "done"
@@ -10,7 +14,8 @@ export type ProcessNodeState =
 export type ProcessNodeId =
   | "submitted"
   | "pending"
-  | "feedback"
+  | "reviewed"
+  | "ranking"
   | "decision";
 
 export interface ProcessNode {
@@ -42,6 +47,13 @@ function getDecisionLabel(application: ApplicationResponse): string {
   return "Decision";
 }
 
+function hasLecturerChat(application: ApplicationResponse): boolean {
+  if (application.comment?.trim()) return true;
+  return getCorrespondenceMessages(application).some(
+    (message) => message.authorRole === "lecturer"
+  );
+}
+
 function connectorAfterStep(state: ProcessNodeState): boolean {
   return state === "done" || state === "bypassed";
 }
@@ -49,22 +61,22 @@ function connectorAfterStep(state: ProcessNodeState): boolean {
 export function buildApplicationProcessFlow(
   application: ApplicationResponse
 ): ApplicationProcessFlow {
-  const hasComment = Boolean(application.comment?.trim());
+  const hasReview = applicationHasLecturerReview(application);
   const terminal = isTerminal(application);
 
   let pending: ProcessNodeState = "upcoming";
-  let feedback: ProcessNodeState = "upcoming";
+  let reviewed: ProcessNodeState = "upcoming";
   let decision: ProcessNodeState = terminal ? "current" : "upcoming";
 
   if (application.isWithdrawn) {
     pending = "done";
-    feedback = hasComment ? "done" : "bypassed";
+    reviewed = hasReview ? "done" : "bypassed";
   } else if (terminal) {
     pending = "done";
-    feedback = hasComment ? "done" : "bypassed";
+    reviewed = hasReview ? "done" : "bypassed";
   } else if (application.status === "pending") {
-    pending = hasComment ? "done" : "current";
-    feedback = hasComment ? "current" : "upcoming";
+    pending = hasReview ? "done" : "current";
+    reviewed = hasReview ? "current" : "upcoming";
     decision = "upcoming";
   }
 
@@ -72,9 +84,9 @@ export function buildApplicationProcessFlow(
     { id: "submitted", label: "Submitted", state: "done" },
     { id: "pending", label: "Pending", state: pending },
     {
-      id: "feedback",
-      label: "Feedback",
-      state: feedback,
+      id: "reviewed",
+      label: "Reviewed",
+      state: reviewed,
     },
     {
       id: "decision",
@@ -94,14 +106,18 @@ export function buildApplicationProcessFlow(
 
   if (application.isWithdrawn) {
     progressCaption = "You withdrew this application";
-  } else if (application.status === "pending" && !hasComment) {
+  } else if (application.status === "pending" && !hasReview) {
     currentLabel = "Pending";
     progressCaption = "In the lecturer review queue";
-  } else if (hasComment && !terminal) {
-    currentLabel = "Feedback";
-    progressCaption = application.candidateResponse?.trim()
-      ? "Lecturer feedback — you have replied"
-      : "Read lecturer feedback and reply if needed";
+  } else if (hasReview && !terminal) {
+    currentLabel = "Reviewed";
+    if (hasLecturerChat(application)) {
+      progressCaption = application.candidateResponse?.trim()
+        ? "Application reviewed — you have replied"
+        : "Your application was reviewed — reply in chat if needed";
+    } else {
+      progressCaption = "A lecturer has reviewed your application";
+    }
   } else if (application.status === "selected") {
     progressCaption = "You were selected for this role";
   } else if (application.status === "rejected") {

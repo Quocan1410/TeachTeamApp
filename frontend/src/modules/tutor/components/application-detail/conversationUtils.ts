@@ -62,8 +62,17 @@ export function getCandidateFormattedName(
 }
 
 export function getLecturerFormattedName(
-  application: ApplicationResponse
+  application: ApplicationResponse,
+  authUser?: (AvatarPerson & { id?: number }) | null
 ): string {
+  if (authUser?.email && authUser.userType === "lecturer") {
+    return formatLecturerDisplayName(
+      getLecturerComposerPerson(authUser),
+      joinPersonName(getLecturerComposerPerson(authUser)) ||
+        getLecturerDisplayName(application)
+    );
+  }
+
   const fromComment = application.commentedByUser;
   if (fromComment) {
     return formatLecturerDisplayName(
@@ -78,7 +87,7 @@ export function getLecturerFormattedName(
     );
   }
 
-  const lecturer = getLecturerAvatarPerson(application);
+  const lecturer = getLecturerAvatarPerson(application, authUser);
   if (lecturer) {
     return formatLecturerDisplayName(
       lecturer,
@@ -115,9 +124,14 @@ export function getCandidateAvatarPerson(
   application: ApplicationResponse,
   authUser?: (AvatarPerson & { id?: number }) | null
 ): AvatarPerson {
-  if (authUser?.email) {
+  const authUserId = authUser?.userId ?? authUser?.id;
+  const isCandidateViewer =
+    authUser?.userType === "candidate" ||
+    (authUserId != null && authUserId === application.candidateId);
+
+  if (authUser?.email && isCandidateViewer) {
     return {
-      userId: authUser.userId ?? authUser.id ?? application.candidateId,
+      userId: authUserId ?? application.candidateId,
       firstName: authUser.firstName ?? application.candidate?.firstName,
       lastName: authUser.lastName ?? application.candidate?.lastName,
       email: authUser.email,
@@ -139,8 +153,13 @@ export function getCandidateAvatarPerson(
 }
 
 export function getLecturerAvatarPerson(
-  application: ApplicationResponse
+  application: ApplicationResponse,
+  authUser?: (AvatarPerson & { id?: number }) | null
 ): AvatarPerson | null {
+  if (authUser?.email && authUser.userType === "lecturer") {
+    return getLecturerComposerPerson(authUser);
+  }
+
   const fromComment = application.commentedByUser;
   if (fromComment?.email) {
     return {
@@ -177,6 +196,20 @@ export function getLecturerAvatarPerson(
     userType: "lecturer",
     honorific: lecturer.honorific,
     avatarUrl: lecturer.avatarUrl,
+  };
+}
+
+export function getLecturerComposerPerson(
+  authUser?: (AvatarPerson & { id?: number }) | null
+): AvatarPerson {
+  return {
+    userId: authUser?.userId ?? authUser?.id,
+    firstName: authUser?.firstName,
+    lastName: authUser?.lastName,
+    email: authUser?.email ?? "",
+    userType: "lecturer",
+    honorific: authUser?.honorific,
+    avatarUrl: authUser?.avatarUrl,
   };
 }
 
@@ -245,7 +278,7 @@ function replyQuoteSenderLabel(
 ): string {
   const full =
     referenced.kind === "lecturer"
-      ? getLecturerFormattedName(application)
+      ? getLecturerFormattedName(application, authUser)
       : getCandidateFormattedName(application, authUser);
   const { leading, rest } = splitDisplayName(full);
   const firstName = rest.split(/\s+/).filter(Boolean)[0] ?? rest;

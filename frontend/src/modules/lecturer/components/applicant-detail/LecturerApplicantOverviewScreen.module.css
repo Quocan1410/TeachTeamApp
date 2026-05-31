@@ -1,0 +1,118 @@
+.actionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.screeningChoiceRow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.screeningChoiceRow .actionBtn {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  padding: 0.45rem 0.75rem;
+}
+
+.actionBtn {
+  padding: 0.38rem 0.85rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.actionBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.actionBtnPrimary {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.actionBtnDanger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.actionBtnGhost {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.actionBtnSuccess {
+  background: #16a34a;
+  color: #fff;
+}
+
+.actionBtnMuted {
+  background: rgba(124, 58, 237, 0.12);
+  color: #7c3aed;
+  cursor: default;
+}
+
+.reviewHint,
+.screeningHint {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--color-text-tertiary);
+}
+
+.notesBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.notesHint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+}
+
+.notesInput {
+  width: 100%;
+  min-height: 72px;
+  max-height: 120px;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: 0.8125rem;
+  resize: none;
+  box-sizing: border-box;
+}
+
+.notesInput:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--color-primary) 40%, var(--color-border));
+}
+
+.notesView {
+  width: 100%;
+  min-height: 72px;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  box-sizing: border-box;
+}

@@ -3,19 +3,16 @@ import { motion } from "framer-motion";
 import styles from "./TutorHeroSection.module.css";
 
 interface TutorHeroSectionProps {
-  totalCourses: number;
+  availableCourses: number;
   userApplications: number;
-  availableOpportunities?: number; // Optional prop for more accurate calculation
+  openPositions: number;
 }
 
 const TutorHeroSection: React.FC<TutorHeroSectionProps> = ({
-  totalCourses,
+  availableCourses,
   userApplications,
-  availableOpportunities,
+  openPositions,
 }) => {
-  // Use provided availableOpportunities if available, otherwise fallback to simple calculation
-  const opportunities = availableOpportunities ?? Math.max(0, totalCourses - userApplications);
-
   return (
     <motion.div
       className={styles.tutorHeroSection}
@@ -52,7 +49,7 @@ const TutorHeroSection: React.FC<TutorHeroSectionProps> = ({
             transition={{ duration: 0.7, delay: 0.6 }}
           >
             <div className={styles.statItem}>
-              <div className={styles.statValue}>{totalCourses}</div>
+              <div className={styles.statValue}>{availableCourses}</div>
               <div className={styles.statLabel}>Available Courses</div>
             </div>
             <div className={styles.statDivider}></div>
@@ -62,7 +59,7 @@ const TutorHeroSection: React.FC<TutorHeroSectionProps> = ({
             </div>
             <div className={styles.statDivider}></div>
             <div className={styles.statItem}>
-              <div className={styles.statValue}>{opportunities}</div>
+              <div className={styles.statValue}>{openPositions}</div>
               <div className={styles.statLabel}>Open Positions</div>
             </div>
           </motion.div>

@@ -57,3 +57,34 @@ export const getAvatarMimeType = (filePath: string): string => {
             return "image/jpeg";
     }
 };
+
+/** Link uploaded files to users when avatarUrl was cleared (e.g. after db:reset). */
+export const reconcileOrphanAvatarFiles = async (
+    userRepository: { findOne: (opts: { where: { id: number } }) => Promise<{ id: number; avatarUrl: string | null } | null>; save: (user: { id: number; avatarUrl: string | null }) => Promise<unknown> }
+): Promise<number> => {
+    if (!fs.existsSync(AVATAR_UPLOAD_DIR)) {
+        return 0;
+    }
+
+    let linked = 0;
+    const files = fs.readdirSync(AVATAR_UPLOAD_DIR);
+
+    for (const file of files) {
+        const match = /^user-(\d+)-\d+\.(jpg|jpeg|png|webp)$/i.exec(file);
+        if (!match) {
+            continue;
+        }
+
+        const userId = parseInt(match[1], 10);
+        const user = await userRepository.findOne({ where: { id: userId } });
+        if (!user || user.avatarUrl) {
+            continue;
+        }
+
+        user.avatarUrl = buildAvatarPublicPath(file);
+        await userRepository.save(user);
+        linked += 1;
+    }
+
+    return linked;
+};

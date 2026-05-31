@@ -273,9 +273,10 @@ export class AuthController {
             });
 
             if (!user) {
-                res.status(404).json({
+                res.status(401).json({
                     success: false,
-                    message: "User not found",
+                    message:
+                        "Session expired or account no longer exists. Please sign in again.",
                 });
                 return;
             }
@@ -341,7 +342,7 @@ export class AuthController {
                 return;
             }
 
-            const { firstName, lastName } = req.body;
+            const { firstName, lastName, honorific } = req.body;
 
             const user = await this.userRepository.findOne({
                 where: { id: userId },
@@ -365,6 +366,25 @@ export class AuthController {
 
             user.firstName = firstName.trim();
             user.lastName = lastName.trim();
+
+            if (typeof honorific === "string" && honorific.trim()) {
+                const trimmed = honorific.trim();
+                const candidateTitles = new Set(["Mr.", "Ms.", "Mrs."]);
+                const lecturerTitles = new Set(["Dr.", "Prof."]);
+
+                if (
+                    user.userType === UserType.CANDIDATE &&
+                    candidateTitles.has(trimmed)
+                ) {
+                    user.honorific = trimmed;
+                } else if (
+                    user.userType === UserType.LECTURER &&
+                    lecturerTitles.has(trimmed)
+                ) {
+                    user.honorific = trimmed;
+                }
+            }
+
             const updatedUser = await this.userRepository.save(user);
             const { password: _, ...userProfile } = updatedUser;
 

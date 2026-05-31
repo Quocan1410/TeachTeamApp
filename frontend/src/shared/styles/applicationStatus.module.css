@@ -60,6 +60,30 @@
   border: 1px solid rgba(107, 114, 128, 0.3);
 }
 
+.status-unavailable {
+  background-color: rgba(148, 163, 184, 0.16);
+  color: #64748b;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+}
+
+.status-blocked {
+  background-color: rgba(148, 163, 184, 0.16);
+  color: #64748b;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+}
+
+.status-ranked {
+  background-color: rgba(59, 130, 246, 0.14);
+  color: #2563eb;
+  border: 1px solid rgba(59, 130, 246, 0.28);
+}
+
+.status-reviewed {
+  background-color: rgba(14, 165, 233, 0.14);
+  color: #0284c7;
+  border: 1px solid rgba(14, 165, 233, 0.28);
+}
+
 :global(html.dark) .status-pending,
 :global(html[data-theme="dark"]) .status-pending {
   background-color: rgba(245, 158, 11, 0.22);
@@ -93,4 +117,27 @@
   background-color: rgba(107, 114, 128, 0.24);
   color: #9ca3af;
   border-color: rgba(107, 114, 128, 0.4);
+}
+
+:global(html.dark) .status-unavailable,
+:global(html[data-theme="dark"]) .status-unavailable,
+:global(html.dark) .status-blocked,
+:global(html[data-theme="dark"]) .status-blocked {
+  background-color: rgba(148, 163, 184, 0.14);
+  color: #94a3b8;
+  border-color: rgba(148, 163, 184, 0.28);
+}
+
+:global(html.dark) .status-ranked,
+:global(html[data-theme="dark"]) .status-ranked {
+  background-color: rgba(96, 165, 250, 0.18);
+  color: #93c5fd;
+  border-color: rgba(96, 165, 250, 0.32);
+}
+
+:global(html.dark) .status-reviewed,
+:global(html[data-theme="dark"]) .status-reviewed {
+  background-color: rgba(56, 189, 248, 0.18);
+  color: #7dd3fc;
+  border-color: rgba(56, 189, 248, 0.32);
 }

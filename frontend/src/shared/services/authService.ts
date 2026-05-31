@@ -8,6 +8,7 @@ import {
 } from "../types/user";
 import StorageManager from "../utils/storageManager";
 import { env } from "@/lib/env";
+import { dedupeInFlight } from "../utils/inFlightRequest";
 
 const authAPI = axios.create({
   baseURL: `${env.apiEndpoint}/auth`,
@@ -119,19 +120,21 @@ export class AuthService {
   }
 
   static async getProfile(): Promise<AuthResponse> {
-    try {
-      const response = await authAPI.get("/profile");
-      return response.data;
-    } catch (error: unknown) {
-      const axiosError = error as AxiosError<AuthResponse>;
-      if (axiosError.response?.data) {
-        return axiosError.response.data;
+    return dedupeInFlight("auth-profile", async () => {
+      try {
+        const response = await authAPI.get("/profile");
+        return response.data;
+      } catch (error: unknown) {
+        const axiosError = error as AxiosError<AuthResponse>;
+        if (axiosError.response?.data) {
+          return axiosError.response.data;
+        }
+        return {
+          success: false,
+          message: "Network error occurred while fetching profile.",
+        };
       }
-      return {
-        success: false,
-        message: "Network error occurred while fetching profile.",
-      };
-    }
+    });
   }
 
   static async updateProfile(data: UpdateProfileData): Promise<AuthResponse> {

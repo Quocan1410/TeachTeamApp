@@ -15,6 +15,7 @@ export interface UserDropdownProps {
     role: string;
     avatarPath?: string;
     avatarNumber?: number;
+    avatarUrl?: string | null;
     firstName?: string;
     lastName?: string;
     userType?: string;
@@ -38,44 +39,25 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const protectedAvatarUrl = useProtectedAvatar(
     !!user.hasCustomAvatar,
-    user.hasCustomAvatar ? user.email : null
+    user.hasCustomAvatar ? user.avatarUrl : null
   );
 
   useEffect(() => {
     setAvatarLoadFailed(false);
-  }, [user.avatarPath, protectedAvatarUrl]);
+  }, [user.avatarPath, user.avatarUrl, protectedAvatarUrl]);
 
   const showInitials =
-    avatarLoadFailed ||
-    (!user.hasCustomAvatar && !user.avatarNumber) ||
-    (user.hasCustomAvatar && !protectedAvatarUrl);
+    !user.hasCustomAvatar || avatarLoadFailed || !protectedAvatarUrl;
 
   const initials = getUserInitials(
     user.firstName,
     user.lastName,
-    user.email
+    user.email,
+    user.fullName
   );
 
-  // Function to get avatar path
-  const getAvatarPath = () => {
-    if (user.avatarPath) {
-      return user.avatarPath;
-    } else if (user.avatarNumber) {
-      return `/avatars/avatar-${user.avatarNumber}.jpg`;
-    } else {
-      // Generate a consistent avatar number based on email
-      const emailHash = user.email
-        .split("")
-        .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-
-      // Use lecturer images if user is a lecturer
-      if (user.role === "lecturer") {
-        return `/lecturers/lecturer-${(emailHash % 4) + 1}.jpg`;
-      }
-
-      return `/avatars/avatar-${(emailHash % 12) + 1}.jpg`;
-    }
-  };
+  const avatarImageSrc =
+    user.hasCustomAvatar && protectedAvatarUrl ? protectedAvatarUrl : null;
 
   // Function to get display role
   const getDisplayRole = () => {
@@ -131,16 +113,16 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
       <div className={styles.avatarButton} onClick={toggleDropdown}>
         <div className={styles.avatarWrapper}>
           <div className={styles.avatarContent}>
-            {showInitials ? (
+            {showInitials || !avatarImageSrc ? (
               <span className={styles.avatarInitials}>{initials}</span>
             ) : (
               <Image
-                src={user.hasCustomAvatar && protectedAvatarUrl ? protectedAvatarUrl : getAvatarPath()}
+                src={avatarImageSrc}
                 alt={user.fullName}
                 width={40}
                 height={40}
                 className={styles.avatarImage}
-                unoptimized={!!user.hasCustomAvatar}
+                unoptimized
                 onError={() => setAvatarLoadFailed(true)}
               />
             )}
@@ -152,16 +134,16 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
       {isOpen && (
         <div className={styles.userDropdownMenu}>
           <div className={styles.dropdownHeader}>
-            {showInitials ? (
+            {showInitials || !avatarImageSrc ? (
               <div className={styles.dropdownAvatarInitials}>{initials}</div>
             ) : (
             <Image
-              src={user.hasCustomAvatar && protectedAvatarUrl ? protectedAvatarUrl : getAvatarPath()}
+              src={avatarImageSrc}
               alt={user.fullName}
               width={60}
               height={60}
               className={styles.dropdownAvatar}
-              unoptimized={!!user.hasCustomAvatar}
+              unoptimized
               onError={() => setAvatarLoadFailed(true)}
             />
             )}
@@ -177,7 +159,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
             </div>
             <button
               type="button"
-              className={`${styles.closeButton} iconCloseHit`}
+              className={`${styles.closeButton} iconCloseHit iconCloseCircle`}
               onClick={() => setIsOpen(false)}
               aria-label="Close dropdown"
             >

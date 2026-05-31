@@ -117,45 +117,36 @@ export const validateStatusUpdate = (
         });
     }
 
-    // Course selection validation for selected status
-    if (status === "selected") {
-        if (
-            !selectedCourses ||
-            !Array.isArray(selectedCourses) ||
-            selectedCourses.length === 0
-        ) {
+    // Each application belongs to a single course — selectedCourses in the body is optional legacy input.
+    if (
+        status === "selected" &&
+        selectedCourses &&
+        Array.isArray(selectedCourses) &&
+        selectedCourses.length > 0
+    ) {
+        const invalidCourses = selectedCourses.filter((course: string) => {
+            return !(
+                course &&
+                typeof course === "string" &&
+                /^[A-Z]{4}\d{4}$/.test(course.trim())
+            );
+        });
+
+        if (invalidCourses.length > 0) {
             errors.push({
                 field: "selectedCourses",
-                message:
-                    "At least one course must be selected when selecting an applicant",
-                code: "COURSES_REQUIRED",
+                message: "All course codes must follow format: COSC1234",
+                code: "COURSES_INVALID_FORMAT",
             });
-        } else {
-            const invalidCourses = selectedCourses.filter((course: string) => {
-                return !(
-                    course &&
-                    typeof course === "string" &&
-                    /^[A-Z]{4}\d{4}$/.test(course.trim())
-                );
+        }
+
+        const uniqueCourses = [...new Set(selectedCourses)];
+        if (uniqueCourses.length !== selectedCourses.length) {
+            errors.push({
+                field: "selectedCourses",
+                message: "Duplicate courses are not allowed",
+                code: "COURSES_DUPLICATE",
             });
-
-            if (invalidCourses.length > 0) {
-                errors.push({
-                    field: "selectedCourses",
-                    message: "All course codes must follow format: COSC1234",
-                    code: "COURSES_INVALID_FORMAT",
-                });
-            }
-
-            // Check for duplicates
-            const uniqueCourses = [...new Set(selectedCourses)];
-            if (uniqueCourses.length !== selectedCourses.length) {
-                errors.push({
-                    field: "selectedCourses",
-                    message: "Duplicate courses are not allowed",
-                    code: "COURSES_DUPLICATE",
-                });
-            }
         }
     }
 

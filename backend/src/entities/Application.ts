@@ -20,6 +20,12 @@ export enum ApplicationStatus {
     REJECTED = "rejected",
 }
 
+export enum OfferResponse {
+    PENDING = "pending",
+    ACCEPTED = "accepted",
+    DECLINED = "declined",
+}
+
 @Entity("applications")
 @Index(["candidateId", "courseId", "roleId"], { unique: true })
 export class Application {
@@ -172,6 +178,33 @@ export class Application {
     })
     rankedForCourse?: string | null;
 
+    /** Candidate response to a final selection offer. */
+    @Column({
+        type: "varchar",
+        length: 20,
+        nullable: true,
+    })
+    offerResponse?: OfferResponse | null;
+
+    @Column({
+        type: "datetime",
+        nullable: true,
+    })
+    offerRespondedAt?: Date | null;
+
+    /** Lecturer opened/reviewed the application (with or without chat message). */
+    @Column({
+        type: "datetime",
+        nullable: true,
+    })
+    reviewedAt?: Date | null;
+
+    @Column({
+        type: "int",
+        nullable: true,
+    })
+    reviewedBy?: number | null;
+
     @CreateDateColumn()
     appliedAt: Date;
 
@@ -242,7 +275,7 @@ export class Application {
     }
 
     get canBeRanked(): boolean {
-        return this.isSelected && this.hasComment;
+        return this.status === ApplicationStatus.PENDING && !this.isRejected;
     }
 
     get commentSummary(): string {

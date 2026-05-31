@@ -38,11 +38,14 @@
   padding: 1.25rem;
   border-radius: 0.75rem;
   background-color: var(--color-bg-secondary);
-  transition: all 0.2s ease-out;
+  transition:
+    background-color 0.2s ease-out,
+    border-color 0.2s ease-out;
   cursor: pointer;
   position: relative;
   border: 1px solid transparent;
   min-height: 120px;
+  box-sizing: border-box;
 }
 
 .applicantItem:hover {
@@ -58,17 +61,35 @@
 .applicantAvatar {
   width: 56px;
   height: 56px;
+  min-width: 56px;
+  min-height: 56px;
   border-radius: 50%;
+  aspect-ratio: 1;
+  box-sizing: border-box;
   background-color: var(--color-primary);
   color: white;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
   margin-right: 1.25rem;
   margin-top: 0.25rem;
   flex-shrink: 0;
-  font-size: 1.1rem;
+  font-size: 0.9375rem;
+  overflow: hidden;
+}
+
+.applicantAvatarHasImage {
+  background-color: var(--color-bg-secondary);
+}
+
+.applicantAvatarPhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .applicantInfo {
@@ -149,6 +170,7 @@
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
+  z-index: 2;
   color: #10b981; /* Tailwind green-500 */
 }
 
@@ -163,6 +185,7 @@
   position: absolute;
   top: 0.75rem;
   right: 2.5rem; /* Position it to the left of the selected icon */
+  z-index: 2;
   color: #8b5cf6; /* Purple color for the crown */
 }
 
@@ -269,89 +292,81 @@
   color: var(--color-text-primary);
 }
 
-/* Blocked candidate styles */
+/* Blocked candidate — muted styling; Remove button always visible */
 .applicantItem.blocked {
-  opacity: 0.6;
-  background-color: #f5f5f5;
-  border-color: #e5e5e5;
+  opacity: 0.78;
+  background-color: var(--color-bg-secondary);
+  border-color: rgba(148, 163, 184, 0.22);
   position: relative;
 }
 
 .applicantItem.blocked:hover {
-  background-color: #f0f0f0;
-  border-color: #d5d5d5;
+  background-color: rgba(148, 163, 184, 0.08);
+  border-color: rgba(148, 163, 184, 0.32);
 }
 
-.applicantItem.blocked::after {
-  content: "⚠️ UNAVAILABLE";
+.removeBlockedButton {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background-color: #ff6b6b;
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 600;
+  top: 0.625rem;
+  right: 0.625rem;
   z-index: 10;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  cursor: pointer;
+  background: rgba(148, 163, 184, 0.14);
+  color: var(--color-text-tertiary);
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+  transform: translateZ(0);
+}
+
+.removeBlockedButton:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.removeBlockedButton:active {
+  transform: translateZ(0) scale(0.98);
+}
+
+:global(.dark) .removeBlockedButton:hover {
+  color: #f87171;
+}
+
+.applicantItem.blocked .applicantInfo {
+  padding-right: 4.75rem;
 }
 
 .applicantItem.blocked .applicantName {
-  color: #888;
-  text-decoration: line-through;
+  color: var(--color-text-secondary);
 }
 
 .applicantItem.blocked .applicantAvatar {
-  background-color: #ccc;
+  opacity: 0.85;
 }
 
-.applicantItem.blocked .skillBadge {
-  background-color: rgba(0, 0, 0, 0.1);
-  color: #888;
-}
-
-.applicantItem.blocked .roleInfo {
-  background-color: rgba(0, 0, 0, 0.1);
-  color: #888;
-}
-
-.applicantItem.blocked .roleIcon {
-  color: #888;
-}
-
+.applicantItem.blocked .skillBadge,
+.applicantItem.blocked .roleInfo,
 .applicantItem.blocked .courseCode {
-  background-color: rgba(0, 0, 0, 0.1);
-  color: #888;
-  border-color: rgba(0, 0, 0, 0.1);
+  opacity: 0.85;
 }
 
-/* Dark mode for blocked candidates */
-.dark .applicantItem.blocked {
-  background-color: rgba(128, 128, 128, 0.2);
-  border-color: rgba(128, 128, 128, 0.3);
+:global(.dark) .applicantItem.blocked {
+  background-color: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
-.dark .applicantItem.blocked:hover {
-  background-color: rgba(128, 128, 128, 0.3);
-}
-
-.dark .applicantItem.blocked .applicantName {
-  color: #aaa;
-}
-
-.dark .applicantItem.blocked .roleInfo {
-  background-color: rgba(128, 128, 128, 0.2);
-  color: #aaa;
-}
-
-.dark .applicantItem.blocked .roleIcon {
-  color: #aaa;
-}
-
-.dark .applicantItem.blocked .courseCode {
-  background-color: rgba(128, 128, 128, 0.2);
-  color: #aaa;
-  border-color: rgba(128, 128, 128, 0.2);
+:global(.dark) .applicantItem.blocked:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 /* Dark mode for new elements */

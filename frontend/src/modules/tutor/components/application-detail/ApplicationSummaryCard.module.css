@@ -229,3 +229,32 @@
 :global(.dark) .date {
   color: #a1a1aa;
 }
+
+.descriptionLecturer {
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+}
+
+.reviewBlock,
+.screeningBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-border) 85%, transparent);
+}
+
+.reviewLabel,
+.screeningLabel {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-primary) 35%, var(--color-text-tertiary));
+}
+
+:global(.dark) .reviewLabel,
+:global(.dark) .screeningLabel {
+  color: color-mix(in srgb, #fdba74 40%, var(--color-text-tertiary));
+}

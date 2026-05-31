@@ -125,10 +125,12 @@
 .applyModalClose {
   width: 2rem !important;
   height: 2rem !important;
+  min-width: 2rem !important;
+  min-height: 2rem !important;
   padding: 0 !important;
   flex-shrink: 0 !important;
   border: none !important;
-  border-radius: 0.5rem !important;
+  border-radius: 50% !important;
   background: transparent !important;
   color: var(--color-text-tertiary) !important;
   cursor: pointer !important;

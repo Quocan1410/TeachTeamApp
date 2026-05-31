@@ -570,7 +570,6 @@
 }
 
 .formTextarea {
-    resize: vertical !important;
     min-height: 80px !important;
 }
 

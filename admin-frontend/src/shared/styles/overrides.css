@@ -13,6 +13,17 @@ textarea:focus {
     box-shadow: none !important;
 }
 
+textarea {
+    resize: none !important;
+}
+
+button,
+button:focus,
+button:focus-visible,
+button:active {
+    outline: none;
+}
+
 /* ======== FRAMEWORK OVERRIDES ======== */
 
 /* Tailwind CSS overrides for better theming */
@@ -43,12 +54,6 @@ textarea:focus {
     width: 1.25rem;
     height: 1.25rem;
     flex-shrink: 0;
-}
-
-/* Button overrides for consistent theming */
-button:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
 }
 
 /* Form input overrides */

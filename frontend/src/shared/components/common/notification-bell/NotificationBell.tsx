@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useNotifications } from "@/shared/contexts/NotificationContext";
+import CloseIcon from "@/shared/components/common/icons/CloseIcon";
 import styles from "./NotificationBell.module.css";
 
 const NotificationBell: React.FC = () => {
@@ -176,7 +177,15 @@ const NotificationBell: React.FC = () => {
           />
         </svg>
         {unreadCount > 0 && (
-          <span className={styles.badge}>
+          <span
+            className={`${styles.badge} ${
+              unreadCount > 99
+                ? styles.badgeCompact
+                : unreadCount > 9
+                  ? styles.badgeWide
+                  : ""
+            }`}
+          >
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
@@ -228,15 +237,25 @@ const NotificationBell: React.FC = () => {
                 {visible.map((notification) => {
                   const actor = getNotificationActor(notification.type);
                   return (
-                    <button
+                    <div
                       key={notification.id}
-                      type="button"
+                      role="button"
+                      tabIndex={0}
                       className={`${styles.notificationItem} ${
                         !notification.read ? styles.unread : ""
                       }`}
                       onClick={() =>
                         handleNotificationClick(notification.id, notification.link)
                       }
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          handleNotificationClick(
+                            notification.id,
+                            notification.link
+                          );
+                        }
+                      }}
                     >
                       <div className={styles.notificationIconWrap}>
                         {getNotificationIcon(notification.type)}
@@ -254,39 +273,22 @@ const NotificationBell: React.FC = () => {
                         </p>
                       </div>
                       <div className={styles.itemAside}>
-                        <span
-                          role="button"
-                          tabIndex={0}
-                          className={styles.removeButton}
-                          onClick={(e) => {
-                            e.stopPropagation();
+                        <button
+                          type="button"
+                          className={`${styles.removeButton} iconCloseHit iconCloseCircle`}
+                          onClick={(event) => {
+                            event.stopPropagation();
                             removeNotification(notification.id);
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              e.stopPropagation();
-                              removeNotification(notification.id);
-                            }
                           }}
                           aria-label="Remove notification"
                         >
-                          <svg
-                            className={styles.removeIcon}
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth={2.25}
-                            strokeLinecap="round"
-                            aria-hidden
-                          >
-                            <path d="M6 6l12 12M18 6L6 18" />
-                          </svg>
-                        </span>
+                          <CloseIcon size={7} />
+                        </button>
                         <span className={styles.notificationTime}>
                           {formatTimeAgo(notification.timestamp)}
                         </span>
                       </div>
-                    </button>
+                    </div>
                   );
                 })}
               </div>

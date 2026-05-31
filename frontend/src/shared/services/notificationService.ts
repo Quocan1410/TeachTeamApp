@@ -4,9 +4,15 @@ import { env } from "@/lib/env";
 const notificationAPI = axios.create({
   baseURL: `${env.apiEndpoint}/notifications`,
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
+});
+
+notificationAPI.interceptors.request.use((config) => {
+  const method = config.method?.toLowerCase();
+  if (method && method !== "get" && method !== "head") {
+    config.headers = config.headers ?? {};
+    config.headers["Content-Type"] = "application/json";
+  }
+  return config;
 });
 
 export type NotificationType =
@@ -14,6 +20,8 @@ export type NotificationType =
   | "application_selected"
   | "application_rejected"
   | "application_comment"
+  | "application_response"
+  | "application_withdrawn"
   | "candidate_blocked"
   | "candidate_unblocked"
   | "account_blocked"
@@ -41,8 +49,16 @@ export interface NotificationListResponse {
 export async function fetchNotifications(): Promise<NotificationListResponse> {
   const response = await notificationAPI.get<{
     success: boolean;
-    data: NotificationListResponse;
-  }>("/");
+    data?: NotificationListResponse;
+    message?: string;
+  }>("");
+
+  if (!response.data?.success || !response.data.data) {
+    throw new Error(
+      response.data?.message || "Failed to load notifications"
+    );
+  }
+
   return response.data.data;
 }
 

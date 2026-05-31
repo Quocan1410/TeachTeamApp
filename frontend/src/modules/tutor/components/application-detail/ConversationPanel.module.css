@@ -532,8 +532,8 @@
   font-size: 0.84rem;
   line-height: 1.45;
   color: var(--color-text-primary);
-  resize: vertical;
   box-sizing: border-box;
+  resize: none;
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
@@ -597,8 +597,10 @@
 }
 
 .threadFooter {
-  padding: 0.35rem 0 0.15rem;
+  flex-shrink: 0;
+  padding: 0.15rem 1.15rem 0.65rem;
   text-align: center;
+  background: var(--color-bg-secondary);
 }
 
 .withdrawLink {

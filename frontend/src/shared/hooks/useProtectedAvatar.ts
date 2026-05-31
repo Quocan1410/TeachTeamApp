@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { env } from "@/lib/env";
+import { getAvatarCacheBuster } from "@/shared/utils/avatarUtils";
+import { fetchAvatarBlob } from "@/shared/utils/avatarFetchCache";
 
 export function useProtectedAvatar(
   hasAvatar: boolean,
@@ -19,16 +21,22 @@ export function useProtectedAvatar(
       }
 
       try {
-        const response = await fetch(`${env.apiEndpoint}/auth/avatar/image`, {
-          credentials: "include",
-        });
+        const cacheBuster =
+          typeof refreshKey === "string"
+            ? getAvatarCacheBuster(refreshKey)
+            : undefined;
+        const query = cacheBuster
+          ? `?v=${encodeURIComponent(cacheBuster)}`
+          : "";
+        const blob = await fetchAvatarBlob(
+          `${env.apiEndpoint}/auth/avatar/image${query}`,
+          { credentials: "include", cache: "no-store" }
+        );
 
-        if (!response.ok) {
+        if (!blob) {
           setObjectUrl(null);
           return;
         }
-
-        const blob = await response.blob();
         const url = URL.createObjectURL(blob);
         revoked = url;
         setObjectUrl(url);

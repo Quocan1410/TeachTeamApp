@@ -70,8 +70,10 @@ const Header: React.FC = () => {
   // When authenticated: show role-appropriate links
   const showTutorLink =
     !isLoading && (!isAuthenticated || user?.userType === "candidate");
-  const showLecturerLink =
-    !isLoading && (!isAuthenticated || user?.userType === "lecturer");
+  const isLecturerUser =
+    !isLoading && isAuthenticated && user?.userType === "lecturer";
+  const showPublicLecturerLink =
+    !isLoading && !isAuthenticated;
 
   return (
     <header
@@ -128,7 +130,17 @@ const Header: React.FC = () => {
                     Applications
                   </Link>
                 )}
-                {showLecturerLink && (
+                {isLecturerUser && (
+                  <Link
+                    href="/lecturer"
+                    className={`${styles["nav-link"]} ${
+                      pathname === "/lecturer" ? styles.active : ""
+                    }`}
+                  >
+                    Applicants
+                  </Link>
+                )}
+                {showPublicLecturerLink && (
                   <Link
                     href="/lecturer"
                     className={`${styles["nav-link"]} ${pathname === "/lecturer" ? styles.active : ""}`}
@@ -180,6 +192,7 @@ const Header: React.FC = () => {
                     firstName: user.firstName,
                     lastName: user.lastName,
                     userType: user.userType,
+                    avatarUrl: user.avatarUrl,
                     hasCustomAvatar: hasCustomAvatar(user.avatarUrl),
                   }}
                   onSignOut={handleSignOut}

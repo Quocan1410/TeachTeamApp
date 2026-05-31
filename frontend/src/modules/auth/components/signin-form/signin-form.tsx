@@ -88,8 +88,8 @@ export default function SignInForm() {
           ]),
           timeout,
         ]);
-      } catch (error) {
-        console.warn("Dashboard preload failed, continuing anyway:", error);
+      } catch {
+        // Preload is best-effort only.
       } finally {
         if (!cancelled) {
           setIsDashboardReady(true);

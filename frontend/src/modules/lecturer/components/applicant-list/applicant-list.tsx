@@ -1,5 +1,8 @@
+"use client";
+
 import React from "react";
 import type { Application as TutorApplication } from "@/shared/types/application"; // Updated
+import ApplicantAvatar from "./ApplicantAvatar";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./applicant-list.module.css";
 
@@ -17,6 +20,7 @@ interface ApplicantListProps {
   applications: TutorApplication[];
   selectedApplication: TutorApplication | null;
   onSelectApplication: (app: TutorApplication) => void;
+  onRemoveBlockedApplication?: (app: TutorApplication) => void;
   title?: string;
 }
 
@@ -25,8 +29,9 @@ const ApplicantItem = React.memo<{
   application: TutorApplication;
   isSelected: boolean;
   onSelect: (app: TutorApplication) => void;
+  onRemoveBlocked?: (app: TutorApplication) => void;
   index: number;
-}>(({ application, isSelected, onSelect, index }) => {
+}>(({ application, isSelected, onSelect, onRemoveBlocked, index }) => {
   // Type guard to check if application has extended properties
   const extendedApp = application as ExtendedApplication;
   // Reduce animation complexity for large lists
@@ -39,14 +44,14 @@ const ApplicantItem = React.memo<{
       className={`${styles.applicantItem} ${isSelected ? styles.selected : ""} ${application.isBlocked ? styles.blocked : ""}`}
       onClick={() => onSelect(application)}
     >
-      <div className={styles.applicantAvatar}>
-        {application.fullName
-          .split(" ")
-          .map((n) => n[0])
-          .join("")
-          .toUpperCase()}
-      </div>
-      <div className={styles.applicantInfo}>
+      <ApplicantAvatar
+        userId={application.userId}
+        email={application.email}
+        fullName={application.fullName}
+        firstName={application.firstName}
+        lastName={application.lastName}
+        avatarUrl={application.avatarUrl}
+      />      <div className={styles.applicantInfo}>
         <div className={styles.applicantName}>{application.fullName}</div>
         <div className={styles.applicantDetails}>
           {/* Role Information */}
@@ -115,10 +120,11 @@ const ApplicantItem = React.memo<{
       </div>
       {application.rank !== undefined &&
         application.rank !== null &&
-        application.rank > 0 && (
+        application.rank > 0 &&
+        !application.isBlocked && (
           <div
             className={styles.applicantRankedIconContainer}
-            title={`Ranked ${application.rank}`}
+            title={`Ranked #${application.rank}`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -129,8 +135,16 @@ const ApplicantItem = React.memo<{
             </svg>
           </div>
         )}
-      {application.selected && (
-        <div className={styles.applicantSelectedIconContainer}>
+      {(application.selected || application.isShortlisted) &&
+        !application.isBlocked && (
+        <div
+          className={styles.applicantSelectedIconContainer}
+          title={
+            application.selected
+              ? "Final selection confirmed"
+              : "Shortlisted"
+          }
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className={styles.statusIcon}
@@ -147,6 +161,21 @@ const ApplicantItem = React.memo<{
           </svg>
         </div>
       )}
+      {application.isBlocked && onRemoveBlocked && (
+        <button
+          type="button"
+          className={styles.removeBlockedButton}
+          title="Remove unavailable application"
+          aria-label={`Remove ${application.fullName} from list`}
+          onClick={(event) => {
+            event.stopPropagation();
+            onRemoveBlocked(application);
+          }}
+          onMouseDown={(event) => event.stopPropagation()}
+        >
+          Remove
+        </button>
+      )}
       <div className={styles.appliedDate}>
         {new Date(application.dateApplied).toLocaleDateString()}
       </div>
@@ -158,17 +187,14 @@ const ApplicantItem = React.memo<{
     return (
       <motion.div
         key={application.id}
-        layout
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
         transition={{
           duration: 0.2,
-          delay: index * 0.02, // Reduced delay for smoother appearance
+          delay: index * 0.02,
           ease: "easeOut",
         }}
-        whileHover={{ scale: 1.01 }}
-        whileTap={{ scale: 0.99 }}
       >
         {itemContent}
       </motion.div>
@@ -179,7 +205,6 @@ const ApplicantItem = React.memo<{
   return (
     <motion.div
       key={application.id}
-      layout
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -196,6 +221,7 @@ const ApplicantList: React.FC<ApplicantListProps> = ({
   applications,
   selectedApplication,
   onSelectApplication,
+  onRemoveBlockedApplication,
   title = "Applicants",
 }) => {
   return (
@@ -225,13 +251,14 @@ const ApplicantList: React.FC<ApplicantListProps> = ({
           </div>
         ) : (
           <div className={styles.applicantList}>
-            <AnimatePresence mode="popLayout">
+            <AnimatePresence mode="sync">
               {applications.map((application, index) => (
                 <ApplicantItem
                   key={application.id}
                   application={application}
                   isSelected={selectedApplication?.id === application.id}
                   onSelect={onSelectApplication}
+                  onRemoveBlocked={onRemoveBlockedApplication}
                   index={index}
                 />
               ))}

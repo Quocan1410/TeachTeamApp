@@ -97,7 +97,9 @@ function senderLabel(
 
   }
 
-  if (item.kind === "lecturer") return getLecturerFormattedName(application);
+  if (item.kind === "lecturer") {
+    return getLecturerFormattedName(application, authUser);
+  }
 
   return "System";
 
@@ -143,7 +145,7 @@ const ConversationMessage: React.FC<ConversationMessageProps> = ({
 
     ? getCandidateAvatarPerson(application, authUser)
 
-    : getLecturerAvatarPerson(application) ?? {
+    : getLecturerAvatarPerson(application, authUser) ?? {
 
         firstName: name,
 
@@ -161,9 +163,11 @@ const ConversationMessage: React.FC<ConversationMessageProps> = ({
 
     !!canCompose && isCandidate && canEditTimelineMessage(item);
 
-  const canDelete = !!canCompose && isCandidate;
-
   const viewerIsLecturer = authUser?.userType === "lecturer";
+
+  const canDelete =
+    !!canCompose && (viewerIsLecturer ? isLecturer : isCandidate);
+
   const canReply =
     !!canCompose &&
     ((viewerIsLecturer && isCandidate) || (!viewerIsLecturer && isLecturer));
