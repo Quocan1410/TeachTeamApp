@@ -30,7 +30,6 @@ export class NotificationController {
                 },
             });
         } catch (error) {
-            console.error("Error fetching notifications:", error);
             res.status(500).json({
                 success: false,
                 message: "Failed to fetch notifications",
@@ -75,7 +74,6 @@ export class NotificationController {
                 data: { unreadCount },
             });
         } catch (error) {
-            console.error("Error marking notification as read:", error);
             res.status(500).json({
                 success: false,
                 message: "Failed to update notification",
@@ -104,7 +102,6 @@ export class NotificationController {
                 data: { unreadCount: 0 },
             });
         } catch (error) {
-            console.error("Error marking all notifications as read:", error);
             res.status(500).json({
                 success: false,
                 message: "Failed to update notifications",
@@ -149,7 +146,6 @@ export class NotificationController {
                 data: { unreadCount },
             });
         } catch (error) {
-            console.error("Error deleting notification:", error);
             res.status(500).json({
                 success: false,
                 message: "Failed to delete notification",

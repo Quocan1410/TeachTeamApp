@@ -45,7 +45,6 @@ export class AnnouncementController {
 
             res.status(200).json({ success: true, data: filtered });
         } catch (error) {
-            console.error("getActiveAnnouncements error:", error);
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     }

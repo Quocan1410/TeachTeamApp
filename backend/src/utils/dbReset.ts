@@ -32,7 +32,6 @@ export class DatabaseResetService {
 
             return isEmpty;
         } catch (error) {
-            console.error("Error checking database state:", error);
             return true; // Assume empty if error occurs
         }
     }
@@ -50,7 +49,6 @@ export class DatabaseResetService {
             await AppDataSource.query("SELECT 1");
             return true;
         } catch (error) {
-            console.error("Database connection failed:", error);
             return false;
         }
     }
@@ -67,7 +65,6 @@ export class DatabaseResetService {
             await AppDataSource.synchronize(true);
 
         } catch (error) {
-            console.error("Error dropping/recreating schema:", error);
             throw error;
         }
     }
@@ -86,7 +83,6 @@ export class DatabaseResetService {
             await AppDataSource.getRepository(Course).clear();
             await AppDataSource.getRepository(Role).clear();
         } catch (error) {
-            console.error("Error clearing database data:", error);
             throw error;
         }
     }
@@ -112,7 +108,6 @@ export class DatabaseResetService {
                 throw new Error("Database reset verification failed - database is still empty");
             }
         } catch (error) {
-            console.error("Database reset failed:", error);
             throw error;
         }
     }
@@ -124,7 +119,6 @@ export class DatabaseResetService {
         try {
             await runBootstrapSeed();
         } catch (error) {
-            console.error("Error seeding essential data:", error);
             throw error;
         }
     }
@@ -142,13 +136,11 @@ export class DatabaseResetService {
             }
             return false;
         } catch (error) {
-            console.error("Auto-reset check failed:", error);
             // Try to reset anyway if we can't determine state
             try {
                 await this.resetDatabase();
                 return true;
             } catch (resetError) {
-                console.error("Auto-reset failed:", resetError);
                 throw resetError;
             }
         }

@@ -121,7 +121,6 @@ export class PublicController {
                 data: { lecturers: profiles },
             });
         } catch (error) {
-            console.error("Error fetching public lecturers:", error);
             res.status(500).json({
                 success: false,
                 message: "Failed to load lecturers",

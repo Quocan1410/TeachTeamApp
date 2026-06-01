@@ -462,7 +462,6 @@ export class ApplicationService {
       const response = await applicationAPI.delete(`/${applicationId}/ranking`);
       return response.data;
     } catch (error: unknown) {
-      console.error("Remove from ranking request failed:", error);
       const axiosError = error as AxiosError<ApiResponse<ApplicationResponse>>;
       if (axiosError.response?.data) {
         return axiosError.response.data;

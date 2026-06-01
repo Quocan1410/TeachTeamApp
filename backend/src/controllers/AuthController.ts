@@ -169,7 +169,6 @@ export class AuthController {
                 },
             });
         } catch (error) {
-            console.error("Signup error:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error during registration",
@@ -255,7 +254,6 @@ export class AuthController {
                 },
             });
         } catch (error) {
-            console.error("Signin error:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error during login",
@@ -271,7 +269,6 @@ export class AuthController {
                 message: "Logged out successfully",
             });
         } catch (error) {
-            console.error("Logout error:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error during logout",
@@ -327,10 +324,6 @@ export class AuthController {
                         assignedAt: assignment.assignedAt,
                     }));
                 } catch (courseError) {
-                    console.error(
-                        "Error fetching course assignments:",
-                        courseError
-                    );
                     // Keep assignedCourses as empty array if there's an error
                     assignedCourses = [];
                 }
@@ -345,7 +338,6 @@ export class AuthController {
                 },
             });
         } catch (error) {
-            console.error("Get profile error:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error while fetching profile",
@@ -417,7 +409,6 @@ export class AuthController {
                 data: { user: userProfile },
             });
         } catch (error) {
-            console.error("Update profile error:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error while updating profile",
@@ -468,7 +459,6 @@ export class AuthController {
                 data: { user: userProfile },
             });
         } catch (error) {
-            console.error("Update theme error:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error while updating theme",
@@ -526,7 +516,6 @@ export class AuthController {
                 },
             });
         } catch (error) {
-            console.error("Upload avatar error:", error);
             const err = error as {
                 code?: string;
                 errno?: number;
@@ -607,7 +596,6 @@ export class AuthController {
                 },
             });
         } catch (error) {
-            console.error("Delete avatar error:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error while removing avatar",
@@ -653,7 +641,6 @@ export class AuthController {
             res.setHeader("Cache-Control", "private, max-age=300");
             fs.createReadStream(filePath).pipe(res);
         } catch (error) {
-            console.error("Get avatar error:", error);
             res.status(500).json({
                 success: false,
                 message: "Failed to load avatar",
@@ -708,7 +695,6 @@ export class AuthController {
             res.setHeader("Cache-Control", "private, max-age=300");
             fs.createReadStream(filePath).pipe(res);
         } catch (error) {
-            console.error("Get user avatar error:", error);
             res.status(500).json({
                 success: false,
                 message: "Failed to load avatar",
@@ -743,7 +729,6 @@ export class AuthController {
 
             res.status(200).json(payload);
         } catch (error) {
-            console.error("Forgot password error:", error);
             res.status(500).json({
                 success: false,
                 message: "Unable to process password reset request",
@@ -786,7 +771,6 @@ export class AuthController {
                 message: result.message,
             });
         } catch (error) {
-            console.error("Reset password error:", error);
             res.status(500).json({
                 success: false,
                 message: "Unable to reset password",

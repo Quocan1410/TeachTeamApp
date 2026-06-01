@@ -70,6 +70,5 @@ export async function notifyApplicationUpdated(
             emitToUser(lecturerId, APPLICATION_UPDATED_EVENT, payload);
         });
     } catch (error) {
-        console.error("Failed to emit application:updated:", error);
     }
 }

@@ -79,10 +79,6 @@ const initializeDataSource = async (): Promise<void> => {
             throw error;
         }
 
-        console.warn(
-            "⚠️ Recreating notifications table (schema index conflict)..."
-        );
-
         if (AppDataSource.isInitialized) {
             await AppDataSource.destroy();
         }
@@ -171,7 +167,6 @@ export const initializeDatabase = async () => {
 
         // Data is loaded via /api/database reset or manual bootstrap — not on every start.
     } catch (error) {
-        console.error("Error during database initialization:", error);
         throw error;
     }
 };
@@ -189,9 +184,7 @@ const syncOrphanAvatarsIfNeeded = async (): Promise<void> => {
     const linked = await reconcileOrphanAvatarFiles(
         AppDataSource.getRepository(User)
     );
-    if (linked > 0) {
-        console.log(`Linked ${linked} orphaned avatar file(s) to user records.`);
-    }
+    void linked;
 };
 
 export const initializeDatabaseConnection = async () => {
@@ -200,7 +193,6 @@ export const initializeDatabaseConnection = async () => {
             await initializeDataSource();
         }
     } catch (error) {
-        console.error("Error during database connection initialization:", error);
         throw error;
     }
 };

@@ -74,8 +74,7 @@ export function useUserAccountStatusSubscription({
       
       try {
         ws.send(JSON.stringify(initMessage));
-      } catch (error) {
-        console.error("Failed to send connection init:", error);
+      } catch {
       }
     };
 
@@ -129,8 +128,7 @@ export function useUserAccountStatusSubscription({
                 error: undefined,
                 isConnected: true,
               }));
-            } catch (error) {
-              console.error("Failed to send subscription:", error);
+            } catch {
             }
             break;
 
@@ -141,7 +139,6 @@ export function useUserAccountStatusSubscription({
             break;
 
           case "error":
-            console.error("Account subscription error:", message.payload);
             if (!isCleanedUpRef.current) {
               setSubscriptionState((prev) => ({
                 ...prev,

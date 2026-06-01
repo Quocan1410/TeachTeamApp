@@ -128,9 +128,8 @@ export const ProfilePage: React.FC = () => {
             }
           }
         }
-      } catch (apiError) {
+      } catch {
         if (!cancelled) {
-          console.error("Failed to load profile data:", apiError);
         }
       } finally {
         if (!cancelled) {

@@ -194,8 +194,7 @@ export default function SignUpForm() {
           response.message || "Failed to create account. Please try again."
         );
       }
-    } catch (error) {
-      console.error("Signup error:", error);
+    } catch {
       setApiError(
         "Network error occurred. Please check your connection and try again."
       );

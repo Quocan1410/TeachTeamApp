@@ -56,9 +56,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         AuthService.removeUser();
         setUser(null);
-      } catch (initError) {
+      } catch {
         if (cancelled) return;
-        console.error("Auth initialization error:", initError);
         AuthService.removeUser();
         setUser(null);
       } finally {
@@ -84,8 +83,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoggingOut(true);
     try {
       await AuthService.logout();
-    } catch (error) {
-      console.error("Logout API call failed:", error);
+    } catch {
     } finally {
       AuthService.removeUser();
       setUser(null);

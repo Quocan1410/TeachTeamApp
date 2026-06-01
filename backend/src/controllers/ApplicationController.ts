@@ -258,7 +258,6 @@ export class ApplicationController {
                 data: sanitizeApplicationForCandidate(savedApplication),
             });
         } catch (error) {
-            console.error("Error creating application:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -291,7 +290,6 @@ export class ApplicationController {
                 data: sanitizeApplicationsForCandidate(applications),
             });
         } catch (error) {
-            console.error("Error fetching candidate applications:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -387,7 +385,6 @@ export class ApplicationController {
                 data: sanitizeApplicationForCandidate(updatedApplication),
             });
         } catch (error) {
-            console.error("Error updating candidate response:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -524,7 +521,6 @@ export class ApplicationController {
                 data: sanitizeApplicationForCandidate(responseApplication),
             });
         } catch (error) {
-            console.error("Error responding to offer:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -614,7 +610,6 @@ export class ApplicationController {
                 data: sanitizeApplicationForCandidate(updatedApplication),
             });
         } catch (error) {
-            console.error("Error deleting candidate response:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -717,7 +712,6 @@ export class ApplicationController {
                 data: sanitizeApplicationForCandidate(saved),
             });
         } catch (error) {
-            console.error("Error editing correspondence message:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -782,7 +776,6 @@ export class ApplicationController {
                 data: sanitizeApplicationForCandidate(updatedApplication),
             });
         } catch (error) {
-            console.error("Error withdrawing application:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -903,7 +896,6 @@ export class ApplicationController {
                 data: responseApplication,
             });
         } catch (error) {
-            console.error("Error toggling message reaction:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -984,7 +976,6 @@ export class ApplicationController {
                 data: { courses: coursesWithAvailablePositions, roles },
             });
         } catch (error) {
-            console.error("Error fetching courses and roles:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -1110,7 +1101,6 @@ export class ApplicationController {
                 data: applicationsWithShortlist,
             });
         } catch (error) {
-            console.error("Error fetching lecturer applications:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -1212,7 +1202,6 @@ export class ApplicationController {
                 data: stats,
             });
         } catch (error) {
-            console.error("Error fetching application statistics:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -1500,7 +1489,6 @@ export class ApplicationController {
                 });
                 return;
             }
-            console.error("Error updating application status:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -1653,7 +1641,6 @@ export class ApplicationController {
                 data: coursesWithAvailability,
             });
         } catch (error) {
-            console.error("Error fetching assigned courses:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -1768,7 +1755,6 @@ export class ApplicationController {
                 data: responseApplication,
             });
         } catch (error) {
-            console.error("Error updating application comment:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -1847,7 +1833,6 @@ export class ApplicationController {
                 data: responseApplication,
             });
         } catch (error) {
-            console.error("Error deleting application comment:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -1944,7 +1929,6 @@ export class ApplicationController {
                 data: updatedApplication,
             });
         } catch (error) {
-            console.error("Error adding application to ranking:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -2009,7 +1993,6 @@ export class ApplicationController {
                 data: updatedApplication,
             });
         } catch (error) {
-            console.error("Error updating application ranking:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -2074,7 +2057,6 @@ export class ApplicationController {
                 data: updatedApplication,
             });
         } catch (error) {
-            console.error("Error removing application from ranking:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -2152,7 +2134,6 @@ export class ApplicationController {
                 data: responseApplication,
             });
         } catch (error) {
-            console.error("Error marking application reviewed:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -2200,7 +2181,6 @@ export class ApplicationController {
                 data: { lecturerNotes: application.lecturerNotes ?? "" },
             });
         } catch (error) {
-            console.error("getLecturerNotes error:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -2265,7 +2245,6 @@ export class ApplicationController {
                 data: { lecturerNotes: application.lecturerNotes },
             });
         } catch (error) {
-            console.error("updateLecturerNotes error:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -2326,7 +2305,6 @@ export class ApplicationController {
                 message: "Blocked application removed successfully",
             });
         } catch (error) {
-            console.error("Error deleting blocked application:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -2418,7 +2396,6 @@ export class ApplicationController {
                 },
             });
         } catch (error) {
-            console.error("Error shortlisting application:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",
@@ -2492,7 +2469,6 @@ export class ApplicationController {
                 },
             });
         } catch (error) {
-            console.error("Error removing shortlist:", error);
             res.status(500).json({
                 success: false,
                 message: "Internal server error",

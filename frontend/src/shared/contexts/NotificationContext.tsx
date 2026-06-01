@@ -178,7 +178,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
             ? "Session expired. Please sign in again."
             : "Could not load notifications.";
 
-        console.error("Failed to load notifications:", error);
         setFetchError(message);
       } finally {
         inFlightRef.current = false;
@@ -268,8 +267,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
             : notification
         )
       );
-    } catch (error) {
-      console.error("Failed to mark notification as read:", error);
+    } catch {
     }
   }, []);
 
@@ -280,8 +278,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       setNotifications((prev) =>
         prev.map((notification) => ({ ...notification, read: true }))
       );
-    } catch (error) {
-      console.error("Failed to mark all notifications as read:", error);
+    } catch {
     }
   }, []);
 
@@ -295,8 +292,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       setNotifications((prev) =>
         prev.filter((notification) => notification.id !== notificationId)
       );
-    } catch (error) {
-      console.error("Failed to delete notification:", error);
+    } catch {
     }
   }, []);
 

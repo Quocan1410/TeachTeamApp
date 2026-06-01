@@ -13,9 +13,6 @@ export async function sendPasswordResetEmail(
 ): Promise<{ sent: boolean; reason?: string }> {
     if (!isSmtpConfigured()) {
         if (process.env.NODE_ENV !== "production") {
-            console.info(
-                `[password-reset] SMTP not configured. Reset link for ${to}:\n${resetUrl}`
-            );
         }
         return { sent: false, reason: "smtp_not_configured" };
     }

@@ -52,22 +52,11 @@ const startServer = async () => {
         await initializeDatabase();
         initSocketServer(httpServer);
 
-        httpServer.listen(PORT, () => {
-            if (process.env.NODE_ENV !== "production") {
-                console.log(`Server is running on port ${PORT}`);
-            }
-        });
+        httpServer.listen(PORT);
     } catch (error) {
-        console.error("Failed to start server:", error);
         initSocketServer(httpServer);
 
-        httpServer.listen(PORT, () => {
-            if (process.env.NODE_ENV !== "production") {
-                console.log(
-                    `Server is running on port ${PORT} (database unavailable)`
-                );
-            }
-        });
+        httpServer.listen(PORT);
     }
 };
 

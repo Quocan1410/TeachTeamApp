@@ -217,8 +217,7 @@ export class AuthService {
   static saveUser(user: User): void {
     try {
       StorageManager.setVersionedItem("user", user);
-    } catch (error) {
-      console.error("Error saving user:", error);
+    } catch {
       StorageManager.setItem("user", JSON.stringify(user));
     }
   }
@@ -244,8 +243,7 @@ export class AuthService {
         this.removeUser();
       }
       return null;
-    } catch (error) {
-      console.error("Error getting user:", error);
+    } catch {
       StorageManager.removeItem("user");
       return null;
     }
@@ -284,8 +282,7 @@ export class AuthService {
       }
       this.removeUser();
       return false;
-    } catch (error) {
-      console.error("Error syncing with database:", error);
+    } catch {
       return false;
     }
   }

@@ -44,8 +44,7 @@ export default function HomePage() {
     try {
       const data = await PublicService.getLecturers();
       setLecturers(data);
-    } catch (error) {
-      console.error("Failed to load lecturers:", error);
+    } catch {
       setLecturersError(
         "Unable to load lecturers right now. Please try again later."
       );

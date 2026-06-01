@@ -34,8 +34,7 @@ class StorageManager {
       } else {
         this.fallbackStorage.set(key, value);
       }
-    } catch (e) {
-      console.error(`Storage error writing key '${key}':`, e);
+    } catch {
       this.fallbackStorage.set(key, value);
     }
   }
@@ -47,8 +46,7 @@ class StorageManager {
         return store.getItem(key);
       }
       return this.fallbackStorage.get(key) || null;
-    } catch (e) {
-      console.error(`Storage error reading key '${key}':`, e);
+    } catch {
       return this.fallbackStorage.get(key) || null;
     }
   }
@@ -61,8 +59,7 @@ class StorageManager {
       } else {
         this.fallbackStorage.delete(key);
       }
-    } catch (e) {
-      console.error(`Storage error removing key '${key}':`, e);
+    } catch {
       this.fallbackStorage.delete(key);
     }
   }
@@ -88,8 +85,7 @@ class StorageManager {
         return migratedData;
       }
       return versionedData.data;
-    } catch (e) {
-      console.error(`Error reading versioned data for ${key}:`, e);
+    } catch {
       return null;
     }
   }

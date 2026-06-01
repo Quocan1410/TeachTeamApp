@@ -28,7 +28,6 @@ export class ApplicationDraftController {
 
             res.status(200).json({ success: true, data: draft ?? null });
         } catch (error) {
-            console.error("getDraft error:", error);
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     }
@@ -43,7 +42,6 @@ export class ApplicationDraftController {
             });
             res.status(200).json({ success: true, data: drafts });
         } catch (error) {
-            console.error("listDrafts error:", error);
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     }
@@ -115,7 +113,6 @@ export class ApplicationDraftController {
                 data: saved,
             });
         } catch (error) {
-            console.error("upsertDraft error:", error);
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     }
@@ -129,7 +126,6 @@ export class ApplicationDraftController {
             await this.draftRepo.delete({ candidateId, courseId, roleId });
             res.status(200).json({ success: true, message: "Draft deleted" });
         } catch (error) {
-            console.error("deleteDraft error:", error);
             res.status(500).json({ success: false, message: "Internal server error" });
         }
     }

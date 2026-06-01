@@ -112,8 +112,7 @@ const TutorDashboardPage: React.FC = () => {
             applicationsResponse.message || "Failed to load your applications"
           );
         }
-      } catch (error) {
-        console.error("Error loading data:", error);
+      } catch {
         showError("Failed to load dashboard data. Please try again.");
       } finally {
         setIsDataLoading(false);
@@ -130,8 +129,7 @@ const TutorDashboardPage: React.FC = () => {
       if (coursesResponse.success && coursesResponse.data) {
         setCourses(coursesResponse.data.courses);
       }
-    } catch (error) {
-      console.error("Error refreshing course data:", error);
+    } catch {
       // Don't show error to user as this is background refresh
     }
   };
@@ -150,8 +148,7 @@ const TutorDashboardPage: React.FC = () => {
       if (applicationsResponse.success && applicationsResponse.data) {
         setMyApplications(applicationsResponse.data);
       }
-    } catch (error) {
-      console.error("Error refreshing tutor dashboard data:", error);
+    } catch {
     }
   }, []);
 
@@ -448,8 +445,7 @@ const TutorDashboardPage: React.FC = () => {
             "Failed to submit your application. Please try again."
         );
       }
-    } catch (error) {
-      console.error("Error submitting application:", error);
+    } catch {
       showError("Failed to submit your application. Please try again.");
     } finally {
       setIsSubmitting(false);

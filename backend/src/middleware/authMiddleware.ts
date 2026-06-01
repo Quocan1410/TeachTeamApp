@@ -79,7 +79,6 @@ export const authenticateToken = async (
                 message: "Invalid token",
             });
         } else {
-            console.error("Authentication error:", error);
             res.status(500).json({
                 success: false,
                 message: "Authentication verification failed",

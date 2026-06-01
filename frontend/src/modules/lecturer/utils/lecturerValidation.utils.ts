@@ -415,8 +415,7 @@ export const validateLecturerFormSubmission = (data: {
 /**
  * Network error handler for validation operations
  */
-export const handleValidationNetworkError = (error: unknown): EnhancedValidationResult => {
-    console.error('Validation network error:', error);
+export const handleValidationNetworkError = (): EnhancedValidationResult => {
 
     return {
         isValid: false,

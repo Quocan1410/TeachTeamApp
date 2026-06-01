@@ -209,8 +209,7 @@ export default function SignInForm() {
           setApiError(response.message);
         }
       }
-    } catch (error) {
-      console.error("Signin error:", error);
+    } catch {
       setApiError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);

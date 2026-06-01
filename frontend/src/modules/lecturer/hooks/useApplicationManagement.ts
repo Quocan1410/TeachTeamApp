@@ -91,12 +91,10 @@ export const useApplicationManagement = () => {
       if (response.success && response.data) {
         applyApplicationsResponse(response.data);
       } else {
-        console.error("Failed to load applications:", response.message);
         setApplications([]);
         setRankedApplications([]);
       }
-    } catch (error) {
-      console.error("Error loading applications:", error);
+    } catch {
       setApplications([]);
       setRankedApplications([]);
     } finally {
@@ -148,11 +146,9 @@ export const useApplicationManagement = () => {
       if (response.success && response.data) {
         setStatistics(response.data);
       } else {
-        console.error("Failed to load statistics:", response.message);
         setStatistics(null);
       }
-    } catch (error) {
-      console.error("Error loading statistics:", error);
+    } catch {
       setStatistics(null);
     }
   }, []);
@@ -163,8 +159,7 @@ export const useApplicationManagement = () => {
       try {
         await Promise.all([loadApplications(), loadStatistics()]);
         setIsInitialized(true);
-      } catch (error) {
-        console.error("Error initializing data:", error);
+      } catch {
         setIsInitialized(true); // Still mark as initialized to show UI
       }
     };
@@ -258,11 +253,9 @@ export const useApplicationManagement = () => {
           await loadApplications();
           return { success: true };
         } else {
-          console.error("Failed to save application:", response.message);
           return { success: false, message: response.message };
         }
       } catch (error: unknown) {
-        console.error("Error saving application:", error);
         const errorMessage =
           error && typeof error === "object" && "response" in error
             ? (error as { response?: { data?: { message?: string } } }).response
