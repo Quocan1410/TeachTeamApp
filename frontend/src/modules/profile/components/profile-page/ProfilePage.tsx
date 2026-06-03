@@ -36,6 +36,16 @@ export const ProfilePage: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [profileMessage, setProfileMessage] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [passwordErrors, setPasswordErrors] = useState<Record<string, string>>(
+    {}
+  );
+  const [passwordMessage, setPasswordMessage] = useState("");
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [editForm, setEditForm] = useState({
     firstName: "",
     lastName: "",
@@ -233,6 +243,38 @@ export const ProfilePage: React.FC = () => {
       setProfileMessage("Failed to save profile. Please try again.");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleChangePassword = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!user) {
+      return;
+    }
+
+    setIsChangingPassword(true);
+    setPasswordMessage("");
+    setPasswordErrors({});
+
+    try {
+      const response = await AuthService.changePassword(passwordForm);
+      if (response.success) {
+        setPasswordForm({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+        setPasswordMessage("Password changed successfully.");
+      } else if (response.errors) {
+        setPasswordErrors(response.errors);
+        setPasswordMessage("Please fix the errors below.");
+      } else {
+        setPasswordMessage(response.message || "Failed to change password.");
+      }
+    } catch {
+      setPasswordMessage("Failed to change password. Please try again.");
+    } finally {
+      setIsChangingPassword(false);
     }
   };
 
@@ -686,6 +728,115 @@ export const ProfilePage: React.FC = () => {
                   )}
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div className={styles.infoCardExpandable}>
+            <div className={styles.cardHeader}>
+              <h3 className={styles.cardTitle}>Change Password</h3>
+            </div>
+            <div className={styles.cardContentExpandable}>
+              <form onSubmit={handleChangePassword}>
+                <div className={styles.infoItem}>
+                  <label className={styles.infoLabel} htmlFor="currentPassword">
+                    Current password
+                  </label>
+                  <input
+                    id="currentPassword"
+                    type="password"
+                    className={`${styles.formInput} ${
+                      passwordErrors.currentPassword ? styles.formInputError : ""
+                    }`}
+                    value={passwordForm.currentPassword}
+                    onChange={(event) =>
+                      setPasswordForm((prev) => ({
+                        ...prev,
+                        currentPassword: event.target.value,
+                      }))
+                    }
+                    autoComplete="current-password"
+                    required
+                    disabled={isChangingPassword}
+                  />
+                  {passwordErrors.currentPassword && (
+                    <span className={styles.fieldError}>
+                      {passwordErrors.currentPassword}
+                    </span>
+                  )}
+                </div>
+                <div className={styles.infoItem}>
+                  <label className={styles.infoLabel} htmlFor="newPassword">
+                    New password
+                  </label>
+                  <input
+                    id="newPassword"
+                    type="password"
+                    className={`${styles.formInput} ${
+                      passwordErrors.newPassword ? styles.formInputError : ""
+                    }`}
+                    value={passwordForm.newPassword}
+                    onChange={(event) =>
+                      setPasswordForm((prev) => ({
+                        ...prev,
+                        newPassword: event.target.value,
+                      }))
+                    }
+                    autoComplete="new-password"
+                    required
+                    disabled={isChangingPassword}
+                  />
+                  {passwordErrors.newPassword && (
+                    <span className={styles.fieldError}>
+                      {passwordErrors.newPassword}
+                    </span>
+                  )}
+                </div>
+                <div className={styles.infoItem}>
+                  <label className={styles.infoLabel} htmlFor="confirmPassword">
+                    Confirm new password
+                  </label>
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    className={`${styles.formInput} ${
+                      passwordErrors.confirmPassword ? styles.formInputError : ""
+                    }`}
+                    value={passwordForm.confirmPassword}
+                    onChange={(event) =>
+                      setPasswordForm((prev) => ({
+                        ...prev,
+                        confirmPassword: event.target.value,
+                      }))
+                    }
+                    autoComplete="new-password"
+                    required
+                    disabled={isChangingPassword}
+                  />
+                  {passwordErrors.confirmPassword && (
+                    <span className={styles.fieldError}>
+                      {passwordErrors.confirmPassword}
+                    </span>
+                  )}
+                </div>
+                {passwordMessage && (
+                  <p
+                    className={`${styles.profileMessage} ${
+                      passwordMessage.toLowerCase().includes("success")
+                        ? styles.profileMessageSuccess
+                        : styles.profileMessageError
+                    }`}
+                  >
+                    {passwordMessage}
+                  </p>
+                )}
+                <button
+                  type="submit"
+                  className={styles.primaryButton}
+                  disabled={isChangingPassword}
+                >
+                  {isChangingPassword ? "Updating..." : "Update password"}
+                </button>
+              </form>
             </div>
           </div>
 

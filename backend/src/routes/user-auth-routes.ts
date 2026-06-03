@@ -6,6 +6,7 @@ import {
     authRateLimiter,
     passwordResetRateLimiter,
 } from "../middleware/rateLimiters";
+import { validateSignupData } from "../utils/validation";
 
 const router = Router();
 const authController = new AuthController();
@@ -33,67 +34,16 @@ const validateRequestBody = (requiredFields: string[]) => {
     };
 };
 
-// Enhanced signup validation
+// Signup validation — single source of truth shared with AuthController
 const validateSignupFields = (req: any, res: any, next: any) => {
-    const { email, password, confirmPassword, firstName, lastName } = req.body;
-    const errors: Record<string, string> = {};
-
-    // Email validation
-    if (!email) {
-        errors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        errors.email = "Please enter a valid email address";
-    } else {
-        const emailLower = email.toLowerCase();
-        const isValidDomain = emailLower.endsWith("@candidate.edu.au") ||
-            emailLower.endsWith("@lecturer.edu.au") ||
-            emailLower === "admin@admin.com";
-        if (!isValidDomain) {
-            errors.email = "Email must end with @candidate.edu.au (for candidates) or @lecturer.edu.au (for lecturers)";
-        }
-    }
-
-    // Password validation
-    if (!password) {
-        errors.password = "Password is required";
-    } else if (password.length < 8) {
-        errors.password = "Password must be at least 8 characters long";
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-        errors.password = "Password must contain at least one uppercase letter, one lowercase letter, and one number";
-    }
-
-    // Confirm password validation
-    if (!confirmPassword) {
-        errors.confirmPassword = "Please confirm your password";
-    } else if (password !== confirmPassword) {
-        errors.confirmPassword = "Passwords do not match";
-    }
-
-    // Name validation
-    if (!firstName) {
-        errors.firstName = "First name is required";
-    } else if (firstName.length < 1) {
-        errors.firstName = "First name must be at least 1 character long";
-    } else if (!/^[a-zA-Z\s]+$/.test(firstName)) {
-        errors.firstName = "First name can only contain letters and spaces";
-    }
-
-    if (!lastName) {
-        errors.lastName = "Last name is required";
-    } else if (lastName.length < 1) {
-        errors.lastName = "Last name must be at least 1 character long";
-    } else if (!/^[a-zA-Z\s]+$/.test(lastName)) {
-        errors.lastName = "Last name can only contain letters and spaces";
-    }
-
-    if (Object.keys(errors).length > 0) {
+    const validation = validateSignupData(req.body);
+    if (!validation.isValid) {
         return res.status(400).json({
             success: false,
             message: "",
-            errors,
+            errors: validation.errors,
         });
     }
-
     next();
 };
 
@@ -148,12 +98,28 @@ router.post("/logout", async (req, res) => {
     await authController.logout(req, res);
 });
 
+router.post("/refresh", authRateLimiter, async (req, res) => {
+    await authController.refreshToken(req, res);
+});
+
+router.get("/security-questions", (req, res) => {
+    authController.getSecurityQuestions(req, res);
+});
+
 router.post(
-    "/forgot-password",
+    "/forgot-password/challenge",
     passwordResetRateLimiter,
     validateRequestBody(["email"]),
     async (req, res) => {
-        await authController.forgotPassword(req, res);
+        await authController.forgotPasswordChallenge(req, res);
+    }
+);
+
+router.post(
+    "/forgot-password/verify",
+    passwordResetRateLimiter,
+    async (req, res) => {
+        await authController.forgotPasswordVerify(req, res);
     }
 );
 
@@ -174,6 +140,15 @@ router.get("/profile", authenticateToken, async (req, res) => {
 router.put("/profile", authenticateToken, validateProfileFields, async (req, res) => {
     await authController.updateProfile(req, res);
 });
+
+router.post(
+    "/change-password",
+    authenticateToken,
+    validateRequestBody(["currentPassword", "newPassword", "confirmPassword"]),
+    async (req, res) => {
+        await authController.changePassword(req, res);
+    }
+);
 
 router.patch("/theme", authenticateToken, async (req, res) => {
     await authController.updateTheme(req, res);

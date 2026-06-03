@@ -1,3 +1,6 @@
+import type { SecurityAnswerFormRow } from "../components/security-question-fields/SecurityQuestionFields";
+import { SECURITY_QUESTION_COUNT } from "@/shared/constants/securityQuestions";
+
 // Check if the email follows the pattern for specific roles
 export const validateRoleSpecificEmail = (
   email: string,
@@ -47,6 +50,48 @@ export const validateFullName = (fullName: string): boolean => {
   return words.every(word => nameRegex.test(word));
 };
 
+/** Matches backend signup name split (first word → firstName, rest → lastName). */
+export const splitSignupFullName = (
+  fullName: string
+): { firstName: string; lastName: string } => {
+  const words = fullName.trim().split(/\s+/).filter(Boolean);
+  return {
+    firstName: words[0] || "",
+    lastName: words.slice(1).join(" ") || "",
+  };
+};
+
+/** Map REST signup field errors to signup-form field names. */
+export const mapSignupApiErrors = (
+  apiErrors: Record<string, string>
+): Record<string, string> => {
+  const mapped = { ...apiErrors };
+  if (mapped.firstName || mapped.lastName) {
+    const parts = [mapped.firstName, mapped.lastName].filter(Boolean);
+    mapped.fullName = parts.join(" ");
+    delete mapped.firstName;
+    delete mapped.lastName;
+  }
+  return mapped;
+};
+
+/** Password rules aligned with backend validateSignupData. */
+export const validateSignupPassword = (password: string): string | null => {
+  if (!password) {
+    return "Password is required";
+  }
+  if (password.length < 8) {
+    return "Password must be at least 8 characters long";
+  }
+  if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+    return "Password must contain at least one uppercase letter, one lowercase letter, and one number";
+  }
+  if (containsEmojis(password)) {
+    return "Password cannot contain emojis";
+  }
+  return null;
+};
+
 // Check if password contains emojis
 export const containsEmojis = (text: string): boolean => {
   // More comprehensive emoji detection including surrogate pairs
@@ -94,4 +139,47 @@ export const getPasswordStrengthFeedback = (
   )
     return { text: "Good password", level: "medium" };
   return { text: "Weak password", level: "weak" };
+};
+
+export const validateSecurityAnswerRows = (
+  rows: SecurityAnswerFormRow[]
+): Record<string, string> => {
+  const errors: Record<string, string> = {};
+  const used = new Set<string>();
+
+  if (rows.length !== SECURITY_QUESTION_COUNT) {
+    errors.securityAnswers = `Please set ${SECURITY_QUESTION_COUNT} security questions`;
+    return errors;
+  }
+
+  rows.forEach((row, index) => {
+    if (!row.questionId) {
+      errors[`securityAnswers.${index}.questionId`] = "Question is required";
+    } else if (used.has(row.questionId)) {
+      errors.securityAnswers = "Each question must be different";
+    } else {
+      used.add(row.questionId);
+    }
+
+    const trimmedAnswer = row.answer.trim();
+    const normalized = trimmedAnswer.toLowerCase();
+    if (!trimmedAnswer) {
+      errors[`securityAnswers.${index}.answer`] = "Answer is required";
+    } else if (normalized.length < 2) {
+      errors[`securityAnswers.${index}.answer`] =
+        "Answer must be at least 2 characters";
+    } else if (normalized.length > 100) {
+      errors[`securityAnswers.${index}.answer`] =
+        "Answer must be at most 100 characters";
+    }
+  });
+
+  if (
+    used.size !== SECURITY_QUESTION_COUNT &&
+    !errors.securityAnswers
+  ) {
+    errors.securityAnswers = `Please set ${SECURITY_QUESTION_COUNT} different security questions`;
+  }
+
+  return errors;
 };

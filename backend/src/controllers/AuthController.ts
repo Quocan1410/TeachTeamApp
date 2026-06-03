@@ -7,13 +7,16 @@ import { User, UserType } from "../entities/User";
 import { Course } from "../entities/Course";
 import { CourseAssignment } from "../entities/CourseAssignment";
 import {
-    validateSignupData,
     validateSigninData,
     validateForgotPasswordEmail,
     validateResetPasswordData,
+    validateChangePasswordData,
     getUserTypeFromEmail,
 } from "../utils/validation";
 import { PasswordResetService } from "../services/PasswordResetService";
+import { SecurityQuestionService } from "../services/SecurityQuestionService";
+import { SECURITY_QUESTIONS } from "../config/securityQuestions";
+import { RefreshTokenService } from "../services/RefreshTokenService";
 import { NotificationService } from "../services/NotificationService";
 import { NotificationType } from "../entities/Notification";
 import {
@@ -25,6 +28,8 @@ import {
 import {
     clearAuthCookie,
     setAuthCookie,
+    setRefreshCookie,
+    getRefreshTokenFromRequest,
 } from "../utils/authCookie";
 
 interface AssignedCourse {
@@ -40,6 +45,20 @@ export class AuthController {
     private courseAssignmentRepository =
         AppDataSource.getRepository(CourseAssignment);
     private passwordResetService = new PasswordResetService();
+    private securityQuestionService = new SecurityQuestionService();
+
+    private async issueUserSession(
+        res: Response,
+        user: User
+    ): Promise<void> {
+        setAuthCookie(res, {
+            userId: user.id,
+            email: user.email,
+            userType: user.userType,
+        });
+        const refreshToken = await RefreshTokenService.issue(user.id);
+        setRefreshCookie(res, refreshToken);
+    }
 
     async signup(req: Request, res: Response): Promise<void> {
         try {
@@ -90,18 +109,6 @@ export class AuthController {
                 return;
             }
 
-            // Validate input data with userType now set
-            const validation = validateSignupData(req.body);
-
-            if (!validation.isValid) {
-                res.status(400).json({
-                    success: false,
-                    message: "",
-                    errors: validation.errors,
-                });
-                return;
-            }
-
             // Check if user already exists
             const existingUser = await this.userRepository.findOne({
                 where: { email },
@@ -120,11 +127,16 @@ export class AuthController {
             const hashedPassword = await bcrypt.hash(password, saltRounds);
 
             const resolvedHonorific =
-                finalUserType === UserType.LECTURER
-                    ? "Dr."
-                    : typeof honorific === "string" && honorific.trim()
-                      ? honorific.trim()
+                typeof honorific === "string" && honorific.trim()
+                    ? honorific.trim()
+                    : finalUserType === UserType.LECTURER
+                      ? "Dr."
                       : "Mr.";
+
+            const securityValidation =
+                SecurityQuestionService.validateSecurityAnswersInput(
+                    req.body.securityAnswers
+                );
 
             // Create new user with the final userType
             const newUser = this.userRepository.create({
@@ -136,8 +148,21 @@ export class AuthController {
                 honorific: resolvedHonorific,
             });
 
-            // Save user to database
             const savedUser = await this.userRepository.save(newUser);
+
+            try {
+                await this.securityQuestionService.saveAnswers(
+                    savedUser.id,
+                    securityValidation.parsed
+                );
+            } catch {
+                await this.userRepository.delete({ id: savedUser.id });
+                res.status(500).json({
+                    success: false,
+                    message: "Unable to save security questions. Please try again.",
+                });
+                return;
+            }
 
             if (finalUserType !== UserType.ADMIN) {
                 await NotificationService.notifyAdmins({
@@ -152,11 +177,7 @@ export class AuthController {
                 });
             }
 
-            setAuthCookie(res, {
-                userId: savedUser.id,
-                email: savedUser.email,
-                userType: savedUser.userType,
-            });
+            await this.issueUserSession(res, savedUser);
 
             // Return success response (exclude password)
             const { password: _, ...userWithoutPassword } = savedUser;
@@ -238,11 +259,7 @@ export class AuthController {
                 return;
             }
 
-            setAuthCookie(res, {
-                userId: user.id,
-                email: user.email,
-                userType: user.userType,
-            });
+            await this.issueUserSession(res, user);
 
             // Return success response (exclude password)
             const { password: _, ...userWithoutPassword } = user;
@@ -263,6 +280,10 @@ export class AuthController {
 
     async logout(req: Request, res: Response): Promise<void> {
         try {
+            const refreshToken = getRefreshTokenFromRequest(req);
+            if (refreshToken) {
+                await RefreshTokenService.revoke(refreshToken);
+            }
             clearAuthCookie(res);
             res.status(200).json({
                 success: true,
@@ -272,6 +293,163 @@ export class AuthController {
             res.status(500).json({
                 success: false,
                 message: "Internal server error during logout",
+            });
+        }
+    }
+
+    async refreshToken(req: Request, res: Response): Promise<void> {
+        try {
+            const rawRefresh = getRefreshTokenFromRequest(req);
+            if (!rawRefresh) {
+                res.status(401).json({
+                    success: false,
+                    message: "Refresh token is required",
+                    code: "REFRESH_TOKEN_REQUIRED",
+                });
+                return;
+            }
+
+            const rotated = await RefreshTokenService.rotate(rawRefresh);
+            if (!rotated) {
+                clearAuthCookie(res);
+                res.status(401).json({
+                    success: false,
+                    message: "Invalid or expired refresh token",
+                    code: "REFRESH_TOKEN_INVALID",
+                });
+                return;
+            }
+
+            const user = await this.userRepository.findOne({
+                where: { id: rotated.userId },
+            });
+
+            if (!user || user.isBlocked) {
+                clearAuthCookie(res);
+                res.status(401).json({
+                    success: false,
+                    message: "User account unavailable",
+                    code: "REFRESH_TOKEN_INVALID",
+                });
+                return;
+            }
+
+            if (user.userType === UserType.ADMIN) {
+                clearAuthCookie(res);
+                res.status(403).json({
+                    success: false,
+                    message: "Admin accounts use the admin panel",
+                });
+                return;
+            }
+
+            setAuthCookie(res, {
+                userId: user.id,
+                email: user.email,
+                userType: user.userType,
+            });
+            setRefreshCookie(res, rotated.newToken);
+
+            const { password: _, ...userWithoutPassword } = user;
+            res.status(200).json({
+                success: true,
+                message: "Token refreshed",
+                data: { user: userWithoutPassword },
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: "Unable to refresh session",
+            });
+        }
+    }
+
+    async changePassword(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    message: "User not authenticated",
+                });
+                return;
+            }
+
+            const { currentPassword, newPassword, confirmPassword } = req.body;
+            const validation = validateChangePasswordData({
+                currentPassword,
+                newPassword,
+                confirmPassword,
+            });
+
+            if (!validation.isValid) {
+                res.status(400).json({
+                    success: false,
+                    message: "",
+                    errors: validation.errors,
+                });
+                return;
+            }
+
+            const user = await this.userRepository.findOne({
+                where: { id: userId },
+            });
+
+            if (!user) {
+                res.status(404).json({
+                    success: false,
+                    message: "User not found",
+                });
+                return;
+            }
+
+            if (user.userType === UserType.ADMIN) {
+                res.status(403).json({
+                    success: false,
+                    message: "Admin password is managed in the admin panel",
+                });
+                return;
+            }
+
+            const matches = await bcrypt.compare(
+                currentPassword,
+                user.password
+            );
+            if (!matches) {
+                res.status(400).json({
+                    success: false,
+                    message: "",
+                    errors: { currentPassword: "Current password is incorrect" },
+                });
+                return;
+            }
+
+            if (currentPassword === newPassword) {
+                res.status(400).json({
+                    success: false,
+                    message: "",
+                    errors: {
+                        newPassword:
+                            "New password must be different from current password",
+                    },
+                });
+                return;
+            }
+
+            user.password = await bcrypt.hash(newPassword, 12);
+            await this.userRepository.save(user);
+            await RefreshTokenService.revokeAllForUser(user.id);
+
+            await this.issueUserSession(res, user);
+
+            res.status(200).json({
+                success: true,
+                message: "Password changed successfully",
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: "Unable to change password",
             });
         }
     }
@@ -702,7 +880,14 @@ export class AuthController {
         }
     }
 
-    async forgotPassword(req: Request, res: Response): Promise<void> {
+    getSecurityQuestions(_req: Request, res: Response): void {
+        res.status(200).json({
+            success: true,
+            data: { questions: SECURITY_QUESTIONS },
+        });
+    }
+
+    async forgotPasswordChallenge(req: Request, res: Response): Promise<void> {
         try {
             const { email } = req.body;
             const validation = validateForgotPasswordEmail(email || "");
@@ -715,23 +900,69 @@ export class AuthController {
                 return;
             }
 
-            const result = await this.passwordResetService.requestReset(email);
-            const payload: Record<string, unknown> = {
-                success: true,
-                message: result.message,
-            };
-            if (result.resetUrl) {
-                payload.resetUrl = result.resetUrl;
-            }
-            if (result.emailSent !== undefined) {
-                payload.emailSent = result.emailSent;
+            const result =
+                await this.securityQuestionService.getChallengeForEmail(email);
+
+            if (!result.ok) {
+                res.status(400).json({
+                    success: false,
+                    message: result.message,
+                });
+                return;
             }
 
-            res.status(200).json(payload);
+            res.status(200).json({
+                success: true,
+                data: { questions: result.questions },
+            });
         } catch (error) {
             res.status(500).json({
                 success: false,
-                message: "Unable to process password reset request",
+                message: "Unable to start password recovery",
+            });
+        }
+    }
+
+    async forgotPasswordVerify(req: Request, res: Response): Promise<void> {
+        try {
+            const { email, securityAnswers } = req.body;
+            const emailValidation = validateForgotPasswordEmail(email || "");
+            if (!emailValidation.isValid) {
+                res.status(400).json({
+                    success: false,
+                    message: "",
+                    errors: emailValidation.errors,
+                });
+                return;
+            }
+
+            const result =
+                await this.securityQuestionService.verifyAndIssueResetToken(
+                    email,
+                    securityAnswers
+                );
+
+            if (!result.ok) {
+                res.status(400).json({
+                    success: false,
+                    message: result.message,
+                    errors: result.errors,
+                });
+                return;
+            }
+
+            res.status(200).json({
+                success: true,
+                message: "Answers verified. You can set a new password.",
+                data: {
+                    resetToken: result.resetToken,
+                    resetUrl: result.resetUrl,
+                },
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: "Unable to verify security answers",
             });
         }
     }

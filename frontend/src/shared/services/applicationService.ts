@@ -1,13 +1,7 @@
-import axios, { AxiosError } from "axios";
-import { env } from "@/lib/env";
+import { AxiosError } from "axios";
+import { createApiClient } from "./apiClient";
 
-const applicationAPI = axios.create({
-  baseURL: `${env.apiEndpoint}/applications`,
-  withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+const applicationAPI = createApiClient("/applications");
 
 // Types for API responses
 export interface ApiResponse<T = unknown> {

@@ -1,10 +1,6 @@
-import axios from "axios";
-import { env } from "@/lib/env";
+import { createApiClient } from "./apiClient";
 
-const announcementAPI = axios.create({
-  baseURL: `${env.apiEndpoint}/announcements`,
-  withCredentials: true,
-});
+const announcementAPI = createApiClient("/announcements");
 
 export interface Announcement {
   id: number;

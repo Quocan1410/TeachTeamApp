@@ -1,6 +1,7 @@
 import { UserType } from "../entities/User";
 import { getAdminEmail, isCanonicalAdminEmail } from "./adminConfig";
 import { validateNewPassword } from "./passwordRules";
+import { SecurityQuestionService } from "../services/SecurityQuestionService";
 
 interface ValidationResult {
     isValid: boolean;
@@ -127,8 +128,9 @@ export const validateSignupData = (data: any): ValidationResult => {
         const emojiRegex = /[\u{1F000}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\uD800-\uDBFF][\uDC00-\uDFFF]/u;
         if (emojiRegex.test(data.lastName)) {
             errors.lastName = "Last name cannot contain emojis";
-        } else if (!/^[a-zA-Z'-]+$/.test(data.lastName)) {
-            errors.lastName = "Last name can only contain letters, apostrophes and hyphens";
+        } else if (!/^[a-zA-Z\s'-]+$/.test(data.lastName)) {
+            errors.lastName =
+                "Last name can only contain letters, spaces, apostrophes and hyphens";
         }
     }
 
@@ -137,11 +139,18 @@ export const validateSignupData = (data: any): ValidationResult => {
         errors.userType = "Invalid user type";
     }
 
-    if (data.honorific) {
-        const allowed = ["Mr.", "Ms.", "Mrs.", "Dr.", "Prof."];
-        if (!allowed.includes(String(data.honorific).trim())) {
-            errors.honorific = "Invalid title";
-        }
+    const allowedHonorifics = ["Mr.", "Ms.", "Mrs.", "Dr.", "Prof."];
+    if (!data.honorific || !String(data.honorific).trim()) {
+        errors.honorific = "Please select a title";
+    } else if (!allowedHonorifics.includes(String(data.honorific).trim())) {
+        errors.honorific = "Invalid title";
+    }
+
+    const securityValidation = SecurityQuestionService.validateSecurityAnswersInput(
+        data.securityAnswers
+    );
+    if (!securityValidation.isValid) {
+        Object.assign(errors, securityValidation.errors);
     }
 
     return {
@@ -166,6 +175,34 @@ export const validateForgotPasswordEmail = (email: string): ValidationResult => 
             errors.email =
                 "Password reset is only available for @candidate.edu.au and @lecturer.edu.au accounts";
         }
+    }
+
+    return {
+        isValid: Object.keys(errors).length === 0,
+        errors,
+    };
+};
+
+export const validateChangePasswordData = (data: {
+    currentPassword?: string;
+    newPassword?: string;
+    confirmPassword?: string;
+}): ValidationResult => {
+    const errors: Record<string, string> = {};
+
+    if (!data.currentPassword?.trim()) {
+        errors.currentPassword = "Current password is required";
+    }
+
+    const passwordError = validateNewPassword(data.newPassword || "");
+    if (passwordError) {
+        errors.newPassword = passwordError;
+    }
+
+    if (!data.confirmPassword) {
+        errors.confirmPassword = "Please confirm your new password";
+    } else if (data.newPassword !== data.confirmPassword) {
+        errors.confirmPassword = "Passwords do not match";
     }
 
     return {

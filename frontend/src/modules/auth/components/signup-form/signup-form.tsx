@@ -9,24 +9,36 @@ import {
   getPasswordStrengthFeedback,
   validateFullName,
   containsEmojis,
+  validateSecurityAnswerRows,
+  validateSignupPassword,
+  splitSignupFullName,
+  mapSignupApiErrors,
 } from "../../utils/authValidation.utils";
+import SecurityQuestionFields, {
+  createEmptySecurityRows,
+  type SecurityAnswerFormRow,
+} from "../security-question-fields/SecurityQuestionFields";
 import { AuthService } from "../../../../shared/services/authService";
 import { UserType } from "../../../../shared/types/user";
 import { useAuth } from "../../hooks/useAuth";
 import EmailAutocomplete from "../email-autocomplete/email-autocomplete";
 import AppSelect from "@/shared/components/common/app-select/AppSelect";
+import { type Honorific } from "@/shared/utils/personDisplayName";
+import grid from "@/modules/auth/styles/signup-grid.module.css";
 import styles from "./signup-form.module.css";
 
 const TITLE_PLACEHOLDER = "";
 
-const CANDIDATE_HONORIFIC_OPTIONS = [
+const HONORIFIC_OPTIONS = [
   { value: TITLE_PLACEHOLDER, label: "Title", isDefault: true },
   { value: "Mr.", label: "Mr." },
   { value: "Ms.", label: "Ms." },
   { value: "Mrs.", label: "Mrs." },
+  { value: "Dr.", label: "Dr." },
+  { value: "Prof.", label: "Prof." },
 ];
 
-type CandidateHonorific = "Mr." | "Ms." | "Mrs." | "";
+type SignupHonorific = Honorific | "";
 
 export default function SignUpForm() {
   const router = useRouter();
@@ -36,9 +48,12 @@ export default function SignUpForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState<"tutor" | "lecturer">("tutor");
-  const [honorific, setHonorific] = useState<CandidateHonorific>(TITLE_PLACEHOLDER);
+  const [honorific, setHonorific] = useState<SignupHonorific>(TITLE_PLACEHOLDER);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [securityRows, setSecurityRows] = useState<SecurityAnswerFormRow[]>(
+    createEmptySecurityRows
+  );
 
   // Validation states
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -51,6 +66,15 @@ export default function SignUpForm() {
     password,
     passwordStrength
   );
+
+  const handleRoleChange = (next: "tutor" | "lecturer") => {
+    setRole(next);
+    setErrors((prev) => {
+      const nextErrors = { ...prev };
+      delete nextErrors.honorific;
+      return nextErrors;
+    });
+  };
 
   const handleInputChange = (field: string, value: string) => {
     // Update form data
@@ -101,13 +125,14 @@ export default function SignUpForm() {
       }
     }
 
-    // Validate title for candidates
-    if (role === "tutor" && !honorific) {
+    if (!honorific) {
       newErrors.honorific = "Please select a title";
     }
 
     // Validate email
-    if (!validateEmail(email)) {
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!validateEmail(email)) {
       newErrors.email = "Please enter a valid email address";
     } else if (!validateRoleSpecificEmail(email, role)) {
       const expectedDomain =
@@ -116,13 +141,10 @@ export default function SignUpForm() {
       newErrors.email = `${roleDisplayName} email must end with ${expectedDomain}`;
     }
 
-    // Validate password strength
-    if (password.length === 0) {
-      newErrors.password = "Password is required";
-    } else if (password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters long";
-    } else if (containsEmojis(password)) {
-      newErrors.password = "Password cannot contain emojis";
+    // Validate password (backend rules first, then UI strength hint)
+    const passwordRuleError = validateSignupPassword(password);
+    if (passwordRuleError) {
+      newErrors.password = passwordRuleError;
     } else if (
       passwordFeedback.level === "veryWeak" ||
       passwordFeedback.level === "weak"
@@ -137,6 +159,9 @@ export default function SignUpForm() {
     } else if (password !== confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
     }
+
+    const securityErrors = validateSecurityAnswerRows(securityRows);
+    Object.assign(newErrors, securityErrors);
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -154,10 +179,7 @@ export default function SignUpForm() {
     }
 
     try {
-      // Split the full name into first and last name
-      const nameParts = fullName.trim().split(" ");
-      const firstName = nameParts[0] || "";
-      const lastName = nameParts.slice(1).join(" ") || "";
+      const { firstName, lastName } = splitSignupFullName(fullName);
 
       // Convert role to UserType
       const userType =
@@ -171,10 +193,11 @@ export default function SignUpForm() {
         firstName,
         lastName,
         userType,
-        honorific:
-          userType === UserType.CANDIDATE
-            ? (honorific as CandidateHonorific)
-            : "Dr.",
+        honorific: honorific as Honorific,
+        securityAnswers: securityRows.map((row) => ({
+          questionId: row.questionId,
+          answer: row.answer.trim(),
+        })),
       };
 
       // Call the signup API
@@ -188,7 +211,7 @@ export default function SignUpForm() {
       } else {
         // Handle API errors
         if (response.errors) {
-          setErrors(response.errors);
+          setErrors(mapSignupApiErrors(response.errors));
         }
         setApiError(
           response.message || "Failed to create account. Please try again."
@@ -205,7 +228,7 @@ export default function SignUpForm() {
 
   return (
     <div className={styles.formContainer}>
-      <form className={styles.form} onSubmit={handleSubmit}>
+      <form className={styles.form} onSubmit={handleSubmit} noValidate>
         <h2 className={styles.title}>Create Account</h2>
 
         {apiError && (
@@ -214,206 +237,257 @@ export default function SignUpForm() {
           </div>
         )}
 
-        <div className={styles.inputContainer}>
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={fullName}
-            onChange={(e) => handleInputChange("fullName", e.target.value)}
-            required
-            className={`${styles.inputField} ${errors.fullName ? styles.inputError : ""}`}
-          />
-          {errors.fullName && (
-            <div className={styles.errorMessage}>
-              {errors.fullName}
-            </div>
-          )}
-        </div>
+        <div className={styles.formStack}>
+          <div className={styles.accountSection}>
+            <p className={styles.sectionTitle}>Account</p>
 
-        {role === "tutor" && (
-          <div className={styles.inputContainer}>
-            <AppSelect
-              id="honorific"
-              value={honorific}
-              onChange={(value) => {
-                setHonorific(value as CandidateHonorific);
-                if (errors.honorific) {
-                  setErrors((prev) => ({ ...prev, honorific: "" }));
-                }
-                if (apiError) {
-                  setApiError("");
+            <div className={grid.stack}>
+              <div className={grid.row}>
+                <div className={grid.cell}>
+                  <input
+                    type="text"
+                    placeholder="Full Name"
+                    value={fullName}
+                    onChange={(e) =>
+                      handleInputChange("fullName", e.target.value)
+                    }
+                    required
+                    className={`${grid.control} ${errors.fullName ? grid.controlError : ""}`}
+                  />
+                  {errors.fullName && (
+                    <span className={grid.fieldError}>{errors.fullName}</span>
+                  )}
+                </div>
+                <div className={grid.cell}>
+                  <div className={grid.controlWrap}>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) =>
+                        handleInputChange("password", e.target.value)
+                      }
+                      required
+                      className={`${grid.control} ${errors.password ? grid.controlError : ""}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className={styles.passwordToggle}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className={styles.icon}
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                          <path
+                            fillRule="evenodd"
+                            d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className={styles.icon}
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z"
+                            clipRule="evenodd"
+                          />
+                          <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <span className={grid.fieldError}>{errors.password}</span>
+                  )}
+                </div>
+              </div>
+
+              {password && (
+                <div className={`${grid.row} ${grid.rowTight}`}>
+                  <div className={grid.cell} aria-hidden="true" />
+                  <div className={grid.cell}>
+                    <div
+                      className={`${styles.passwordStrengthMeter} ${styles[passwordFeedback.level]}`}
+                    >
+                      <div className={styles.segment} />
+                      <div className={styles.segment} />
+                      <div className={styles.segment} />
+                      <div className={styles.segment} />
+                    </div>
+                    <div
+                      className={`${styles.passwordStrengthText} ${styles[passwordFeedback.level + "Text"]}`}
+                    >
+                      {passwordFeedback.text}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className={grid.row}>
+                <div className={grid.cell}>
+                  <AppSelect
+                    id="honorific"
+                    value={honorific}
+                    onChange={(value) => {
+                      setHonorific(value as SignupHonorific);
+                      if (errors.honorific) {
+                        setErrors((prev) => ({ ...prev, honorific: "" }));
+                      }
+                      if (apiError) {
+                        setApiError("");
+                      }
+                    }}
+                    options={HONORIFIC_OPTIONS}
+                    variant="pill"
+                    hasError={!!errors.honorific}
+                    className={grid.selectWrap}
+                    aria-label="Title"
+                    aria-required="true"
+                  />
+                  {errors.honorific && (
+                    <span className={grid.fieldError}>
+                      {errors.honorific}
+                    </span>
+                  )}
+                </div>
+                <div className={grid.cell}>
+                  <div className={grid.controlWrap}>
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="Confirm Password"
+                      value={confirmPassword}
+                      onChange={(e) =>
+                        handleInputChange("confirmPassword", e.target.value)
+                      }
+                      required
+                      className={`${grid.control} ${errors.confirmPassword ? grid.controlError : ""}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      className={styles.passwordToggle}
+                      aria-label={
+                        showConfirmPassword ? "Hide password" : "Show password"
+                      }
+                    >
+                      {showConfirmPassword ? (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className={styles.icon}
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                          <path
+                            fillRule="evenodd"
+                            d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className={styles.icon}
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z"
+                            clipRule="evenodd"
+                          />
+                          <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+                  {errors.confirmPassword && (
+                    <span className={grid.fieldError}>
+                      {errors.confirmPassword}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className={grid.row}>
+                <div className={grid.cell}>
+                  <EmailAutocomplete
+                    value={email}
+                    onChange={(value) => handleInputChange("email", value)}
+                    placeholder="Email Address"
+                    className={`${grid.control} ${errors.email ? grid.controlError : ""}`}
+                    role={role}
+                    hasError={!!errors.email}
+                    required
+                  />
+                  {errors.email && (
+                    <span className={grid.fieldError}>{errors.email}</span>
+                  )}
+                </div>
+                <div className={grid.cell}>
+                  <div
+                    className={styles.roleSection}
+                    role="group"
+                    aria-labelledby="signup-role-label"
+                  >
+                    <p id="signup-role-label" className={styles.roleLabel}>
+                      I am a:
+                    </p>
+                    <div className={styles.roleToggleContainer}>
+                      <button
+                        type="button"
+                        className={`${styles.roleBtn} ${role === "tutor" ? styles.active : ""}`}
+                        onClick={() => handleRoleChange("tutor")}
+                      >
+                        Candidate
+                      </button>
+                      <button
+                        type="button"
+                        className={`${styles.roleBtn} ${role === "lecturer" ? styles.active : ""}`}
+                        onClick={() => handleRoleChange("lecturer")}
+                      >
+                        Lecturer
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.securitySection}>
+            <SecurityQuestionFields
+              rows={securityRows}
+              onChange={(rows) => {
+                setSecurityRows(rows);
+                if (Object.keys(errors).some((k) => k.startsWith("securityAnswers"))) {
+                  setErrors((prev) => {
+                    const next = { ...prev };
+                    Object.keys(next).forEach((key) => {
+                      if (key.startsWith("securityAnswers")) {
+                        delete next[key];
+                      }
+                    });
+                    return next;
+                  });
                 }
               }}
-              options={CANDIDATE_HONORIFIC_OPTIONS}
-              variant="pill"
-              hasError={!!errors.honorific}
-              className={styles.titleSelect}
-              aria-label="Title"
+              errors={errors}
+              disabled={isLoading}
             />
-            {errors.honorific && (
-              <div className={styles.errorMessage}>{errors.honorific}</div>
-            )}
-          </div>
-        )}
-
-        <div className={styles.inputContainer}>
-          <EmailAutocomplete
-            value={email}
-            onChange={(value) => handleInputChange("email", value)}
-            placeholder="Email Address"
-            className={styles.inputField}
-            role={role}
-            hasError={!!errors.email}
-          />
-          {errors.email && (
-            <div className={styles.errorMessage}>
-              {errors.email}
-            </div>
-          )}
-        </div>
-
-        <div className={styles.passwordContainer}>
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            value={password}
-            onChange={(e) => handleInputChange("password", e.target.value)}
-            required
-            className={`${styles.inputField} ${errors.password ? styles.inputError : ""}`}
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className={styles.passwordToggle}
-            aria-label={showPassword ? "Hide password" : "Show password"}
-          >
-            {showPassword ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className={styles.icon}
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                <path
-                  fillRule="evenodd"
-                  d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className={styles.icon}
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z"
-                  clipRule="evenodd"
-                />
-                <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
-              </svg>
-            )}
-          </button>
-          {errors.password && (
-            <div className={styles.errorMessage}>
-              {errors.password}
-            </div>
-          )}
-        </div>
-
-        {/* Password strength meter */}
-        {password && (
-          <>
-            <div
-              className={`${styles.passwordStrengthMeter} ${styles[passwordFeedback.level]}`}
-            >
-              <div className={styles.segment}></div>
-              <div className={styles.segment}></div>
-              <div className={styles.segment}></div>
-              <div className={styles.segment}></div>
-            </div>
-            <div
-              className={`${styles.passwordStrengthText} ${styles[passwordFeedback.level + "Text"]}`}
-            >
-              {passwordFeedback.text}
-            </div>
-          </>
-        )}
-
-        <div className={styles.passwordContainer}>
-          <input
-            type={showConfirmPassword ? "text" : "password"}
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) =>
-              handleInputChange("confirmPassword", e.target.value)
-            }
-            required
-            className={`${styles.inputField} ${errors.confirmPassword ? styles.inputError : ""}`}
-          />
-          <button
-            type="button"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className={styles.passwordToggle}
-            aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-          >
-            {showConfirmPassword ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className={styles.icon}
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                <path
-                  fillRule="evenodd"
-                  d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className={styles.icon}
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z"
-                  clipRule="evenodd"
-                />
-                <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
-              </svg>
-            )}
-          </button>
-          {errors.confirmPassword && (
-            <div className={styles.errorMessage}>
-              {errors.confirmPassword}
-            </div>
-          )}
-        </div>
-
-        <div className={styles.roleSection}>
-          <p className={styles.roleLabel}>I am a:</p>
-          <div className={styles.roleToggleContainer}>
-            <button
-              type="button"
-              className={`${styles.roleBtn} ${role === "tutor" ? styles.active : ""}`}
-              onClick={() => setRole("tutor")}
-            >
-              Candidate
-            </button>
-            <button
-              type="button"
-              className={`${styles.roleBtn} ${role === "lecturer" ? styles.active : ""}`}
-              onClick={() => setRole("lecturer")}
-            >
-              Lecturer
-            </button>
           </div>
         </div>
 

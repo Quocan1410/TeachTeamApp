@@ -1,11 +1,6 @@
-import axios from "axios";
-import { env } from "@/lib/env";
+import { createApiClient } from "./apiClient";
 
-const draftAPI = axios.create({
-  baseURL: `${env.apiEndpoint}/application-drafts`,
-  withCredentials: true,
-  headers: { "Content-Type": "application/json" },
-});
+const draftAPI = createApiClient("/application-drafts");
 
 export interface DraftPayload {
   availability?: string;

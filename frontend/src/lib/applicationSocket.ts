@@ -1,12 +1,12 @@
 import { io, Socket } from "socket.io-client";
-import { env } from "@/lib/env";
+import { resolveSocketIoOrigin } from "@/lib/proxyUrls";
 import { APPLICATION_UPDATED_EVENT } from "@/shared/socket/applicationEvents";
 
 let socket: Socket | null = null;
 let refCount = 0;
 
 const createSocket = (): Socket =>
-  io(env.socketUrl, {
+  io(resolveSocketIoOrigin(), {
     path: "/socket.io",
     withCredentials: true,
     transports: ["websocket", "polling"],

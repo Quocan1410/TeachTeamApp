@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 import { UserAccountEvent } from "@/lib/graphql-subscriptions";
+import { resolveAdminGraphqlWsUrl } from "@/lib/proxyUrls";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 
 interface UseUserAccountStatusSubscriptionOptions {
@@ -53,11 +54,7 @@ export function useUserAccountStatusSubscription({
       return;
     }
 
-    const wsUrl =
-      process.env.NEXT_PUBLIC_ADMIN_WS_ENDPOINT ||
-      "ws://localhost:4002/graphql";
-
-    const ws = new WebSocket(wsUrl, "graphql-transport-ws");
+    const ws = new WebSocket(resolveAdminGraphqlWsUrl(), "graphql-transport-ws");
     wsRef.current = ws;
 
     ws.onopen = () => {

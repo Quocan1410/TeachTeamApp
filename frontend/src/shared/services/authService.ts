@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import {
   AuthResponse,
   SignupData,
@@ -8,25 +8,14 @@ import {
   PasswordResetRequestData,
   PasswordResetConfirmData,
   PasswordResetResponse,
+  ChangePasswordData,
+  SecurityAnswerInput,
 } from "../types/user";
 import StorageManager from "../utils/storageManager";
-import { env } from "@/lib/env";
 import { dedupeInFlight } from "../utils/inFlightRequest";
+import { apiClient, createApiClient } from "./apiClient";
 
-const authAPI = axios.create({
-  baseURL: `${env.apiEndpoint}/auth`,
-  withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-authAPI.interceptors.request.use((config) => {
-  if (config.data instanceof FormData) {
-    delete config.headers["Content-Type"];
-  }
-  return config;
-});
+const authAPI = createApiClient("/auth");
 
 export class AuthService {
   static async signup(data: SignupData): Promise<AuthResponse> {
@@ -45,13 +34,35 @@ export class AuthService {
     }
   }
 
-  static async forgotPassword(
+  static async forgotPasswordChallenge(
     email: string
   ): Promise<PasswordResetResponse> {
     try {
       const response = await authAPI.post<PasswordResetResponse>(
-        "/forgot-password",
+        "/forgot-password/challenge",
         { email } satisfies PasswordResetRequestData
+      );
+      return response.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<PasswordResetResponse>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Network error occurred. Please try again.",
+      };
+    }
+  }
+
+  static async forgotPasswordVerify(
+    email: string,
+    securityAnswers: SecurityAnswerInput[]
+  ): Promise<PasswordResetResponse> {
+    try {
+      const response = await authAPI.post<PasswordResetResponse>(
+        "/forgot-password/verify",
+        { email, securityAnswers }
       );
       return response.data;
     } catch (error: unknown) {
@@ -83,6 +94,43 @@ export class AuthService {
       return {
         success: false,
         message: "Network error occurred. Please try again.",
+      };
+    }
+  }
+
+  static async changePassword(
+    data: ChangePasswordData
+  ): Promise<AuthResponse> {
+    try {
+      const response = await authAPI.post<AuthResponse>(
+        "/change-password",
+        data
+      );
+      return response.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<AuthResponse>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Network error occurred. Please try again.",
+      };
+    }
+  }
+
+  static async refreshSession(): Promise<AuthResponse> {
+    try {
+      const response = await authAPI.post<AuthResponse>("/refresh");
+      return response.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<AuthResponse>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Unable to refresh session",
       };
     }
   }
@@ -287,3 +335,5 @@ export class AuthService {
     }
   }
 }
+
+export { apiClient };

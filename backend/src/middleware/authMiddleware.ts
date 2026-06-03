@@ -72,6 +72,7 @@ export const authenticateToken = async (
             res.status(401).json({
                 success: false,
                 message: "Token has expired",
+                code: "TOKEN_EXPIRED",
             });
         } else if (error instanceof jwt.JsonWebTokenError) {
             res.status(403).json({

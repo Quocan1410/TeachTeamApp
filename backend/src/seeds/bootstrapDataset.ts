@@ -11,10 +11,33 @@ import { SelectedCandidate } from "../entities/SelectedCandidate";
 import { ApplicationDraft } from "../entities/ApplicationDraft";
 import { Announcement } from "../entities/Announcement";
 import { PasswordResetToken } from "../entities/PasswordResetToken";
+import { RefreshToken } from "../entities/RefreshToken";
+import { UserSecurityAnswer } from "../entities/UserSecurityAnswer";
 import { LECTURER_PRIMARY_MESSAGE_ID } from "../utils/correspondenceMessages";
 import type { MessageReactionsMap } from "../utils/messageReactions";
+import { SecurityQuestionService } from "../services/SecurityQuestionService";
 
 export const DEMO_PASSWORD = "Password123!";
+
+/** Same 4 Q&A for every seeded lecturer/candidate — used for forgot-password demos. */
+export const DEMO_SECURITY_ANSWERS = [
+    { questionId: "birth_city", answer: "Melbourne" },
+    { questionId: "first_school", answer: "Demo School" },
+    { questionId: "favorite_book", answer: "TeachTeam Guide" },
+    { questionId: "childhood_nickname", answer: "Demo" },
+] as const;
+
+async function seedDemoSecurityAnswersForUsers(users: User[]): Promise<void> {
+    const securityService = new SecurityQuestionService();
+    const answers = DEMO_SECURITY_ANSWERS.map((row) => ({
+        questionId: row.questionId,
+        answer: row.answer,
+    }));
+    for (const user of users) {
+        if (user.userType === UserType.ADMIN) continue;
+        await securityService.saveAnswers(user.id, answers);
+    }
+}
 
 const LECTURERS = [
     {
@@ -591,6 +614,11 @@ export async function seedBootstrapDataset(): Promise<void> {
         candidateByEmail.set(def.email, user);
     }
 
+    await seedDemoSecurityAnswersForUsers([
+        ...lecturerByEmail.values(),
+        ...candidateByEmail.values(),
+    ]);
+
     for (const roleData of [
         { roleName: "tutor", description: "Tutorial sessions" },
         { roleName: "lab_assistant", description: "Laboratory sessions" },
@@ -833,7 +861,7 @@ export async function seedBootstrapDataset(): Promise<void> {
     await announcementRepo.save(
         announcementRepo.create({
             title: "Welcome to TeachTeam (local demo)",
-            body: "Use the seeded accounts to explore tutor, lecturer, and application flows. Run `npm run db:reset` in the backend folder to refresh data.",
+            body: "Use the seeded accounts to explore tutor, lecturer, and application flows. Run `npm run db:reset` in the backend folder to refresh data. Forgot password demo: use the same 4 security answers documented in env.example (DEMO_SECURITY_ANSWERS).",
             createdBy: lecturerByEmail.get("jane.lecturer@lecturer.edu.au")!.id,
             isActive: true,
         })
@@ -860,7 +888,9 @@ export async function seedBootstrapDataset(): Promise<void> {
 }
 
 export async function clearAllTables(): Promise<void> {
+    await AppDataSource.getRepository(RefreshToken).clear();
     await AppDataSource.getRepository(PasswordResetToken).clear();
+    await AppDataSource.getRepository(UserSecurityAnswer).clear();
     await AppDataSource.getRepository(Notification).clear();
     await AppDataSource.getRepository(SelectedCandidate).clear();
     await AppDataSource.getRepository(ApplicationDraft).clear();

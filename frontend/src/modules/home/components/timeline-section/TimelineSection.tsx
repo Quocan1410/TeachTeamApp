@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./TimelineSection.module.css";
-import Link from "next/link"; // Assuming the Apply button links somewhere
-import Button from "@/shared/components/common/Button/Button"; // Import Button component
+import Link from "next/link";
+import buttonStyles from "@/shared/components/common/Button/Button.module.css";
 
 interface TimelineSectionProps {
   isLoggedIn: boolean;
@@ -94,22 +94,25 @@ const TimelineSection: React.FC<TimelineSectionProps> = ({
         </div>
         <div className={styles.actionsContainer}>
           {!isLoggedIn ? (
-            <Link href="/signin" passHref legacyBehavior>
-              <Button variant="primary" className={styles.applyButton}>
-                Apply as a Tutor
-              </Button>
+            <Link
+              href="/signin"
+              className={`${buttonStyles.btn} ${buttonStyles.btnPrimary} ${styles.applyButton}`}
+            >
+              Apply as a Tutor
             </Link>
           ) : userRole === "candidate" ? (
-            <Link href="/tutor" passHref legacyBehavior>
-              <Button variant="primary" className={styles.applyButton}>
-                Go to Tutor Dashboard
-              </Button>
+            <Link
+              href="/tutor"
+              className={`${buttonStyles.btn} ${buttonStyles.btnPrimary} ${styles.applyButton}`}
+            >
+              Go to Tutor Dashboard
             </Link>
           ) : userRole === "lecturer" ? (
-            <Link href="/lecturer" passHref legacyBehavior>
-              <Button variant="primary" className={styles.applyButton}>
-                Go to Lecturer Dashboard
-              </Button>
+            <Link
+              href="/lecturer"
+              className={`${buttonStyles.btn} ${buttonStyles.btnPrimary} ${styles.applyButton}`}
+            >
+              Go to Lecturer Dashboard
             </Link>
           ) : null}
         </div>

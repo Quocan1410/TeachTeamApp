@@ -1,8 +1,36 @@
 const path = require("path");
 require("dotenv").config({ path: path.join(__dirname, "../.env") });
 
+const mainApiOrigin =
+  process.env.MAIN_API_ORIGIN ||
+  process.env.NEXT_PUBLIC_API_ORIGIN ||
+  "http://localhost:5000";
+const adminGraphqlOrigin =
+  process.env.ADMIN_GRAPHQL_ORIGIN || "http://localhost:4002";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  outputFileTracingRoot: path.join(__dirname, ".."),
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${mainApiOrigin}/api/:path*`,
+      },
+      {
+        source: "/socket.io/:path*",
+        destination: `${mainApiOrigin}/socket.io/:path*`,
+      },
+      {
+        source: "/admin-graphql",
+        destination: `${adminGraphqlOrigin}/graphql`,
+      },
+      {
+        source: "/uploads/:path*",
+        destination: `${mainApiOrigin}/uploads/:path*`,
+      },
+    ];
+  },
   env: {
     NEXT_PUBLIC_API_ENDPOINT: process.env.NEXT_PUBLIC_API_ENDPOINT,
     NEXT_PUBLIC_API_ORIGIN: process.env.NEXT_PUBLIC_API_ORIGIN,

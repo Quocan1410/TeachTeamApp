@@ -6,6 +6,11 @@ import { CourseAssignment } from "../entities/CourseAssignment";
 import { Application } from "../entities/Application";
 import { SelectedCandidate } from "../entities/SelectedCandidate";
 import { Notification } from "../entities/Notification";
+import { ApplicationDraft } from "../entities/ApplicationDraft";
+import { Announcement } from "../entities/Announcement";
+import { PasswordResetToken } from "../entities/PasswordResetToken";
+import { UserSecurityAnswer } from "../entities/UserSecurityAnswer";
+import { RefreshToken } from "../entities/RefreshToken";
 import { runBootstrapSeed } from "../seeds";
 
 export class DatabaseResetService {
@@ -75,10 +80,15 @@ export class DatabaseResetService {
     static async clearAllData(): Promise<void> {
         try {
             // Clear in reverse dependency order to avoid foreign key constraint errors
+            await AppDataSource.getRepository(RefreshToken).clear();
+            await AppDataSource.getRepository(PasswordResetToken).clear();
+            await AppDataSource.getRepository(UserSecurityAnswer).clear();
             await AppDataSource.getRepository(Notification).clear();
             await AppDataSource.getRepository(SelectedCandidate).clear();
+            await AppDataSource.getRepository(ApplicationDraft).clear();
             await AppDataSource.getRepository(Application).clear();
             await AppDataSource.getRepository(CourseAssignment).clear();
+            await AppDataSource.getRepository(Announcement).clear();
             await AppDataSource.getRepository(User).clear();
             await AppDataSource.getRepository(Course).clear();
             await AppDataSource.getRepository(Role).clear();

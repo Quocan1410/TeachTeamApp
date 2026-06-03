@@ -9,6 +9,7 @@ interface EmailAutocompleteProps {
   className?: string;
   role: "tutor" | "lecturer";
   hasError?: boolean;
+  required?: boolean;
 }
 
 const EMAIL_SUGGESTIONS = [
@@ -22,7 +23,8 @@ export default function EmailAutocomplete({
   placeholder = "Email Address",
   className = "",
   role,
-  hasError = false
+  hasError = false,
+  required = false,
 }: EmailAutocompleteProps) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -169,8 +171,10 @@ export default function EmailAutocomplete({
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className={`${className} ${hasError ? styles.inputError : ""}`}
+        className={className}
         autoComplete="email"
+        required={required}
+        aria-required={required}
       />
       
       {showSuggestions && suggestions.length > 0 && (

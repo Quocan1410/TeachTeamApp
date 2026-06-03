@@ -19,9 +19,12 @@ export const getBackendJwtSecret = (): string => {
     return secret || "dev-only-backend-jwt-secret-change-me";
 };
 
-export const signBackendToken = (payload: AppJwtPayload): string => {
-    return jwt.sign(payload, getBackendJwtSecret(), { expiresIn: "7d" });
+export const signBackendAccessToken = (payload: AppJwtPayload): string => {
+    return jwt.sign(payload, getBackendJwtSecret(), { expiresIn: "15m" });
 };
+
+/** Short-lived access JWT (refresh token handles session renewal). */
+export const signBackendToken = signBackendAccessToken;
 
 export const getAdminJwtSecret = (): string => {
     const secret =

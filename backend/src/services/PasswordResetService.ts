@@ -4,7 +4,7 @@ import { LessThan, IsNull } from "typeorm";
 import { AppDataSource } from "../config/database";
 import { PasswordResetToken } from "../entities/PasswordResetToken";
 import { User, UserType } from "../entities/User";
-import { sendPasswordResetEmail } from "./emailService";
+import { RefreshTokenService } from "./RefreshTokenService";
 
 const TOKEN_BYTES = 32;
 const DEFAULT_TTL_MINUTES = 60;
@@ -23,7 +23,7 @@ function getResetTtlMs(): number {
         1000;
 }
 
-function buildResetUrl(rawToken: string): string {
+export function buildResetUrl(rawToken: string): string {
     const base =
         process.env.FRONTEND_URL?.replace(/\/$/, "") ||
         "http://localhost:3000";
@@ -34,30 +34,12 @@ export class PasswordResetService {
     private tokenRepo = AppDataSource.getRepository(PasswordResetToken);
     private userRepo = AppDataSource.getRepository(User);
 
-    /** Generic success message — do not reveal whether email exists. */
-    static readonly REQUEST_SUCCESS_MESSAGE =
-        "If an account exists for that email, we sent password reset instructions.";
-
-    async requestReset(email: string): Promise<{
-        message: string;
-        resetUrl?: string;
-        emailSent?: boolean;
+    async createResetTokenForUser(userId: number): Promise<{
+        rawToken: string;
+        resetUrl: string;
     }> {
-        const normalizedEmail = email.trim().toLowerCase();
-        const user = await this.userRepo.findOne({
-            where: { email: normalizedEmail },
-        });
-
-        if (
-            !user ||
-            user.userType === UserType.ADMIN ||
-            user.isBlocked
-        ) {
-            return { message: PasswordResetService.REQUEST_SUCCESS_MESSAGE };
-        }
-
         await this.tokenRepo.update(
-            { userId: user.id, usedAt: IsNull() },
+            { userId, usedAt: IsNull() },
             { usedAt: new Date() }
         );
 
@@ -66,30 +48,17 @@ export class PasswordResetService {
 
         await this.tokenRepo.save(
             this.tokenRepo.create({
-                userId: user.id,
+                userId,
                 tokenHash: hashToken(rawToken),
                 expiresAt,
                 usedAt: null,
             })
         );
 
-        const resetUrl = buildResetUrl(rawToken);
-        const emailResult = await sendPasswordResetEmail(user.email, resetUrl);
-
-        const response: {
-            message: string;
-            resetUrl?: string;
-            emailSent?: boolean;
-        } = {
-            message: PasswordResetService.REQUEST_SUCCESS_MESSAGE,
-            emailSent: emailResult.sent,
+        return {
+            rawToken,
+            resetUrl: buildResetUrl(rawToken),
         };
-
-        if (process.env.NODE_ENV !== "production" && !emailResult.sent) {
-            response.resetUrl = resetUrl;
-        }
-
-        return response;
     }
 
     async resetPassword(
@@ -127,6 +96,7 @@ export class PasswordResetService {
         const saltRounds = 12;
         user.password = await bcrypt.hash(newPassword, saltRounds);
         await this.userRepo.save(user);
+        await RefreshTokenService.revokeAllForUser(user.id);
 
         record.usedAt = new Date();
         await this.tokenRepo.save(record);

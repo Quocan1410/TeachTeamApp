@@ -7,13 +7,11 @@ import {
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
+import { env } from "@/lib/env";
+import { resolveAdminGraphqlWsUrl } from "@/lib/proxyUrls";
 
-// HTTP link to admin backend
-const httpUrl =
-  process.env.NEXT_PUBLIC_ADMIN_GRAPHQL_ENDPOINT ||
-  "http://localhost:4002/graphql";
-const wsUrl =
-  process.env.NEXT_PUBLIC_ADMIN_WS_ENDPOINT || "ws://localhost:4002/graphql";
+const httpUrl = env.adminGraphql;
+const wsUrl = resolveAdminGraphqlWsUrl();
 
 const httpLink = createHttpLink({
   uri: httpUrl,
@@ -91,7 +89,9 @@ export const adminClient = new ApolloClient({
       errorPolicy: "all",
     },
   },
-  connectToDevTools: process.env.NODE_ENV === "development",
+  devtools: {
+    enabled: process.env.NODE_ENV === "development",
+  },
 });
 
 export default adminClient;

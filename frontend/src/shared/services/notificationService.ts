@@ -1,10 +1,6 @@
-import axios from "axios";
-import { env } from "@/lib/env";
+import { createApiClient } from "./apiClient";
 
-const notificationAPI = axios.create({
-  baseURL: `${env.apiEndpoint}/notifications`,
-  withCredentials: true,
-});
+const notificationAPI = createApiClient("/notifications");
 
 notificationAPI.interceptors.request.use((config) => {
   const method = config.method?.toLowerCase();
