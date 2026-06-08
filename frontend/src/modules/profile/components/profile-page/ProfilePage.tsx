@@ -17,6 +17,8 @@ import { clearAvatarFetchCache } from "../../../../shared/utils/avatarFetchCache
 import { useProtectedAvatar } from "../../../../shared/hooks/useProtectedAvatar";
 import { getUserDisplayName, type Honorific } from "@/shared/utils/personDisplayName";
 import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
+import Toast from "@/shared/components/common/toast/toast";
+import { useToast } from "@/shared/hooks/useNotification";
 import styles from "./ProfilePage.module.css";
 
 export const ProfilePage: React.FC = () => {
@@ -52,6 +54,7 @@ export const ProfilePage: React.FC = () => {
     honorific: "Mr." as Honorific,
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast, showSuccess, showError, hideToast } = useToast();
   const protectedAvatarUrl = useProtectedAvatar(
     !!user && hasCustomAvatar(user.avatarUrl),
     user?.avatarUrl
@@ -232,15 +235,15 @@ export const ProfilePage: React.FC = () => {
         updateUser(response.data.user);
         AuthService.saveUser(response.data.user);
         setIsEditing(false);
-        setProfileMessage("Profile saved successfully.");
+        showSuccess("Profile saved successfully.");
       } else if (response.errors) {
         setFieldErrors(response.errors);
-        setProfileMessage("Please fix the errors below.");
+        showError("Please fix the errors below.");
       } else {
-        setProfileMessage(response.message || "Failed to save profile.");
+        showError(response.message || "Failed to save profile.");
       }
     } catch {
-      setProfileMessage("Failed to save profile. Please try again.");
+      showError("Failed to save profile. Please try again.");
     } finally {
       setIsSaving(false);
     }
@@ -264,15 +267,16 @@ export const ProfilePage: React.FC = () => {
           newPassword: "",
           confirmPassword: "",
         });
-        setPasswordMessage("Password changed successfully.");
+        setPasswordMessage("");
+        showSuccess("Password changed successfully.");
       } else if (response.errors) {
         setPasswordErrors(response.errors);
-        setPasswordMessage("Please fix the errors below.");
+        showError("Please fix the errors below.");
       } else {
-        setPasswordMessage(response.message || "Failed to change password.");
+        showError(response.message || "Failed to change password.");
       }
     } catch {
-      setPasswordMessage("Failed to change password. Please try again.");
+      showError("Failed to change password. Please try again.");
     } finally {
       setIsChangingPassword(false);
     }
@@ -287,12 +291,12 @@ export const ProfilePage: React.FC = () => {
     }
 
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-      setAvatarMessage("Please upload a JPEG, PNG, or WebP image.");
+      showError("Please upload a JPEG, PNG, or WebP image.");
       return;
     }
 
     if (file.size > 2 * 1024 * 1024) {
-      setAvatarMessage("Image must be smaller than 2MB.");
+      showError("Image must be smaller than 2MB.");
       return;
     }
 
@@ -308,18 +312,16 @@ export const ProfilePage: React.FC = () => {
         setUser(response.data.user);
         updateUser(response.data.user);
         AuthService.saveUser(response.data.user);
-        setAvatarMessage("Avatar updated successfully.");
+        showSuccess("Avatar updated successfully.");
       } else {
-        setAvatarMessage(
+        showError(
           response.message ||
             "Upload failed. Sign in again or restart the backend."
         );
         setAvatarPreview(null);
       }
     } catch {
-      setAvatarMessage(
-        "Upload failed. Check backend is running and try again."
-      );
+      showError("Upload failed. Check backend is running and try again.");
       setAvatarPreview(null);
     } finally {
       setIsUploadingAvatar(false);
@@ -345,12 +347,12 @@ export const ProfilePage: React.FC = () => {
         AuthService.saveUser(response.data.user);
         setAvatarPreview(null);
         setShowAvatarInitials(true);
-        setAvatarMessage("Avatar removed.");
+        showSuccess("Avatar removed.");
       } else {
-        setAvatarMessage(response.message || "Failed to remove avatar.");
+        showError(response.message || "Failed to remove avatar.");
       }
     } catch {
-      setAvatarMessage("Failed to remove avatar. Please try again.");
+      showError("Failed to remove avatar. Please try again.");
     } finally {
       setIsUploadingAvatar(false);
     }
@@ -960,6 +962,12 @@ export const ProfilePage: React.FC = () => {
           </div>
         </div>
       </div>
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        visible={toast.visible}
+        onClose={hideToast}
+      />
     </div>
   );
 };

@@ -10,6 +10,8 @@ interface SearchFiltersProps {
   onSearchChange: (query: string) => void;
   activeFilter: CourseFilter;
   onFilterChange: (filter: CourseFilter) => void;
+  sortBy?: string;
+  onSortChange?: (sort: string) => void;
 }
 
 const FILTERS: { id: CourseFilter; label: string }[] = [
@@ -24,6 +26,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   onSearchChange,
   activeFilter,
   onFilterChange,
+  sortBy = "relevance",
+  onSortChange,
 }) => {
   return (
     <motion.section
@@ -61,6 +65,23 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               </button>
             ))}
           </div>
+          {onSortChange && (
+            <div className={styles.sortGroup}>
+              <label htmlFor="course-sort" className={styles.filterLabel}>
+                Sort
+              </label>
+              <select
+                id="course-sort"
+                className={styles.sortSelect}
+                value={sortBy}
+                onChange={(e) => onSortChange(e.target.value)}
+              >
+                <option value="relevance">Relevance</option>
+                <option value="code">Course code</option>
+                <option value="name">Course name</option>
+              </select>
+            </div>
+          )}
         </div>
       </div>
     </motion.section>

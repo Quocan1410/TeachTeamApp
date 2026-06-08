@@ -20,7 +20,9 @@ import { useApplicationRealtime } from "@/shared/hooks/useApplicationRealtime";
 import { usePinnedApplications } from "@/shared/hooks/usePinnedApplications";
 import type { ApplicationUpdatedPayload } from "@/shared/socket/applicationEvents";
 import Toast from "@/shared/components/common/toast/toast";
+import PaginationBar from "@/shared/components/common/pagination-bar/PaginationBar";
 import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
+import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import ApplicationsHeroSection from "@/modules/tutor/components/hero-section/ApplicationsHeroSection";
 import ApplicationStatusBadge from "@/shared/components/common/application-status-badge/ApplicationStatusBadge";
 import { resolveApplicationStatusDisplay } from "@/shared/utils/applicationStatus";
@@ -30,6 +32,8 @@ import ConfirmModal from "@/shared/components/common/modal/ConfirmModal";
 import styles from "./ApplicationsPage.module.css";
 
 type ViewMode = "grid" | "list";
+
+const APPLICATION_PAGE_SIZE = 8;
 
 const formatRoleLabel = (roleName: string) =>
   roleName === "tutor" ? "Tutor" : "Lab Assistant";
@@ -49,6 +53,11 @@ export default function TutorApplicationsPage() {
   const [drafts, setDrafts] = useState<Record<number, string>>({});
   const [busyId, setBusyId] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("date");
+  const [page, setPage] = useState(1);
+  const debouncedSearch = useDebouncedValue(searchQuery, 320);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [withdrawTargetId, setWithdrawTargetId] = useState<number | null>(null);
   const { toast, showSuccess, showError, hideToast } = useToast();
@@ -118,13 +127,62 @@ export default function TutorApplicationsPage() {
   }, []);
 
   const sortedApplications = useMemo(() => {
-    const list = [...applications];
-    list.sort(
-      (a, b) =>
+    let list = [...applications];
+
+    if (debouncedSearch.trim()) {
+      const q = debouncedSearch.trim().toLowerCase();
+      list = list.filter(
+        (app) =>
+          app.course.courseCode.toLowerCase().includes(q) ||
+          app.course.courseName.toLowerCase().includes(q) ||
+          app.role.roleName.toLowerCase().includes(q)
+      );
+    }
+
+    if (statusFilter === "active") {
+      list = list.filter((app) => !app.isWithdrawn && app.status === "pending");
+    } else if (statusFilter === "selected") {
+      list = list.filter((app) => app.status === "selected" && !app.isWithdrawn);
+    } else if (statusFilter === "closed") {
+      list = list.filter(
+        (app) => app.isWithdrawn || app.status === "rejected"
+      );
+    }
+
+    list.sort((a, b) => {
+      if (sortBy === "course") {
+        return a.course.courseCode.localeCompare(b.course.courseCode);
+      }
+      if (sortBy === "status") {
+        return a.status.localeCompare(b.status);
+      }
+      return (
         new Date(b.appliedAt).getTime() - new Date(a.appliedAt).getTime()
-    );
+      );
+    });
+
     return list;
-  }, [applications]);
+  }, [applications, debouncedSearch, statusFilter, sortBy]);
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(sortedApplications.length / APPLICATION_PAGE_SIZE)
+  );
+
+  const paginatedApplications = sortedApplications.slice(
+    (page - 1) * APPLICATION_PAGE_SIZE,
+    page * APPLICATION_PAGE_SIZE
+  );
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, statusFilter, sortBy]);
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
 
   const selectedApplication = useMemo(
     () => sortedApplications.find((a) => a.id === selectedId) ?? null,
@@ -552,6 +610,36 @@ export default function TutorApplicationsPage() {
               }`}
             >
               {!hasSelection && (
+                <div className={styles.filtersRow}>
+                  <input
+                    type="search"
+                    className={styles.filterInput}
+                    placeholder="Search course or role..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  <select
+                    className={styles.filterSelect}
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                  >
+                    <option value="all">All statuses</option>
+                    <option value="active">In review</option>
+                    <option value="selected">Selected</option>
+                    <option value="closed">Closed</option>
+                  </select>
+                  <select
+                    className={styles.filterSelect}
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                  >
+                    <option value="date">Newest first</option>
+                    <option value="course">Course code</option>
+                    <option value="status">Status</option>
+                  </select>
+                </div>
+              )}
+              {!hasSelection && (
                 <div
                   className={styles.viewToggle}
                   role="group"
@@ -617,10 +705,19 @@ export default function TutorApplicationsPage() {
                           : styles.listPaneList
                     }`}
                   >
-                    {sortedApplications.map((application) =>
+                    {paginatedApplications.map((application) =>
                       renderListCard(application)
                     )}
                   </div>
+                  {!hasSelection && (
+                    <PaginationBar
+                      page={page}
+                      pageSize={APPLICATION_PAGE_SIZE}
+                      totalCount={sortedApplications.length}
+                      totalPages={totalPages}
+                      onPageChange={setPage}
+                    />
+                  )}
                 </div>
               </div>
 

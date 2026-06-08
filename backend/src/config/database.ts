@@ -26,7 +26,8 @@ export const AppDataSource = new DataSource({
     username: process.env.DB_USERNAME || "",
     password: process.env.DB_PASSWORD || "",
     database: process.env.DB_NAME || "",
-    synchronize: true, // Auto-create tables in development
+    synchronize: process.env.DB_SYNC === "true",
+    migrationsRun: process.env.NODE_ENV === "production",
     logging: process.env.NODE_ENV === "development",
     entities: [
         User,
@@ -42,7 +43,7 @@ export const AppDataSource = new DataSource({
         RefreshToken,
         UserSecurityAnswer,
     ],
-    migrations: ["src/migrations/*.ts"],
+    migrations: [path.join(__dirname, "../migrations/*.{ts,js}")],
     subscribers: ["src/subscribers/*.ts"],
     // Connection options for Cloud MySQL
     extra: {
@@ -110,56 +111,58 @@ const ensureColumn = async (
 };
 
 const ensureSchemaColumns = async (): Promise<void> => {
-    await ensureColumn(
-        "users",
-        "avatarUrl",
-        "ALTER TABLE `users` ADD `avatarUrl` varchar(512) NULL"
-    );
-    await ensureColumn(
-        "users",
-        "theme",
-        "ALTER TABLE `users` ADD `theme` varchar(10) NOT NULL DEFAULT 'dark'"
-    );
-    await ensureColumn(
-        "users",
-        "honorific",
-        "ALTER TABLE `users` ADD `honorific` varchar(10) NULL"
-    );
-    await ensureColumn(
-        "courses",
-        "applicationDeadline",
-        "ALTER TABLE `courses` ADD `applicationDeadline` datetime NULL"
-    );
-    await ensureColumn(
-        "applications",
-        "lecturerNotes",
-        "ALTER TABLE `applications` ADD `lecturerNotes` text NULL"
-    );
-    await ensureColumn(
-        "applications",
-        "correspondenceMessages",
-        "ALTER TABLE `applications` ADD `correspondenceMessages` json NULL"
-    );
-    await ensureColumn(
-        "applications",
-        "offerResponse",
-        "ALTER TABLE `applications` ADD `offerResponse` varchar(20) NULL"
-    );
-    await ensureColumn(
-        "applications",
-        "offerRespondedAt",
-        "ALTER TABLE `applications` ADD `offerRespondedAt` datetime NULL"
-    );
-    await ensureColumn(
-        "applications",
-        "reviewedAt",
-        "ALTER TABLE `applications` ADD `reviewedAt` datetime NULL"
-    );
-    await ensureColumn(
-        "applications",
-        "reviewedBy",
-        "ALTER TABLE `applications` ADD `reviewedBy` int NULL"
-    );
+    if (process.env.DB_SYNC === "true") {
+        await ensureColumn(
+            "users",
+            "avatarUrl",
+            "ALTER TABLE `users` ADD `avatarUrl` varchar(512) NULL"
+        );
+        await ensureColumn(
+            "users",
+            "theme",
+            "ALTER TABLE `users` ADD `theme` varchar(10) NOT NULL DEFAULT 'dark'"
+        );
+        await ensureColumn(
+            "users",
+            "honorific",
+            "ALTER TABLE `users` ADD `honorific` varchar(10) NULL"
+        );
+        await ensureColumn(
+            "courses",
+            "applicationDeadline",
+            "ALTER TABLE `courses` ADD `applicationDeadline` datetime NULL"
+        );
+        await ensureColumn(
+            "applications",
+            "lecturerNotes",
+            "ALTER TABLE `applications` ADD `lecturerNotes` text NULL"
+        );
+        await ensureColumn(
+            "applications",
+            "correspondenceMessages",
+            "ALTER TABLE `applications` ADD `correspondenceMessages` json NULL"
+        );
+        await ensureColumn(
+            "applications",
+            "offerResponse",
+            "ALTER TABLE `applications` ADD `offerResponse` varchar(20) NULL"
+        );
+        await ensureColumn(
+            "applications",
+            "offerRespondedAt",
+            "ALTER TABLE `applications` ADD `offerRespondedAt` datetime NULL"
+        );
+        await ensureColumn(
+            "applications",
+            "reviewedAt",
+            "ALTER TABLE `applications` ADD `reviewedAt` datetime NULL"
+        );
+        await ensureColumn(
+            "applications",
+            "reviewedBy",
+            "ALTER TABLE `applications` ADD `reviewedBy` int NULL"
+        );
+    }
 };
 
 export const initializeDatabase = async () => {

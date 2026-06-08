@@ -17,6 +17,7 @@ import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import TutorHeroSection from "@/modules/tutor/components/hero-section/TutorHeroSection";
 import SearchFilters from "@/modules/tutor/components/search-filters/SearchFilters";
+import PaginationBar from "@/shared/components/common/pagination-bar/PaginationBar";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { useApplicationRealtime } from "@/shared/hooks/useApplicationRealtime";
 import { getApplicationApplyBlockMessage } from "@/shared/utils/applicationApplyBlock";
@@ -29,6 +30,8 @@ import {
 } from "@/modules/tutor/utils/tutorCourseAvailability";
 
 import styles from "./TutorPage.module.css";
+
+const COURSE_PAGE_SIZE = 9;
 
 const TutorDashboardPage: React.FC = () => {
   const router = useRouter();
@@ -53,6 +56,8 @@ const TutorDashboardPage: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<
     "all" | "applied" | "available" | "unavailable"
   >("all");
+  const [courseSortBy, setCourseSortBy] = useState("relevance");
+  const [coursePage, setCoursePage] = useState(1);
   const debouncedSearchQuery = useDebouncedValue(searchQuery, 320);
 
   // Toast notifications
@@ -384,6 +389,37 @@ const TutorDashboardPage: React.FC = () => {
     calculateSearchScore,
   ]);
 
+  const sortedFilteredCourses = React.useMemo(() => {
+    const list = [...filteredCourses];
+    if (courseSortBy === "code") {
+      return list.sort((a, b) => a.courseCode.localeCompare(b.courseCode));
+    }
+    if (courseSortBy === "name") {
+      return list.sort((a, b) => a.courseName.localeCompare(b.courseName));
+    }
+    return list;
+  }, [filteredCourses, courseSortBy]);
+
+  const courseTotalPages = Math.max(
+    1,
+    Math.ceil(sortedFilteredCourses.length / COURSE_PAGE_SIZE)
+  );
+
+  const paginatedCourses = sortedFilteredCourses.slice(
+    (coursePage - 1) * COURSE_PAGE_SIZE,
+    coursePage * COURSE_PAGE_SIZE
+  );
+
+  React.useEffect(() => {
+    setCoursePage(1);
+  }, [debouncedSearchQuery, activeFilter, courseSortBy]);
+
+  React.useEffect(() => {
+    if (coursePage > courseTotalPages) {
+      setCoursePage(courseTotalPages);
+    }
+  }, [coursePage, courseTotalPages]);
+
   const openApplyModal = (course: Course, role: Role) => {
     if (!user) {
       showError("You must be logged in to apply for courses.");
@@ -499,11 +535,13 @@ const TutorDashboardPage: React.FC = () => {
           onSearchChange={setSearchQuery}
           activeFilter={activeFilter}
           onFilterChange={setActiveFilter}
+          sortBy={courseSortBy}
+          onSortChange={setCourseSortBy}
         />
 
         {/* Course Cards Grid - Modified to show 3 cards per row */}
         <div className="container mx-auto px-4 py-8">
-          {filteredCourses.length === 0 ? (
+          {sortedFilteredCourses.length === 0 ? (
             <div className={styles.emptyStateCard}>
               <p className={styles.emptyTitle}>
                 {debouncedSearchQuery || activeFilter !== "all"
@@ -531,10 +569,11 @@ const TutorDashboardPage: React.FC = () => {
               )}
             </div>
           ) : (
+            <>
             <div
               className={`${styles.courseGrid} grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6`}
             >
-              {filteredCourses.map((course) => (
+              {paginatedCourses.map((course) => (
                 <CourseCard
                   key={course.id}
                   course={course}
@@ -544,6 +583,14 @@ const TutorDashboardPage: React.FC = () => {
                 />
               ))}
             </div>
+            <PaginationBar
+              page={coursePage}
+              pageSize={COURSE_PAGE_SIZE}
+              totalCount={sortedFilteredCourses.length}
+              totalPages={courseTotalPages}
+              onPageChange={setCoursePage}
+            />
+            </>
           )}
         </div>
       </main>

@@ -59,16 +59,12 @@ export class DatabaseResetService {
     }
 
     /**
-     * Drop and recreate database schema completely
+     * Drop schema and recreate via TypeORM migrations.
      */
     static async dropAndRecreateSchema(): Promise<void> {
         try {
-            // Drop all tables to avoid constraint issues
             await AppDataSource.dropDatabase();
-
-            // Recreate schema
-            await AppDataSource.synchronize(true);
-
+            await AppDataSource.runMigrations();
         } catch (error) {
             throw error;
         }

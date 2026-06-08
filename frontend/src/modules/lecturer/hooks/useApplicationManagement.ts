@@ -28,6 +28,10 @@ export const useApplicationManagement = () => {
   const [skillsFilter, setSkillsFilter] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("none");
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(20);
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   // Selected application state
   const [selectedApplication, setSelectedApplication] =
@@ -82,17 +86,35 @@ export const useApplicationManagement = () => {
       if (selectedCourse !== "all") filters.courseCode = selectedCourse;
       if (statusFilter !== "all") filters.status = statusFilter;
 
-      const filterKey = JSON.stringify(filters);
+      filters.page = page;
+      filters.pageSize = pageSize;
+
+      if (sortBy === "name") {
+        filters.sortBy = "candidateName";
+        filters.sortDir = "asc";
+      } else if (sortBy === "date") {
+        filters.sortBy = "appliedAt";
+        filters.sortDir = "desc";
+      } else if (sortBy === "status") {
+        filters.sortBy = "status";
+        filters.sortDir = "asc";
+      }
+
+      const filterKey = JSON.stringify({ ...filters, page, sortBy });
       const response = await dedupeInFlight(
         `lecturer-applications:${filterKey}`,
         () => ApplicationService.getApplicationsForLecturer(filters)
       );
 
       if (response.success && response.data) {
-        applyApplicationsResponse(response.data);
+        applyApplicationsResponse(response.data.items ?? []);
+        setTotalCount(response.data.totalCount ?? 0);
+        setTotalPages(response.data.totalPages ?? 1);
       } else {
         setApplications([]);
         setRankedApplications([]);
+        setTotalCount(0);
+        setTotalPages(1);
       }
     } catch {
       setApplications([]);
@@ -107,6 +129,8 @@ export const useApplicationManagement = () => {
     skillsFilter,
     selectedCourse,
     statusFilter,
+    page,
+    sortBy,
     applyApplicationsResponse,
   ]);
 
@@ -167,6 +191,19 @@ export const useApplicationManagement = () => {
     initializeData();
   }, [loadApplications, loadStatistics]);
 
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [
+    debouncedSearchQuery,
+    roleTypeFilter,
+    availabilityFilter,
+    skillsFilter,
+    selectedCourse,
+    statusFilter,
+    sortBy,
+  ]);
+
   // Reload when filters change (skip the run right after initial load)
   useEffect(() => {
     if (!isInitialized) {
@@ -188,6 +225,8 @@ export const useApplicationManagement = () => {
     skillsFilter,
     selectedCourse,
     statusFilter,
+    page,
+    sortBy,
   ]);
 
   // Sync selectedApplication with updated applications data
@@ -351,6 +390,12 @@ export const useApplicationManagement = () => {
     setStatusFilter,
     sortBy,
     setSortBy,
+
+    page,
+    setPage,
+    pageSize,
+    totalCount,
+    totalPages,
 
     // Actions
     loadApplications,

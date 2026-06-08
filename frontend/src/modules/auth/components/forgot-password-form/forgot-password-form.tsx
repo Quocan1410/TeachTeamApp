@@ -28,19 +28,21 @@ export default function ForgotPasswordForm() {
   const [apiError, setApiError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const normalizedEmail = email.trim().toLowerCase();
+
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setApiError("");
     setErrors({});
 
-    if (!email.trim()) {
+    if (!normalizedEmail) {
       setErrors({ email: "Email is required" });
       return;
     }
 
     setIsLoading(true);
     try {
-      const response = await AuthService.forgotPasswordChallenge(email.trim());
+      const response = await AuthService.forgotPasswordChallenge(normalizedEmail);
       if (response.success && response.data?.questions?.length) {
         const questions = response.data.questions;
         setChallengeQuestions(questions);
@@ -73,7 +75,7 @@ export default function ForgotPasswordForm() {
     setIsLoading(true);
     try {
       const response = await AuthService.forgotPasswordVerify(
-        email.trim(),
+        normalizedEmail,
         securityRows.map((row) => ({
           questionId: row.questionId,
           answer: row.answer.trim(),
@@ -106,6 +108,12 @@ export default function ForgotPasswordForm() {
         className={styles.form}
       >
         <h2 className={styles.title}>Forgot password</h2>
+        <p
+          className={styles.linkText}
+          style={{ textAlign: "center", marginBottom: "0.75rem", opacity: 0.85 }}
+        >
+          Step {step === "email" ? "1" : "2"} of 2
+        </p>
 
         {step === "email" ? (
           <p
@@ -120,7 +128,8 @@ export default function ForgotPasswordForm() {
             className={styles.linkText}
             style={{ textAlign: "center", marginBottom: "1rem" }}
           >
-            Answer the security questions you chose when you signed up.
+            Verifying <strong>{normalizedEmail}</strong> — answer your security
+            questions below.
           </p>
         )}
 

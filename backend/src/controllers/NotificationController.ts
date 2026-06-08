@@ -1,6 +1,10 @@
 import { Response } from "express";
 import { AuthenticatedRequest } from "../middleware/authMiddleware";
 import { NotificationService } from "../services/NotificationService";
+import {
+    normalizePagination,
+    paginatedResult,
+} from "../utils/pagination";
 
 export class NotificationController {
     async getMyNotifications(
@@ -17,15 +21,24 @@ export class NotificationController {
                 return;
             }
 
-            const notifications =
-                await NotificationService.getForUser(userId);
+            const { page, pageSize } = normalizePagination({
+                page: req.query.page as string | number | undefined,
+                pageSize: req.query.pageSize as string | number | undefined,
+            });
+
+            const { items, totalCount } =
+                await NotificationService.getForUserPaginated(
+                    userId,
+                    page,
+                    pageSize
+                );
             const unreadCount =
                 await NotificationService.getUnreadCount(userId);
 
             res.status(200).json({
                 success: true,
                 data: {
-                    notifications,
+                    ...paginatedResult(items, totalCount, page, pageSize),
                     unreadCount,
                 },
             });

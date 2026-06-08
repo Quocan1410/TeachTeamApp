@@ -38,6 +38,11 @@ import {
     sanitizeApplicationForCandidate,
     sanitizeApplicationsForCandidate,
 } from "../utils/candidateApplicationView";
+import {
+    normalizePagination,
+    paginatedResult,
+} from "../utils/pagination";
+import { ApplicationQueryService } from "../services/applicationQueryService";
 
 export class ApplicationController {
     private applicationRepository = AppDataSource.getRepository(Application);
@@ -49,6 +54,7 @@ export class ApplicationController {
     private courseAssignmentRepository =
         AppDataSource.getRepository(CourseAssignment);
     private draftRepository = AppDataSource.getRepository(ApplicationDraft);
+    private applicationQueryService = new ApplicationQueryService();
 
     private async attachShortlistFlags<T extends Application>(
         applications: T[]
@@ -990,115 +996,67 @@ export class ApplicationController {
     ): Promise<void> {
         try {
             const lecturerId = req.user?.userId;
-            const {
-                candidateName,
-                roleType,
-                availability,
-                skills,
-                courseCode,
-                status = "all",
-            } = req.query;
-
-
-
-            // Verify user is a lecturer
-            const lecturer = await this.userRepository.findOne({
-                where: { id: lecturerId, userType: UserType.LECTURER },
-            });
-
-            if (!lecturer) {
-                res.status(403).json({
+            if (!lecturerId) {
+                res.status(401).json({
                     success: false,
-                    message: "Only lecturers can access applications",
+                    message: "Unauthorized",
                 });
                 return;
             }
 
-            // Get lecturer's assigned courses
-            const courseAssignments =
-                await this.courseAssignmentRepository.find({
-                    where: { lecturerId },
-                    relations: ["course"],
+            const result =
+                await this.applicationQueryService.getLecturerApplicationsPaginated(
+                    lecturerId,
+                    {
+                        candidateName: req.query.candidateName as
+                            | string
+                            | undefined,
+                        roleType: req.query.roleType as string | undefined,
+                        availability: req.query.availability as
+                            | string
+                            | undefined,
+                        skills: req.query.skills as string | undefined,
+                        courseCode: req.query.courseCode as string | undefined,
+                        status: (req.query.status as string) || "all",
+                        page: req.query.page as string | number | undefined,
+                        pageSize: req.query.pageSize as
+                            | string
+                            | number
+                            | undefined,
+                        sortBy: req.query.sortBy as string | undefined,
+                        sortDir: req.query.sortDir as string | undefined,
+                    },
+                    (apps) => this.attachShortlistFlags(apps)
+                );
+
+            if (!result.ok) {
+                res.status(result.status).json({
+                    success: false,
+                    message: result.message,
                 });
+                return;
+            }
 
-            const assignedCourseIds = courseAssignments.map(
-                (ca) => ca.courseId
-            );
-
-            if (assignedCourseIds.length === 0) {
+            if ("empty" in result && result.empty) {
                 res.status(200).json({
                     success: true,
-                    data: [],
-                    message: "No courses assigned to this lecturer",
+                    data: paginatedResult([], 0, 1, 20),
+                    message: result.message,
                 });
                 return;
             }
 
-            // Build query with filters
-            const queryBuilder = this.applicationRepository
-                .createQueryBuilder("application")
-                .leftJoinAndSelect("application.candidate", "candidate")
-                .leftJoinAndSelect("application.commentedByUser", "commentedByUser")
-                .leftJoinAndSelect("application.course", "course")
-                .leftJoinAndSelect("course.courseAssignments", "courseAssignment")
-                .leftJoinAndSelect("courseAssignment.lecturer", "courseLecturer")
-                .leftJoinAndSelect("application.role", "role")
-                .where("application.courseId IN (:...courseIds)", {
-                    courseIds: assignedCourseIds,
+            if (!("data" in result)) {
+                res.status(500).json({
+                    success: false,
+                    message: "Internal server error",
                 });
-
-            // Apply filters
-            if (candidateName) {
-                queryBuilder.andWhere(
-                    "(LOWER(candidate.firstName) LIKE LOWER(:name) OR LOWER(candidate.lastName) LIKE LOWER(:name) OR LOWER(CONCAT(candidate.firstName, ' ', candidate.lastName)) LIKE LOWER(:name))",
-                    { name: `%${candidateName}%` }
-                );
+                return;
             }
-
-            if (roleType && roleType !== "all") {
-                queryBuilder.andWhere("role.roleName = :roleType", {
-                    roleType,
-                });
-            }
-
-            if (availability && availability !== "all") {
-                queryBuilder.andWhere(
-                    "JSON_UNQUOTE(JSON_EXTRACT(application.availability, '$.type')) = :availability",
-                    { availability }
-                );
-            }
-
-            if (skills) {
-                queryBuilder.andWhere(
-                    "LOWER(application.skills) LIKE LOWER(:skills)",
-                    {
-                        skills: `%${skills}%`,
-                    }
-                );
-            }
-
-            if (courseCode && courseCode !== "all") {
-                queryBuilder.andWhere("course.courseCode = :courseCode", {
-                    courseCode,
-                });
-            }
-
-            if (status && status !== "all") {
-                queryBuilder.andWhere("application.status = :status", {
-                    status,
-                });
-            }
-
-            // Order by application date (newest first)
-            queryBuilder.orderBy("application.appliedAt", "DESC");
-
-            const applications = await queryBuilder.getMany();
-            const applicationsWithShortlist =
-                await this.attachShortlistFlags(applications);
 
             res.status(200).json({
                 success: true,
-                data: applicationsWithShortlist,
+                data: result.data,
             });
         } catch (error) {
             res.status(500).json({

@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useNotifications } from "@/shared/contexts/NotificationContext";
 import CloseIcon from "@/shared/components/common/icons/CloseIcon";
+import PaginationBar from "@/shared/components/common/pagination-bar/PaginationBar";
 import styles from "./NotificationBell.module.css";
 
 const NotificationBell: React.FC = () => {
@@ -14,6 +15,11 @@ const NotificationBell: React.FC = () => {
     markAsRead,
     markAllAsRead,
     removeNotification,
+    notificationPage,
+    notificationPageSize,
+    notificationTotalCount,
+    notificationTotalPages,
+    setNotificationPage,
   } = useNotifications();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -295,11 +301,16 @@ const NotificationBell: React.FC = () => {
             )}
           </div>
 
-          {notifications.length > 10 && (
+          {notificationTotalCount > 0 && (
             <div className={styles.dropdownFooter}>
-              <span className={styles.moreText}>
-                +{notifications.length - 10} more in your inbox
-              </span>
+              <PaginationBar
+                page={notificationPage}
+                pageSize={notificationPageSize}
+                totalCount={notificationTotalCount}
+                totalPages={notificationTotalPages}
+                onPageChange={setNotificationPage}
+                loading={loading}
+              />
             </div>
           )}
         </div>

@@ -272,6 +272,21 @@ export class NotificationService {
         });
     }
 
+    static async getForUserPaginated(
+        userId: number,
+        page: number,
+        pageSize: number
+    ): Promise<{ items: Notification[]; totalCount: number }> {
+        const skip = (page - 1) * pageSize;
+        const [items, totalCount] = await this.getRepository().findAndCount({
+            where: { userId },
+            order: { createdAt: "DESC" },
+            skip,
+            take: pageSize,
+        });
+        return { items, totalCount };
+    }
+
     static async getUnreadCount(userId: number): Promise<number> {
         return this.getRepository().count({
             where: { userId, read: false },

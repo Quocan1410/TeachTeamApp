@@ -38,16 +38,23 @@ export interface StoredNotification {
 }
 
 export interface NotificationListResponse {
-  notifications: StoredNotification[];
+  items: StoredNotification[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
   unreadCount: number;
 }
 
-export async function fetchNotifications(): Promise<NotificationListResponse> {
+export async function fetchNotifications(
+  page = 1,
+  pageSize = 50
+): Promise<NotificationListResponse> {
   const response = await notificationAPI.get<{
     success: boolean;
     data?: NotificationListResponse;
     message?: string;
-  }>("");
+  }>("", { params: { page, pageSize } });
 
   if (!response.data?.success || !response.data.data) {
     throw new Error(

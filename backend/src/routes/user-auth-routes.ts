@@ -116,6 +116,15 @@ router.post(
 );
 
 router.post(
+    "/forgot-password/email",
+    passwordResetRateLimiter,
+    validateRequestBody(["email"]),
+    async (req, res) => {
+        await authController.forgotPasswordEmail(req, res);
+    }
+);
+
+router.post(
     "/forgot-password/verify",
     passwordResetRateLimiter,
     async (req, res) => {

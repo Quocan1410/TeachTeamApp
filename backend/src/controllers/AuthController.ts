@@ -31,6 +31,8 @@ import {
     setRefreshCookie,
     getRefreshTokenFromRequest,
 } from "../utils/authCookie";
+import { enqueueEmail } from "../services/emailQueue";
+import { AuthService } from "../services/authService";
 
 interface AssignedCourse {
     id: number;
@@ -62,132 +64,33 @@ export class AuthController {
 
     async signup(req: Request, res: Response): Promise<void> {
         try {
-            const { email, password, firstName, lastName, userType, honorific } =
-                req.body;
-
-            // Automatically determine userType from email domain if not provided
-            let finalUserType = userType;
-            if (!finalUserType) {
-                finalUserType = getUserTypeFromEmail(email);
-                if (!finalUserType) {
-                    res.status(400).json({
-                        success: false,
-                        message: "Invalid email domain",
-                        errors: {
-                            email: "Email must end with @candidate.edu.au (for candidates) or @lecturer.edu.au (for lecturers)",
-                        },
-                    });
-                    return;
-                }
-                // Set the userType in the request body for validation
-                req.body.userType = finalUserType;
-            } else {
-                // If userType is provided, verify it matches the email domain
-                const userTypeFromEmail = getUserTypeFromEmail(email);
-                if (userTypeFromEmail && userTypeFromEmail !== finalUserType) {
-                    const expectedDomain =
-                        userTypeFromEmail === UserType.CANDIDATE
-                            ? "@candidate.edu.au"
-                            : "@lecturer.edu.au";
-                    res.status(400).json({
-                        success: false,
-                        message: "User type does not match email domain",
-                        errors: {
-                            email: `Email domain does not match selected user type. Use ${expectedDomain} for ${userTypeFromEmail}s`,
-                        },
-                    });
-                    return;
-                }
-            }
-
-            if (finalUserType === UserType.ADMIN) {
-                res.status(403).json({
+            const result = await AuthService.registerUser(req.body);
+            if (!result.success || !result.data?.user) {
+                res.status(result.statusCode).json({
                     success: false,
-                    message:
-                        "Admin accounts cannot be created via signup. Sign in at the admin panel.",
+                    message: result.message,
+                    errors: result.errors,
                 });
                 return;
             }
 
-            // Check if user already exists
-            const existingUser = await this.userRepository.findOne({
-                where: { email },
+            const savedUser = await this.userRepository.findOne({
+                where: { id: result.data.user.id },
             });
-
-            if (existingUser) {
-                res.status(409).json({
-                    success: false,
-                    message: "User with this email already exists",
-                });
-                return;
-            }
-
-            // Hash password
-            const saltRounds = 12;
-            const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-            const resolvedHonorific =
-                typeof honorific === "string" && honorific.trim()
-                    ? honorific.trim()
-                    : finalUserType === UserType.LECTURER
-                      ? "Dr."
-                      : "Mr.";
-
-            const securityValidation =
-                SecurityQuestionService.validateSecurityAnswersInput(
-                    req.body.securityAnswers
-                );
-
-            // Create new user with the final userType
-            const newUser = this.userRepository.create({
-                email,
-                password: hashedPassword,
-                firstName,
-                lastName,
-                userType: finalUserType as UserType,
-                honorific: resolvedHonorific,
-            });
-
-            const savedUser = await this.userRepository.save(newUser);
-
-            try {
-                await this.securityQuestionService.saveAnswers(
-                    savedUser.id,
-                    securityValidation.parsed
-                );
-            } catch {
-                await this.userRepository.delete({ id: savedUser.id });
+            if (!savedUser) {
                 res.status(500).json({
                     success: false,
-                    message: "Unable to save security questions. Please try again.",
+                    message: "Internal server error during registration",
                 });
                 return;
-            }
-
-            if (finalUserType !== UserType.ADMIN) {
-                await NotificationService.notifyAdmins({
-                    type: NotificationType.USER_REGISTERED,
-                    title: "New user registered",
-                    message: `${savedUser.firstName} ${savedUser.lastName} (${savedUser.email}) joined as ${finalUserType}`,
-                    link: "/dashboard/users",
-                    metadata: {
-                        userId: savedUser.id,
-                        userType: finalUserType,
-                    },
-                });
             }
 
             await this.issueUserSession(res, savedUser);
 
-            // Return success response (exclude password)
-            const { password: _, ...userWithoutPassword } = savedUser;
-
-            res.status(201).json({
+            res.status(result.statusCode).json({
                 success: true,
-                message: "User registered successfully",
-                data: {
-                    user: userWithoutPassword,
-                },
+                message: result.message,
+                data: result.data,
             });
         } catch (error) {
             res.status(500).json({
@@ -375,18 +278,12 @@ export class AuthController {
                 return;
             }
 
-            const { currentPassword, newPassword, confirmPassword } = req.body;
-            const validation = validateChangePasswordData({
-                currentPassword,
-                newPassword,
-                confirmPassword,
-            });
-
-            if (!validation.isValid) {
-                res.status(400).json({
+            const result = await AuthService.changePassword(userId, req.body);
+            if (!result.success) {
+                res.status(result.statusCode).json({
                     success: false,
-                    message: "",
-                    errors: validation.errors,
+                    message: result.message,
+                    errors: result.errors,
                 });
                 return;
             }
@@ -394,57 +291,13 @@ export class AuthController {
             const user = await this.userRepository.findOne({
                 where: { id: userId },
             });
-
-            if (!user) {
-                res.status(404).json({
-                    success: false,
-                    message: "User not found",
-                });
-                return;
+            if (user) {
+                await this.issueUserSession(res, user);
             }
-
-            if (user.userType === UserType.ADMIN) {
-                res.status(403).json({
-                    success: false,
-                    message: "Admin password is managed in the admin panel",
-                });
-                return;
-            }
-
-            const matches = await bcrypt.compare(
-                currentPassword,
-                user.password
-            );
-            if (!matches) {
-                res.status(400).json({
-                    success: false,
-                    message: "",
-                    errors: { currentPassword: "Current password is incorrect" },
-                });
-                return;
-            }
-
-            if (currentPassword === newPassword) {
-                res.status(400).json({
-                    success: false,
-                    message: "",
-                    errors: {
-                        newPassword:
-                            "New password must be different from current password",
-                    },
-                });
-                return;
-            }
-
-            user.password = await bcrypt.hash(newPassword, 12);
-            await this.userRepository.save(user);
-            await RefreshTokenService.revokeAllForUser(user.id);
-
-            await this.issueUserSession(res, user);
 
             res.status(200).json({
                 success: true,
-                message: "Password changed successfully",
+                message: result.message,
             });
         } catch (error) {
             res.status(500).json({
@@ -535,56 +388,11 @@ export class AuthController {
                 return;
             }
 
-            const { firstName, lastName, honorific } = req.body;
-
-            const user = await this.userRepository.findOne({
-                where: { id: userId },
-            });
-
-            if (!user) {
-                res.status(404).json({
-                    success: false,
-                    message: "User not found",
-                });
-                return;
-            }
-
-            if (user.isBlocked) {
-                res.status(403).json({
-                    success: false,
-                    message: "Blocked accounts cannot update their profile",
-                });
-                return;
-            }
-
-            user.firstName = firstName.trim();
-            user.lastName = lastName.trim();
-
-            if (typeof honorific === "string" && honorific.trim()) {
-                const trimmed = honorific.trim();
-                const candidateTitles = new Set(["Mr.", "Ms.", "Mrs."]);
-                const lecturerTitles = new Set(["Dr.", "Prof."]);
-
-                if (
-                    user.userType === UserType.CANDIDATE &&
-                    candidateTitles.has(trimmed)
-                ) {
-                    user.honorific = trimmed;
-                } else if (
-                    user.userType === UserType.LECTURER &&
-                    lecturerTitles.has(trimmed)
-                ) {
-                    user.honorific = trimmed;
-                }
-            }
-
-            const updatedUser = await this.userRepository.save(user);
-            const { password: _, ...userProfile } = updatedUser;
-
-            res.status(200).json({
-                success: true,
-                message: "Profile updated successfully",
-                data: { user: userProfile },
+            const result = await AuthService.updateProfile(userId, req.body);
+            res.status(result.statusCode).json({
+                success: result.success,
+                message: result.message,
+                data: result.data,
             });
         } catch (error) {
             res.status(500).json({
@@ -919,6 +727,54 @@ export class AuthController {
             res.status(500).json({
                 success: false,
                 message: "Unable to start password recovery",
+            });
+        }
+    }
+
+    /** Email reset link — queued via cron worker (SMTP optional in dev). */
+    async forgotPasswordEmail(req: Request, res: Response): Promise<void> {
+        try {
+            const { email } = req.body;
+            const validation = validateForgotPasswordEmail(email || "");
+            if (!validation.isValid) {
+                res.status(400).json({
+                    success: false,
+                    message: "",
+                    errors: validation.errors,
+                });
+                return;
+            }
+
+            const normalized = String(email).trim().toLowerCase();
+            const user = await this.userRepository.findOne({
+                where: { email: normalized },
+            });
+
+            if (
+                user &&
+                user.userType !== UserType.ADMIN &&
+                !user.isBlocked
+            ) {
+                const { resetUrl } =
+                    await this.passwordResetService.createResetTokenForUser(
+                        user.id
+                    );
+                enqueueEmail({
+                    type: "password_reset",
+                    to: user.email,
+                    resetUrl,
+                });
+            }
+
+            res.status(200).json({
+                success: true,
+                message:
+                    "If an account exists for that email, a reset link has been queued.",
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: "Unable to queue password reset email",
             });
         }
     }

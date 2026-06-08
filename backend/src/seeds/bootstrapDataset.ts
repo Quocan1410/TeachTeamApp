@@ -9,13 +9,28 @@ import { Application, ApplicationStatus } from "../entities/Application";
 import { Notification, NotificationType } from "../entities/Notification";
 import { SelectedCandidate } from "../entities/SelectedCandidate";
 import { ApplicationDraft } from "../entities/ApplicationDraft";
-import { Announcement } from "../entities/Announcement";
+import {
+    Announcement,
+    AnnouncementAudience,
+} from "../entities/Announcement";
 import { PasswordResetToken } from "../entities/PasswordResetToken";
 import { RefreshToken } from "../entities/RefreshToken";
 import { UserSecurityAnswer } from "../entities/UserSecurityAnswer";
 import { LECTURER_PRIMARY_MESSAGE_ID } from "../utils/correspondenceMessages";
 import type { MessageReactionsMap } from "../utils/messageReactions";
 import { SecurityQuestionService } from "../services/SecurityQuestionService";
+import {
+    EXTRA_LECTURERS,
+    EXTRA_CANDIDATES,
+    EXTRA_COURSE_DEFS,
+    buildExtraApplications,
+} from "./extendedSeedData";
+import {
+    WAVE2_LECTURERS,
+    WAVE2_CANDIDATES,
+    WAVE2_COURSE_DEFS,
+    buildSecondWaveApplications,
+} from "./secondWaveSeedData";
 
 export const DEMO_PASSWORD = "Password123!";
 
@@ -107,6 +122,254 @@ function addMinutes(base: Date, minutes: number): Date {
     const d = new Date(base);
     d.setMinutes(d.getMinutes() + minutes);
     return d;
+}
+
+type AnnouncementSeed = {
+    title: string;
+    body: string;
+    audience?: AnnouncementAudience;
+    startsAt?: Date | null;
+    endsAt?: Date | null;
+    isActive?: boolean;
+};
+
+/** Sample announcements for admin filters, pagination (15/page), and user-app banner testing. */
+function buildAnnouncementSeeds(now: Date): AnnouncementSeed[] {
+    return [
+        {
+            title: "Welcome to TeachTeam (local demo)",
+            body: "Use the seeded accounts to explore tutor, lecturer, and application flows. Run `npm run db:reset` in the backend folder to refresh data.",
+            audience: AnnouncementAudience.ALL,
+            isActive: true,
+        },
+        {
+            title: "Tutor applications now open",
+            body: "Browse available courses and submit your tutor or lab assistant applications before the semester deadline.",
+            audience: AnnouncementAudience.CANDIDATE,
+            startsAt: addDays(now, -14),
+            endsAt: addDays(now, 60),
+            isActive: true,
+        },
+        {
+            title: "Submit final grades by Friday",
+            body: "Lecturers: please finalize marks in the portal and confirm course allocations for next term.",
+            audience: AnnouncementAudience.LECTURER,
+            isActive: true,
+        },
+        {
+            title: "Platform maintenance (inactive draft)",
+            body: "Scheduled downtime notice — kept inactive for admin testing.",
+            audience: AnnouncementAudience.ALL,
+            isActive: false,
+        },
+        {
+            title: "Mid-semester break notice (expired)",
+            body: "Campus closed during break week. This banner has ended but remains active in admin for history.",
+            audience: AnnouncementAudience.ALL,
+            startsAt: addDays(now, -60),
+            endsAt: addDays(now, -7),
+            isActive: true,
+        },
+        {
+            title: "Orientation week (scheduled future)",
+            body: "Welcome sessions start next month. This announcement is active but not yet visible to users.",
+            audience: AnnouncementAudience.ALL,
+            startsAt: addDays(now, 21),
+            endsAt: addDays(now, 28),
+            isActive: true,
+        },
+        {
+            title: "Complete your candidate profile",
+            body: "Add skills, availability, and experience so lecturers can review stronger applications.",
+            audience: AnnouncementAudience.CANDIDATE,
+            isActive: true,
+        },
+        {
+            title: "Course allocation update",
+            body: "Review assigned courses and confirm tutor selections before the reporting deadline.",
+            audience: AnnouncementAudience.LECTURER,
+            startsAt: addDays(now, -3),
+            endsAt: addDays(now, 14),
+            isActive: true,
+        },
+        {
+            title: "Draft: academic integrity policy",
+            body: "Policy revision pending approval — inactive row for admin edit/delete testing.",
+            audience: AnnouncementAudience.ALL,
+            isActive: false,
+        },
+        {
+            title: "COMP9001 tutor hiring",
+            body: "We are recruiting tutors for COMP9001 Advanced Programming. Search this code to test filters.",
+            audience: AnnouncementAudience.CANDIDATE,
+            isActive: true,
+        },
+        {
+            title: "Selections report reminder",
+            body: "Check the selections dashboard for over-allocated courses and pending approvals.",
+            audience: AnnouncementAudience.LECTURER,
+            isActive: true,
+        },
+        {
+            title: "System update changelog",
+            body: "Improved notifications, application drafts, and announcement scheduling in this release.",
+            audience: AnnouncementAudience.ALL,
+            isActive: true,
+        },
+        {
+            title: "Interview scheduling for shortlisted candidates",
+            body: "Shortlisted applicants will receive interview slots via email this week.",
+            audience: AnnouncementAudience.CANDIDATE,
+            startsAt: addDays(now, -1),
+            endsAt: addDays(now, 10),
+            isActive: true,
+        },
+        {
+            title: "Marking scheme published",
+            body: "Updated rubrics are available on each course page for lecturer reference.",
+            audience: AnnouncementAudience.LECTURER,
+            isActive: true,
+        },
+        {
+            title: "Accessibility improvements",
+            body: "Dark mode and keyboard navigation enhancements are live for all users.",
+            audience: AnnouncementAudience.ALL,
+            isActive: true,
+        },
+        {
+            title: "Application deadline extension — COSC2758",
+            body: "COSC2758 applications extended by one week. Candidates only.",
+            audience: AnnouncementAudience.CANDIDATE,
+            endsAt: addDays(now, 7),
+            isActive: true,
+        },
+        {
+            title: "Workshop invitation (inactive)",
+            body: "Teaching workshop for lecturers — inactive sample row.",
+            audience: AnnouncementAudience.LECTURER,
+            isActive: false,
+        },
+        {
+            title: "End-of-semester survey",
+            body: "Share feedback on the teaching team platform before exams begin.",
+            audience: AnnouncementAudience.ALL,
+            startsAt: addDays(now, 45),
+            isActive: true,
+        },
+        // Wave 2 — doubles announcement count for admin filters
+        {
+            title: "Wave 2: Campus safety briefing",
+            body: "Mandatory safety session for all teaching staff next week.",
+            audience: AnnouncementAudience.LECTURER,
+            isActive: true,
+        },
+        {
+            title: "Wave 2: Peer mentoring signup",
+            body: "Candidates can register as peer mentors for first-year students.",
+            audience: AnnouncementAudience.CANDIDATE,
+            isActive: true,
+        },
+        {
+            title: "Wave 2: Holiday closure (inactive)",
+            body: "Campus closed — inactive row for filter testing.",
+            audience: AnnouncementAudience.ALL,
+            isActive: false,
+        },
+        {
+            title: "Wave 2: Lab equipment refresh",
+            body: "New microscopes installed in BIOL1002 labs.",
+            audience: AnnouncementAudience.LECTURER,
+            startsAt: addDays(now, -2),
+            endsAt: addDays(now, 20),
+            isActive: true,
+        },
+        {
+            title: "Wave 2: Scholarship applications",
+            body: "Teaching excellence scholarships now open.",
+            audience: AnnouncementAudience.CANDIDATE,
+            isActive: true,
+        },
+        {
+            title: "Wave 2: GDPR data review",
+            body: "Annual privacy compliance check for all users.",
+            audience: AnnouncementAudience.ALL,
+            isActive: false,
+        },
+        {
+            title: "Wave 2: STAT2001 revision class",
+            body: "Extra revision sessions before the final exam.",
+            audience: AnnouncementAudience.CANDIDATE,
+            isActive: true,
+        },
+        {
+            title: "Wave 2: Lecturer onboarding",
+            body: "New lecturers: complete onboarding modules by month end.",
+            audience: AnnouncementAudience.LECTURER,
+            isActive: true,
+        },
+        {
+            title: "Wave 2: Mobile app beta",
+            body: "Try the mobile-friendly tutor dashboard in beta.",
+            audience: AnnouncementAudience.ALL,
+            isActive: true,
+        },
+        {
+            title: "Wave 2: Draft policy update",
+            body: "Inactive draft — workplace policy revision.",
+            audience: AnnouncementAudience.ALL,
+            isActive: false,
+        },
+        {
+            title: "Wave 2: INFO3003 cloud labs",
+            body: "Cloud computing lab slots released for tutors.",
+            audience: AnnouncementAudience.CANDIDATE,
+            isActive: true,
+        },
+        {
+            title: "Wave 2: Selections deadline",
+            body: "Lecturers must confirm selections before Friday.",
+            audience: AnnouncementAudience.LECTURER,
+            endsAt: addDays(now, 5),
+            isActive: true,
+        },
+        {
+            title: "Wave 2: Welcome back",
+            body: "Second semester welcome message for all users.",
+            audience: AnnouncementAudience.ALL,
+            isActive: true,
+        },
+        {
+            title: "Wave 2: Archived notice (inactive)",
+            body: "Old notice kept for admin inactive filter demos.",
+            audience: AnnouncementAudience.ALL,
+            isActive: false,
+        },
+        {
+            title: "Wave 2: GAME2001 showcase",
+            body: "Student game projects exhibition next month.",
+            audience: AnnouncementAudience.CANDIDATE,
+            startsAt: addDays(now, 14),
+            isActive: true,
+        },
+        {
+            title: "Wave 2: Research seminar series",
+            body: "Weekly seminars for lecturers and tutors.",
+            audience: AnnouncementAudience.LECTURER,
+            isActive: true,
+        },
+        {
+            title: "Wave 2: System performance update",
+            body: "Backend optimisations deployed — report issues to IT.",
+            audience: AnnouncementAudience.ALL,
+            isActive: true,
+        },
+        {
+            title: "Wave 2: Exam timetable published",
+            body: "Final exam schedules are now available on the student portal.",
+            audience: AnnouncementAudience.CANDIDATE,
+            isActive: true,
+        },
+    ];
 }
 
 const COURSE_DEFS = [
@@ -553,6 +816,32 @@ const APPLICATION_DEFS: SeedApplication[] = [
         lecturerComment: "Strong PASS feedback.",
     },
     {
+        candidateEmail: "sam.candidate@candidate.edu.au",
+        courseCode: "COMP9001",
+        roleName: "tutor",
+        status: ApplicationStatus.SELECTED,
+        availability: "Part Time",
+        skills: "Academic writing, peer review",
+        experience: "Thesis editing assistant.",
+        motivation: "Support research methods workshops.",
+        lecturerEmail: "marcus.lecturer@lecturer.edu.au",
+        lecturerComment: "Fourth concurrent pick — over-selected demo.",
+        rank: 2,
+        rankedForCourse: "COMP9001",
+    },
+    {
+        candidateEmail: "sam.candidate@candidate.edu.au",
+        courseCode: "COSC2123",
+        roleName: "lab_assistant",
+        status: ApplicationStatus.SELECTED,
+        availability: "Part Time",
+        skills: "C++, gdb, Valgrind",
+        experience: "Algorithms lab demonstrator.",
+        motivation: "Assist data structures labs.",
+        lecturerEmail: "jane.lecturer@lecturer.edu.au",
+        lecturerComment: "Fifth selection for admin overlap reporting.",
+    },
+    {
         candidateEmail: "alex.candidate@candidate.edu.au",
         courseCode: "COMP9417",
         roleName: "lab_assistant",
@@ -565,9 +854,9 @@ const APPLICATION_DEFS: SeedApplication[] = [
 ];
 
 /**
- * Comprehensive local dataset: 4 lecturers, 4 candidates, 12 courses,
- * applications covering pending/selected/rejected/withdrawn, correspondence,
- * rankings, quota-full course, closed deadline, blocked candidate, drafts, notifications.
+ * Comprehensive local dataset: lecturers, candidates, courses,
+ * applications (pending/selected/rejected/withdrawn), announcements,
+ * correspondence, rankings, blocked users, drafts, notifications.
  */
 export async function seedBootstrapDataset(): Promise<void> {
     const userRepo = AppDataSource.getRepository(User);
@@ -581,10 +870,32 @@ export async function seedBootstrapDataset(): Promise<void> {
     const announcementRepo = AppDataSource.getRepository(Announcement);
 
     const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 12);
+    const adminEmail = (process.env.ADMIN_EMAIL || "admin@admin.com")
+        .trim()
+        .toLowerCase();
+    const adminPasswordHash = await bcrypt.hash(
+        process.env.ADMIN_PASSWORD || "admin",
+        12
+    );
     const now = new Date();
 
+    await userRepo.save(
+        userRepo.create({
+            email: adminEmail,
+            password: adminPasswordHash,
+            firstName: "System",
+            lastName: "Administrator",
+            userType: UserType.ADMIN,
+            isBlocked: false,
+        })
+    );
+
     const lecturerByEmail = new Map<string, User>();
-    for (const def of LECTURERS) {
+    for (const def of [
+        ...LECTURERS,
+        ...EXTRA_LECTURERS,
+        ...WAVE2_LECTURERS,
+    ]) {
         const user = await userRepo.save(
             userRepo.create({
                 email: def.email,
@@ -599,7 +910,7 @@ export async function seedBootstrapDataset(): Promise<void> {
     }
 
     const candidateByEmail = new Map<string, User>();
-    for (const def of CANDIDATES) {
+    for (const def of [...CANDIDATES, ...EXTRA_CANDIDATES, ...WAVE2_CANDIDATES]) {
         const user = await userRepo.save(
             userRepo.create({
                 email: def.email,
@@ -634,7 +945,7 @@ export async function seedBootstrapDataset(): Promise<void> {
     });
 
     const courseByCode = new Map<string, Course>();
-    for (const def of COURSE_DEFS) {
+    for (const def of [...COURSE_DEFS, ...EXTRA_COURSE_DEFS, ...WAVE2_COURSE_DEFS]) {
         const course = await courseRepo.save(
             courseRepo.create({
                 courseCode: def.courseCode,
@@ -686,7 +997,11 @@ export async function seedBootstrapDataset(): Promise<void> {
         );
     };
 
-    for (const def of APPLICATION_DEFS) {
+    for (const def of [
+        ...APPLICATION_DEFS,
+        ...buildExtraApplications(),
+        ...buildSecondWaveApplications(),
+    ]) {
         const candidate = candidateByEmail.get(def.candidateEmail);
         const course = courseByCode.get(def.courseCode);
         if (!candidate || !course) continue;
@@ -858,13 +1173,21 @@ export async function seedBootstrapDataset(): Promise<void> {
         );
     }
 
+    const announcementAuthorId = lecturerByEmail.get(
+        "jane.lecturer@lecturer.edu.au"
+    )!.id;
     await announcementRepo.save(
-        announcementRepo.create({
-            title: "Welcome to TeachTeam (local demo)",
-            body: "Use the seeded accounts to explore tutor, lecturer, and application flows. Run `npm run db:reset` in the backend folder to refresh data. Forgot password demo: use the same 4 security answers documented in env.example (DEMO_SECURITY_ANSWERS).",
-            createdBy: lecturerByEmail.get("jane.lecturer@lecturer.edu.au")!.id,
-            isActive: true,
-        })
+        buildAnnouncementSeeds(now).map((seed) =>
+            announcementRepo.create({
+                title: seed.title,
+                body: seed.body,
+                audience: seed.audience ?? AnnouncementAudience.ALL,
+                startsAt: seed.startsAt ?? null,
+                endsAt: seed.endsAt ?? null,
+                isActive: seed.isActive ?? true,
+                createdBy: announcementAuthorId,
+            })
+        )
     );
 
     if (alex) {

@@ -17,6 +17,8 @@ import path from "path";
 import { ensureAvatarUploadDir } from "./utils/avatarUtils";
 import { corsOptions } from "./config/corsConfig";
 import { initSocketServer } from "./socket/socketServer";
+import { generalRateLimiter } from "./middleware/rateLimiters";
+import { startEmailScheduler } from "./jobs/emailScheduler";
 
 ensureAvatarUploadDir();
 
@@ -27,6 +29,7 @@ const PORT = process.env.BACKEND_PORT || process.env.PORT || 5000;
 app.use(helmet());
 app.use(cookieParser());
 app.use(cors(corsOptions));
+app.use(generalRateLimiter);
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 app.use("/uploads", express.static(path.resolve(__dirname, "../uploads")));
@@ -50,10 +53,12 @@ app.get("/health", (_req, res) => {
 const startServer = async () => {
     try {
         await initializeDatabase();
+        startEmailScheduler();
         initSocketServer(httpServer);
 
         httpServer.listen(PORT);
     } catch (error) {
+        startEmailScheduler();
         initSocketServer(httpServer);
 
         httpServer.listen(PORT);

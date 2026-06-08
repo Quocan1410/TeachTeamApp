@@ -8,6 +8,7 @@ import {
 } from "@/shared/services/applicationService";
 import { Application } from "@/shared/types/application";
 import ApplicantList from "@/modules/lecturer/components/applicant-list/applicant-list";
+import PaginationBar from "@/shared/components/common/pagination-bar/PaginationBar";
 import LecturerApplicantDetailPanel from "@/modules/lecturer/components/applicant-detail/LecturerApplicantDetailPanel";
 import RankedCandidates from "@/modules/lecturer/components/ranked-candidates/ranked-candidates";
 import Toast from "@/shared/components/common/toast/toast";
@@ -191,6 +192,11 @@ const LecturerDashboardInner: React.FC = () => {
     setStatusFilter,
     sortBy,
     setSortBy,
+    page,
+    setPage,
+    pageSize,
+    totalCount,
+    totalPages,
     loadApplications,
     scheduleLoadApplications,
     patchApplication,
@@ -939,6 +945,13 @@ const LecturerDashboardInner: React.FC = () => {
                       selectedApplication={selectedApplication}
                       onSelectApplication={handleSelectApplication}
                       onRemoveBlockedApplication={handleRemoveBlockedApplication}
+                    />
+                    <PaginationBar
+                      page={page}
+                      pageSize={pageSize}
+                      totalCount={totalCount}
+                      totalPages={totalPages}
+                      onPageChange={setPage}
                     />
                   </div>
 

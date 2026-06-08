@@ -11,6 +11,14 @@ export interface ApiResponse<T = unknown> {
   errors?: Record<string, string>;
 }
 
+export interface PaginatedResult<T> {
+  items: T[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
 export interface Course {
   id: number;
   courseCode: string;
@@ -133,6 +141,18 @@ export interface ApplicationFilters {
   skills?: string;
   courseCode?: string;
   status?: string;
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortDir?: "asc" | "desc";
+}
+
+export interface PaginatedList<T> {
+  items: T[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
 }
 
 export class ApplicationService {
@@ -217,7 +237,7 @@ export class ApplicationService {
   // CR Part: Get applications for lecturer with filtering
   static async getApplicationsForLecturer(
     filters?: ApplicationFilters
-  ): Promise<ApiResponse<ApplicationResponse[]>> {
+  ): Promise<ApiResponse<PaginatedList<ApplicationResponse>>> {
     try {
       const queryParams = new URLSearchParams();
       if (filters?.candidateName)
@@ -229,17 +249,21 @@ export class ApplicationService {
       if (filters?.courseCode)
         queryParams.set("courseCode", filters.courseCode);
       if (filters?.status) queryParams.set("status", filters.status);
+      if (filters?.page) queryParams.set("page", String(filters.page));
+      queryParams.set("pageSize", String(filters?.pageSize ?? 100));
+      if (filters?.sortBy) queryParams.set("sortBy", filters.sortBy);
+      if (filters?.sortDir) queryParams.set("sortDir", filters.sortDir);
 
       const url = queryParams.toString()
         ? `/lecturer?${queryParams}`
-        : "/lecturer";
+        : "/lecturer?pageSize=100";
 
       const response = await applicationAPI.get(url);
 
       return response.data;
     } catch (error: unknown) {
       const axiosError = error as AxiosError<
-        ApiResponse<ApplicationResponse[]>
+        ApiResponse<PaginatedList<ApplicationResponse>>
       >;
 
       if (axiosError.response?.data) {

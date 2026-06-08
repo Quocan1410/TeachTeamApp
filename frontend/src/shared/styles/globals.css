@@ -20,10 +20,4 @@
 @import "./thin-orange-scrollbar.css";
 @import "./icon-close-button.css";
 
-/* 
-  Removed responsive.css from critical path - it will be loaded lazily
-  to improve initial page load performance. The 9.9KB file was causing
-  delays in the critical rendering path.
-  
-  Component-specific styles should be handled by their respective CSS Modules.
-*/
+/* Component-specific responsive rules live in CSS Modules per page/component. */
