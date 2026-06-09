@@ -51,18 +51,13 @@ app.get("/health", (_req, res) => {
 });
 
 const startServer = async () => {
-    try {
-        await initializeDatabase();
-        startEmailScheduler();
-        initSocketServer(httpServer);
+    console.log("Connecting to database ...");
+    await initializeDatabase();
+    startEmailScheduler();
+    initSocketServer(httpServer);
 
-        httpServer.listen(PORT);
-    } catch (error) {
-        startEmailScheduler();
-        initSocketServer(httpServer);
-
-        httpServer.listen(PORT);
-    }
+    httpServer.listen(PORT);
+    console.log(`Http Server is listening on port: ${PORT}`);
 };
 
 startServer();

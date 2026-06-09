@@ -77,20 +77,7 @@ const recreateNotificationsTable = async (): Promise<void> => {
 };
 
 const initializeDataSource = async (): Promise<void> => {
-    try {
-        await AppDataSource.initialize();
-    } catch (error) {
-        if (!isNotificationSchemaConflict(error)) {
-            throw error;
-        }
-
-        if (AppDataSource.isInitialized) {
-            await AppDataSource.destroy();
-        }
-
-        await recreateNotificationsTable();
-        await AppDataSource.initialize();
-    }
+    await AppDataSource.initialize();
 };
 
 const ensureColumn = async (
