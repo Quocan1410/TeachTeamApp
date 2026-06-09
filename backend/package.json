@@ -4,7 +4,7 @@
     "description": "Teaching Tutor Backend API",
     "main": "dist/index.js",
     "scripts": {
-        "build": "tsc",
+        "build": "ncc build ./src/index.ts -o dist",
         "start": "node dist/index.js",
         "dev": "nodemon --exec ts-node src/index.ts",
         "db:reset": "ts-node src/scripts/resetDatabase.ts",
@@ -46,6 +46,7 @@
         "@types/node": "^22.15.29",
         "@types/node-cron": "^3.0.11",
         "@types/nodemailer": "^8.0.0",
+        "@vercel/ncc": "^0.38.4",
         "nodemon": "^3.1.10",
         "ts-node": "^10.9.2",
         "typescript": "^5.8.3"
