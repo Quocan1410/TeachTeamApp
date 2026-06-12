@@ -23,7 +23,7 @@ export const DEFAULT_COMMENT_CONFIG: CommentValidationConfig = {
     minLength: 5,
     maxLength: 1000,
     allowEmpty: false,
-    restrictedWords: ["test", "asdf", "qwerty", "spam"]
+    restrictedWords: ["asdf", "qwerty", "spam"]
 };
 
 export const DEFAULT_STATUS_CONFIG: StatusUpdateValidationConfig = {
@@ -77,8 +77,8 @@ export const validateLecturerComment = (
     // Restricted words validation
     if (config.restrictedWords && config.restrictedWords.length > 0) {
         const lowerComment = trimmedComment.toLowerCase();
-        const foundRestrictedWords = config.restrictedWords.filter(word =>
-            lowerComment.includes(word.toLowerCase())
+        const foundRestrictedWords = config.restrictedWords.filter((word) =>
+            new RegExp(`\\b${word.toLowerCase()}\\b`, "i").test(lowerComment)
         );
 
         if (foundRestrictedWords.length > 0) {

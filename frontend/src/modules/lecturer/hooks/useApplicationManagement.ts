@@ -161,21 +161,36 @@ export const useApplicationManagement = () => {
     }, 800);
   }, [loadApplications]);
 
+  const mergeApplicationUpdate = useCallback(
+    (
+      existing: ApplicationResponse,
+      updated: ApplicationResponse
+    ): ApplicationResponse => ({
+      ...existing,
+      ...updated,
+      correspondenceMessages:
+        updated.correspondenceMessages ?? existing.correspondenceMessages,
+      messageReactions:
+        updated.messageReactions ?? existing.messageReactions,
+    }),
+    []
+  );
+
   const patchApplication = useCallback(
     (updated: ApplicationResponse) => {
       setApplications((prev) => {
         const next = prev.map((app) =>
-          app.id === updated.id ? { ...app, ...updated } : app
+          app.id === updated.id ? mergeApplicationUpdate(app, updated) : app
         );
         updateRankedFromApplications(next);
         return next;
       });
 
       setSelectedApplication((prev) =>
-        prev?.id === updated.id ? { ...prev, ...updated } : prev
+        prev?.id === updated.id ? mergeApplicationUpdate(prev, updated) : prev
       );
     },
-    [updateRankedFromApplications]
+    [mergeApplicationUpdate, updateRankedFromApplications]
   );
 
   // Load statistics (DI Part)
@@ -250,31 +265,48 @@ export const useApplicationManagement = () => {
           selectedApplication.status !== updatedSelectedApplication.status;
         const hasReviewChanged =
           selectedApplication.reviewedAt !== updatedSelectedApplication.reviewedAt;
+        const hasCorrespondenceChanged =
+          JSON.stringify(selectedApplication.correspondenceMessages ?? null) !==
+          JSON.stringify(updatedSelectedApplication.correspondenceMessages ?? null);
+        const hasCandidateResponseChanged =
+          selectedApplication.candidateResponse !==
+          updatedSelectedApplication.candidateResponse;
 
-        const mergedSelectedApplication =
-          selectedApplication.reviewedAt &&
+        const mergedSelectedApplication = {
+          ...(selectedApplication.reviewedAt &&
           !updatedSelectedApplication.reviewedAt
             ? {
                 ...updatedSelectedApplication,
                 reviewedAt: selectedApplication.reviewedAt,
                 reviewedBy: selectedApplication.reviewedBy,
               }
-            : updatedSelectedApplication;
+            : updatedSelectedApplication),
+          correspondenceMessages:
+            updatedSelectedApplication.correspondenceMessages ??
+            selectedApplication.correspondenceMessages,
+          messageReactions:
+            updatedSelectedApplication.messageReactions ??
+            selectedApplication.messageReactions,
+        };
 
-        if (
-          mergedSelectedApplication !== selectedApplication ||
+        const shouldSyncSelected =
           hasCommentChanged ||
+          hasCorrespondenceChanged ||
+          hasCandidateResponseChanged ||
           hasRankChanged ||
           hasBlockedStatusChanged ||
           hasStatusChanged ||
-          hasReviewChanged
-        ) {
+          hasReviewChanged;
+
+        if (shouldSyncSelected) {
           setSelectedApplication(mergedSelectedApplication);
-          setComment(mergedSelectedApplication.comment || "");
+          if (hasCommentChanged) {
+            setComment(mergedSelectedApplication.comment || "");
+          }
         }
       }
     }
-  }, [applications, selectedApplication]); // Include full selectedApplication as dependency
+  }, [applications, selectedApplication]);
 
   // Save application (update status)
   const saveApplication = useCallback(

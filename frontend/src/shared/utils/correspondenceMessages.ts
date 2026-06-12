@@ -1,4 +1,5 @@
 import type { ApplicationResponse } from "@/shared/services/applicationService";
+import { parseApiDateTime } from "@/shared/utils/parseApiDateTime";
 
 export type CorrespondenceAuthorRole = "candidate" | "lecturer";
 
@@ -103,11 +104,11 @@ export function getCorrespondenceMessages(
   );
   const messages =
     stored.length > 0 ? stored : buildFromLegacy(application);
-  const appliedMs = new Date(application.appliedAt).getTime();
+  const appliedMs = parseApiDateTime(application.appliedAt).getTime();
   if (Number.isNaN(appliedMs)) return messages;
 
   return messages.filter(
-    (message) => new Date(message.createdAt).getTime() >= appliedMs
+    (message) => parseApiDateTime(message.createdAt).getTime() >= appliedMs
   );
 }
 

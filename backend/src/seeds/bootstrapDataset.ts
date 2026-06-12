@@ -1,122 +1,137 @@
 import bcrypt from "bcryptjs";
-import type { DeepPartial } from "typeorm";
 import { AppDataSource } from "../config/database";
 import { User, UserType } from "../entities/User";
 import { Course } from "../entities/Course";
 import { Role } from "../entities/Role";
 import { CourseAssignment } from "../entities/CourseAssignment";
-import { Application, ApplicationStatus } from "../entities/Application";
-import { Notification, NotificationType } from "../entities/Notification";
+import { Application } from "../entities/Application";
+import { Notification } from "../entities/Notification";
 import { SelectedCandidate } from "../entities/SelectedCandidate";
 import { ApplicationDraft } from "../entities/ApplicationDraft";
 import { PasswordResetToken } from "../entities/PasswordResetToken";
 import { RefreshToken } from "../entities/RefreshToken";
 import { UserSecurityAnswer } from "../entities/UserSecurityAnswer";
-import { LECTURER_PRIMARY_MESSAGE_ID } from "../utils/correspondenceMessages";
-import type { MessageReactionsMap } from "../utils/messageReactions";
 import { SecurityQuestionService } from "../services/SecurityQuestionService";
 import {
     EXTRA_LECTURERS,
     EXTRA_CANDIDATES,
-    EXTRA_COURSE_DEFS,
-    buildExtraApplications,
-} from "./extendedSeedData";
+    assignExtraCourseLecturers,
+    seedApplicationInteractions,
+} from "./seedInteractions";
+import { WAVE_2_COURSES } from "./seedCoursesWave2";
 import {
-    WAVE2_LECTURERS,
-    WAVE2_CANDIDATES,
-    WAVE2_COURSE_DEFS,
-    buildSecondWaveApplications,
-} from "./secondWaveSeedData";
+    seedAdminNotifications,
+    seedApplicationDrafts,
+    seedBlockedCandidateDemo,
+    seedOfferResponsesOnSelected,
+    seedUserProfileVariety,
+} from "./seedEnrichment";
 
+/** Local dev password for all seeded lecturer and candidate accounts. */
 export const DEMO_PASSWORD = "Password123!";
 
-/** Same 4 Q&A for every seeded lecturer/candidate — used for forgot-password demos. */
+type SecurityAnswerSeed = {
+    questionId: string;
+    answer: string;
+};
+
+export type PersonSeed = {
+    email: string;
+    firstName: string;
+    lastName: string;
+    honorific: string;
+    securityAnswers: SecurityAnswerSeed[];
+};
+
+/** Documented fallback answers (see env.example for per-account values). */
 export const DEMO_SECURITY_ANSWERS = [
     { questionId: "birth_city", answer: "Melbourne" },
-    { questionId: "first_school", answer: "Demo School" },
-    { questionId: "favorite_book", answer: "TeachTeam Guide" },
-    { questionId: "childhood_nickname", answer: "Demo" },
+    { questionId: "first_school", answer: "Northside High School" },
+    { questionId: "favorite_book", answer: "Introduction to Algorithms" },
+    { questionId: "childhood_nickname", answer: "Lex" },
 ] as const;
 
-async function seedDemoSecurityAnswersForUsers(users: User[]): Promise<void> {
-    const securityService = new SecurityQuestionService();
-    const answers = DEMO_SECURITY_ANSWERS.map((row) => ({
-        questionId: row.questionId,
-        answer: row.answer,
-    }));
-    for (const user of users) {
-        if (user.userType === UserType.ADMIN) continue;
-        await securityService.saveAnswers(user.id, answers);
-    }
-}
-
-const LECTURERS = [
+const LECTURERS: PersonSeed[] = [
     {
-        email: "jane.lecturer@lecturer.edu.au",
+        email: "jane.morrison@lecturer.edu.au",
         firstName: "Jane",
-        lastName: "Lecturer",
+        lastName: "Morrison",
         honorific: "Dr.",
+        securityAnswers: [
+            { questionId: "birth_city", answer: "Melbourne" },
+            { questionId: "first_school", answer: "Kew High School" },
+            { questionId: "favorite_book", answer: "Clean Code" },
+            { questionId: "childhood_nickname", answer: "Janey" },
+        ],
     },
     {
-        email: "marcus.lecturer@lecturer.edu.au",
+        email: "marcus.chen@lecturer.edu.au",
         firstName: "Marcus",
         lastName: "Chen",
         honorific: "Dr.",
+        securityAnswers: [
+            { questionId: "birth_city", answer: "Sydney" },
+            { questionId: "first_school", answer: "Chatswood High School" },
+            { questionId: "favorite_book", answer: "The Elements of Statistical Learning" },
+            { questionId: "childhood_nickname", answer: "Mark" },
+        ],
     },
     {
-        email: "priya.lecturer@lecturer.edu.au",
+        email: "priya.sharma@lecturer.edu.au",
         firstName: "Priya",
         lastName: "Sharma",
-        honorific: "Dr.",
+        honorific: "Prof.",
+        securityAnswers: [
+            { questionId: "birth_city", answer: "Adelaide" },
+            { questionId: "first_school", answer: "Unley High School" },
+            { questionId: "favorite_book", answer: "A Brief History of Time" },
+            { questionId: "childhood_nickname", answer: "Pri" },
+        ],
     },
-    {
-        email: "david.lecturer@lecturer.edu.au",
-        firstName: "David",
-        lastName: "Walsh",
-        honorific: "Dr.",
-    },
-] as const;
+];
 
-const CANDIDATES = [
+const CANDIDATES: PersonSeed[] = [
     {
-        email: "alex.candidate@candidate.edu.au",
+        email: "alex.nguyen@candidate.edu.au",
         firstName: "Alex",
         lastName: "Nguyen",
         honorific: "Mr.",
-        isBlocked: false,
+        securityAnswers: [
+            { questionId: "birth_city", answer: "Ho Chi Minh City" },
+            { questionId: "first_school", answer: "Tran Dai Nghia High School" },
+            { questionId: "favorite_book", answer: "Structure and Interpretation of Computer Programs" },
+            { questionId: "childhood_nickname", answer: "Anh" },
+        ],
     },
     {
-        email: "sam.candidate@candidate.edu.au",
-        firstName: "Sam",
+        email: "samira.patel@candidate.edu.au",
+        firstName: "Samira",
         lastName: "Patel",
+        honorific: "Ms.",
+        securityAnswers: [
+            { questionId: "birth_city", answer: "Brisbane" },
+            { questionId: "first_school", answer: "Brisbane State High School" },
+            { questionId: "favorite_book", answer: "Thinking, Fast and Slow" },
+            { questionId: "childhood_nickname", answer: "Sam" },
+        ],
+    },
+    {
+        email: "james.oconnor@candidate.edu.au",
+        firstName: "James",
+        lastName: "O'Connor",
         honorific: "Mr.",
-        isBlocked: false,
+        securityAnswers: [
+            { questionId: "birth_city", answer: "Dublin" },
+            { questionId: "first_school", answer: "Belvedere College" },
+            { questionId: "favorite_book", answer: "The Pragmatic Programmer" },
+            { questionId: "childhood_nickname", answer: "Jim" },
+        ],
     },
-    {
-        email: "riley.candidate@candidate.edu.au",
-        firstName: "Riley",
-        lastName: "Kim",
-        honorific: "Ms.",
-        isBlocked: false,
-    },
-    {
-        email: "taylor.candidate@candidate.edu.au",
-        firstName: "Taylor",
-        lastName: "Brooks",
-        honorific: "Ms.",
-        isBlocked: true,
-    },
-] as const;
+];
 
 function addDays(base: Date, days: number): Date {
     const d = new Date(base);
     d.setDate(d.getDate() + days);
-    return d;
-}
-
-function addMinutes(base: Date, minutes: number): Date {
-    const d = new Date(base);
-    d.setMinutes(d.getMinutes() + minutes);
     return d;
 }
 
@@ -125,496 +140,154 @@ const COURSE_DEFS = [
         courseCode: "COSC2758",
         courseName: "Full Stack Development",
         semester: "Semester 2 2026",
-        description: "React, Node.js, databases",
+        description:
+            "Design and build modern web applications using React, Node.js, and relational databases.",
         maxTutors: 3,
         maxLabAssistants: 2,
         deadlineDays: 60,
-        lecturerEmails: ["jane.lecturer@lecturer.edu.au", "marcus.lecturer@lecturer.edu.au"],
+        lecturerEmails: ["jane.morrison@lecturer.edu.au", "marcus.chen@lecturer.edu.au"],
     },
     {
         courseCode: "COSC2123",
         courseName: "Algorithms & Analysis",
         semester: "Semester 2 2026",
-        description: "Data structures and complexity",
+        description:
+            "Core data structures, algorithm design, and complexity analysis for computer science students.",
         maxTutors: 2,
         maxLabAssistants: 2,
         deadlineDays: 35,
-        lecturerEmails: ["jane.lecturer@lecturer.edu.au"],
+        lecturerEmails: ["jane.morrison@lecturer.edu.au"],
     },
     {
         courseCode: "INTE2400",
         courseName: "Network Engineering",
         semester: "Semester 2 2026",
-        description: "Routing, switching, protocols",
+        description:
+            "Routing, switching, and network protocols with practical lab configuration exercises.",
         maxTutors: 2,
         maxLabAssistants: 1,
         deadlineDays: 21,
-        lecturerEmails: ["jane.lecturer@lecturer.edu.au"],
+        lecturerEmails: ["jane.morrison@lecturer.edu.au"],
     },
     {
         courseCode: "COMP9001",
         courseName: "Research Methods",
         semester: "Semester 2 2026",
-        description: "Graduate research skills",
+        description:
+            "Graduate-level research design, academic writing, and ethics for thesis preparation.",
         maxTutors: 2,
         maxLabAssistants: 0,
         deadlineDays: 55,
-        lecturerEmails: ["marcus.lecturer@lecturer.edu.au"],
+        lecturerEmails: ["marcus.chen@lecturer.edu.au"],
     },
     {
         courseCode: "COMP9417",
         courseName: "Machine Learning",
         semester: "Semester 2 2026",
-        description: "ML foundations and practice",
+        description:
+            "Supervised and unsupervised learning, model evaluation, and applied ML workflows in Python.",
         maxTutors: 3,
         maxLabAssistants: 2,
         deadlineDays: 5,
-        lecturerEmails: ["marcus.lecturer@lecturer.edu.au"],
+        lecturerEmails: ["marcus.chen@lecturer.edu.au"],
     },
     {
         courseCode: "BUSM1001",
         courseName: "Business Analytics",
         semester: "Semester 2 2026",
-        description: "Analytics for business decisions",
+        description:
+            "Data-driven decision making with spreadsheets, SQL, and visual analytics for business problems.",
         maxTutors: 2,
         maxLabAssistants: 1,
         deadlineDays: 40,
-        lecturerEmails: ["marcus.lecturer@lecturer.edu.au"],
+        lecturerEmails: ["marcus.chen@lecturer.edu.au"],
     },
     {
         courseCode: "MATH1131",
         courseName: "Mathematics 1A",
         semester: "Semester 2 2026",
-        description: "Calculus and linear algebra",
+        description:
+            "Differential calculus, integral calculus, and introductory linear algebra for science and engineering.",
         maxTutors: 4,
         maxLabAssistants: 0,
         deadlineDays: 50,
-        lecturerEmails: ["priya.lecturer@lecturer.edu.au"],
+        lecturerEmails: ["priya.sharma@lecturer.edu.au"],
     },
     {
         courseCode: "PHYS1161",
         courseName: "Physics 1A",
         semester: "Semester 2 2026",
-        description: "Mechanics and waves",
+        description:
+            "Classical mechanics, waves, and experimental methods with weekly tutorial problem sets.",
         maxTutors: 2,
         maxLabAssistants: 2,
         deadlineDays: 42,
-        lecturerEmails: ["priya.lecturer@lecturer.edu.au"],
+        lecturerEmails: ["priya.sharma@lecturer.edu.au"],
     },
     {
         courseCode: "ENGG1300",
         courseName: "Engineering Practice",
         semester: "Semester 2 2026",
-        description: "Team projects and communication",
+        description:
+            "Professional communication, teamwork, and project delivery in multidisciplinary engineering studios.",
         maxTutors: 3,
         maxLabAssistants: 2,
         deadlineDays: 48,
-        lecturerEmails: ["priya.lecturer@lecturer.edu.au"],
+        lecturerEmails: ["priya.sharma@lecturer.edu.au"],
     },
     {
         courseCode: "ISYS9001",
         courseName: "Enterprise Systems",
         semester: "Semester 2 2026",
-        description: "ERP and integration",
+        description:
+            "Enterprise resource planning, system integration, and process modelling in large organisations.",
         maxTutors: 2,
         maxLabAssistants: 1,
         deadlineDays: 30,
-        lecturerEmails: ["david.lecturer@lecturer.edu.au"],
+        lecturerEmails: ["marcus.chen@lecturer.edu.au"],
     },
     {
         courseCode: "ACCT5001",
         courseName: "Financial Accounting",
         semester: "Semester 2 2026",
-        description: "Reporting and analysis (applications closed)",
+        description:
+            "Financial statements, reporting standards, and analysis for postgraduate business students.",
         maxTutors: 2,
         maxLabAssistants: 0,
         deadlineDays: -10,
-        lecturerEmails: ["david.lecturer@lecturer.edu.au"],
+        lecturerEmails: ["marcus.chen@lecturer.edu.au"],
     },
     {
         courseCode: "MARK1001",
         courseName: "Marketing Fundamentals",
         semester: "Semester 2 2026",
-        description: "Consumer behaviour, campaigns, and market research",
+        description:
+            "Consumer behaviour, segmentation, and campaign planning with case studies from Australian markets.",
         maxTutors: 2,
         maxLabAssistants: 1,
         deadlineDays: 3,
-        lecturerEmails: ["david.lecturer@lecturer.edu.au"],
+        lecturerEmails: ["marcus.chen@lecturer.edu.au"],
     },
 ] as const;
 
-type ReactionSeedItem = {
-    messageId?: string;
-    emoji: string;
-    actors: Array<"candidate" | "lecturer">;
-};
-
-type SeedApplication = {
-    candidateEmail: string;
-    courseCode: string;
-    roleName: "tutor" | "lab_assistant";
-    status: ApplicationStatus;
-    isWithdrawn?: boolean;
-    availability: "Full Time" | "Part Time";
-    skills: string;
-    experience: string;
-    motivation: string;
-    lecturerEmail?: string;
-    lecturerComment?: string;
-    candidateReply?: string;
-    rank?: number;
-    rankedForCourse?: string;
-    /** Per-message emoji reactions (resolved to user ids when seeding). */
-    reactionSeed?: ReactionSeedItem[];
-    extraMessages?: Array<{
-        id: string;
-        authorRole: "candidate" | "lecturer";
-        body: string;
-        replyToMessageId?: string;
-    }>;
-    candidateReplyToMessageId?: string;
-};
-
-function buildMessageReactions(
-    def: Pick<SeedApplication, "reactionSeed">,
-    candidate: User,
-    lecturer?: User
-): MessageReactionsMap | undefined {
-    if (!def.reactionSeed?.length) {
-        return undefined;
-    }
-
-    const map: MessageReactionsMap = {};
-
-    for (const item of def.reactionSeed) {
-        const messageId = item.messageId ?? LECTURER_PRIMARY_MESSAGE_ID;
-        const userIds: number[] = [];
-
-        if (item.actors.includes("candidate")) {
-            userIds.push(candidate.id);
-        }
-        if (item.actors.includes("lecturer") && lecturer) {
-            userIds.push(lecturer.id);
-        }
-
-        if (userIds.length === 0) {
-            continue;
-        }
-
-        if (!map[messageId]) {
-            map[messageId] = {};
-        }
-        map[messageId][item.emoji] = [...new Set(userIds)];
-    }
-
-    return Object.keys(map).length > 0 ? map : undefined;
+async function seedSecurityAnswers(
+    userId: number,
+    answers: SecurityAnswerSeed[]
+): Promise<void> {
+    const securityService = new SecurityQuestionService();
+    await securityService.saveAnswers(userId, answers);
 }
 
-const APPLICATION_DEFS: SeedApplication[] = [
-    {
-        candidateEmail: "alex.candidate@candidate.edu.au",
-        courseCode: "COSC2758",
-        roleName: "tutor",
-        status: ApplicationStatus.PENDING,
-        availability: "Part Time",
-        skills: "React, TypeScript, Node.js",
-        experience: "Led a student dev team for 12 months.",
-        motivation: "Want to mentor students in full-stack labs.",
-        lecturerEmail: "jane.lecturer@lecturer.edu.au",
-        lecturerComment:
-            "Strong stack — please confirm tutorial availability.",
-        candidateReply: "Available Tuesday and Thursday afternoons.",
-        candidateReplyToMessageId: LECTURER_PRIMARY_MESSAGE_ID,
-        extraMessages: [
-            {
-                id: "msg-lecturer-2",
-                authorRole: "lecturer",
-                body: "Tuesday 2–4pm works well. How would you structure the first React lab?",
-            },
-            {
-                id: "msg-candidate-2",
-                authorRole: "candidate",
-                body: "I'd open with components and props, then a paired todo checkpoint before homework.",
-                replyToMessageId: "msg-lecturer-2",
-            },
-        ],
-        reactionSeed: [
-            { emoji: "👍", actors: ["candidate"] },
-            { emoji: "❤️", actors: ["lecturer"] },
-            { emoji: "👏", actors: ["candidate", "lecturer"] },
-            { messageId: "msg-candidate-1", emoji: "😮", actors: ["lecturer"] },
-            { messageId: "msg-candidate-2", emoji: "👍", actors: ["lecturer"] },
-        ],
-    },
-    {
-        candidateEmail: "alex.candidate@candidate.edu.au",
-        courseCode: "COSC2123",
-        roleName: "tutor",
-        status: ApplicationStatus.PENDING,
-        availability: "Part Time",
-        skills: "Python, algorithms, proofs",
-        experience: "HD in Algorithms; peer tutoring experience.",
-        motivation: "Enjoy explaining complexity analysis.",
-        lecturerEmail: "jane.lecturer@lecturer.edu.au",
-        lecturerComment: "Please share your past tutoring hours.",
-        candidateReply: "hi",
-        extraMessages: [
-            {
-                id: "msg-lecturer-2",
-                authorRole: "lecturer",
-                body: "Thanks — roughly how many hours per week have you tutored before?",
-            },
-            {
-                id: "msg-candidate-2",
-                authorRole: "candidate",
-                body: "About six hours a week last semester, mostly algorithms help desk.",
-            },
-        ],
-        reactionSeed: [
-            { messageId: "msg-candidate-1", emoji: "❤️", actors: ["lecturer"] },
-            { messageId: "msg-candidate-2", emoji: "👍", actors: ["lecturer"] },
-        ],
-    },
-    {
-        candidateEmail: "alex.candidate@candidate.edu.au",
-        courseCode: "INTE2400",
-        roleName: "lab_assistant",
-        status: ApplicationStatus.REJECTED,
-        isWithdrawn: true,
-        availability: "Part Time",
-        skills: "Networking, Cisco basics",
-        experience: "CCNA study in progress.",
-        motivation: "Hands-on lab support.",
-        lecturerEmail: "jane.lecturer@lecturer.edu.au",
-        lecturerComment: "Thanks for your interest.",
-    },
-    {
-        candidateEmail: "alex.candidate@candidate.edu.au",
-        courseCode: "COMP9001",
-        roleName: "tutor",
-        status: ApplicationStatus.SELECTED,
-        availability: "Full Time",
-        skills: "Research writing, LaTeX",
-        experience: "Published workshop paper.",
-        motivation: "Support grad research workshops.",
-        lecturerEmail: "marcus.lecturer@lecturer.edu.au",
-        lecturerComment: "Excellent research communication.",
-        rank: 1,
-        rankedForCourse: "COMP9001",
-    },
-    {
-        candidateEmail: "alex.candidate@candidate.edu.au",
-        courseCode: "MATH1131",
-        roleName: "tutor",
-        status: ApplicationStatus.REJECTED,
-        availability: "Part Time",
-        skills: "Calculus, linear algebra",
-        experience: "Math help desk volunteer.",
-        motivation: "Support first-year students.",
-        lecturerEmail: "priya.lecturer@lecturer.edu.au",
-        lecturerComment: "Competitive round — not selected this time.",
-    },
-    {
-        candidateEmail: "alex.candidate@candidate.edu.au",
-        courseCode: "ENGG1300",
-        roleName: "tutor",
-        status: ApplicationStatus.REJECTED,
-        availability: "Part Time",
-        skills: "Team leadership, CAD basics",
-        experience: "Design project captain.",
-        motivation: "Facilitate studio sessions.",
-        lecturerEmail: "priya.lecturer@lecturer.edu.au",
-        lecturerComment: "Good fit but quota filled elsewhere.",
-    },
-    {
-        candidateEmail: "sam.candidate@candidate.edu.au",
-        courseCode: "COSC2758",
-        roleName: "lab_assistant",
-        status: ApplicationStatus.SELECTED,
-        availability: "Part Time",
-        skills: "Linux, Docker, debugging",
-        experience: "IT support intern.",
-        motivation: "Help students in lab environment.",
-        lecturerEmail: "jane.lecturer@lecturer.edu.au",
-        lecturerComment: "Solid lab skills.",
-        rank: 2,
-        rankedForCourse: "COSC2758",
-    },
-    {
-        candidateEmail: "sam.candidate@candidate.edu.au",
-        courseCode: "COMP9417",
-        roleName: "tutor",
-        status: ApplicationStatus.PENDING,
-        availability: "Part Time",
-        skills: "Python, scikit-learn, pandas",
-        experience: "Kaggle top 15% in tabular comp.",
-        motivation: "Support ML tutorials.",
-    },
-    {
-        candidateEmail: "sam.candidate@candidate.edu.au",
-        courseCode: "BUSM1001",
-        roleName: "tutor",
-        status: ApplicationStatus.SELECTED,
-        availability: "Full Time",
-        skills: "Excel, SQL, Tableau",
-        experience: "Business analyst internship.",
-        motivation: "Teach analytics workshops.",
-        lecturerEmail: "marcus.lecturer@lecturer.edu.au",
-        lecturerComment: "Top analytics candidate.",
-        rank: 1,
-        rankedForCourse: "BUSM1001",
-    },
-    {
-        candidateEmail: "sam.candidate@candidate.edu.au",
-        courseCode: "ACCT5001",
-        roleName: "tutor",
-        status: ApplicationStatus.PENDING,
-        availability: "Part Time",
-        skills: "Accounting, Excel",
-        experience: "PASS leader for introductory accounting.",
-        motivation: "Support revision sessions.",
-        lecturerEmail: "david.lecturer@lecturer.edu.au",
-    },
-    {
-        candidateEmail: "riley.candidate@candidate.edu.au",
-        courseCode: "BUSM1001",
-        roleName: "tutor",
-        status: ApplicationStatus.SELECTED,
-        availability: "Part Time",
-        skills: "R, statistics, storytelling",
-        experience: "Data storytelling competition finalist.",
-        motivation: "Second tutor slot for analytics.",
-        lecturerEmail: "marcus.lecturer@lecturer.edu.au",
-        lecturerComment: "Fills final tutor quota for BUSM1001.",
-        rank: 2,
-        rankedForCourse: "BUSM1001",
-    },
-    {
-        candidateEmail: "riley.candidate@candidate.edu.au",
-        courseCode: "PHYS1161",
-        roleName: "tutor",
-        status: ApplicationStatus.PENDING,
-        availability: "Part Time",
-        skills: "Physics, MATLAB",
-        experience: "Lab demonstrator in high school outreach.",
-        motivation: "Help with mechanics tutorials.",
-        lecturerEmail: "priya.lecturer@lecturer.edu.au",
-        lecturerComment: "Can you run a sample tutorial outline?",
-        candidateReply: "I can demo projectile motion with simulations.",
-    },
-    {
-        candidateEmail: "riley.candidate@candidate.edu.au",
-        courseCode: "ENGG1300",
-        roleName: "lab_assistant",
-        status: ApplicationStatus.REJECTED,
-        availability: "Part Time",
-        skills: "Workshop safety, 3D printing",
-        experience: "Maker space volunteer.",
-        motivation: "Support prototyping labs.",
-        lecturerEmail: "priya.lecturer@lecturer.edu.au",
-        lecturerComment: "Not selected for this semester.",
-    },
-    {
-        candidateEmail: "riley.candidate@candidate.edu.au",
-        courseCode: "COSC2123",
-        roleName: "lab_assistant",
-        status: ApplicationStatus.PENDING,
-        availability: "Full Time",
-        skills: "C++, debugging",
-        experience: "Competitive programming club.",
-        motivation: "Assist algorithm labs.",
-        lecturerEmail: "jane.lecturer@lecturer.edu.au",
-        lecturerComment: "Share your contest ranking.",
-        candidateReply: "Codeforces Specialist — happy to mentor basics.",
-    },
-    {
-        candidateEmail: "taylor.candidate@candidate.edu.au",
-        courseCode: "ISYS9001",
-        roleName: "tutor",
-        status: ApplicationStatus.PENDING,
-        availability: "Part Time",
-        skills: "SAP, integration",
-        experience: "ERP module HD.",
-        motivation: "Enterprise systems tutorials.",
-        lecturerEmail: "david.lecturer@lecturer.edu.au",
-        lecturerComment: "Account flagged blocked — hold review.",
-    },
-    {
-        candidateEmail: "taylor.candidate@candidate.edu.au",
-        courseCode: "MARK1001",
-        roleName: "tutor",
-        status: ApplicationStatus.PENDING,
-        availability: "Part Time",
-        skills: "Marketing, presentation",
-        experience: "Agency internship.",
-        motivation: "Urgent intake — marketing labs.",
-        lecturerEmail: "david.lecturer@lecturer.edu.au",
-        lecturerComment: "Was ranked before account block — ranking cleared.",
-    },
-    {
-        candidateEmail: "sam.candidate@candidate.edu.au",
-        courseCode: "MATH1131",
-        roleName: "tutor",
-        status: ApplicationStatus.SELECTED,
-        availability: "Part Time",
-        skills: "Statistics, tutoring",
-        experience: "Two semesters as PASS leader.",
-        motivation: "Calculus support classes.",
-        lecturerEmail: "priya.lecturer@lecturer.edu.au",
-        lecturerComment: "Strong PASS feedback.",
-    },
-    {
-        candidateEmail: "sam.candidate@candidate.edu.au",
-        courseCode: "COMP9001",
-        roleName: "tutor",
-        status: ApplicationStatus.SELECTED,
-        availability: "Part Time",
-        skills: "Academic writing, peer review",
-        experience: "Thesis editing assistant.",
-        motivation: "Support research methods workshops.",
-        lecturerEmail: "marcus.lecturer@lecturer.edu.au",
-        lecturerComment: "Fourth concurrent pick — over-selected demo.",
-        rank: 2,
-        rankedForCourse: "COMP9001",
-    },
-    {
-        candidateEmail: "sam.candidate@candidate.edu.au",
-        courseCode: "COSC2123",
-        roleName: "lab_assistant",
-        status: ApplicationStatus.SELECTED,
-        availability: "Part Time",
-        skills: "C++, gdb, Valgrind",
-        experience: "Algorithms lab demonstrator.",
-        motivation: "Assist data structures labs.",
-        lecturerEmail: "jane.lecturer@lecturer.edu.au",
-        lecturerComment: "Fifth selection for admin overlap reporting.",
-    },
-    {
-        candidateEmail: "alex.candidate@candidate.edu.au",
-        courseCode: "COMP9417",
-        roleName: "lab_assistant",
-        status: ApplicationStatus.PENDING,
-        availability: "Part Time",
-        skills: "TensorFlow, Python",
-        experience: "ML club workshop lead.",
-        motivation: "Assist neural net labs.",
-    },
-];
-
 /**
- * Comprehensive local dataset: lecturers, candidates, courses,
- * applications (pending/selected/rejected/withdrawn),
- * correspondence, rankings, blocked users, drafts, notifications.
+ * Bootstrap: dev accounts (10 lecturers, 19 candidates, 1 admin), roles, courses,
+ * applications, drafts, notifications, and profile variety — all via the same
+ * correspondence / workflow utilities used by the API.
  */
 export async function seedBootstrapDataset(): Promise<void> {
     const userRepo = AppDataSource.getRepository(User);
     const courseRepo = AppDataSource.getRepository(Course);
     const roleRepo = AppDataSource.getRepository(Role);
     const assignmentRepo = AppDataSource.getRepository(CourseAssignment);
-    const applicationRepo = AppDataSource.getRepository(Application);
-    const notificationRepo = AppDataSource.getRepository(Notification);
-    const selectedRepo = AppDataSource.getRepository(SelectedCandidate);
-    const draftRepo = AppDataSource.getRepository(ApplicationDraft);
     const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 12);
     const adminEmail = (process.env.ADMIN_EMAIL || "admin@admin.com")
         .trim()
@@ -637,11 +310,9 @@ export async function seedBootstrapDataset(): Promise<void> {
     );
 
     const lecturerByEmail = new Map<string, User>();
-    for (const def of [
-        ...LECTURERS,
-        ...EXTRA_LECTURERS,
-        ...WAVE2_LECTURERS,
-    ]) {
+    const candidateByEmail = new Map<string, User>();
+
+    for (const def of [...LECTURERS, ...EXTRA_LECTURERS]) {
         const user = await userRepo.save(
             userRepo.create({
                 email: def.email,
@@ -653,10 +324,10 @@ export async function seedBootstrapDataset(): Promise<void> {
             })
         );
         lecturerByEmail.set(def.email, user);
+        await seedSecurityAnswers(user.id, def.securityAnswers);
     }
 
-    const candidateByEmail = new Map<string, User>();
-    for (const def of [...CANDIDATES, ...EXTRA_CANDIDATES, ...WAVE2_CANDIDATES]) {
+    for (const def of [...CANDIDATES, ...EXTRA_CANDIDATES]) {
         const user = await userRepo.save(
             userRepo.create({
                 email: def.email,
@@ -665,16 +336,12 @@ export async function seedBootstrapDataset(): Promise<void> {
                 lastName: def.lastName,
                 userType: UserType.CANDIDATE,
                 honorific: def.honorific,
-                isBlocked: def.isBlocked,
+                isBlocked: false,
             })
         );
         candidateByEmail.set(def.email, user);
+        await seedSecurityAnswers(user.id, def.securityAnswers);
     }
-
-    await seedDemoSecurityAnswersForUsers([
-        ...lecturerByEmail.values(),
-        ...candidateByEmail.values(),
-    ]);
 
     for (const roleData of [
         { roleName: "tutor", description: "Tutorial sessions" },
@@ -691,7 +358,7 @@ export async function seedBootstrapDataset(): Promise<void> {
     });
 
     const courseByCode = new Map<string, Course>();
-    for (const def of [...COURSE_DEFS, ...EXTRA_COURSE_DEFS, ...WAVE2_COURSE_DEFS]) {
+    for (const def of [...COURSE_DEFS, ...WAVE_2_COURSES]) {
         const course = await courseRepo.save(
             courseRepo.create({
                 courseCode: def.courseCode,
@@ -708,6 +375,10 @@ export async function seedBootstrapDataset(): Promise<void> {
         for (const lecturerEmail of def.lecturerEmails) {
             const lecturer = lecturerByEmail.get(lecturerEmail);
             if (!lecturer) continue;
+            const exists = await assignmentRepo.findOne({
+                where: { lecturerId: lecturer.id, courseId: course.id },
+            });
+            if (exists) continue;
             await assignmentRepo.save(
                 assignmentRepo.create({
                     lecturerId: lecturer.id,
@@ -717,226 +388,26 @@ export async function seedBootstrapDataset(): Promise<void> {
         }
     }
 
-    const alex = candidateByEmail.get("alex.candidate@candidate.edu.au");
-    const markCourse = courseByCode.get("MARK1001");
-    const labRoleId = labRole.id;
+    await assignExtraCourseLecturers(courseByCode, lecturerByEmail);
 
-    const notify = async (
-        userId: number,
-        type: NotificationType,
-        title: string,
-        message: string,
-        link: string,
-        read = false,
-        metadata?: Record<string, unknown>
-    ) => {
-        await notificationRepo.save(
-            notificationRepo.create({
-                userId,
-                type,
-                title,
-                message,
-                link,
-                read,
-                metadata,
-            })
-        );
-    };
+    await seedApplicationInteractions(
+        lecturerByEmail,
+        candidateByEmail,
+        courseByCode,
+        tutorRole,
+        labRole
+    );
 
-    for (const def of [
-        ...APPLICATION_DEFS,
-        ...buildExtraApplications(),
-        ...buildSecondWaveApplications(),
-    ]) {
-        const candidate = candidateByEmail.get(def.candidateEmail);
-        const course = courseByCode.get(def.courseCode);
-        if (!candidate || !course) continue;
-
-        const role = def.roleName === "tutor" ? tutorRole : labRole;
-        const lecturer = def.lecturerEmail
-            ? lecturerByEmail.get(def.lecturerEmail)
-            : undefined;
-        const appliedAt = addDays(now, -3);
-        let chatMinuteOffset = 30;
-
-        const correspondenceMessages: Application["correspondenceMessages"] = [];
-        const pushCorrespondence = (
-            message: Omit<
-                NonNullable<Application["correspondenceMessages"]>[number],
-                "createdAt"
-            > & { createdAt?: string }
-        ) => {
-            correspondenceMessages.push({
-                ...message,
-                createdAt:
-                    message.createdAt ??
-                    addMinutes(appliedAt, chatMinuteOffset).toISOString(),
-            });
-            chatMinuteOffset += 55;
-        };
-
-        if (def.lecturerComment && lecturer) {
-            pushCorrespondence({
-                id: LECTURER_PRIMARY_MESSAGE_ID,
-                authorRole: "lecturer",
-                authorId: lecturer.id,
-                body: def.lecturerComment,
-            });
-        }
-        if (def.candidateReply) {
-            pushCorrespondence({
-                id: "msg-candidate-1",
-                authorRole: "candidate",
-                authorId: candidate.id,
-                body: def.candidateReply,
-                replyToMessageId: def.candidateReplyToMessageId ?? null,
-            });
-        }
-        for (const extra of def.extraMessages ?? []) {
-            pushCorrespondence({
-                id: extra.id,
-                authorRole: extra.authorRole,
-                authorId:
-                    extra.authorRole === "lecturer"
-                        ? lecturer?.id ?? 0
-                        : candidate.id,
-                body: extra.body,
-                replyToMessageId: extra.replyToMessageId ?? null,
-            });
-        }
-
-        const latestLecturer = [...correspondenceMessages]
-            .reverse()
-            .find((m) => m.authorRole === "lecturer");
-        const latestCandidate = [...correspondenceMessages]
-            .reverse()
-            .find((m) => m.authorRole === "candidate");
-
-        const withdrawnAt = def.isWithdrawn ? addDays(now, -2) : null;
-
-        const applicationData: DeepPartial<Application> = {
-            candidateId: candidate.id,
-            courseId: course.id,
-            roleId: role.id,
-            status: def.status,
-            appliedAt,
-            isWithdrawn: Boolean(def.isWithdrawn),
-            withdrawnAt: withdrawnAt ?? undefined,
-            availability: { type: def.availability },
-            skills: def.skills,
-            experience: def.experience,
-            motivation: def.motivation,
-            comment: latestLecturer?.body ?? def.lecturerComment,
-            commentedBy: latestLecturer?.authorId ?? lecturer?.id,
-            commentedAt: latestLecturer
-                ? new Date(latestLecturer.createdAt)
-                : def.lecturerComment
-                  ? now
-                  : undefined,
-            candidateResponse: latestCandidate?.body ?? def.candidateReply,
-            candidateRespondedAt: latestCandidate
-                ? new Date(latestCandidate.createdAt)
-                : def.candidateReply
-                  ? now
-                  : undefined,
-            correspondenceMessages:
-                correspondenceMessages.length > 0
-                    ? correspondenceMessages
-                    : undefined,
-            messageReactions: buildMessageReactions(def, candidate, lecturer),
-            rank: def.rank,
-            rankedBy: def.rank && lecturer ? lecturer.id : undefined,
-            rankedAt: def.rank ? now : undefined,
-            rankedForCourse: def.rankedForCourse,
-        };
-
-        const application = await applicationRepo.save(
-            applicationRepo.create(applicationData)
-        );
-
-        if (def.status === ApplicationStatus.SELECTED && lecturer) {
-            await selectedRepo.save(
-                selectedRepo.create({
-                    applicationId: application.id,
-                    selectedById: lecturer.id,
-                })
-            );
-        }
-
-        if (lecturer) {
-            const candidateName =
-                `${candidate.firstName} ${candidate.lastName}`.trim();
-            const roleLabel =
-                def.roleName === "tutor" ? "tutor" : "lab assistant";
-            const metadata = {
-                courseId: course.id,
-                candidateId: candidate.id,
-                applicationId: application.id,
-            };
-            const courseAssignments = await assignmentRepo.find({
-                where: { courseId: course.id },
-            });
-
-            for (const assignment of courseAssignments) {
-                await notify(
-                    assignment.lecturerId,
-                    NotificationType.APPLICATION_SUBMITTED,
-                    "New application",
-                    `${candidateName} applied for ${def.courseCode} ${roleLabel}.`,
-                    "/lecturer",
-                    false,
-                    metadata
-                );
-
-                if (def.candidateReply) {
-                    await notify(
-                        assignment.lecturerId,
-                        NotificationType.APPLICATION_RESPONSE,
-                        "Candidate replied",
-                        `${candidate.firstName} sent additional details for ${def.courseCode}.`,
-                        "/lecturer",
-                        false,
-                        metadata
-                    );
-                }
-            }
-        }
-    }
-
-    if (alex && markCourse) {
-        await draftRepo.save(
-            draftRepo.create({
-                candidateId: alex.id,
-                courseId: markCourse.id,
-                roleId: labRoleId,
-                payload: {
-                    availability: "Part Time",
-                    skills: "Branding, social campaigns",
-                    experience: "Student marketing club.",
-                    motivation: "Draft — not yet submitted.",
-                },
-            })
-        );
-    }
-
-    if (alex) {
-        await notify(
-            alex.id,
-            NotificationType.APPLICATION_COMMENT,
-            "New feedback on your application",
-            "Jane left feedback on your COSC2758 tutor application.",
-            "/tutor/applications",
-            false
-        );
-        await notify(
-            alex.id,
-            NotificationType.APPLICATION_SELECTED,
-            "Application selected",
-            "You were selected for COMP9001 tutor role.",
-            "/tutor/applications",
-            true
-        );
-    }
+    await seedBlockedCandidateDemo(passwordHash);
+    await seedApplicationDrafts(
+        candidateByEmail,
+        courseByCode,
+        tutorRole,
+        labRole
+    );
+    await seedOfferResponsesOnSelected();
+    await seedUserProfileVariety();
+    await seedAdminNotifications(adminEmail);
 }
 
 export async function clearAllTables(): Promise<void> {

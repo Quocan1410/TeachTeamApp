@@ -192,17 +192,18 @@ npm run dev
 
 ---
 
-## Demo accounts
+## Local dev accounts
 
-Run `npm run db:reset` before signing in.
+Run `npm run db:reset` before signing in. Seed includes roles, courses, and accounts only — no demo applications or chat threads.
 
 | Role | Email | Password | Notes |
 |------|-------|----------|-------|
-| Lecturer | `jane.lecturer@lecturer.edu.au` | `Password123!` | `/lecturer` |
-| Lecturer | `marcus.lecturer@lecturer.edu.au` | `Password123!` | |
-| Candidate | `alex.candidate@candidate.edu.au` | `Password123!` | `/tutor` |
-| Candidate | `sam.candidate@candidate.edu.au` | `Password123!` | |
-| Candidate (blocked) | `taylor.candidate@candidate.edu.au` | `Password123!` | Test unblock in admin |
+| Lecturer | `jane.morrison@lecturer.edu.au` | `Password123!` | Dr. — Software Engineering (`/lecturer`) |
+| Lecturer | `marcus.chen@lecturer.edu.au` | `Password123!` | Dr. — ML & Business Analytics |
+| Lecturer | `priya.sharma@lecturer.edu.au` | `Password123!` | Prof. — Mathematics & Science |
+| Candidate | `alex.nguyen@candidate.edu.au` | `Password123!` | `/tutor` |
+| Candidate | `samira.patel@candidate.edu.au` | `Password123!` | |
+| Candidate | `james.oconnor@candidate.edu.au` | `Password123!` | |
 | Admin | `admin@admin.com` | `admin` | Login at http://localhost:3001 (admin repo) |
 
 **Signup:** only `@candidate.edu.au` or `@lecturer.edu.au` (admin cannot register via REST).

@@ -167,6 +167,14 @@ const Toast: React.FC<ToastProps> = ({
 
   const animationVariants = getAnimationVariants();
 
+  const effectiveTitle =
+    title ??
+    (type === "error" && message.trim()
+      ? message.trim()
+      : getDefaultTitle());
+  const effectiveMessage =
+    type === "error" && message.trim() && !title ? "" : message;
+
   return (
     <AnimatePresence>
       {visible && (
@@ -194,9 +202,11 @@ const Toast: React.FC<ToastProps> = ({
             {/* Content */}
             <div className={styles.toastContentArea}>
               <div className={styles.toastHeader}>
-                <h2 className={styles.toastTitle}>{title || getDefaultTitle()}</h2>
+                <h2 className={styles.toastTitle}>{effectiveTitle}</h2>
               </div>
-              <p className={styles.toastMessage}>{message}</p>
+              {effectiveMessage ? (
+                <p className={styles.toastMessage}>{effectiveMessage}</p>
+              ) : null}
             </div>
             
             {/* Close button at top right corner */}

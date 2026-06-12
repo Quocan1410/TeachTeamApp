@@ -219,24 +219,26 @@ const LecturerDashboardInner: React.FC = () => {
 
   const handleApplicationRealtimeUpdate = useCallback(
     (payload: ApplicationUpdatedPayload) => {
-      if (payload.reason === "reviewed") {
-        if (
-          rawSelectedApplication &&
-          payload.application.id === rawSelectedApplication.id
-        ) {
-          setRawSelectedApplication(payload.application);
-        }
-        patchApplication(payload.application);
-        return;
-      }
+      patchApplication(payload.application);
 
-      scheduleLoadApplications();
       if (
         rawSelectedApplication &&
         payload.application.id === rawSelectedApplication.id
       ) {
         setRawSelectedApplication(payload.application);
         setComment(payload.application.comment || "");
+      }
+
+      const chatReasons = new Set([
+        "comment",
+        "comment_removed",
+        "candidate_response",
+        "reaction",
+        "reviewed",
+      ]);
+
+      if (!chatReasons.has(payload.reason)) {
+        scheduleLoadApplications();
       }
     },
     [
@@ -1033,6 +1035,7 @@ const LecturerDashboardInner: React.FC = () => {
             position="bottom-left"
             autoClose={true}
             autoCloseDelay={3000}
+            darkMode={user?.theme === "dark"}
           />
         )}
 

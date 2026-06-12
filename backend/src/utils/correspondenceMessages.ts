@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import type { Application } from "../entities/Application";
 import { touchApplicationReviewed } from "./applicationReview";
+import { parseApiDateTime } from "./parseApiDateTime";
 
 export type CorrespondenceAuthorRole = "candidate" | "lecturer";
 
@@ -124,12 +125,12 @@ export function getCorrespondenceMessages(
             ? stored
             : buildCorrespondenceFromLegacy(application);
     const appliedMs = application.appliedAt
-        ? new Date(application.appliedAt).getTime()
+        ? parseApiDateTime(application.appliedAt).getTime()
         : NaN;
     if (Number.isNaN(appliedMs)) return messages;
 
     return messages.filter(
-        (message) => new Date(message.createdAt).getTime() >= appliedMs
+        (message) => parseApiDateTime(message.createdAt).getTime() >= appliedMs
     );
 }
 

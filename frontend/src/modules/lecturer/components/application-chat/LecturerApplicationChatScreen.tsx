@@ -35,6 +35,8 @@ import {
   resolveReplyQuote,
 } from "@/modules/tutor/components/application-detail/conversationUtils";
 import ConfirmModal from "@/shared/components/common/modal/ConfirmModal";
+import { useApplicationChatSync } from "@/shared/hooks/useApplicationChatSync";
+import { formatApiErrorMessage } from "@/shared/utils/apiErrors";
 import conversationStyles from "@/modules/tutor/components/application-detail/ConversationPanel.module.css";
 import styles from "@/modules/tutor/components/application-detail/ApplicationChatScreen.module.css";
 
@@ -53,6 +55,13 @@ const LecturerApplicationChatScreen: React.FC<
   LecturerApplicationChatScreenProps
 > = ({ application, onApplicationUpdated, onBack, showToast }) => {
   const { user } = useAuth();
+
+  useApplicationChatSync({
+    applicationId: application.id,
+    enabled: true,
+    onApplicationUpdated,
+  });
+
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [pinnedMessageId, setPinnedMessageId] = useState<string | null>(null);
@@ -136,7 +145,10 @@ const LecturerApplicationChatScreen: React.FC<
     );
     setBusy(false);
     if (!response.success || !response.data) {
-      showToast(response.message || "Failed to send feedback", "error");
+      showToast(
+        formatApiErrorMessage(response, "Failed to send feedback"),
+        "error"
+      );
       return;
     }
     onApplicationUpdated(response.data);
@@ -154,7 +166,10 @@ const LecturerApplicationChatScreen: React.FC<
     );
     setBusy(false);
     if (!response.success || !response.data) {
-      showToast(response.message || "Failed to delete feedback", "error");
+      showToast(
+        formatApiErrorMessage(response, "Failed to delete feedback"),
+        "error"
+      );
       return;
     }
     onApplicationUpdated(response.data);
@@ -173,7 +188,10 @@ const LecturerApplicationChatScreen: React.FC<
       emoji
     );
     if (!response.success || !response.data) {
-      showToast(response.message || "Failed to update reaction", "error");
+      showToast(
+        formatApiErrorMessage(response, "Failed to update reaction"),
+        "error"
+      );
       return;
     }
     onApplicationUpdated(response.data);

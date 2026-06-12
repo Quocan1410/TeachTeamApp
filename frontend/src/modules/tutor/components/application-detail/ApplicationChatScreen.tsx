@@ -27,6 +27,7 @@ import ConversationComposer from "./ConversationComposer";
 import type { MessageAction } from "./ConversationMessageActions";
 import { resolveReplyQuote } from "./conversationUtils";
 import ConfirmModal from "@/shared/components/common/modal/ConfirmModal";
+import { useApplicationChatSync } from "@/shared/hooks/useApplicationChatSync";
 import conversationStyles from "./ConversationPanel.module.css";
 import styles from "./ApplicationChatScreen.module.css";
 
@@ -48,6 +49,7 @@ interface ApplicationChatScreenProps {
     decision: "accept" | "decline",
     message: string
   ) => Promise<void>;
+  onApplicationUpdated?: (application: ApplicationResponse) => void;
 }
 
 const ApplicationChatScreen: React.FC<ApplicationChatScreenProps> = ({
@@ -65,8 +67,15 @@ const ApplicationChatScreen: React.FC<ApplicationChatScreenProps> = ({
   onClose,
   onToggleReaction,
   onOfferResponse,
+  onApplicationUpdated,
 }) => {
   const { user } = useAuth();
+
+  useApplicationChatSync({
+    applicationId: application.id,
+    enabled: Boolean(onApplicationUpdated),
+    onApplicationUpdated: onApplicationUpdated ?? (() => undefined),
+  });
   const [pinnedMessageId, setPinnedMessageId] = useState<string | null>(null);
   const [replyToMessageId, setReplyToMessageId] = useState<string | null>(null);
   const replyToMessageIdRef = useRef<string | null>(null);

@@ -29,6 +29,9 @@ export function resolveSocketIoOrigin(): string {
   if (env.socketUrl) {
     return env.socketUrl;
   }
+  if (env.apiOrigin) {
+    return env.apiOrigin;
+  }
   if (typeof window !== "undefined") {
     return window.location.origin;
   }

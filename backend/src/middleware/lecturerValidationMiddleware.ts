@@ -12,6 +12,20 @@ interface ValidationResult {
     errors: ValidationError[];
 }
 
+function validationErrorResponse(errors: ValidationError[]) {
+    const fieldErrors = errors.reduce((acc, error) => {
+        acc[error.field] = error.message;
+        return acc;
+    }, {} as Record<string, string>);
+
+    return {
+        success: false,
+        message: errors[0]?.message ?? "Validation failed",
+        errors: fieldErrors,
+        validationErrors: errors,
+    };
+}
+
 /**
  * Validates comment data for lecturer operations
  */
@@ -30,20 +44,11 @@ export const validateLecturerComment = (comment: string): ValidationResult => {
             });
         }
 
-        // Minimum length validation (if not empty)
-        if (trimmedComment.length > 0 && trimmedComment.length < 3) {
-            errors.push({
-                field: "comment",
-                message: "Comment must be at least 3 characters long",
-                code: "COMMENT_TOO_SHORT",
-            });
-        }
-
         // Professional content validation
-        const restrictedWords = ["test", "asdf", "qwerty", "spam"];
+        const restrictedWords = ["asdf", "qwerty", "spam"];
         const lowerComment = trimmedComment.toLowerCase();
         const foundRestrictedWords = restrictedWords.filter((word) =>
-            lowerComment.includes(word)
+            new RegExp(`\\b${word}\\b`, "i").test(lowerComment)
         );
 
         if (foundRestrictedWords.length > 0) {
@@ -169,15 +174,7 @@ export const validateStatusUpdate = (
     }
 
     if (errors.length > 0) {
-        res.status(400).json({
-            success: false,
-            message: "",
-            errors: errors.reduce((acc, error) => {
-                acc[error.field] = error.message;
-                return acc;
-            }, {} as Record<string, string>),
-            validationErrors: errors,
-        });
+        res.status(400).json(validationErrorResponse(errors));
         return;
     }
 
@@ -212,15 +209,7 @@ export const validateCommentSubmission = (
     }
 
     if (errors.length > 0) {
-        res.status(400).json({
-            success: false,
-            message: "",
-            errors: errors.reduce((acc, error) => {
-                acc[error.field] = error.message;
-                return acc;
-            }, {} as Record<string, string>),
-            validationErrors: errors,
-        });
+        res.status(400).json(validationErrorResponse(errors));
         return;
     }
 
@@ -288,15 +277,7 @@ export const validateRankingOperation = (
     }
 
     if (errors.length > 0) {
-        res.status(400).json({
-            success: false,
-            message: "",
-            errors: errors.reduce((acc, error) => {
-                acc[error.field] = error.message;
-                return acc;
-            }, {} as Record<string, string>),
-            validationErrors: errors,
-        });
+        res.status(400).json(validationErrorResponse(errors));
         return;
     }
 

@@ -296,5 +296,11 @@ router.get(
     )
 );
 
+router.get(
+    "/:id",
+    authenticateToken,
+    requireUserType(["candidate", "lecturer"]),
+    applicationController.getApplicationById.bind(applicationController)
+);
 
 export default router;

@@ -2,6 +2,7 @@ import { AppDataSource } from "../config/database";
 import { Application } from "../entities/Application";
 import { CourseAssignment } from "../entities/CourseAssignment";
 import { emitToUser } from "./socketServer";
+import { sanitizeApplicationForCandidate } from "../utils/candidateApplicationView";
 
 export const APPLICATION_UPDATED_EVENT = "application:updated";
 
@@ -27,6 +28,8 @@ const APPLICATION_RELATIONS = [
     "course.courseAssignments",
     "course.courseAssignments.lecturer",
     "role",
+    "candidate",
+    "commentedByUser",
 ] as const;
 
 const serializeApplication = (application: Application): Record<string, unknown> =>
@@ -50,12 +53,23 @@ export async function notifyApplicationUpdated(
             return;
         }
 
-        const payload: ApplicationUpdatedPayload = {
+        const lecturerPayload: ApplicationUpdatedPayload = {
             reason,
             application: serializeApplication(application),
         };
 
-        emitToUser(application.candidateId, APPLICATION_UPDATED_EVENT, payload);
+        const candidatePayload: ApplicationUpdatedPayload = {
+            reason,
+            application: serializeApplication(
+                sanitizeApplicationForCandidate(application)
+            ),
+        };
+
+        emitToUser(
+            application.candidateId,
+            APPLICATION_UPDATED_EVENT,
+            candidatePayload
+        );
 
         const assignments = await assignmentRepository.find({
             where: { courseId: application.courseId },
@@ -67,8 +81,9 @@ export async function notifyApplicationUpdated(
         );
 
         lecturerIds.forEach((lecturerId) => {
-            emitToUser(lecturerId, APPLICATION_UPDATED_EVENT, payload);
+            emitToUser(lecturerId, APPLICATION_UPDATED_EVENT, lecturerPayload);
         });
     } catch (error) {
+        console.error("notifyApplicationUpdated failed:", error);
     }
 }

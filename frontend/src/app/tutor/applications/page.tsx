@@ -283,7 +283,7 @@ export default function TutorApplicationsPage() {
           return reason === "created" ? [application, ...prev] : prev;
         }
         const next = [...prev];
-        next[index] = application;
+        next[index] = { ...prev[index], ...application };
         return next;
       });
 
@@ -433,6 +433,12 @@ export default function TutorApplicationsPage() {
     }));
     setBusyId(null);
   };
+
+  const refreshApplication = useCallback((application: ApplicationResponse) => {
+    setApplications((prev) =>
+      prev.map((item) => (item.id === application.id ? application : item))
+    );
+  }, []);
 
   const toggleReaction = async (
     applicationId: number,
@@ -768,6 +774,7 @@ export default function TutorApplicationsPage() {
                     onOfferResponse={(decision, message) =>
                       respondToOffer(selectedApplication.id, decision, message)
                     }
+                    onApplicationUpdated={refreshApplication}
                   />
                 </aside>
               )}

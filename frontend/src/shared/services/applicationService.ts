@@ -178,6 +178,24 @@ export class ApplicationService {
     }
   }
 
+  static async getApplicationById(
+    applicationId: number
+  ): Promise<ApiResponse<ApplicationResponse>> {
+    try {
+      const response = await applicationAPI.get(`/${applicationId}`);
+      return response.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<ApiResponse<ApplicationResponse>>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Network error occurred while fetching application.",
+      };
+    }
+  }
+
   // PA Part C: Get candidate's applications
   static async getMyCandidateApplications(): Promise<
     ApiResponse<ApplicationResponse[]>

@@ -314,6 +314,95 @@ export class ApplicationController {
         }
     }
 
+    async getApplicationById(
+        req: AuthenticatedRequest,
+        res: Response
+    ): Promise<void> {
+        try {
+            const applicationId = parseInt(req.params.id, 10);
+            const userId = req.user?.userId;
+            const userType = req.user?.userType;
+
+            if (!userId || !userType) {
+                res.status(401).json({
+                    success: false,
+                    message: "Authentication required",
+                });
+                return;
+            }
+
+            if (!Number.isInteger(applicationId) || applicationId <= 0) {
+                res.status(400).json({
+                    success: false,
+                    message: "Invalid application id",
+                });
+                return;
+            }
+
+            const application = await this.loadApplicationForResponse(
+                applicationId
+            );
+
+            if (!application) {
+                res.status(404).json({
+                    success: false,
+                    message: "Application not found",
+                });
+                return;
+            }
+
+            if (userType === UserType.CANDIDATE) {
+                if (application.candidateId !== userId) {
+                    res.status(403).json({
+                        success: false,
+                        message: "You do not have access to this application",
+                    });
+                    return;
+                }
+
+                res.status(200).json({
+                    success: true,
+                    data: sanitizeApplicationForCandidate(application),
+                });
+                return;
+            }
+
+            if (userType === UserType.LECTURER) {
+                const hasAccess = await this.verifyLecturerCourseAccess(
+                    userId,
+                    application.courseId
+                );
+                if (!hasAccess) {
+                    res.status(403).json({
+                        success: false,
+                        message: "You don't have access to this application",
+                    });
+                    return;
+                }
+
+                const [withShortlist] = await this.attachShortlistFlags([
+                    application,
+                ]);
+
+                res.status(200).json({
+                    success: true,
+                    data: withShortlist,
+                });
+                return;
+            }
+
+            res.status(403).json({
+                success: false,
+                message: "Access denied",
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: "Internal server error",
+            });
+        }
+    }
+
     async updateCandidateResponse(
         req: AuthenticatedRequest,
         res: Response

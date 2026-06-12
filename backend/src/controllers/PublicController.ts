@@ -3,7 +3,7 @@ import { In } from "typeorm";
 import { AppDataSource } from "../config/database";
 import { User, UserType } from "../entities/User";
 import { CourseAssignment } from "../entities/CourseAssignment";
-const FEATURED_LECTURER_EMAILS = ["jane.lecturer@lecturer.edu.au"];
+const FEATURED_LECTURER_EMAILS = ["jane.morrison@lecturer.edu.au"];
 
 export interface PublicLecturerCourse {
     courseCode: string;

@@ -30,6 +30,7 @@ import {
     setAuthCookie,
     setRefreshCookie,
     getRefreshTokenFromRequest,
+    getAuthTokenFromRequest,
 } from "../utils/authCookie";
 import { enqueueEmail } from "../services/emailQueue";
 import { AuthService } from "../services/authService";
@@ -303,6 +304,29 @@ export class AuthController {
             res.status(500).json({
                 success: false,
                 message: "Unable to change password",
+            });
+        }
+    }
+
+    async getSocketToken(req: Request, res: Response): Promise<void> {
+        try {
+            const token = getAuthTokenFromRequest(req);
+            if (!token) {
+                res.status(401).json({
+                    success: false,
+                    message: "Authentication required",
+                });
+                return;
+            }
+
+            res.status(200).json({
+                success: true,
+                data: { token },
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: "Internal server error",
             });
         }
     }

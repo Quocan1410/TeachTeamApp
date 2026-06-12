@@ -142,6 +142,10 @@ router.post(
 );
 
 // Protected routes
+router.get("/socket-token", authenticateToken, async (req, res) => {
+    await authController.getSocketToken(req, res);
+});
+
 router.get("/profile", authenticateToken, async (req, res) => {
     await authController.getProfile(req, res);
 });

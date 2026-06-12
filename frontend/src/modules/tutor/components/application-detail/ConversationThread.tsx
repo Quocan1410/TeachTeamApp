@@ -69,7 +69,12 @@ const ConversationThread: React.FC<ConversationThreadProps> = ({
   }, [humanItems.length, application.id]);
 
   if (humanItems.length === 0) {
-    return null;
+    return (
+      <p className={styles.emptyThread} role="status">
+        No messages yet. When the lecturer or you send a message, it will appear
+        here.
+      </p>
+    );
   }
 
   return (

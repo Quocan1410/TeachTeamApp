@@ -33,6 +33,7 @@ interface ApplicationDetailPanelProps {
     decision: "accept" | "decline",
     message: string
   ) => Promise<void>;
+  onApplicationUpdated?: (application: ApplicationResponse) => void;
   hideSummary?: boolean;
   hideApplicationDetails?: boolean;
 }
@@ -51,6 +52,7 @@ const ApplicationDetailPanel: React.FC<ApplicationDetailPanelProps> = ({
   onTogglePin,
   onToggleReaction,
   onOfferResponse,
+  onApplicationUpdated,
   hideSummary = false,
 }) => {
   const [view, setView] = useState<DetailView>("overview");
@@ -142,6 +144,7 @@ const ApplicationDetailPanel: React.FC<ApplicationDetailPanelProps> = ({
                 onClose={onClose}
                 onToggleReaction={onToggleReaction}
                 onOfferResponse={onOfferResponse}
+                onApplicationUpdated={onApplicationUpdated}
               />
             </motion.div>
           )}
