@@ -157,7 +157,10 @@ const ConversationMessage: React.FC<ConversationMessageProps> = ({
 
 
 
-  const body = item.body?.trim() || item.title;
+  const isDeleted = Boolean(item.deletedAt);
+  const body = isDeleted
+    ? "This message was deleted."
+    : item.body?.trim() || item.title;
 
   const canEdit =
 
@@ -166,7 +169,9 @@ const ConversationMessage: React.FC<ConversationMessageProps> = ({
   const viewerIsLecturer = authUser?.userType === "lecturer";
 
   const canDelete =
-    !!canCompose && (viewerIsLecturer ? isLecturer : isCandidate);
+    !!canCompose &&
+    !isDeleted &&
+    (viewerIsLecturer ? isLecturer : isCandidate);
 
   const canReply =
     !!canCompose &&
@@ -258,8 +263,14 @@ const ConversationMessage: React.FC<ConversationMessageProps> = ({
                   targetMessageId={replyQuote.messageId}
                 />
               ) : null}
-              <p className={conversationStyles.messageBody}>{body}</p>
-              {item.body ? (
+              <p
+                className={`${conversationStyles.messageBody} ${
+                  isDeleted ? conversationStyles.messageBodyDeleted : ""
+                }`.trim()}
+              >
+                {body}
+              </p>
+              {item.body && !isDeleted ? (
                 <div className={conversationStyles.messageToolbarSlot}>
                   <MessageHoverToolbar
                     messageId={item.id}
@@ -277,7 +288,7 @@ const ConversationMessage: React.FC<ConversationMessageProps> = ({
                 </div>
               ) : null}
             </div>
-            {item.body ? (
+            {item.body && !isDeleted ? (
               <MessageReactionBar
                 messageId={item.id}
                 reactions={messageReactions}

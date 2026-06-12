@@ -48,7 +48,7 @@ export const authenticateToken = async (
             where: { id: decoded.userId },
         });
 
-        if (!user) {
+        if (!user || user.deletedAt) {
             res.status(401).json({
                 success: false,
                 message: "User account not found",

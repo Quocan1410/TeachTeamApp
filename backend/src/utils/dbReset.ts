@@ -7,7 +7,6 @@ import { Application } from "../entities/Application";
 import { SelectedCandidate } from "../entities/SelectedCandidate";
 import { Notification } from "../entities/Notification";
 import { ApplicationDraft } from "../entities/ApplicationDraft";
-import { Announcement } from "../entities/Announcement";
 import { PasswordResetToken } from "../entities/PasswordResetToken";
 import { UserSecurityAnswer } from "../entities/UserSecurityAnswer";
 import { RefreshToken } from "../entities/RefreshToken";
@@ -84,7 +83,6 @@ export class DatabaseResetService {
             await AppDataSource.getRepository(ApplicationDraft).clear();
             await AppDataSource.getRepository(Application).clear();
             await AppDataSource.getRepository(CourseAssignment).clear();
-            await AppDataSource.getRepository(Announcement).clear();
             await AppDataSource.getRepository(User).clear();
             await AppDataSource.getRepository(Course).clear();
             await AppDataSource.getRepository(Role).clear();

@@ -35,14 +35,17 @@
 }
 
 .filtersRow {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 0.75rem;
+  align-items: center;
+  justify-content: start;
+  flex: 1 1 auto;
+  min-width: 0;
   width: 100%;
 }
 
-.filterInput,
-.filterSelect {
+.filterInput {
   min-height: 2.5rem;
   padding: 0.45rem 0.75rem;
   border-radius: 0.65rem;
@@ -50,14 +53,30 @@
   background: var(--color-bg-primary);
   color: var(--color-text-primary);
   font-size: 0.875rem;
+  width: 100%;
+  min-width: 0;
 }
 
-.filterInput {
-  flex: 1 1 220px;
+.filterAppSelect {
+  width: auto;
+  min-width: 0;
 }
 
-.filterSelect {
-  min-width: 140px;
+.filterAppSelect button {
+  width: auto;
+  min-height: 2.5rem;
+  justify-content: flex-start;
+  gap: 0.35rem;
+  padding: 0.45rem 0.65rem 0.45rem 0.75rem;
+  border-radius: 0.65rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.filterAppSelect button span:first-child {
+  flex: 0 1 auto;
+  font-size: 0.875rem;
 }
 
 .stackCount {
@@ -716,6 +735,16 @@
   }
 }
 
+@media (max-width: 768px) {
+  .filtersRow {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filterInput {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (max-width: 640px) {
   .page {
     padding: 1.5rem 1rem 2.5rem;
@@ -725,4 +754,7 @@
     margin-bottom: 1.5rem;
   }
 
+  .filtersRow {
+    grid-template-columns: 1fr;
+  }
 }

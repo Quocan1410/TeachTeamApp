@@ -38,12 +38,7 @@ interface NotificationContextType {
   unreadCount: number;
   loading: boolean;
   fetchError: string | null;
-  notificationPage: number;
-  notificationPageSize: number;
-  notificationTotalCount: number;
-  notificationTotalPages: number;
-  setNotificationPage: (page: number) => void;
-  refreshNotifications: (options?: { force?: boolean; page?: number }) => Promise<void>;
+  refreshNotifications: (options?: { force?: boolean }) => Promise<void>;
   addNotification: (
     notification: Omit<Notification, "id" | "timestamp" | "read">
   ) => void;
@@ -115,10 +110,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
-  const [notificationPage, setNotificationPage] = useState(1);
-  const notificationPageSize = 10;
-  const [notificationTotalCount, setNotificationTotalCount] = useState(0);
-  const [notificationTotalPages, setNotificationTotalPages] = useState(1);
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const userId = user?.id ?? null;
   const userType = user?.userType;
@@ -129,7 +120,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   const loadedForUserIdRef = useRef<number | null>(null);
 
   const refreshNotifications = useCallback(
-    async (options?: { force?: boolean; page?: number }) => {
+    async (options?: { force?: boolean }) => {
       if (authLoading) {
         return;
       }
@@ -143,9 +134,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       ) {
         setNotifications([]);
         setUnreadCount(0);
-        setNotificationTotalCount(0);
-        setNotificationTotalPages(1);
-        setNotificationPage(1);
         setFetchError(null);
         loadedForUserIdRef.current = null;
         return;
@@ -174,13 +162,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       try {
         setLoading(true);
         setFetchError(null);
-        const pageToLoad = options?.page ?? notificationPage;
-        const data = await fetchNotifications(pageToLoad, notificationPageSize);
+        const data = await fetchNotifications();
         setNotifications(data.items.map(mapStoredNotification));
         setUnreadCount(data.unreadCount);
-        setNotificationTotalCount(data.totalCount);
-        setNotificationTotalPages(data.totalPages);
-        setNotificationPage(data.page);
         loadedForUserIdRef.current = activeUserId;
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 429) {
@@ -200,12 +184,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         setLoading(false);
       }
     },
-    [authLoading, isAuthenticated, userId, userType, notificationPage, notificationPageSize]
+    [authLoading, isAuthenticated, userId, userType]
   );
 
   useEffect(() => {
-    void refreshNotifications({ page: notificationPage });
-  }, [notificationPage, refreshNotifications]);
+    void refreshNotifications();
+  }, [refreshNotifications]);
 
   useEffect(() => {
     if (authLoading || !isAuthenticated) {
@@ -323,11 +307,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     unreadCount,
     loading,
     fetchError,
-    notificationPage,
-    notificationPageSize,
-    notificationTotalCount,
-    notificationTotalPages,
-    setNotificationPage,
     refreshNotifications,
     addNotification,
     markAsRead,

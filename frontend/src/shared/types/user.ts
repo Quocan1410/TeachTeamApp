@@ -39,7 +39,6 @@ export interface SecurityAnswerInput {
 export interface SignupData {
   email: string;
   password: string;
-  confirmPassword: string;
   firstName: string;
   lastName: string;
   userType: UserType;

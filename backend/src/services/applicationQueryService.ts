@@ -1,6 +1,6 @@
 import { Brackets } from "typeorm";
 import { AppDataSource } from "../config/database";
-import { Application } from "../entities/Application";
+import { Application, ApplicationStatus } from "../entities/Application";
 import { CourseAssignment } from "../entities/CourseAssignment";
 import { User, UserType } from "../entities/User";
 import {
@@ -131,7 +131,20 @@ export class ApplicationQueryService {
             });
         }
 
-        if (status && status !== "all") {
+        if (status === "ranked") {
+            queryBuilder.andWhere("application.rank IS NOT NULL");
+            queryBuilder.andWhere("application.rank > 0");
+        } else if (status === "shortlisted") {
+            queryBuilder.andWhere("application.status = :pendingStatus", {
+                pendingStatus: ApplicationStatus.PENDING,
+            });
+            queryBuilder.andWhere(
+                "(application.rank IS NULL OR application.rank <= 0)"
+            );
+            queryBuilder.andWhere(
+                "EXISTS (SELECT 1 FROM selected_candidates sc WHERE sc.applicationId = application.id)"
+            );
+        } else if (status && status !== "all") {
             queryBuilder.andWhere("application.status = :status", { status });
         }
 

@@ -120,7 +120,7 @@ export class AuthController {
                 where: { email },
             });
 
-            if (!user) {
+            if (!user || user.deletedAt) {
                 res.status(401).json({
                     success: false,
                     message: "Invalid email or password",
@@ -227,7 +227,7 @@ export class AuthController {
                 where: { id: rotated.userId },
             });
 
-            if (!user || user.isBlocked) {
+            if (!user || user.isBlocked || user.deletedAt) {
                 clearAuthCookie(res);
                 res.status(401).json({
                     success: false,
@@ -753,7 +753,8 @@ export class AuthController {
             if (
                 user &&
                 user.userType !== UserType.ADMIN &&
-                !user.isBlocked
+                !user.isBlocked &&
+                !user.deletedAt
             ) {
                 const { resetUrl } =
                     await this.passwordResetService.createResetTokenForUser(

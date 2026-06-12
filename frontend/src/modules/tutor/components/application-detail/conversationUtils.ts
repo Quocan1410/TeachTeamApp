@@ -298,7 +298,17 @@ export function resolveReplyQuote(
   if (!replyId) return null;
 
   const referenced = itemsById.get(replyId);
-  if (!referenced?.body?.trim()) return null;
+  if (!referenced) return null;
+
+  if (referenced.deletedAt) {
+    return {
+      senderName: replyQuoteSenderLabel(referenced, application, authUser),
+      body: "Message deleted",
+      messageId: replyId,
+    };
+  }
+
+  if (!referenced.body?.trim()) return null;
 
   return {
     senderName: replyQuoteSenderLabel(referenced, application, authUser),
@@ -345,6 +355,7 @@ export function canEditTimelineMessage(
   item: ApplicationTimelineItem
 ): boolean {
   if (item.kind !== "candidate") return false;
+  if (item.deletedAt) return false;
   const ageMs = Date.now() - new Date(item.at).getTime();
   return ageMs <= CANDIDATE_EDIT_WINDOW_MS;
 }

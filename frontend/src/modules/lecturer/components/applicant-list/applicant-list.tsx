@@ -246,7 +246,7 @@ const ApplicantList: React.FC<ApplicantListProps> = ({
               </svg>
             </div>
             <p className={styles.emptyText}>
-              No applications found for this course.
+              No applications match the current filters.
             </p>
           </div>
         ) : (

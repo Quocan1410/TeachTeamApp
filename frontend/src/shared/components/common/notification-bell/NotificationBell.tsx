@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useNotifications } from "@/shared/contexts/NotificationContext";
 import CloseIcon from "@/shared/components/common/icons/CloseIcon";
-import PaginationBar from "@/shared/components/common/pagination-bar/PaginationBar";
 import styles from "./NotificationBell.module.css";
 
 const NotificationBell: React.FC = () => {
@@ -15,11 +14,6 @@ const NotificationBell: React.FC = () => {
     markAsRead,
     markAllAsRead,
     removeNotification,
-    notificationPage,
-    notificationPageSize,
-    notificationTotalCount,
-    notificationTotalPages,
-    setNotificationPage,
   } = useNotifications();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -157,8 +151,6 @@ const NotificationBell: React.FC = () => {
     );
   };
 
-  const visible = notifications.slice(0, 10);
-
   return (
     <div className={styles.notificationContainer} ref={dropdownRef}>
       <button
@@ -240,7 +232,7 @@ const NotificationBell: React.FC = () => {
               </div>
             ) : (
               <div className={styles.notificationListInner}>
-                {visible.map((notification) => {
+                {notifications.map((notification) => {
                   const actor = getNotificationActor(notification.type);
                   return (
                     <div
@@ -301,18 +293,6 @@ const NotificationBell: React.FC = () => {
             )}
           </div>
 
-          {notificationTotalCount > 0 && (
-            <div className={styles.dropdownFooter}>
-              <PaginationBar
-                page={notificationPage}
-                pageSize={notificationPageSize}
-                totalCount={notificationTotalCount}
-                totalPages={notificationTotalPages}
-                onPageChange={setNotificationPage}
-                loading={loading}
-              />
-            </div>
-          )}
         </div>
       )}
     </div>

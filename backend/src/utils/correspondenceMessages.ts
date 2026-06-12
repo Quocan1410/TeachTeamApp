@@ -11,7 +11,20 @@ export interface CorrespondenceMessage {
     body: string;
     createdAt: string;
     editedAt?: string | null;
+    deletedAt?: string | null;
     replyToMessageId?: string | null;
+}
+
+export function isCorrespondenceMessageDeleted(
+    message: CorrespondenceMessage
+): boolean {
+    return Boolean(message.deletedAt);
+}
+
+function activeCorrespondenceMessages(
+    messages: CorrespondenceMessage[]
+): CorrespondenceMessage[] {
+    return messages.filter((message) => !isCorrespondenceMessageDeleted(message));
 }
 
 export const LECTURER_PRIMARY_MESSAGE_ID = "msg-lecturer-primary";
@@ -50,6 +63,8 @@ export function parseCorrespondenceMessages(
             createdAt,
             editedAt:
                 typeof row.editedAt === "string" ? row.editedAt : null,
+            deletedAt:
+                typeof row.deletedAt === "string" ? row.deletedAt : null,
             replyToMessageId:
                 typeof row.replyToMessageId === "string" &&
                 row.replyToMessageId.trim()
@@ -122,7 +137,10 @@ export function syncLegacyCorrespondenceFields(
     application: Application,
     messages: CorrespondenceMessage[]
 ): void {
-    const lecturerMsgs = messages.filter((m) => m.authorRole === "lecturer");
+    const visibleMessages = activeCorrespondenceMessages(messages);
+    const lecturerMsgs = visibleMessages.filter(
+        (m) => m.authorRole === "lecturer"
+    );
     const latestLecturer = lecturerMsgs[lecturerMsgs.length - 1];
     if (latestLecturer) {
         application.comment = latestLecturer.body;
@@ -134,7 +152,9 @@ export function syncLegacyCorrespondenceFields(
         application.commentedAt = undefined;
     }
 
-    const candidateMsgs = messages.filter((m) => m.authorRole === "candidate");
+    const candidateMsgs = visibleMessages.filter(
+        (m) => m.authorRole === "candidate"
+    );
     const latestCandidate = candidateMsgs[candidateMsgs.length - 1];
     if (latestCandidate) {
         application.candidateResponse = latestCandidate.body;
@@ -218,8 +238,12 @@ export function syncLecturerCommentMessage(
     );
 
     if (!trimmed) {
-        const next = messages.filter(
-            (m) => m.id !== LECTURER_PRIMARY_MESSAGE_ID
+        const deletedAt = new Date().toISOString();
+        const next = messages.map((message) =>
+            message.id === LECTURER_PRIMARY_MESSAGE_ID &&
+            !isCorrespondenceMessageDeleted(message)
+                ? { ...message, deletedAt }
+                : message
         );
         syncLegacyCorrespondenceFields(application, next);
         return;
@@ -260,6 +284,9 @@ export function updateCandidateMessage(
     if (message.authorRole !== "candidate" || message.authorId !== candidateId) {
         return null;
     }
+    if (isCorrespondenceMessageDeleted(message)) {
+        return null;
+    }
 
     const ageMs = Date.now() - new Date(message.createdAt).getTime();
     if (ageMs > CANDIDATE_EDIT_WINDOW_MS) {
@@ -286,29 +313,34 @@ export function deleteCorrespondenceMessage(
     if (target.authorRole !== "candidate" || target.authorId !== candidateId) {
         return false;
     }
-
-    const next = messages.filter((m) => m.id !== messageId);
-
-    if (application.messageReactions?.[messageId]) {
-        const reactions = { ...application.messageReactions };
-        delete reactions[messageId];
-        application.messageReactions =
-            Object.keys(reactions).length > 0 ? reactions : null;
+    if (isCorrespondenceMessageDeleted(target)) {
+        return false;
     }
 
-    syncLegacyCorrespondenceFields(application, next);
+    const index = messages.findIndex((m) => m.id === messageId);
+    messages[index] = {
+        ...target,
+        deletedAt: new Date().toISOString(),
+    };
+
+    syncLegacyCorrespondenceFields(application, messages);
     return true;
 }
 
 export function clearLecturerCorrespondence(application: Application): void {
-    const messages = getCorrespondenceMessages(application).filter(
-        (m) => m.authorRole !== "lecturer"
+    const messages = getCorrespondenceMessages(application);
+    const deletedAt = new Date().toISOString();
+    const next = messages.map((message) =>
+        message.authorRole === "lecturer" && !isCorrespondenceMessageDeleted(message)
+            ? { ...message, deletedAt }
+            : message
     );
-    syncLegacyCorrespondenceFields(application, messages);
+    syncLegacyCorrespondenceFields(application, next);
 }
 
 export function canCandidateEditMessage(message: CorrespondenceMessage): boolean {
     if (message.authorRole !== "candidate") return false;
+    if (isCorrespondenceMessageDeleted(message)) return false;
     const ageMs = Date.now() - new Date(message.createdAt).getTime();
     return ageMs <= CANDIDATE_EDIT_WINDOW_MS;
 }

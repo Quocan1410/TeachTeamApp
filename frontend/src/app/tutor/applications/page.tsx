@@ -29,9 +29,23 @@ import { resolveApplicationStatusDisplay } from "@/shared/utils/applicationStatu
 import PinIcon from "@/shared/components/common/icons/PinIcon";
 import ApplicationDetailPanel from "@/modules/tutor/components/application-detail/ApplicationDetailPanel";
 import ConfirmModal from "@/shared/components/common/modal/ConfirmModal";
+import AppSelect from "@/shared/components/common/app-select/AppSelect";
 import styles from "./ApplicationsPage.module.css";
 
 type ViewMode = "grid" | "list";
+
+const STATUS_FILTER_OPTIONS = [
+  { value: "all", label: "All statuses" },
+  { value: "active", label: "In review" },
+  { value: "selected", label: "Selected" },
+  { value: "closed", label: "Closed" },
+] as const;
+
+const SORT_OPTIONS = [
+  { value: "date", label: "Newest first" },
+  { value: "course", label: "Course code" },
+  { value: "status", label: "Status" },
+] as const;
 
 const APPLICATION_PAGE_SIZE = 8;
 
@@ -618,25 +632,22 @@ export default function TutorApplicationsPage() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
-                  <select
-                    className={styles.filterSelect}
+                  <AppSelect
+                    id="applications-status-filter"
+                    className={styles.filterAppSelect}
                     value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                  >
-                    <option value="all">All statuses</option>
-                    <option value="active">In review</option>
-                    <option value="selected">Selected</option>
-                    <option value="closed">Closed</option>
-                  </select>
-                  <select
-                    className={styles.filterSelect}
+                    onChange={setStatusFilter}
+                    options={[...STATUS_FILTER_OPTIONS]}
+                    aria-label="Filter by status"
+                  />
+                  <AppSelect
+                    id="applications-sort"
+                    className={styles.filterAppSelect}
                     value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                  >
-                    <option value="date">Newest first</option>
-                    <option value="course">Course code</option>
-                    <option value="status">Status</option>
-                  </select>
+                    onChange={setSortBy}
+                    options={[...SORT_OPTIONS]}
+                    aria-label="Sort applications"
+                  />
                 </div>
               )}
               {!hasSelection && (

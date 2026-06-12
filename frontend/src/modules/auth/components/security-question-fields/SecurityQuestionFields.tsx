@@ -76,22 +76,55 @@ export default function SecurityQuestionFields({
     <div className={styles.wrapper}>
       <h3 className={styles.heading}>{heading}</h3>
       <p className={styles.hint}>
-        Choose {SECURITY_QUESTION_COUNT} different questions and answers you will
-        remember. 
+        {lockedQuestions
+          ? "Answer each question below to verify your identity."
+          : `Choose ${SECURITY_QUESTION_COUNT} different questions and answers you will remember.`}
       </p>
       {errors.securityAnswers && (
         <div className={styles.blockError}>{errors.securityAnswers}</div>
       )}
-      <div className={grid.stack}>
-        {displayRows.map((item, index) => (
-          <div
-            key={lockedQuestions ? item.questionId : index}
-            className={grid.row}
-          >
-            <div className={grid.cell}>
-              {lockedQuestions ? (
-                <p className={styles.questionLabel}>{item.text}</p>
-              ) : (
+      <div
+        className={
+          lockedQuestions ? styles.lockedStack : grid.stack
+        }
+      >
+        {displayRows.map((item, index) =>
+          lockedQuestions ? (
+            <div key={item.questionId} className={styles.lockedRow}>
+              <label
+                className={styles.questionLabelLocked}
+                htmlFor={`security-answer-${index}`}
+              >
+                <span className={styles.questionIndex}>
+                  {index + 1}
+                </span>
+                {item.text}
+              </label>
+              <input
+                id={`security-answer-${index}`}
+                type="text"
+                className={`${styles.answerInput} ${
+                  errors[`securityAnswers.${index}.answer`]
+                    ? styles.answerInputError
+                    : ""
+                }`}
+                placeholder="Your answer"
+                value={rows[index]?.answer || ""}
+                onChange={(e) => updateRow(index, { answer: e.target.value })}
+                disabled={disabled}
+                autoComplete="off"
+                required
+                aria-required
+              />
+              {errors[`securityAnswers.${index}.answer`] && (
+                <span className={styles.fieldError}>
+                  {errors[`securityAnswers.${index}.answer`]}
+                </span>
+              )}
+            </div>
+          ) : (
+            <div key={index} className={grid.row}>
+              <div className={grid.cell}>
                 <AppSelect
                   id={`security-question-${index}`}
                   value={rows[index]?.questionId || ""}
@@ -109,37 +142,39 @@ export default function SecurityQuestionFields({
                   aria-required="true"
                   disabled={disabled}
                 />
-              )}
-              {errors[`securityAnswers.${index}.questionId`] && (
-                <span className={grid.fieldError}>
-                  {errors[`securityAnswers.${index}.questionId`]}
-                </span>
-              )}
+                {errors[`securityAnswers.${index}.questionId`] && (
+                  <span className={grid.fieldError}>
+                    {errors[`securityAnswers.${index}.questionId`]}
+                  </span>
+                )}
+              </div>
+              <div className={grid.cell}>
+                <input
+                  type="text"
+                  className={`${grid.control} ${
+                    errors[`securityAnswers.${index}.answer`]
+                      ? grid.controlError
+                      : ""
+                  }`}
+                  placeholder="Your answer"
+                  value={rows[index]?.answer || ""}
+                  onChange={(e) =>
+                    updateRow(index, { answer: e.target.value })
+                  }
+                  disabled={disabled || !rows[index]?.questionId}
+                  autoComplete="off"
+                  required
+                  aria-required
+                />
+                {errors[`securityAnswers.${index}.answer`] && (
+                  <span className={grid.fieldError}>
+                    {errors[`securityAnswers.${index}.answer`]}
+                  </span>
+                )}
+              </div>
             </div>
-            <div className={grid.cell}>
-              <input
-                type="text"
-                className={`${grid.control} ${
-                  errors[`securityAnswers.${index}.answer`]
-                    ? grid.controlError
-                    : ""
-                }`}
-                placeholder="Your answer"
-                value={rows[index]?.answer || ""}
-                onChange={(e) => updateRow(index, { answer: e.target.value })}
-                disabled={disabled || (!lockedQuestions && !rows[index]?.questionId)}
-                autoComplete="off"
-                required={!lockedQuestions}
-                aria-required={!lockedQuestions}
-              />
-              {errors[`securityAnswers.${index}.answer`] && (
-                <span className={grid.fieldError}>
-                  {errors[`securityAnswers.${index}.answer`]}
-                </span>
-              )}
-            </div>
-          </div>
-        ))}
+          )
+        )}
       </div>
     </div>
   );

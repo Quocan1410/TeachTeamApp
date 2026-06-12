@@ -90,6 +90,13 @@ export class User {
     @UpdateDateColumn()
     updatedAt: Date;
 
+    @Column({
+        type: "datetime",
+        precision: 6,
+        nullable: true,
+    })
+    deletedAt: Date | null;
+
     // Relationships - Commented out for PA part b (authentication only)
     // @OneToMany(
     //     () => CourseAssignment,

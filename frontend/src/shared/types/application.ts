@@ -18,6 +18,7 @@ export interface Application {
   selectedForCourses?: string[]; // Which specific courses if selected for multiple in one app
   comment?: string; // Lecturer's comment
   rank?: number; // Lecturer's ranking
+  rankedForCourse?: string; // Course code this rank applies to
   isBlocked?: boolean; // Whether the candidate is blocked
   isWithdrawn?: boolean;
   avatarUrl?: string | null;

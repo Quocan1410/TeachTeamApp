@@ -9,7 +9,6 @@ import { SelectedCandidate } from "../entities/SelectedCandidate";
 import { Notification } from "../entities/Notification";
 import { NotificationService } from "../services/NotificationService";
 import { ApplicationDraft } from "../entities/ApplicationDraft";
-import { Announcement } from "../entities/Announcement";
 import { PasswordResetToken } from "../entities/PasswordResetToken";
 import { RefreshToken } from "../entities/RefreshToken";
 import { UserSecurityAnswer } from "../entities/UserSecurityAnswer";
@@ -38,7 +37,6 @@ export const AppDataSource = new DataSource({
         SelectedCandidate,
         Notification,
         ApplicationDraft,
-        Announcement,
         PasswordResetToken,
         RefreshToken,
         UserSecurityAnswer,
@@ -154,13 +152,18 @@ const ensureSchemaColumns = async (): Promise<void> => {
 
 export const initializeDatabase = async () => {
     try {
+        console.log(
+            `Connecting to MySQL ${process.env.DB_HOST || "localhost"}:${process.env.DB_PORT || "3306"}/${process.env.DB_NAME || ""}`
+        );
         await initializeDataSource();
+        console.log("MySQL connected");
         await ensureSchemaColumns();
         await syncNotificationsIfNeeded();
         await syncOrphanAvatarsIfNeeded();
 
         // Data is loaded via /api/database reset or manual bootstrap — not on every start.
     } catch (error) {
+        console.error("Database initialization failed:", error);
         throw error;
     }
 };
@@ -184,9 +187,24 @@ const syncOrphanAvatarsIfNeeded = async (): Promise<void> => {
 export const initializeDatabaseConnection = async () => {
     try {
         if (!AppDataSource.isInitialized) {
+            console.log("Opening MySQL connection...");
             await initializeDataSource();
         }
     } catch (error) {
+        console.error("Database connection failed:", error);
         throw error;
     }
 };
+
+export async function pingDatabase(): Promise<boolean> {
+    try {
+        if (!AppDataSource.isInitialized) {
+            return false;
+        }
+        await AppDataSource.query("SELECT 1");
+        return true;
+    } catch (error) {
+        console.error("Database ping failed:", error);
+        return false;
+    }
+}

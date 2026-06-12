@@ -8,7 +8,6 @@ import {
 } from "@/shared/services/applicationService";
 import { Application } from "@/shared/types/application";
 import ApplicantList from "@/modules/lecturer/components/applicant-list/applicant-list";
-import PaginationBar from "@/shared/components/common/pagination-bar/PaginationBar";
 import LecturerApplicantDetailPanel from "@/modules/lecturer/components/applicant-detail/LecturerApplicantDetailPanel";
 import RankedCandidates from "@/modules/lecturer/components/ranked-candidates/ranked-candidates";
 import Toast from "@/shared/components/common/toast/toast";
@@ -45,6 +44,16 @@ const AdminApolloProvider = dynamic(
 import { CandidateBlockedEvent } from "@/lib/graphql-subscriptions";
 
 type TabType = "applications" | "rankings" | "stats";
+
+const matchesRankingCourse = (
+  app: { rankedForCourse?: string; courses: string[] },
+  courseCode: string
+) =>
+  Boolean(
+    app.rankedForCourse &&
+      app.rankedForCourse === courseCode &&
+      app.courses.includes(courseCode)
+  );
 
 // Adapter function to convert ApplicationResponse to Application
 const convertToLegacyApplication = (
@@ -95,8 +104,9 @@ const convertToLegacyApplication = (
           semester: appResponse.course.semester,
         }
       : undefined,
-    selectedForCourses:
-      appResponse.status === "selected"
+    selectedForCourses: appResponse.rankedForCourse
+      ? [appResponse.rankedForCourse]
+      : appResponse.status === "selected"
         ? [appResponse.course.courseCode]
         : undefined,
     rankedForCourse: appResponse.rankedForCourse,
@@ -192,11 +202,6 @@ const LecturerDashboardInner: React.FC = () => {
     setStatusFilter,
     sortBy,
     setSortBy,
-    page,
-    setPage,
-    pageSize,
-    totalCount,
-    totalPages,
     loadApplications,
     scheduleLoadApplications,
     patchApplication,
@@ -353,12 +358,14 @@ const LecturerDashboardInner: React.FC = () => {
   const [courses, setCourses] = useState<Array<{ code: string; name: string }>>(
     []
   );
-  const [, setFullCourseData] = useState<
+  const [fullCourseData, setFullCourseData] = useState<
     Array<{
       courseCode: string;
       courseName: string;
       availableTutors?: number;
       availableLabAssistants?: number;
+      selectedTutors?: number;
+      selectedLabAssistants?: number;
       maxTutors?: number;
       maxLabAssistants?: number;
     }>
@@ -397,6 +404,8 @@ const LecturerDashboardInner: React.FC = () => {
           courseName: course.courseName,
           availableTutors: course.availableTutors,
           availableLabAssistants: course.availableLabAssistants,
+          selectedTutors: course.selectedTutors,
+          selectedLabAssistants: course.selectedLabAssistants,
           maxTutors: course.maxTutors,
           maxLabAssistants: course.maxLabAssistants,
         }));
@@ -592,7 +601,10 @@ const LecturerDashboardInner: React.FC = () => {
         targetApplication.id
       );
       if (response.success) {
-        showToast("Applicant shortlisted", "success");
+        showToast(
+          response.message || "Applicant shortlisted and added to ranking",
+          "success"
+        );
         await loadApplications();
       } else {
         showToast(response.message || "Failed to shortlist applicant", "error");
@@ -736,10 +748,7 @@ const LecturerDashboardInner: React.FC = () => {
       return;
     }
 
-    let courseForRanking = selectedRankingCourse;
-    if (!courseForRanking && selectedApplication.courses.length > 0) {
-      courseForRanking = selectedApplication.courses[0];
-    }
+    const courseForRanking = selectedApplication.courses[0];
 
     if (!courseForRanking) {
       showToast("No course found for ranking", "error");
@@ -747,10 +756,8 @@ const LecturerDashboardInner: React.FC = () => {
     }
 
     try {
-      const currentRankedForCourse = rankedApplications.filter(
-        (app) =>
-          app.selectedForCourses?.includes(courseForRanking) ||
-          app.courses.includes(courseForRanking)
+      const currentRankedForCourse = rankedApplications.filter((app) =>
+        matchesRankingCourse(app, courseForRanking)
       );
       const nextRank = currentRankedForCourse.length + 1;
 
@@ -774,10 +781,8 @@ const LecturerDashboardInner: React.FC = () => {
   const handleMoveUp = async (app: Application) => {
     if (!selectedRankingCourse) return;
 
-    const filteredRanked = rankedApplications.filter(
-      (ranked) =>
-        ranked.selectedForCourses?.includes(selectedRankingCourse) ||
-        ranked.courses.includes(selectedRankingCourse)
+    const filteredRanked = rankedApplications.filter((ranked) =>
+      matchesRankingCourse(ranked, selectedRankingCourse)
     );
 
     const currentIndex = filteredRanked.findIndex(
@@ -816,10 +821,8 @@ const LecturerDashboardInner: React.FC = () => {
   const handleMoveDown = async (app: Application) => {
     if (!selectedRankingCourse) return;
 
-    const filteredRanked = rankedApplications.filter(
-      (ranked) =>
-        ranked.selectedForCourses?.includes(selectedRankingCourse) ||
-        ranked.courses.includes(selectedRankingCourse)
+    const filteredRanked = rankedApplications.filter((ranked) =>
+      matchesRankingCourse(ranked, selectedRankingCourse)
     );
 
     const currentIndex = filteredRanked.findIndex(
@@ -946,13 +949,6 @@ const LecturerDashboardInner: React.FC = () => {
                       onSelectApplication={handleSelectApplication}
                       onRemoveBlockedApplication={handleRemoveBlockedApplication}
                     />
-                    <PaginationBar
-                      page={page}
-                      pageSize={pageSize}
-                      totalCount={totalCount}
-                      totalPages={totalPages}
-                      onPageChange={setPage}
-                    />
                   </div>
 
                   <div className={styles.applicantDetailsSection}>
@@ -1009,6 +1005,11 @@ const LecturerDashboardInner: React.FC = () => {
                   showCourseFilter={true}
                   onCourseChange={setSelectedRankingCourse}
                   availableCourses={courses}
+                  courseSlotInfo={
+                    fullCourseData.find(
+                      (course) => course.courseCode === selectedRankingCourse
+                    ) ?? null
+                  }
                 />
               </div>
             )}

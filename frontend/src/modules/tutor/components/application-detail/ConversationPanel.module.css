@@ -284,6 +284,11 @@
   height: 0.25rem;
 }
 
+.messageBodyDeleted {
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
 .messageBody {
   margin: 0;
   font-size: 0.84rem;

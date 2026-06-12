@@ -39,10 +39,6 @@ function isExemptFromGeneralRateLimit(req: Request): boolean {
         return true;
     }
 
-    if (path.startsWith("/api/announcements")) {
-        return true;
-    }
-
     return false;
 }
 

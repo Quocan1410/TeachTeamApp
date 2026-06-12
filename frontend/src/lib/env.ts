@@ -9,7 +9,7 @@ const apiOrigin =
   process.env.NEXT_PUBLIC_API_ORIGIN?.trim() ||
   (apiEndpoint.startsWith("/")
     ? ""
-    : apiEndpoint.replace(/\/api\/?$/, "") || "http://localhost:5000");
+    : apiEndpoint.replace(/\/api\/?$/, ""));
 
 export const env = {
   apiEndpoint,

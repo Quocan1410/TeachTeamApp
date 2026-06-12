@@ -10,7 +10,6 @@ import { Application } from "../entities/Application";
 import { SelectedCandidate } from "../entities/SelectedCandidate";
 import { Notification } from "../entities/Notification";
 import { ApplicationDraft } from "../entities/ApplicationDraft";
-import { Announcement } from "../entities/Announcement";
 import { PasswordResetToken } from "../entities/PasswordResetToken";
 import { RefreshToken } from "../entities/RefreshToken";
 import { UserSecurityAnswer } from "../entities/UserSecurityAnswer";
@@ -36,7 +35,6 @@ export default new DataSource({
         SelectedCandidate,
         Notification,
         ApplicationDraft,
-        Announcement,
         PasswordResetToken,
         RefreshToken,
         UserSecurityAnswer,

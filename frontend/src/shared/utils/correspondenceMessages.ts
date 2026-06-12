@@ -9,7 +9,14 @@ export interface CorrespondenceMessage {
   body: string;
   createdAt: string;
   editedAt?: string | null;
+  deletedAt?: string | null;
   replyToMessageId?: string | null;
+}
+
+export function isCorrespondenceMessageDeleted(
+  message: CorrespondenceMessage
+): boolean {
+  return Boolean(message.deletedAt);
 }
 
 export const CANDIDATE_EDIT_WINDOW_MS = 2 * 60 * 1000;
@@ -45,6 +52,7 @@ export function parseCorrespondenceMessages(
       body,
       createdAt,
       editedAt: typeof row.editedAt === "string" ? row.editedAt : null,
+      deletedAt: typeof row.deletedAt === "string" ? row.deletedAt : null,
       replyToMessageId:
         typeof row.replyToMessageId === "string" && row.replyToMessageId.trim()
           ? row.replyToMessageId.trim()
@@ -105,6 +113,7 @@ export function getCorrespondenceMessages(
 
 export function canEditCandidateMessage(message: CorrespondenceMessage): boolean {
   if (message.authorRole !== "candidate") return false;
+  if (isCorrespondenceMessageDeleted(message)) return false;
   const ageMs = Date.now() - new Date(message.createdAt).getTime();
   return ageMs <= CANDIDATE_EDIT_WINDOW_MS;
 }

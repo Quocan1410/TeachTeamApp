@@ -10,7 +10,8 @@ import SecurityQuestionFields, {
   type SecurityAnswerFormRow,
 } from "../security-question-fields/SecurityQuestionFields";
 import { validateSecurityAnswerRows } from "../../utils/authValidation.utils";
-import styles from "../signin-form/signin-form.module.css";
+import signinStyles from "../signin-form/signin-form.module.css";
+import styles from "./forgot-password-form.module.css";
 
 type Step = "email" | "questions";
 
@@ -102,44 +103,41 @@ export default function ForgotPasswordForm() {
   };
 
   return (
-    <div className={styles.formContainer}>
+    <div
+      className={`${styles.formContainer} ${
+        step === "questions" ? styles.formContainerWide : ""
+      }`.trim()}
+    >
       <form
         onSubmit={step === "email" ? handleEmailSubmit : handleVerifySubmit}
-        className={styles.form}
+        className={signinStyles.form}
       >
-        <h2 className={styles.title}>Forgot password</h2>
-        <p
-          className={styles.linkText}
-          style={{ textAlign: "center", marginBottom: "0.75rem", opacity: 0.85 }}
-        >
+        <h2 className={signinStyles.title}>Forgot password</h2>
+        <p className={styles.stepLabel}>
           Step {step === "email" ? "1" : "2"} of 2
         </p>
 
         {step === "email" ? (
-          <p
-            className={styles.linkText}
-            style={{ textAlign: "center", marginBottom: "1rem" }}
-          >
+          <p className={styles.stepDescription}>
             Enter your account email. We will ask your security questions to
             verify your identity.
           </p>
         ) : (
-          <p
-            className={styles.linkText}
-            style={{ textAlign: "center", marginBottom: "1rem" }}
-          >
+          <p className={styles.stepDescription}>
             Verifying <strong>{normalizedEmail}</strong> — answer your security
             questions below.
           </p>
         )}
 
         {apiError && (
-          <div className={`${styles.alert} ${styles.alertError}`}>{apiError}</div>
+          <div className={`${signinStyles.alert} ${signinStyles.alertError}`}>
+            {apiError}
+          </div>
         )}
 
         {step === "email" ? (
           <>
-            <div className={styles.inputContainer}>
+            <div className={signinStyles.inputContainer}>
               <input
                 id="email"
                 type="email"
@@ -148,26 +146,30 @@ export default function ForgotPasswordForm() {
                   setEmail(e.target.value);
                   if (errors.email) setErrors({});
                 }}
-                className={`${styles.inputField} ${errors.email ? styles.inputError : ""}`}
+                className={`${signinStyles.inputField} ${
+                  errors.email ? signinStyles.inputError : ""
+                }`}
                 placeholder="Email Address"
                 required
                 disabled={isLoading}
               />
               {errors.email && (
-                <div className={styles.errorMessage}>{errors.email}</div>
+                <div className={signinStyles.errorMessage}>{errors.email}</div>
               )}
             </div>
 
             <button
               type="submit"
-              className={`${styles.submitButton} ${isLoading ? styles.loading : ""}`}
+              className={`${signinStyles.submitButton} ${
+                isLoading ? signinStyles.loading : ""
+              }`}
               disabled={isLoading}
             >
               {isLoading ? "Loading..." : "Continue"}
             </button>
           </>
         ) : (
-          <>
+          <div className={styles.verifyActions}>
             <SecurityQuestionFields
               rows={securityRows}
               onChange={setSecurityRows}
@@ -179,7 +181,9 @@ export default function ForgotPasswordForm() {
 
             <button
               type="submit"
-              className={`${styles.submitButton} ${isLoading ? styles.loading : ""}`}
+              className={`${signinStyles.submitButton} ${
+                isLoading ? signinStyles.loading : ""
+              }`}
               disabled={isLoading}
             >
               {isLoading ? "Verifying..." : "Verify and reset password"}
@@ -187,14 +191,7 @@ export default function ForgotPasswordForm() {
 
             <button
               type="button"
-              className={styles.link}
-              style={{
-                display: "block",
-                margin: "1rem auto 0",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-              }}
+              className={`${signinStyles.link} ${styles.secondaryLinkButton}`}
               onClick={() => {
                 setStep("email");
                 setApiError("");
@@ -204,12 +201,12 @@ export default function ForgotPasswordForm() {
             >
               Use a different email
             </button>
-          </>
+          </div>
         )}
 
-        <div className={styles.linkSection}>
-          <p className={styles.linkText}>
-            <Link href="/signin" className={styles.link}>
+        <div className={signinStyles.linkSection}>
+          <p className={signinStyles.linkText}>
+            <Link href="/signin" className={signinStyles.link}>
               Back to sign in
             </Link>
           </p>

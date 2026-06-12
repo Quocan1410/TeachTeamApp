@@ -19,6 +19,7 @@ import {
     normalizeMessageReactions,
     toggleUserReaction,
 } from "../utils/messageReactions";
+import { countActiveSelectedForRole } from "../utils/coursePositionCounts";
 import {
     appendCandidateMessage,
     appendLecturerMessage,
@@ -230,16 +231,26 @@ export class ApplicationController {
             });
 
             const candidateName = `${candidate.firstName} ${candidate.lastName}`;
+            const applicationSubmittedMeta = {
+                applicationId: savedApplication.id,
+                courseId,
+                candidateId,
+            };
+
             await NotificationService.notifyLecturersForCourse(courseId, {
                 type: NotificationType.APPLICATION_SUBMITTED,
                 title: "New application",
                 message: `${candidateName} applied for ${role.roleName} in ${course.courseCode}`,
                 link: "/lecturer",
-                metadata: {
-                    applicationId: savedApplication.id,
-                    courseId,
-                    candidateId,
-                },
+                metadata: applicationSubmittedMeta,
+            });
+
+            await NotificationService.notifyAdmins({
+                type: NotificationType.APPLICATION_SUBMITTED,
+                title: "New application",
+                message: `${candidateName} applied for ${role.roleName} in ${course.courseCode}`,
+                link: "/dashboard",
+                metadata: applicationSubmittedMeta,
             });
 
             await NotificationService.create({
@@ -371,16 +382,27 @@ export class ApplicationController {
                 application
             );
 
+            const candidateResponseMeta = {
+                applicationId: application.id,
+                candidateId,
+                courseId: application.courseId,
+            };
+            const candidateResponseMessage = `Candidate sent additional details for ${application.role.roleName} in ${application.course.courseCode}`;
+
             await NotificationService.notifyLecturersForCourse(application.courseId, {
                 type: NotificationType.APPLICATION_RESPONSE,
                 title: "Candidate sent more details",
-                message: `Candidate sent additional details for ${application.role.roleName} in ${application.course.courseCode}`,
+                message: candidateResponseMessage,
                 link: "/lecturer",
-                metadata: {
-                    applicationId: application.id,
-                    candidateId,
-                    courseId: application.courseId,
-                },
+                metadata: candidateResponseMeta,
+            });
+
+            await NotificationService.notifyAdmins({
+                type: NotificationType.APPLICATION_RESPONSE,
+                title: "Candidate sent more details",
+                message: candidateResponseMessage,
+                link: "/dashboard",
+                metadata: candidateResponseMeta,
             });
 
             void notifyApplicationUpdated(application.id, "candidate_response");
@@ -496,20 +518,32 @@ export class ApplicationController {
             const decisionLabel =
                 decision === OfferResponse.ACCEPTED ? "accepted" : "declined";
 
+            const offerResponseMeta = {
+                applicationId: application.id,
+                candidateId,
+                courseId: application.courseId,
+                offerResponse: decision,
+            };
+            const offerResponseTitle =
+                decision === OfferResponse.ACCEPTED
+                    ? "Candidate accepted offer"
+                    : "Candidate declined offer";
+            const offerResponseMessage = `Candidate ${decisionLabel} the ${application.role.roleName} offer for ${application.course.courseCode}`;
+
             await NotificationService.notifyLecturersForCourse(application.courseId, {
                 type: NotificationType.APPLICATION_RESPONSE,
-                title:
-                    decision === OfferResponse.ACCEPTED
-                        ? "Candidate accepted offer"
-                        : "Candidate declined offer",
-                message: `Candidate ${decisionLabel} the ${application.role.roleName} offer for ${application.course.courseCode}`,
+                title: offerResponseTitle,
+                message: offerResponseMessage,
                 link: "/lecturer",
-                metadata: {
-                    applicationId: application.id,
-                    candidateId,
-                    courseId: application.courseId,
-                    offerResponse: decision,
-                },
+                metadata: offerResponseMeta,
+            });
+
+            await NotificationService.notifyAdmins({
+                type: NotificationType.APPLICATION_RESPONSE,
+                title: offerResponseTitle,
+                message: offerResponseMessage,
+                link: "/dashboard",
+                metadata: offerResponseMeta,
             });
 
             void notifyApplicationUpdated(application.id, "offer_response");
@@ -762,16 +796,27 @@ export class ApplicationController {
                 application
             );
 
+            const withdrawnMeta = {
+                applicationId: application.id,
+                candidateId,
+                courseId: application.courseId,
+            };
+            const withdrawnMessage = `A candidate withdrew ${application.role.roleName} application in ${application.course.courseCode}`;
+
             await NotificationService.notifyLecturersForCourse(application.courseId, {
                 type: NotificationType.APPLICATION_WITHDRAWN,
                 title: "Application withdrawn",
-                message: `A candidate withdrew ${application.role.roleName} application in ${application.course.courseCode}`,
+                message: withdrawnMessage,
                 link: "/lecturer",
-                metadata: {
-                    applicationId: application.id,
-                    candidateId,
-                    courseId: application.courseId,
-                },
+                metadata: withdrawnMeta,
+            });
+
+            await NotificationService.notifyAdmins({
+                type: NotificationType.APPLICATION_WITHDRAWN,
+                title: "Application withdrawn",
+                message: withdrawnMessage,
+                link: "/dashboard",
+                metadata: withdrawnMeta,
             });
 
             void notifyApplicationUpdated(application.id, "withdrawn");
@@ -926,27 +971,18 @@ export class ApplicationController {
             // Calculate available positions for each course by subtracting selected applications
             const coursesWithAvailablePositions = await Promise.all(
                 courses.map(async (course) => {
-                    // Count selected applications for tutors
-                    const selectedTutors =
-                        await this.applicationRepository.count({
-                            where: {
-                                courseId: course.id,
-                                status: ApplicationStatus.SELECTED,
-                                role: { roleName: "tutor" },
-                            },
-                            relations: ["role"],
-                        });
+                    const selectedTutors = await countActiveSelectedForRole(
+                        this.applicationRepository,
+                        course.id,
+                        "tutor"
+                    );
 
-                    // Count selected applications for lab assistants
                     const selectedLabAssistants =
-                        await this.applicationRepository.count({
-                            where: {
-                                courseId: course.id,
-                                status: ApplicationStatus.SELECTED,
-                                role: { roleName: "lab_assistant" },
-                            },
-                            relations: ["role"],
-                        });
+                        await countActiveSelectedForRole(
+                            this.applicationRepository,
+                            course.id,
+                            "lab_assistant"
+                        );
 
                     // Calculate available positions
                     const availableTutors = Math.max(
@@ -1123,6 +1159,26 @@ export class ApplicationController {
                 relations: ["course", "role", "candidate"],
             });
 
+            const applicationIds = applications.map((app) => app.id);
+            const shortlistedIds = new Set<number>();
+            if (applicationIds.length > 0) {
+                const shortlistRows = await this.selectedCandidateRepository
+                    .createQueryBuilder("selection")
+                    .select("selection.applicationId", "applicationId")
+                    .where("selection.applicationId IN (:...applicationIds)", {
+                        applicationIds,
+                    })
+                    .getRawMany<{ applicationId: number }>();
+                for (const row of shortlistRows) {
+                    shortlistedIds.add(Number(row.applicationId));
+                }
+            }
+
+            const isRanked = (app: Application) =>
+                app.rank !== null &&
+                app.rank !== undefined &&
+                app.rank > 0;
+
             // Calculate statistics
             const stats = {
                 totalApplications: applications.length,
@@ -1149,6 +1205,13 @@ export class ApplicationController {
                     ).length,
                     withdrawn: applications.filter((app) => app.isWithdrawn)
                         .length,
+                    ranked: applications.filter(isRanked).length,
+                    shortlisted: applications.filter(
+                        (app) =>
+                            app.status === ApplicationStatus.PENDING &&
+                            shortlistedIds.has(app.id) &&
+                            !isRanked(app)
+                    ).length,
                 },
                 skillFrequency: this.calculateSkillFrequency(applications),
                 availabilityDistribution:
@@ -1275,29 +1338,26 @@ export class ApplicationController {
                             throw new Error("COURSE_NOT_FOUND");
                         }
 
-                        const selectedCount = await manager
-                            .createQueryBuilder(Application, "application")
-                            .where("application.courseId = :courseId", {
-                                courseId: lockedApp.courseId,
-                            })
-                            .andWhere("application.roleId = :roleId", {
-                                roleId: lockedApp.roleId,
-                            })
-                            .andWhere("application.status = :status", {
-                                status: ApplicationStatus.SELECTED,
-                            })
-                            .andWhere("application.id != :applicationId", {
-                                applicationId: lockedApp.id,
-                            })
-                            .getCount();
+                        const roleName =
+                            lockedApp.role.roleName === "tutor"
+                                ? "tutor"
+                                : "lab_assistant";
+                        const selectedCount = await countActiveSelectedForRole(
+                            manager,
+                            lockedApp.courseId,
+                            roleName,
+                            lockedApp.id
+                        );
 
                         const maxPositions =
-                            lockedApp.role.roleName === "tutor"
+                            roleName === "tutor"
                                 ? course.maxTutors
                                 : course.maxLabAssistants;
 
                         if (selectedCount >= maxPositions) {
-                            throw new Error("QUOTA_FULL");
+                            throw new Error(
+                                `QUOTA_FULL:${selectedCount}:${maxPositions}`
+                            );
                         }
 
                         lockedApp.status = status;
@@ -1431,11 +1491,14 @@ export class ApplicationController {
         } catch (error) {
             const code =
                 error instanceof Error ? error.message : "UNKNOWN";
-            if (code === "QUOTA_FULL") {
+            if (code.startsWith("QUOTA_FULL")) {
+                const parts = code.split(":");
+                const filled = parts[1] ?? "?";
+                const max = parts[2] ?? "?";
                 res.status(400).json({
                     success: false,
-                    message:
-                        "No positions available for this role. All slots are filled.",
+                    message: `All ${max} position slots are already confirmed (${filled}/${max}). Revoke an existing final selection or check Rankings — only confirmed picks use slots, not everyone ranked.`,
+                    code: "QUOTA_FULL",
                 });
                 return;
             }
@@ -1552,27 +1615,18 @@ export class ApplicationController {
             // Add position availability information for lecturers
             const coursesWithAvailability = await Promise.all(
                 assignedCourses.map(async (course) => {
-                    // Count selected applications for tutors
-                    const selectedTutors =
-                        await this.applicationRepository.count({
-                            where: {
-                                courseId: course.id,
-                                status: ApplicationStatus.SELECTED,
-                                role: { roleName: "tutor" },
-                            },
-                            relations: ["role"],
-                        });
+                    const selectedTutors = await countActiveSelectedForRole(
+                        this.applicationRepository,
+                        course.id,
+                        "tutor"
+                    );
 
-                    // Count selected applications for lab assistants
                     const selectedLabAssistants =
-                        await this.applicationRepository.count({
-                            where: {
-                                courseId: course.id,
-                                status: ApplicationStatus.SELECTED,
-                                role: { roleName: "lab_assistant" },
-                            },
-                            relations: ["role"],
-                        });
+                        await countActiveSelectedForRole(
+                            this.applicationRepository,
+                            course.id,
+                            "lab_assistant"
+                        );
 
                     // Calculate available positions
                     const availableTutors = Math.max(
@@ -1869,11 +1923,22 @@ export class ApplicationController {
                 return;
             }
 
-            // Update ranking
+            const resolvedCourseCode = application.course?.courseCode;
+            if (
+                !resolvedCourseCode ||
+                (courseCode && courseCode !== resolvedCourseCode)
+            ) {
+                res.status(400).json({
+                    success: false,
+                    message: `Ranking must use the application's course (${resolvedCourseCode})`,
+                });
+                return;
+            }
+
             application.rank = rank;
             application.rankedBy = lecturerId;
             application.rankedAt = new Date();
-            application.rankedForCourse = courseCode;
+            application.rankedForCourse = resolvedCourseCode;
 
             const updatedApplication = await this.applicationRepository.save(
                 application
@@ -1933,11 +1998,22 @@ export class ApplicationController {
                 return;
             }
 
-            // Update ranking
+            const resolvedCourseCode = application.course?.courseCode;
+            if (
+                !resolvedCourseCode ||
+                (courseCode && courseCode !== resolvedCourseCode)
+            ) {
+                res.status(400).json({
+                    success: false,
+                    message: `Ranking must use the application's course (${resolvedCourseCode})`,
+                });
+                return;
+            }
+
             application.rank = rank;
             application.rankedBy = lecturerId;
             application.rankedAt = new Date();
-            application.rankedForCourse = courseCode;
+            application.rankedForCourse = resolvedCourseCode;
 
             const updatedApplication = await this.applicationRepository.save(
                 application
@@ -2338,6 +2414,33 @@ export class ApplicationController {
                 );
             }
 
+            const courseCode = application.course?.courseCode;
+            const needsRanking =
+                courseCode &&
+                (application.rank === null ||
+                    application.rank === undefined ||
+                    application.rank <= 0);
+
+            if (needsRanking && courseCode && lecturerId) {
+                const maxRankRow = await this.applicationRepository
+                    .createQueryBuilder("application")
+                    .select("MAX(application.rank)", "maxRank")
+                    .where("application.courseId = :courseId", {
+                        courseId: application.courseId,
+                    })
+                    .andWhere("application.rank > 0")
+                    .andWhere("application.rankedForCourse = :courseCode", {
+                        courseCode,
+                    })
+                    .getRawOne<{ maxRank: string | number | null }>();
+
+                application.rank = Number(maxRankRow?.maxRank || 0) + 1;
+                application.rankedForCourse = courseCode;
+                application.rankedBy = lecturerId;
+                application.rankedAt = new Date();
+                await this.applicationRepository.save(application);
+            }
+
             const updatedApplication = await this.applicationRepository.findOne({
                 where: { id: application.id },
                 relations: ["course", "role", "candidate"],
@@ -2347,7 +2450,9 @@ export class ApplicationController {
 
             res.status(200).json({
                 success: true,
-                message: "Application shortlisted successfully",
+                message: needsRanking
+                    ? "Application shortlisted and added to ranking"
+                    : "Application shortlisted successfully",
                 data: {
                     ...updatedApplication,
                     isShortlisted: true,

@@ -3,6 +3,15 @@ import type { Application as TutorApplication } from "@/shared/types/application
 import { motion } from "framer-motion";
 import styles from "./ranked-candidates.module.css";
 
+interface CourseSlotInfo {
+  maxTutors?: number;
+  maxLabAssistants?: number;
+  selectedTutors?: number;
+  selectedLabAssistants?: number;
+  availableTutors?: number;
+  availableLabAssistants?: number;
+}
+
 interface RankedCandidatesProps {
   rankedApplications: TutorApplication[];
   selectedCourse: string;
@@ -13,6 +22,7 @@ interface RankedCandidatesProps {
   showCourseFilter?: boolean;
   onCourseChange?: (course: string) => void;
   availableCourses?: { code: string; name: string }[];
+  courseSlotInfo?: CourseSlotInfo | null;
 }
 
 const RankedCandidates: React.FC<RankedCandidatesProps> = ({
@@ -22,10 +32,7 @@ const RankedCandidates: React.FC<RankedCandidatesProps> = ({
   onMoveDown,
   onRemove,
   title = "Ranked Candidates",
-  // Removed unused props
-  // showCourseFilter = false,
-  // onCourseChange,
-  // availableCourses = [],
+  courseSlotInfo = null,
 }) => {
   // Function to format rank display with proper sequential numbering
   const formatRankDisplay = (index: number) => {
@@ -35,15 +42,14 @@ const RankedCandidates: React.FC<RankedCandidatesProps> = ({
   // Filter and sort ranked applications by course and rank
   const filteredRankedApplications = rankedApplications
     .filter((app) => {
-      // Require a course to be selected for rankings
       if (!selectedCourse) {
         return false;
       }
 
-      // Filter by the selected course
-      return app.selectedForCourses
-        ? app.selectedForCourses.includes(selectedCourse)
-        : app.courses.includes(selectedCourse);
+      return (
+        app.rankedForCourse === selectedCourse &&
+        app.courses.includes(selectedCourse)
+      );
     })
     .filter(
       (app) =>
@@ -61,6 +67,32 @@ const RankedCandidates: React.FC<RankedCandidatesProps> = ({
 
 
       {/* Course Selection Info */}
+      {selectedCourse && courseSlotInfo && (
+        <div className={styles.slotSummary}>
+          <strong>Position slots</strong>
+          <span>
+            Tutor: {courseSlotInfo.selectedTutors ?? 0}/
+            {courseSlotInfo.maxTutors ?? 0} confirmed
+            {(courseSlotInfo.availableTutors ?? 0) > 0
+              ? ` · ${courseSlotInfo.availableTutors} open`
+              : " · full"}
+          </span>
+          {(courseSlotInfo.maxLabAssistants ?? 0) > 0 && (
+            <span>
+              Lab: {courseSlotInfo.selectedLabAssistants ?? 0}/
+              {courseSlotInfo.maxLabAssistants ?? 0} confirmed
+              {(courseSlotInfo.availableLabAssistants ?? 0) > 0
+                ? ` · ${courseSlotInfo.availableLabAssistants} open`
+                : " · full"}
+            </span>
+          )}
+          <span className={styles.slotHint}>
+            Rankings show shortlist order. Only confirmed final selections use
+            slots.
+          </span>
+        </div>
+      )}
+
       {selectedCourse && (
         <div className={styles.courseInfo}>
           <div className={styles.courseInfoContent}>
@@ -114,7 +146,8 @@ const RankedCandidates: React.FC<RankedCandidatesProps> = ({
               : "Please select a course to view rankings."}
           </p>
           <p className={styles.emptyRankingsHelp}>
-            Select shortlisted applicants to start ranking.
+            Shortlist an applicant from the Applications tab — they will appear
+            here automatically.
           </p>
         </div>
       ) : (
@@ -137,9 +170,10 @@ const RankedCandidates: React.FC<RankedCandidatesProps> = ({
                   <div className={styles.rankedEmail}>{application.email}</div>
                 </div>
                 <div className={styles.rankedCourses}>
-                  Applied for: {application.selectedForCourses
-                    ? application.selectedForCourses.join(", ")
-                    : application.courses.join(", ")}
+                  Ranked for:{" "}
+                  {application.rankedForCourse ||
+                    application.selectedForCourses?.join(", ") ||
+                    application.courses.join(", ")}
                 </div>
                 <div className={styles.rankedSkills}>
                   {application.skills.slice(0, 3).map((skill, skillIndex) => (

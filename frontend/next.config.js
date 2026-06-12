@@ -1,15 +1,21 @@
 const path = require("path");
 require("dotenv").config({ path: path.join(__dirname, "../.env") });
 
+const backendPort = process.env.BACKEND_PORT || "5000";
+const adminBackendPort = process.env.ADMIN_BACKEND_PORT || "4002";
+
 const mainApiOrigin =
   process.env.MAIN_API_ORIGIN ||
   process.env.NEXT_PUBLIC_API_ORIGIN ||
-  "http://localhost:5000";
+  `http://localhost:${backendPort}`;
 const adminGraphqlOrigin =
-  process.env.ADMIN_GRAPHQL_ORIGIN || "http://localhost:4002";
+  process.env.ADMIN_GRAPHQL_ORIGIN ||
+  `http://localhost:${adminBackendPort}`;
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // distDir: "dist",
+  output: "standalone",
   outputFileTracingRoot: path.join(__dirname, ".."),
   async rewrites() {
     return [
@@ -45,7 +51,7 @@ const nextConfig = {
       {
         protocol: "http",
         hostname: "localhost",
-        port: "5000",
+        port: backendPort,
         pathname: "/uploads/**",
       },
       {

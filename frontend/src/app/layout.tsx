@@ -10,7 +10,6 @@ import { NotificationProvider } from "@/shared/contexts/NotificationContext";
 import GlobalWelcomeBanner from "@/shared/components/welcome/GlobalWelcomeBanner";
 import AppInitializer from "@/shared/components/app-initialization/AppInitializer";
 import AccountStatusMonitor from "@/shared/components/common/AccountStatusMonitor";
-import SystemAnnouncementBanner from "@/shared/components/common/SystemAnnouncementBanner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -38,7 +37,6 @@ export default function RootLayout({
               <AppInitializer />
               <AccountStatusMonitor />
               <Header />
-              <SystemAnnouncementBanner />
               <GlobalWelcomeBanner />
               <main className="flex-grow">
                 {children}

@@ -99,6 +99,7 @@ export class Application {
         body: string;
         createdAt: string;
         editedAt?: string | null;
+        deletedAt?: string | null;
         replyToMessageId?: string | null;
     }> | null;
 

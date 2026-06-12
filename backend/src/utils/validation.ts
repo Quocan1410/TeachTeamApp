@@ -96,13 +96,6 @@ export const validateSignupData = (data: any): ValidationResult => {
         }
     }
 
-    // Confirm password validation
-    if (!data.confirmPassword) {
-        errors.confirmPassword = "Please confirm your password";
-    } else if (data.password !== data.confirmPassword) {
-        errors.confirmPassword = "Passwords do not match";
-    }
-
     // First name validation
     if (!data.firstName) {
         errors.firstName = "First name is required";

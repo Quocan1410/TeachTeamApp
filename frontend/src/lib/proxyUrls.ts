@@ -11,9 +11,9 @@ export function resolveWebSocketUrl(
   }
 
   if (typeof window === "undefined") {
-    return value.startsWith("/")
-      ? `ws://localhost:4002${value}`
-      : value || "ws://localhost:4002/graphql";
+    const wsBase = env.frontendUrl.replace(/^http/, "ws");
+    const path = value.startsWith("/") ? value : fallbackPath;
+    return `${wsBase}${path}`;
   }
 
   const path = value.startsWith("/") ? value : fallbackPath;
@@ -32,5 +32,5 @@ export function resolveSocketIoOrigin(): string {
   if (typeof window !== "undefined") {
     return window.location.origin;
   }
-  return "http://localhost:5000";
+  return env.frontendUrl;
 }

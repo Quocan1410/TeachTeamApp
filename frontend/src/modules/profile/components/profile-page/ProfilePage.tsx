@@ -17,6 +17,7 @@ import { clearAvatarFetchCache } from "../../../../shared/utils/avatarFetchCache
 import { useProtectedAvatar } from "../../../../shared/hooks/useProtectedAvatar";
 import { getUserDisplayName, type Honorific } from "@/shared/utils/personDisplayName";
 import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
+import AppSelect from "@/shared/components/common/app-select/AppSelect";
 import Toast from "@/shared/components/common/toast/toast";
 import { useToast } from "@/shared/hooks/useNotification";
 import styles from "./ProfilePage.module.css";
@@ -48,6 +49,7 @@ export const ProfilePage: React.FC = () => {
   );
   const [passwordMessage, setPasswordMessage] = useState("");
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [editForm, setEditForm] = useState({
     firstName: "",
     lastName: "",
@@ -210,6 +212,8 @@ export const ProfilePage: React.FC = () => {
     });
     setFieldErrors({});
     setProfileMessage("");
+    setIsEditingPassword(false);
+    resetPasswordForm();
     setIsEditing(true);
   };
 
@@ -217,6 +221,32 @@ export const ProfilePage: React.FC = () => {
     setIsEditing(false);
     setFieldErrors({});
     setProfileMessage("");
+  };
+
+  const resetPasswordForm = () => {
+    setPasswordForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+    setPasswordErrors({});
+    setPasswordMessage("");
+  };
+
+  const startPasswordEditing = () => {
+    if (!user) {
+      return;
+    }
+    setIsEditing(false);
+    setFieldErrors({});
+    setProfileMessage("");
+    resetPasswordForm();
+    setIsEditingPassword(true);
+  };
+
+  const cancelPasswordEditing = () => {
+    setIsEditingPassword(false);
+    resetPasswordForm();
   };
 
   const handleSaveProfile = async () => {
@@ -262,12 +292,8 @@ export const ProfilePage: React.FC = () => {
     try {
       const response = await AuthService.changePassword(passwordForm);
       if (response.success) {
-        setPasswordForm({
-          currentPassword: "",
-          newPassword: "",
-          confirmPassword: "",
-        });
-        setPasswordMessage("");
+        resetPasswordForm();
+        setIsEditingPassword(false);
         showSuccess("Password changed successfully.");
       } else if (response.errors) {
         setPasswordErrors(response.errors);
@@ -392,6 +418,7 @@ export const ProfilePage: React.FC = () => {
       <div className={styles.profileGrid}>
         {/* Left Panel - User Information */}
         <div className={styles.userPanel}>
+          <div className={styles.userPanelTop}>
           <div className={styles.avatarSection}>
             <button
               type="button"
@@ -412,8 +439,8 @@ export const ProfilePage: React.FC = () => {
                       email: user.email,
                       userType: user.userType,
                     })} avatar`}
-                    width={112}
-                    height={112}
+                    width={84}
+                    height={84}
                     className={styles.avatarImage}
                     unoptimized={!!user.avatarUrl || !!avatarPreview}
                     onError={() => setShowAvatarInitials(true)}
@@ -541,12 +568,164 @@ export const ProfilePage: React.FC = () => {
               </div>
             </div>
           </div>
+          </div>
+
+          <div className={styles.sidebarSecurityCard}>
+            <div className={styles.cardHeader}>
+              <h3 className={styles.cardTitle}>Security</h3>
+              <div className={styles.cardHeaderActions}>
+                {isEditingPassword ? (
+                  <>
+                    <button
+                      type="button"
+                      className={styles.cancelButton}
+                      onClick={cancelPasswordEditing}
+                      disabled={isChangingPassword}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      form="profile-change-password-form"
+                      className={styles.saveButton}
+                      disabled={isChangingPassword}
+                    >
+                      {isChangingPassword ? "Updating..." : "Update"}
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    className={styles.editButton}
+                    onClick={startPasswordEditing}
+                    disabled={user.isBlocked}
+                    title={
+                      user.isBlocked
+                        ? "Blocked accounts cannot change their password"
+                        : "Change password"
+                    }
+                  >
+                    Change
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className={styles.cardContent}>
+              {isEditingPassword ? (
+                <form
+                  id="profile-change-password-form"
+                  onSubmit={handleChangePassword}
+                  className={styles.passwordForm}
+                >
+                  <div className={styles.infoItem}>
+                    <label className={styles.infoLabel} htmlFor="currentPassword">
+                      Current password
+                    </label>
+                    <input
+                      id="currentPassword"
+                      type="password"
+                      className={`${styles.formInput} ${
+                        passwordErrors.currentPassword ? styles.formInputError : ""
+                      }`}
+                      value={passwordForm.currentPassword}
+                      onChange={(event) =>
+                        setPasswordForm((prev) => ({
+                          ...prev,
+                          currentPassword: event.target.value,
+                        }))
+                      }
+                      autoComplete="current-password"
+                      required
+                      disabled={isChangingPassword}
+                    />
+                    {passwordErrors.currentPassword && (
+                      <span className={styles.fieldError}>
+                        {passwordErrors.currentPassword}
+                      </span>
+                    )}
+                  </div>
+                  <div className={styles.infoItem}>
+                    <label className={styles.infoLabel} htmlFor="newPassword">
+                      New password
+                    </label>
+                    <input
+                      id="newPassword"
+                      type="password"
+                      className={`${styles.formInput} ${
+                        passwordErrors.newPassword ? styles.formInputError : ""
+                      }`}
+                      value={passwordForm.newPassword}
+                      onChange={(event) =>
+                        setPasswordForm((prev) => ({
+                          ...prev,
+                          newPassword: event.target.value,
+                        }))
+                      }
+                      autoComplete="new-password"
+                      required
+                      disabled={isChangingPassword}
+                    />
+                    {passwordErrors.newPassword && (
+                      <span className={styles.fieldError}>
+                        {passwordErrors.newPassword}
+                      </span>
+                    )}
+                  </div>
+                  <div className={styles.infoItem}>
+                    <label className={styles.infoLabel} htmlFor="confirmPassword">
+                      Confirm new password
+                    </label>
+                    <input
+                      id="confirmPassword"
+                      type="password"
+                      className={`${styles.formInput} ${
+                        passwordErrors.confirmPassword ? styles.formInputError : ""
+                      }`}
+                      value={passwordForm.confirmPassword}
+                      onChange={(event) =>
+                        setPasswordForm((prev) => ({
+                          ...prev,
+                          confirmPassword: event.target.value,
+                        }))
+                      }
+                      autoComplete="new-password"
+                      required
+                      disabled={isChangingPassword}
+                    />
+                    {passwordErrors.confirmPassword && (
+                      <span className={styles.fieldError}>
+                        {passwordErrors.confirmPassword}
+                      </span>
+                    )}
+                  </div>
+                  {passwordMessage && (
+                    <p
+                      className={`${styles.profileMessage} ${
+                        passwordMessage.toLowerCase().includes("success")
+                          ? styles.profileMessageSuccess
+                          : styles.profileMessageError
+                      }`}
+                    >
+                      {passwordMessage}
+                    </p>
+                  )}
+                </form>
+              ) : (
+                <div className={styles.infoGrid}>
+                  <div className={`${styles.infoItem} ${styles.infoItemFull}`}>
+                    <span className={styles.infoLabel}>Password</span>
+                    <span className={styles.infoValue}>••••••••</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Right Panel - Information Cards */}
         <div className={styles.infoPanel}>
-          {/* Account Information */}
-          <div className={styles.infoCard}>
+          <div className={styles.infoCardMain}>
+          <div className={styles.infoSection}>
             <div className={styles.cardHeader}>
               <h3 className={styles.cardTitle}>Account Information</h3>
               <div className={styles.cardHeaderActions}>
@@ -612,9 +791,7 @@ export const ProfilePage: React.FC = () => {
                   </span>
                 </div>
                 <div className={styles.infoItem}>
-                  <label className={styles.infoLabel} htmlFor="profile-first-name">
-                    First Name
-                  </label>
+                  <span className={styles.infoLabel}>First Name</span>
                   {isEditing ? (
                     <>
                       <input
@@ -644,9 +821,7 @@ export const ProfilePage: React.FC = () => {
                   )}
                 </div>
                 <div className={styles.infoItem}>
-                  <label className={styles.infoLabel} htmlFor="profile-last-name">
-                    Last Name
-                  </label>
+                  <span className={styles.infoLabel}>Last Name</span>
                   {isEditing ? (
                     <>
                       <input
@@ -679,34 +854,31 @@ export const ProfilePage: React.FC = () => {
                   <span className={styles.infoLabel}>Title</span>
                   {isEditing ? (
                     <>
-                      <select
+                      <AppSelect
                         id="profile-honorific"
-                        className={`${styles.formInput} ${
-                          fieldErrors.honorific ? styles.formInputError : ""
-                        }`}
                         value={editForm.honorific}
-                        onChange={(e) =>
+                        onChange={(value) =>
                           setEditForm((prev) => ({
                             ...prev,
-                            honorific: e.target.value as Honorific,
+                            honorific: value as Honorific,
                           }))
                         }
+                        options={
+                          user.userType === UserType.LECTURER
+                            ? [
+                                { value: "Dr.", label: "Dr." },
+                                { value: "Prof.", label: "Prof." },
+                              ]
+                            : [
+                                { value: "Mr.", label: "Mr." },
+                                { value: "Ms.", label: "Ms." },
+                                { value: "Mrs.", label: "Mrs." },
+                              ]
+                        }
+                        hasError={!!fieldErrors.honorific}
                         disabled={isSaving}
                         aria-label="Title"
-                      >
-                        {user.userType === UserType.LECTURER ? (
-                          <>
-                            <option value="Dr.">Dr.</option>
-                            <option value="Prof.">Prof.</option>
-                          </>
-                        ) : (
-                          <>
-                            <option value="Mr.">Mr.</option>
-                            <option value="Ms.">Ms.</option>
-                            <option value="Mrs.">Mrs.</option>
-                          </>
-                        )}
-                      </select>
+                      />
                       {fieldErrors.honorific && (
                         <span className={styles.fieldError}>
                           {fieldErrors.honorific}
@@ -733,117 +905,9 @@ export const ProfilePage: React.FC = () => {
             </div>
           </div>
 
-          <div className={styles.infoCardExpandable}>
-            <div className={styles.cardHeader}>
-              <h3 className={styles.cardTitle}>Change Password</h3>
-            </div>
-            <div className={styles.cardContentExpandable}>
-              <form onSubmit={handleChangePassword}>
-                <div className={styles.infoItem}>
-                  <label className={styles.infoLabel} htmlFor="currentPassword">
-                    Current password
-                  </label>
-                  <input
-                    id="currentPassword"
-                    type="password"
-                    className={`${styles.formInput} ${
-                      passwordErrors.currentPassword ? styles.formInputError : ""
-                    }`}
-                    value={passwordForm.currentPassword}
-                    onChange={(event) =>
-                      setPasswordForm((prev) => ({
-                        ...prev,
-                        currentPassword: event.target.value,
-                      }))
-                    }
-                    autoComplete="current-password"
-                    required
-                    disabled={isChangingPassword}
-                  />
-                  {passwordErrors.currentPassword && (
-                    <span className={styles.fieldError}>
-                      {passwordErrors.currentPassword}
-                    </span>
-                  )}
-                </div>
-                <div className={styles.infoItem}>
-                  <label className={styles.infoLabel} htmlFor="newPassword">
-                    New password
-                  </label>
-                  <input
-                    id="newPassword"
-                    type="password"
-                    className={`${styles.formInput} ${
-                      passwordErrors.newPassword ? styles.formInputError : ""
-                    }`}
-                    value={passwordForm.newPassword}
-                    onChange={(event) =>
-                      setPasswordForm((prev) => ({
-                        ...prev,
-                        newPassword: event.target.value,
-                      }))
-                    }
-                    autoComplete="new-password"
-                    required
-                    disabled={isChangingPassword}
-                  />
-                  {passwordErrors.newPassword && (
-                    <span className={styles.fieldError}>
-                      {passwordErrors.newPassword}
-                    </span>
-                  )}
-                </div>
-                <div className={styles.infoItem}>
-                  <label className={styles.infoLabel} htmlFor="confirmPassword">
-                    Confirm new password
-                  </label>
-                  <input
-                    id="confirmPassword"
-                    type="password"
-                    className={`${styles.formInput} ${
-                      passwordErrors.confirmPassword ? styles.formInputError : ""
-                    }`}
-                    value={passwordForm.confirmPassword}
-                    onChange={(event) =>
-                      setPasswordForm((prev) => ({
-                        ...prev,
-                        confirmPassword: event.target.value,
-                      }))
-                    }
-                    autoComplete="new-password"
-                    required
-                    disabled={isChangingPassword}
-                  />
-                  {passwordErrors.confirmPassword && (
-                    <span className={styles.fieldError}>
-                      {passwordErrors.confirmPassword}
-                    </span>
-                  )}
-                </div>
-                {passwordMessage && (
-                  <p
-                    className={`${styles.profileMessage} ${
-                      passwordMessage.toLowerCase().includes("success")
-                        ? styles.profileMessageSuccess
-                        : styles.profileMessageError
-                    }`}
-                  >
-                    {passwordMessage}
-                  </p>
-                )}
-                <button
-                  type="submit"
-                  className={styles.primaryButton}
-                  disabled={isChangingPassword}
-                >
-                  {isChangingPassword ? "Updating..." : "Update password"}
-                </button>
-              </form>
-            </div>
-          </div>
+          <div className={styles.infoSectionDivider} aria-hidden="true" />
 
-          {/* Role-Specific Information */}
-          <div className={styles.infoCardExpandable}>
+          <div className={`${styles.infoSection} ${styles.infoSectionGrow}`}>
             <div className={styles.cardHeader}>
               <h3 className={styles.cardTitle}>
                 {user.userType === UserType.LECTURER
@@ -959,6 +1023,7 @@ export const ProfilePage: React.FC = () => {
                 </>
               )}
             </div>
+          </div>
           </div>
         </div>
       </div>

@@ -46,15 +46,17 @@ export interface NotificationListResponse {
   unreadCount: number;
 }
 
-export async function fetchNotifications(
-  page = 1,
-  pageSize = 50
-): Promise<NotificationListResponse> {
+const NOTIFICATION_FETCH_LIMIT = 200;
+
+export async function fetchNotifications(): Promise<{
+  items: StoredNotification[];
+  unreadCount: number;
+}> {
   const response = await notificationAPI.get<{
     success: boolean;
     data?: NotificationListResponse;
     message?: string;
-  }>("", { params: { page, pageSize } });
+  }>("", { params: { page: 1, pageSize: NOTIFICATION_FETCH_LIMIT } });
 
   if (!response.data?.success || !response.data.data) {
     throw new Error(
@@ -62,7 +64,8 @@ export async function fetchNotifications(
     );
   }
 
-  return response.data.data;
+  const { items, unreadCount } = response.data.data;
+  return { items, unreadCount };
 }
 
 export async function markNotificationAsRead(

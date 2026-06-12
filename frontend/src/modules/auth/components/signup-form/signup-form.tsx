@@ -189,7 +189,6 @@ export default function SignUpForm() {
       const signupData = {
         email: email.trim(),
         password,
-        confirmPassword,
         firstName,
         lastName,
         userType,

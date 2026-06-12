@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker build -t teachteamapp:latest .
+docker build -t docker.io/quocan1410/teachteamapp:latest .

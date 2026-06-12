@@ -28,10 +28,7 @@ export const useApplicationManagement = () => {
   const [skillsFilter, setSkillsFilter] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("none");
-  const [page, setPage] = useState(1);
-  const [pageSize] = useState(20);
-  const [totalCount, setTotalCount] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
+  const fetchLimit = 500;
 
   // Selected application state
   const [selectedApplication, setSelectedApplication] =
@@ -44,6 +41,10 @@ export const useApplicationManagement = () => {
   >([]);
   const skipFilterReloadRef = useRef(true);
   const reloadDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const loadRequestIdRef = useRef(0);
+
+  const isActiveFilter = (value: string) =>
+    Boolean(value && value !== "all");
 
   const updateRankedFromApplications = useCallback((data: ApplicationResponse[]) => {
     const ranked = data.filter(
@@ -53,7 +54,8 @@ export const useApplicationManagement = () => {
         app.rank !== undefined &&
         app.rank !== null &&
         app.rank > 0 &&
-        app.rankedForCourse
+        app.rankedForCourse &&
+        app.rankedForCourse === app.course?.courseCode
     );
 
     ranked.sort((a, b) => (a.rank || 0) - (b.rank || 0));
@@ -70,29 +72,39 @@ export const useApplicationManagement = () => {
 
   // Load applications with filters (CR Part)
   const loadApplications = useCallback(async () => {
+    const requestId = ++loadRequestIdRef.current;
+
     try {
       setIsLoading(true);
 
-      // Build filters object
       const filters: ApplicationFilters = {};
 
       if (debouncedSearchQuery.trim()) {
         filters.candidateName = debouncedSearchQuery.trim();
       }
-      if (roleTypeFilter !== "all") filters.roleType = roleTypeFilter;
-      if (availabilityFilter !== "all")
+      if (isActiveFilter(roleTypeFilter)) {
+        filters.roleType = roleTypeFilter;
+      }
+      if (isActiveFilter(availabilityFilter)) {
         filters.availability = availabilityFilter;
-      if (skillsFilter.trim()) filters.skills = skillsFilter.trim();
-      if (selectedCourse !== "all") filters.courseCode = selectedCourse;
-      if (statusFilter !== "all") filters.status = statusFilter;
+      }
+      if (skillsFilter.trim()) {
+        filters.skills = skillsFilter.trim();
+      }
+      if (isActiveFilter(selectedCourse)) {
+        filters.courseCode = selectedCourse;
+      }
+      if (isActiveFilter(statusFilter)) {
+        filters.status = statusFilter;
+      }
 
-      filters.page = page;
-      filters.pageSize = pageSize;
+      filters.page = 1;
+      filters.pageSize = fetchLimit;
 
       if (sortBy === "name") {
         filters.sortBy = "candidateName";
         filters.sortDir = "asc";
-      } else if (sortBy === "date") {
+      } else if (sortBy === "date" || sortBy === "dateApplied") {
         filters.sortBy = "appliedAt";
         filters.sortDir = "desc";
       } else if (sortBy === "status") {
@@ -100,27 +112,32 @@ export const useApplicationManagement = () => {
         filters.sortDir = "asc";
       }
 
-      const filterKey = JSON.stringify({ ...filters, page, sortBy });
+      const filterKey = JSON.stringify({ ...filters, sortBy });
       const response = await dedupeInFlight(
         `lecturer-applications:${filterKey}`,
         () => ApplicationService.getApplicationsForLecturer(filters)
       );
 
+      if (requestId !== loadRequestIdRef.current) {
+        return;
+      }
+
       if (response.success && response.data) {
         applyApplicationsResponse(response.data.items ?? []);
-        setTotalCount(response.data.totalCount ?? 0);
-        setTotalPages(response.data.totalPages ?? 1);
       } else {
         setApplications([]);
         setRankedApplications([]);
-        setTotalCount(0);
-        setTotalPages(1);
       }
     } catch {
+      if (requestId !== loadRequestIdRef.current) {
+        return;
+      }
       setApplications([]);
       setRankedApplications([]);
     } finally {
-      setIsLoading(false);
+      if (requestId === loadRequestIdRef.current) {
+        setIsLoading(false);
+      }
     }
   }, [
     debouncedSearchQuery,
@@ -129,7 +146,6 @@ export const useApplicationManagement = () => {
     skillsFilter,
     selectedCourse,
     statusFilter,
-    page,
     sortBy,
     applyApplicationsResponse,
   ]);
@@ -177,32 +193,19 @@ export const useApplicationManagement = () => {
     }
   }, []);
 
-  // Initialize data
+  // Initialize once on mount; filter changes reload via the effect below.
   useEffect(() => {
     const initializeData = async () => {
       try {
         await Promise.all([loadApplications(), loadStatistics()]);
+      } finally {
         setIsInitialized(true);
-      } catch {
-        setIsInitialized(true); // Still mark as initialized to show UI
       }
     };
 
-    initializeData();
-  }, [loadApplications, loadStatistics]);
-
-  // Reset page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [
-    debouncedSearchQuery,
-    roleTypeFilter,
-    availabilityFilter,
-    skillsFilter,
-    selectedCourse,
-    statusFilter,
-    sortBy,
-  ]);
+    void initializeData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Reload when filters change (skip the run right after initial load)
   useEffect(() => {
@@ -225,7 +228,6 @@ export const useApplicationManagement = () => {
     skillsFilter,
     selectedCourse,
     statusFilter,
-    page,
     sortBy,
   ]);
 
@@ -344,11 +346,19 @@ export const useApplicationManagement = () => {
         });
 
       case "date":
+      case "dateApplied":
         return sorted.sort((a, b) => {
           return (
             new Date(b.appliedAt).getTime() - new Date(a.appliedAt).getTime()
           );
         });
+
+      case "skills":
+        return sorted.sort(
+          (a, b) =>
+            (b.skills?.split(",").length ?? 0) -
+            (a.skills?.split(",").length ?? 0)
+        );
 
       case "status":
         return sorted.sort((a, b) => a.status.localeCompare(b.status));
@@ -390,12 +400,6 @@ export const useApplicationManagement = () => {
     setStatusFilter,
     sortBy,
     setSortBy,
-
-    page,
-    setPage,
-    pageSize,
-    totalCount,
-    totalPages,
 
     // Actions
     loadApplications,

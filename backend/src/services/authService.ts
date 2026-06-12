@@ -85,7 +85,9 @@ export class AuthService {
             return {
                 success: false,
                 statusCode: 409,
-                message: "User with this email already exists",
+                message: existingUser.deletedAt
+                    ? "This email is no longer available"
+                    : "User with this email already exists",
             };
         }
 

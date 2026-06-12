@@ -86,20 +86,22 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
   };
 
   const roleTypeOptions = [
-    { value: '', label: 'All Roles', isDefault: true },
+    { value: 'all', label: 'All Roles', isDefault: true },
     { value: 'tutor', label: 'Tutor (Tutorial)' },
     { value: 'lab_assistant', label: 'Lab Assistant' },
   ];
 
   const availabilityOptions = [
-    { value: '', label: 'All Availability', isDefault: true },
+    { value: 'all', label: 'All Availability', isDefault: true },
     { value: 'Full Time', label: 'Full Time' },
     { value: 'Part Time', label: 'Part Time' },
   ];
 
   const statusOptions = [
-    { value: '', label: 'All Statuses', isDefault: true },
+    { value: 'all', label: 'All Statuses', isDefault: true },
     { value: 'pending', label: 'Pending' },
+    { value: 'shortlisted', label: 'Shortlisted' },
+    { value: 'ranked', label: 'Ranked' },
     { value: 'selected', label: 'Selected' },
     { value: 'rejected', label: 'Rejected' },
   ];

@@ -2,6 +2,30 @@
   padding: 1rem 0;
 }
 
+.slotSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.875rem 1rem;
+  margin-bottom: 1rem;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.slotSummary strong {
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+}
+
+.slotHint {
+  font-size: 0.75rem;
+  font-style: italic;
+  line-height: 1.4;
+}
+
 /* Course Info Section */
 .courseInfo {
   display: flex;

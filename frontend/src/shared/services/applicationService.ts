@@ -88,6 +88,7 @@ export interface ApplicationResponse {
     body: string;
     createdAt: string;
     editedAt?: string | null;
+    deletedAt?: string | null;
     replyToMessageId?: string | null;
   }> | null;
   // Relationships
@@ -129,6 +130,8 @@ export interface ApplicationStatistics {
     selected: number;
     rejected: number;
     withdrawn?: number;
+    ranked?: number;
+    shortlisted?: number;
   };
   skillFrequency: Array<{ skill: string; frequency: number }>;
   availabilityDistribution: { partTime: number; fullTime: number };

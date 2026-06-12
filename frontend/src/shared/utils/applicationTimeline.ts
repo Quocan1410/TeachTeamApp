@@ -10,6 +10,7 @@ export interface ApplicationTimelineItem {
   body?: string;
   at: string;
   editedAt?: string | null;
+  deletedAt?: string | null;
   replyToMessageId?: string | null;
 }
 
@@ -37,6 +38,7 @@ export function buildApplicationTimeline(
       body: message.body,
       at: message.createdAt,
       editedAt: message.editedAt,
+      deletedAt: message.deletedAt ?? null,
       replyToMessageId: message.replyToMessageId ?? null,
     });
   }
