@@ -1,5 +1,5 @@
 /**
- * Client env — from root `.env` via next.config.js (NEXT_PUBLIC_* only).
+ * Client env — from `frontend/.env` (NEXT_PUBLIC_* only).
  * Dev default: same-origin paths proxied by Next.js rewrites (Phase 5).
  */
 const apiEndpoint =

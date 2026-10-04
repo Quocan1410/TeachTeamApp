@@ -1,6 +1,7 @@
 import "reflect-metadata";
-import { config } from "dotenv";
+import "./loadEnv";
 import path from "path";
+import { mysqlSslOption } from "./mysqlSsl";
 import { DataSource } from "typeorm";
 import { User } from "../entities/User";
 import { Course } from "../entities/Course";
@@ -14,8 +15,6 @@ import { PasswordResetToken } from "../entities/PasswordResetToken";
 import { RefreshToken } from "../entities/RefreshToken";
 import { UserSecurityAnswer } from "../entities/UserSecurityAnswer";
 
-config({ path: path.resolve(__dirname, "../../../.env") });
-
 /** CLI datasource — never auto-sync; use migration:run / db:reset instead. */
 export default new DataSource({
     type: "mysql",
@@ -24,6 +23,7 @@ export default new DataSource({
     username: process.env.DB_USERNAME || "",
     password: process.env.DB_PASSWORD || "",
     database: process.env.DB_NAME || "",
+    ssl: mysqlSslOption(),
     synchronize: false,
     logging: process.env.NODE_ENV === "development",
     entities: [

@@ -30,15 +30,13 @@ Main web application for **candidates** and **lecturers** in a university Tutor 
 
 ```
 TeachTeamApp/
-├── .env                 # copy from env.example (do not commit)
-├── env.example
 ├── package.json         # root scripts: install, dev, build, db:reset
-├── frontend/            # Next.js user app (:3000)
+├── frontend/            # Next.js user app (:3000), own frontend/.env
 │   └── src/
 │       ├── app/         # routes: /tutor, /lecturer, /profile, auth
 │       ├── modules/     # auth, lecturer, tutor, profile
 │       └── shared/      # contexts, services, hooks, components
-└── backend/             # REST API (:5000)
+└── backend/             # REST API (:5000), own backend/.env
     └── src/
         ├── routes/
         ├── controllers/
@@ -131,22 +129,19 @@ erDiagram
 
 ## Environment variables
 
+Frontend and backend each load only the `.env` in their own folder.
+
 ```bash
-cp env.example .env
+cp frontend/env.example frontend/.env
+cp backend/env.example backend/.env
 ```
 
-Both `frontend/` and `backend/` read **`.env` at this repo root**.
+| Folder | What it owns |
+|--------|----------------|
+| `backend/.env` | MySQL, `BACKEND_PORT`, JWT, CORS, SMTP, seed admin |
+| `frontend/.env` | `NEXT_PUBLIC_*` and rewrite targets `MAIN_API_ORIGIN`, `ADMIN_GRAPHQL_ORIGIN` |
 
-| Group | Variables |
-|-------|-----------|
-| Database | `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_NAME` |
-| API | `BACKEND_PORT=5000`, `BACKEND_JWT_SECRET` |
-| Admin seed | `ADMIN_EMAIL`, `ADMIN_PASSWORD` |
-| CORS | `ALLOWED_ORIGINS`, `FRONTEND_URL` |
-| Frontend (public) | `NEXT_PUBLIC_API_ENDPOINT=/api`, `NEXT_PUBLIC_SOCKET_URL`, `NEXT_PUBLIC_ADMIN_GRAPHQL_ENDPOINT` |
-| Rewrite targets | `MAIN_API_ORIGIN`, `ADMIN_GRAPHQL_ORIGIN` |
-
-See [env.example](./env.example) for the full list.
+`MAIN_API_ORIGIN` must use the same port as `BACKEND_PORT`. The root `env.example` is only a pointer.
 
 ---
 

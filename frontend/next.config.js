@@ -1,16 +1,21 @@
 const path = require("path");
-require("dotenv").config({ path: path.join(__dirname, "../.env") });
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 
-const backendPort = process.env.BACKEND_PORT || "5000";
-const adminBackendPort = process.env.ADMIN_BACKEND_PORT || "4002";
+function originPort(origin, fallback) {
+  try {
+    return new URL(origin).port || fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 const mainApiOrigin =
   process.env.MAIN_API_ORIGIN ||
   process.env.NEXT_PUBLIC_API_ORIGIN ||
-  `http://localhost:${backendPort}`;
+  "http://localhost:5000";
 const adminGraphqlOrigin =
-  process.env.ADMIN_GRAPHQL_ORIGIN ||
-  `http://localhost:${adminBackendPort}`;
+  process.env.ADMIN_GRAPHQL_ORIGIN || "http://localhost:4002";
+const backendPort = originPort(mainApiOrigin, "5000");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

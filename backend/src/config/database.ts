@@ -1,5 +1,6 @@
+import "./loadEnv";
 import { DataSource } from "typeorm";
-import { config } from "dotenv";
+import { mysqlSslOption } from "./mysqlSsl";
 import { User } from "../entities/User";
 import { Course } from "../entities/Course";
 import { Role } from "../entities/Role";
@@ -15,9 +16,6 @@ import { UserSecurityAnswer } from "../entities/UserSecurityAnswer";
 import path from "path";
 import { reconcileOrphanAvatarFiles } from "../utils/avatarUtils";
 
-// Load environment variables from root .env file
-config({ path: path.resolve(__dirname, "../../../.env") });
-
 export const AppDataSource = new DataSource({
     type: "mysql",
     host: process.env.DB_HOST || "localhost",
@@ -25,6 +23,7 @@ export const AppDataSource = new DataSource({
     username: process.env.DB_USERNAME || "",
     password: process.env.DB_PASSWORD || "",
     database: process.env.DB_NAME || "",
+    ssl: mysqlSslOption(),
     synchronize: process.env.DB_SYNC === "true",
     migrationsRun: process.env.NODE_ENV === "production",
     logging: process.env.NODE_ENV === "development",
@@ -66,6 +65,7 @@ const recreateNotificationsTable = async (): Promise<void> => {
         user: process.env.DB_USERNAME || "",
         password: process.env.DB_PASSWORD || "",
         database: process.env.DB_NAME || "",
+        ssl: mysqlSslOption(),
     });
 
     await conn.query("SET FOREIGN_KEY_CHECKS = 0");

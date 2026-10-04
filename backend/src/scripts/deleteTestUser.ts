@@ -1,13 +1,10 @@
 import "reflect-metadata";
-import { config } from "dotenv";
-import path from "path";
+import "../config/loadEnv";
 import { AppDataSource } from "../config/database";
 import { User } from "../entities/User";
 import { UserSecurityAnswer } from "../entities/UserSecurityAnswer";
 import { RefreshToken } from "../entities/RefreshToken";
 import { PasswordResetToken } from "../entities/PasswordResetToken";
-
-config({ path: path.resolve(__dirname, "../../../.env") });
 
 async function main(): Promise<void> {
     const email = process.argv[2];
