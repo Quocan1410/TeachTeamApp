@@ -5,7 +5,7 @@ import { CourseAssignment } from "../entities/CourseAssignment";
 import { Application, ApplicationStatus } from "../entities/Application";
 
 export interface CreateNotificationInput {
-    userId: number;
+    userId: string;
     type: NotificationType;
     title: string;
     message: string;
@@ -22,9 +22,9 @@ export class NotificationService {
     }
 
     private static async hasNotificationForApplication(
-        userId: number,
+        userId: string,
         type: NotificationType,
-        applicationId: number
+        applicationId: string
     ): Promise<boolean> {
         const rows = await this.getRepository().find({
             where: { userId, type },
@@ -34,7 +34,7 @@ export class NotificationService {
 
         return rows.some(
             (row) =>
-                typeof row.metadata?.applicationId === "number" &&
+                typeof row.metadata?.applicationId === "string" &&
                 row.metadata.applicationId === applicationId
         );
     }
@@ -43,7 +43,7 @@ export class NotificationService {
         input: CreateNotificationInput
     ): Promise<boolean> {
         const applicationId = input.metadata?.applicationId;
-        if (typeof applicationId === "number") {
+        if (typeof applicationId === "string" && applicationId.trim()) {
             const exists = await this.hasNotificationForApplication(
                 input.userId,
                 input.type,
@@ -216,10 +216,10 @@ export class NotificationService {
     }
 
     static async createForUsers(
-        userIds: number[],
+        userIds: string[],
         input: Omit<CreateNotificationInput, "userId">
     ): Promise<void> {
-        const uniqueIds = [...new Set(userIds.filter((id) => id > 0))];
+        const uniqueIds = [...new Set(userIds.filter((id) => id.trim().length > 0))];
         if (uniqueIds.length === 0) return;
 
         await Promise.all(
@@ -247,7 +247,7 @@ export class NotificationService {
     }
 
     static async notifyLecturersForCourse(
-        courseId: number,
+        courseId: string,
         input: Omit<CreateNotificationInput, "userId">
     ): Promise<void> {
         const assignmentRepo = AppDataSource.getRepository(CourseAssignment);
@@ -262,7 +262,7 @@ export class NotificationService {
     }
 
     static async getForUser(
-        userId: number,
+        userId: string,
         limit = 50
     ): Promise<Notification[]> {
         return this.getRepository().find({
@@ -273,7 +273,7 @@ export class NotificationService {
     }
 
     static async getForUserPaginated(
-        userId: number,
+        userId: string,
         page: number,
         pageSize: number
     ): Promise<{ items: Notification[]; totalCount: number }> {
@@ -287,15 +287,15 @@ export class NotificationService {
         return { items, totalCount };
     }
 
-    static async getUnreadCount(userId: number): Promise<number> {
+    static async getUnreadCount(userId: string): Promise<number> {
         return this.getRepository().count({
             where: { userId, read: false },
         });
     }
 
     static async markAsRead(
-        notificationId: number,
-        userId: number
+        notificationId: string,
+        userId: string
     ): Promise<boolean> {
         const result = await this.getRepository().update(
             { id: notificationId, userId },
@@ -304,13 +304,13 @@ export class NotificationService {
         return (result.affected ?? 0) > 0;
     }
 
-    static async markAllAsRead(userId: number): Promise<void> {
+    static async markAllAsRead(userId: string): Promise<void> {
         await this.getRepository().update({ userId, read: false }, { read: true });
     }
 
     static async deleteNotification(
-        notificationId: number,
-        userId: number
+        notificationId: string,
+        userId: string
     ): Promise<boolean> {
         const result = await this.getRepository().delete({
             id: notificationId,

@@ -1,6 +1,3 @@
-import type { SecurityAnswerFormRow } from "../components/security-question-fields/SecurityQuestionFields";
-import { SECURITY_QUESTION_COUNT } from "@/shared/constants/securityQuestions";
-
 // Check if the email follows the pattern for specific roles
 export const validateRoleSpecificEmail = (
   email: string,
@@ -139,47 +136,4 @@ export const getPasswordStrengthFeedback = (
   )
     return { text: "Good password", level: "medium" };
   return { text: "Weak password", level: "weak" };
-};
-
-export const validateSecurityAnswerRows = (
-  rows: SecurityAnswerFormRow[]
-): Record<string, string> => {
-  const errors: Record<string, string> = {};
-  const used = new Set<string>();
-
-  if (rows.length !== SECURITY_QUESTION_COUNT) {
-    errors.securityAnswers = `Please set ${SECURITY_QUESTION_COUNT} security questions`;
-    return errors;
-  }
-
-  rows.forEach((row, index) => {
-    if (!row.questionId) {
-      errors[`securityAnswers.${index}.questionId`] = "Question is required";
-    } else if (used.has(row.questionId)) {
-      errors.securityAnswers = "Each question must be different";
-    } else {
-      used.add(row.questionId);
-    }
-
-    const trimmedAnswer = row.answer.trim();
-    const normalized = trimmedAnswer.toLowerCase();
-    if (!trimmedAnswer) {
-      errors[`securityAnswers.${index}.answer`] = "Answer is required";
-    } else if (normalized.length < 2) {
-      errors[`securityAnswers.${index}.answer`] =
-        "Answer must be at least 2 characters";
-    } else if (normalized.length > 100) {
-      errors[`securityAnswers.${index}.answer`] =
-        "Answer must be at most 100 characters";
-    }
-  });
-
-  if (
-    used.size !== SECURITY_QUESTION_COUNT &&
-    !errors.securityAnswers
-  ) {
-    errors.securityAnswers = `Please set ${SECURITY_QUESTION_COUNT} different security questions`;
-  }
-
-  return errors;
 };

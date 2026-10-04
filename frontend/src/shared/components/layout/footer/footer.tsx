@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./footer.module.css";
-import { getMelbourneYear } from "@/shared/utils/dateUtils";
+import { vietnamYear } from "@/shared/utils/vietnamTime";
 
 const Footer = () => {
   return (
@@ -99,7 +99,7 @@ const Footer = () => {
         </div>
 
         <div className={styles.copyrightText}>
-          &copy; {getMelbourneYear()} EduTeach, School of Computer
+          &copy; {vietnamYear()} EduTeach, School of Computer
           Science. All rights reserved.
         </div>
       </div>

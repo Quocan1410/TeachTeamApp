@@ -8,14 +8,11 @@ import {
   getCandidateAvatarPerson,
   getCandidateFormattedName,
 } from "@/modules/tutor/components/application-detail/conversationUtils";
+import { formatRoleLabel } from "@/shared/utils/applicationFormat";
 import styles from "./CandidateChatIntro.module.css";
 
 interface CandidateChatIntroProps {
   application: ApplicationResponse;
-}
-
-function formatRoleLabel(roleName: string) {
-  return roleName === "tutor" ? "Tutor" : "Lab Assistant";
 }
 
 const CandidateChatIntro: React.FC<CandidateChatIntroProps> = ({

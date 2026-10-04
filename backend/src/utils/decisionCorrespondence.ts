@@ -34,7 +34,7 @@ export function buildRejectionAutoMessage(application: Application): string {
 
 export function appendDecisionAutoMessage(
     application: Application,
-    lecturerId: number,
+    lecturerId: string,
     decision: "selected" | "rejected"
 ): boolean {
     const messageId =

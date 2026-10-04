@@ -13,20 +13,14 @@ import { User } from "./User";
 @Entity("selected_candidates")
 @Index(["applicationId"], { unique: true })
 export class SelectedCandidate {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
 
-    @Column({
-        type: "int",
-        nullable: false,
-    })
-    applicationId: number;
+    @Column({ type: "varchar", length: 36 })
+    applicationId: string;
 
-    @Column({
-        type: "int",
-        nullable: false,
-    })
-    selectedById: number;
+    @Column({ type: "varchar", length: 36 })
+    selectedById: string;
 
     @CreateDateColumn()
     selectedAt: Date;

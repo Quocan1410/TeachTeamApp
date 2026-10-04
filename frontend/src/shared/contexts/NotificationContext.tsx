@@ -27,7 +27,7 @@ export interface Notification {
   timestamp: Date;
   read: boolean;
   link?: string | null;
-  candidateId?: number;
+  candidateId?: string;
   candidateName?: string;
   unselectedCount?: number;
   unrankedCount?: number;
@@ -76,7 +76,7 @@ function mapStoredNotification(n: StoredNotification): Notification {
     read: Boolean(n.read),
     link: n.link,
     candidateId:
-      typeof n.metadata?.candidateId === "number"
+      typeof n.metadata?.candidateId === "string"
         ? n.metadata.candidateId
         : undefined,
     candidateName:
@@ -95,7 +95,7 @@ function mapStoredNotification(n: StoredNotification): Notification {
 }
 
 function canReceiveNotifications(
-  user: { id: number; userType: string } | null | undefined
+  user: { id: string; userType: string } | null | undefined
 ): boolean {
   return (
     !!user &&
@@ -117,7 +117,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   const inFlightRef = useRef(false);
   const lastFetchAtRef = useRef(0);
   const rateLimitedUntilRef = useRef(0);
-  const loadedForUserIdRef = useRef<number | null>(null);
+  const loadedForUserIdRef = useRef<string | null>(null);
 
   const refreshNotifications = useCallback(
     async (options?: { force?: boolean }) => {
@@ -254,11 +254,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   );
 
   const markAsRead = useCallback(async (notificationId: string) => {
-    const numericId = parseInt(notificationId, 10);
-    if (Number.isNaN(numericId)) return;
+    if (!notificationId.trim()) return;
 
     try {
-      const count = await apiMarkAsRead(numericId);
+      const count = await apiMarkAsRead(notificationId);
       setUnreadCount(count);
       setNotifications((prev) =>
         prev.map((notification) =>
@@ -283,11 +282,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   }, []);
 
   const removeNotification = useCallback(async (notificationId: string) => {
-    const numericId = parseInt(notificationId, 10);
-    if (Number.isNaN(numericId)) return;
+    if (!notificationId.trim()) return;
 
     try {
-      const count = await apiDeleteNotification(numericId);
+      const count = await apiDeleteNotification(notificationId);
       setUnreadCount(count);
       setNotifications((prev) =>
         prev.filter((notification) => notification.id !== notificationId)

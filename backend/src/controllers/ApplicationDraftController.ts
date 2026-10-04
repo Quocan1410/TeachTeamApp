@@ -19,8 +19,8 @@ export class ApplicationDraftController {
     async getDraft(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const candidateId = req.user!.userId;
-            const courseId = parseInt(req.params.courseId, 10);
-            const roleId = parseInt(req.params.roleId, 10);
+            const courseId = req.params.courseId;
+            const roleId = req.params.roleId;
 
             const draft = await this.draftRepo.findOne({
                 where: { candidateId, courseId, roleId },
@@ -49,8 +49,8 @@ export class ApplicationDraftController {
     async upsertDraft(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const candidateId = req.user!.userId;
-            const courseId = parseInt(req.params.courseId, 10);
-            const roleId = parseInt(req.params.roleId, 10);
+            const courseId = req.params.courseId;
+            const roleId = req.params.roleId;
             const payload = req.body.payload as ApplicationDraftPayload;
 
             if (!payload || typeof payload !== "object") {
@@ -120,8 +120,8 @@ export class ApplicationDraftController {
     async deleteDraft(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             const candidateId = req.user!.userId;
-            const courseId = parseInt(req.params.courseId, 10);
-            const roleId = parseInt(req.params.roleId, 10);
+            const courseId = req.params.courseId;
+            const roleId = req.params.roleId;
 
             await this.draftRepo.delete({ candidateId, courseId, roleId });
             res.status(200).json({ success: true, message: "Draft deleted" });

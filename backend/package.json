@@ -7,7 +7,6 @@
         "build": "ncc build ./src/index.ts -o dist",
         "start": "node dist/index.js",
         "dev": "nodemon --exec ts-node src/index.ts",
-        "db:reset": "ts-node src/scripts/resetDatabase.ts",
         "typeorm": "typeorm-ts-node-commonjs",
         "migration:run": "typeorm-ts-node-commonjs migration:run -d src/config/dataSourceCli.ts",
         "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/config/dataSourceCli.ts"
@@ -28,8 +27,6 @@
         "jsonwebtoken": "^9.0.2",
         "multer": "^2.1.1",
         "mysql2": "^3.14.1",
-        "node-cron": "^4.2.1",
-        "nodemailer": "^8.0.10",
         "reflect-metadata": "^0.2.2",
         "socket.io": "^4.8.3",
         "typeorm": "^0.3.24"
@@ -44,8 +41,6 @@
         "@types/jsonwebtoken": "^9.0.9",
         "@types/multer": "^2.1.0",
         "@types/node": "^22.15.29",
-        "@types/node-cron": "^3.0.11",
-        "@types/nodemailer": "^8.0.0",
         "@vercel/ncc": "^0.38.4",
         "nodemon": "^3.1.10",
         "ts-node": "^10.9.2",

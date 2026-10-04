@@ -9,19 +9,13 @@ import {
   getPasswordStrengthFeedback,
   validateFullName,
   containsEmojis,
-  validateSecurityAnswerRows,
   validateSignupPassword,
   splitSignupFullName,
   mapSignupApiErrors,
-} from "../../utils/authValidation.utils";
-import SecurityQuestionFields, {
-  createEmptySecurityRows,
-  type SecurityAnswerFormRow,
-} from "../security-question-fields/SecurityQuestionFields";
-import { AuthService } from "../../../../shared/services/authService";
-import { UserType } from "../../../../shared/types/user";
-import { useAuth } from "../../hooks/useAuth";
-import EmailAutocomplete from "../email-autocomplete/email-autocomplete";
+} from "@/modules/auth/utils/authValidation.utils";
+import { AuthService } from "@/shared/services/authService";
+import { UserType } from "@/shared/types/user";
+import EmailAutocomplete from "@/modules/auth/components/email-autocomplete/email-autocomplete";
 import AppSelect from "@/shared/components/common/app-select/AppSelect";
 import { type Honorific } from "@/shared/utils/personDisplayName";
 import grid from "@/modules/auth/styles/signup-grid.module.css";
@@ -42,7 +36,6 @@ type SignupHonorific = Honorific | "";
 
 export default function SignUpForm() {
   const router = useRouter();
-  const { } = useAuth(); // Removed login since we don't auto-login after signup
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -51,9 +44,6 @@ export default function SignUpForm() {
   const [honorific, setHonorific] = useState<SignupHonorific>(TITLE_PLACEHOLDER);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [securityRows, setSecurityRows] = useState<SecurityAnswerFormRow[]>(
-    createEmptySecurityRows
-  );
 
   // Validation states
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -160,9 +150,6 @@ export default function SignUpForm() {
       newErrors.confirmPassword = "Passwords do not match";
     }
 
-    const securityErrors = validateSecurityAnswerRows(securityRows);
-    Object.assign(newErrors, securityErrors);
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -192,11 +179,7 @@ export default function SignUpForm() {
         firstName,
         lastName,
         userType,
-        honorific: honorific as Honorific,
-        securityAnswers: securityRows.map((row) => ({
-          questionId: row.questionId,
-          answer: row.answer.trim(),
-        })),
+        honorific: honorific || undefined,
       };
 
       // Call the signup API
@@ -465,28 +448,6 @@ export default function SignUpForm() {
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className={styles.securitySection}>
-            <SecurityQuestionFields
-              rows={securityRows}
-              onChange={(rows) => {
-                setSecurityRows(rows);
-                if (Object.keys(errors).some((k) => k.startsWith("securityAnswers"))) {
-                  setErrors((prev) => {
-                    const next = { ...prev };
-                    Object.keys(next).forEach((key) => {
-                      if (key.startsWith("securityAnswers")) {
-                        delete next[key];
-                      }
-                    });
-                    return next;
-                  });
-                }
-              }}
-              errors={errors}
-              disabled={isLoading}
-            />
           </div>
         </div>
 

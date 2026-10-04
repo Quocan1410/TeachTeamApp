@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
         cb(null, AVATAR_UPLOAD_DIR);
     },
     filename: (req, file, cb) => {
-        const userId = (req as { user?: { userId?: number } }).user?.userId ?? "unknown";
+        const userId = (req as { user?: { userId?: string } }).user?.userId ?? "unknown";
         const ext = path.extname(file.originalname).toLowerCase() || ".jpg";
         const safeExt = [".jpg", ".jpeg", ".png", ".webp"].includes(ext)
             ? ext === ".jpeg"

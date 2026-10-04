@@ -7,7 +7,7 @@ export enum UserType {
 }
 
 export interface User {
-  id: number;
+  id: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -31,11 +31,6 @@ export interface AuthResponse {
   errors?: Record<string, string>;
 }
 
-export interface SecurityAnswerInput {
-  questionId: string;
-  answer: string;
-}
-
 export interface SignupData {
   email: string;
   password: string;
@@ -43,40 +38,11 @@ export interface SignupData {
   lastName: string;
   userType: UserType;
   honorific?: string;
-  securityAnswers: SecurityAnswerInput[];
 }
 
 export interface SigninData {
   email: string;
   password: string;
-}
-
-export interface PasswordResetRequestData {
-  email: string;
-}
-
-export interface PasswordResetConfirmData {
-  token: string;
-  password: string;
-  confirmPassword: string;
-}
-
-export interface PasswordResetChallengeQuestion {
-  questionId: string;
-  text: string;
-}
-
-export interface PasswordResetResponse {
-  success: boolean;
-  message: string;
-  resetUrl?: string;
-  resetToken?: string;
-  errors?: Record<string, string>;
-  data?: {
-    questions?: PasswordResetChallengeQuestion[];
-    resetToken?: string;
-    resetUrl?: string;
-  };
 }
 
 export interface ChangePasswordData {

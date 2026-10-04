@@ -29,26 +29,17 @@ export enum OfferResponse {
 @Entity("applications")
 @Index(["candidateId", "courseId", "roleId"], { unique: true })
 export class Application {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
 
-    @Column({
-        type: "int",
-        nullable: false,
-    })
-    candidateId: number;
+    @Column({ type: "varchar", length: 36 })
+    candidateId: string;
 
-    @Column({
-        type: "int",
-        nullable: false,
-    })
-    courseId: number;
+    @Column({ type: "varchar", length: 36 })
+    courseId: string;
 
-    @Column({
-        type: "int",
-        nullable: false,
-    })
-    roleId: number;
+    @Column({ type: "varchar", length: 36 })
+    roleId: string;
 
     @Column({
         type: "varchar",
@@ -95,7 +86,7 @@ export class Application {
     correspondenceMessages?: Array<{
         id: string;
         authorRole: "candidate" | "lecturer";
-        authorId: number;
+        authorId: string;
         body: string;
         createdAt: string;
         editedAt?: string | null;
@@ -134,11 +125,8 @@ export class Application {
     })
     comment?: string;
 
-    @Column({
-        type: "int",
-        nullable: true,
-    })
-    commentedBy?: number;
+    @Column({ type: "varchar", length: 36, nullable: true })
+    commentedBy?: string | null;
 
     @Column({
         type: "datetime",
@@ -151,7 +139,7 @@ export class Application {
         type: "json",
         nullable: true,
     })
-    messageReactions?: Record<string, Record<string, number[]>> | null;
+    messageReactions?: Record<string, Record<string, string[]>> | null;
 
     // Ranking fields
     @Column({
@@ -160,11 +148,8 @@ export class Application {
     })
     rank?: number | null;
 
-    @Column({
-        type: "int",
-        nullable: true,
-    })
-    rankedBy?: number | null;
+    @Column({ type: "varchar", length: 36, nullable: true })
+    rankedBy?: string | null;
 
     @Column({
         type: "datetime",
@@ -200,11 +185,8 @@ export class Application {
     })
     reviewedAt?: Date | null;
 
-    @Column({
-        type: "int",
-        nullable: true,
-    })
-    reviewedBy?: number | null;
+    @Column({ type: "varchar", length: 36, nullable: true })
+    reviewedBy?: string | null;
 
     @CreateDateColumn()
     appliedAt: Date;

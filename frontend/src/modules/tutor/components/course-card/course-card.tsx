@@ -65,12 +65,12 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
   const hasApplied = legacyProps?.hasApplied || false;
 
   // Enhanced functionality: Check if user has applied for a specific role in this course
-  const getApplicationForRole = (roleId: number) =>
+  const getApplicationForRole = (roleId: string) =>
     myApplications.find(
       (app) => app.courseId === (course as Course).id && app.roleId === roleId
     );
 
-  const getApplicationStatus = (roleId: number) =>
+  const getApplicationStatus = (roleId: string) =>
     getApplicationForRole(roleId)?.status || null;
 
   // Enhanced functionality: Get suggested skills for this course

@@ -13,20 +13,14 @@ import { Course } from "./Course";
 @Entity("course_assignments")
 @Index(["lecturerId", "courseId"], { unique: true })
 export class CourseAssignment {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
 
-    @Column({
-        type: "int",
-        nullable: false,
-    })
-    lecturerId: number;
+    @Column({ type: "varchar", length: 36 })
+    lecturerId: string;
 
-    @Column({
-        type: "int",
-        nullable: false,
-    })
-    courseId: number;
+    @Column({ type: "varchar", length: 36 })
+    courseId: string;
 
     @CreateDateColumn()
     assignedAt: Date;

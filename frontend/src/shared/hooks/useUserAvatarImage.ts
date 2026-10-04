@@ -7,7 +7,7 @@ import { fetchAvatarBlob } from "../utils/avatarFetchCache";
 
 /** Load another user's uploaded avatar (not the logged-in user's). */
 export function useUserAvatarImage(
-  userId: number | undefined,
+  userId: string | undefined,
   avatarUrl?: string | null
 ): string | null {
   const [objectUrl, setObjectUrl] = useState<string | null>(null);

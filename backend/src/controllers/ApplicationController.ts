@@ -92,7 +92,7 @@ export class ApplicationController {
     ] as const;
 
     private async loadApplicationForResponse(
-        id: number
+        id: string
     ): Promise<Application | null> {
         return this.applicationRepository.findOne({
             where: { id },
@@ -101,8 +101,8 @@ export class ApplicationController {
     }
 
     private async verifyLecturerCourseAccess(
-        lecturerId: number | undefined,
-        courseId: number
+        lecturerId: string | undefined,
+        courseId: string
     ): Promise<boolean> {
         if (!lecturerId) return false;
 
@@ -319,7 +319,7 @@ export class ApplicationController {
         res: Response
     ): Promise<void> {
         try {
-            const applicationId = parseInt(req.params.id, 10);
+            const applicationId = req.params.id;
             const userId = req.user?.userId;
             const userType = req.user?.userType;
 
@@ -331,7 +331,7 @@ export class ApplicationController {
                 return;
             }
 
-            if (!Number.isInteger(applicationId) || applicationId <= 0) {
+            if (!applicationId) {
                 res.status(400).json({
                     success: false,
                     message: "Invalid application id",
@@ -441,7 +441,7 @@ export class ApplicationController {
             }
 
             const application = await this.applicationRepository.findOne({
-                where: { id: parseInt(id, 10), candidateId },
+                where: { id: id, candidateId },
                 relations: ["course", "role"],
             });
 
@@ -561,7 +561,7 @@ export class ApplicationController {
             }
 
             const application = await this.applicationRepository.findOne({
-                where: { id: parseInt(id, 10), candidateId },
+                where: { id: id, candidateId },
                 relations: ["course", "role"],
             });
 
@@ -673,7 +673,7 @@ export class ApplicationController {
             }
 
             const application = await this.applicationRepository.findOne({
-                where: { id: parseInt(id, 10), candidateId },
+                where: { id: id, candidateId },
                 relations: [
                     "course",
                     "course.courseAssignments",
@@ -794,7 +794,7 @@ export class ApplicationController {
             }
 
             const application = await this.applicationRepository.findOne({
-                where: { id: parseInt(id, 10), candidateId },
+                where: { id: id, candidateId },
                 relations: [
                     "course",
                     "course.courseAssignments",
@@ -857,7 +857,7 @@ export class ApplicationController {
             const candidateId = req.user?.userId;
 
             const application = await this.applicationRepository.findOne({
-                where: { id: parseInt(id, 10), candidateId },
+                where: { id: id, candidateId },
                 relations: ["course", "role"],
             });
 
@@ -955,7 +955,7 @@ export class ApplicationController {
             }
 
             const application = await this.applicationRepository.findOne({
-                where: { id: parseInt(id, 10) },
+                where: { id: id },
                 relations: ["course", "role"],
             });
 
@@ -1249,7 +1249,7 @@ export class ApplicationController {
             });
 
             const applicationIds = applications.map((app) => app.id);
-            const shortlistedIds = new Set<number>();
+            const shortlistedIds = new Set<string>();
             if (applicationIds.length > 0) {
                 const shortlistRows = await this.selectedCandidateRepository
                     .createQueryBuilder("selection")
@@ -1257,9 +1257,9 @@ export class ApplicationController {
                     .where("selection.applicationId IN (:...applicationIds)", {
                         applicationIds,
                     })
-                    .getRawMany<{ applicationId: number }>();
+                    .getRawMany<{ applicationId: string }>();
                 for (const row of shortlistRows) {
-                    shortlistedIds.add(Number(row.applicationId));
+                    shortlistedIds.add(String(row.applicationId));
                 }
             }
 
@@ -1330,13 +1330,13 @@ export class ApplicationController {
             const lecturerId = req.user?.userId;
             const previousStatus = (
                 await this.applicationRepository.findOne({
-                    where: { id: parseInt(id) },
+                    where: { id: id },
                     select: ["id", "status"],
                 })
             )?.status;
 
             const application = await this.applicationRepository.findOne({
-                where: { id: parseInt(id) },
+                where: { id: id },
                 relations: ["course", "role", "candidate"],
             });
 
@@ -1767,7 +1767,7 @@ export class ApplicationController {
             }
 
             const application = await this.applicationRepository.findOne({
-                where: { id: parseInt(id) },
+                where: { id: id },
                 relations: ["course", "role", "candidate"],
             });
 
@@ -1879,7 +1879,7 @@ export class ApplicationController {
             }
 
             const application = await this.applicationRepository.findOne({
-                where: { id: parseInt(id) },
+                where: { id: id },
                 relations: ["course", "role", "candidate"],
             });
 
@@ -1952,7 +1952,7 @@ export class ApplicationController {
             const lecturerId = req.user?.userId;
 
             const application = await this.applicationRepository.findOne({
-                where: { id: parseInt(id) },
+                where: { id: id },
                 relations: ["course", "role", "candidate"],
             });
 
@@ -2058,7 +2058,7 @@ export class ApplicationController {
             const lecturerId = req.user?.userId;
 
             const application = await this.applicationRepository.findOne({
-                where: { id: parseInt(id) },
+                where: { id: id },
                 relations: ["course", "role", "candidate"],
             });
 
@@ -2133,7 +2133,7 @@ export class ApplicationController {
             const lecturerId = req.user?.userId;
 
             const application = await this.applicationRepository.findOne({
-                where: { id: parseInt(id) },
+                where: { id: id },
                 relations: ["course", "role", "candidate"],
             });
 
@@ -2203,7 +2203,7 @@ export class ApplicationController {
             }
 
             const application = await this.applicationRepository.findOne({
-                where: { id: parseInt(id, 10) },
+                where: { id: id },
                 relations: ["course", "role", "candidate"],
             });
 
@@ -2272,7 +2272,7 @@ export class ApplicationController {
             const { id } = req.params;
             const lecturerId = req.user?.userId;
             const application = await this.applicationRepository.findOne({
-                where: { id: parseInt(id, 10) },
+                where: { id: id },
             });
 
             if (!application) {
@@ -2332,7 +2332,7 @@ export class ApplicationController {
             }
 
             const application = await this.applicationRepository.findOne({
-                where: { id: parseInt(id, 10) },
+                where: { id: id },
             });
 
             if (!application) {
@@ -2384,7 +2384,7 @@ export class ApplicationController {
             const lecturerId = req.user?.userId;
 
             const application = await this.applicationRepository.findOne({
-                where: { id: parseInt(id, 10) },
+                where: { id: id },
                 relations: ["course", "role", "candidate"],
             });
 
@@ -2444,7 +2444,7 @@ export class ApplicationController {
             const lecturerId = req.user?.userId;
 
             const application = await this.applicationRepository.findOne({
-                where: { id: parseInt(id) },
+                where: { id: id },
                 relations: ["course", "role", "candidate"],
             });
 
@@ -2564,7 +2564,7 @@ export class ApplicationController {
             const lecturerId = req.user?.userId;
 
             const application = await this.applicationRepository.findOne({
-                where: { id: parseInt(id) },
+                where: { id: id },
                 relations: ["course", "role", "candidate"],
             });
 

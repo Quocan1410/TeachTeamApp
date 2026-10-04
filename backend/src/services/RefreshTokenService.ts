@@ -14,7 +14,7 @@ export class RefreshTokenService {
         return AppDataSource.getRepository(RefreshToken);
     }
 
-    static async issue(userId: number): Promise<string> {
+    static async issue(userId: string): Promise<string> {
         const rawToken = generateToken();
         const repo = this.getRepository();
         const row = repo.create({
@@ -27,7 +27,7 @@ export class RefreshTokenService {
         return rawToken;
     }
 
-    static async rotate(rawToken: string): Promise<{ userId: number; newToken: string } | null> {
+    static async rotate(rawToken: string): Promise<{ userId: string; newToken: string } | null> {
         const repo = this.getRepository();
         const tokenHash = hashToken(rawToken);
         const existing = await repo.findOne({ where: { tokenHash } });
@@ -58,7 +58,7 @@ export class RefreshTokenService {
         await repo.save(existing);
     }
 
-    static async revokeAllForUser(userId: number): Promise<void> {
+    static async revokeAllForUser(userId: string): Promise<void> {
         const repo = this.getRepository();
         await repo
             .createQueryBuilder()

@@ -11,11 +11,9 @@ import { Application } from "../entities/Application";
 import { SelectedCandidate } from "../entities/SelectedCandidate";
 import { Notification } from "../entities/Notification";
 import { ApplicationDraft } from "../entities/ApplicationDraft";
-import { PasswordResetToken } from "../entities/PasswordResetToken";
 import { RefreshToken } from "../entities/RefreshToken";
-import { UserSecurityAnswer } from "../entities/UserSecurityAnswer";
 
-/** CLI datasource — never auto-sync; use migration:run / db:reset instead. */
+/** CLI datasource — never auto-sync; use migration:run instead. */
 export default new DataSource({
     type: "mysql",
     host: process.env.DB_HOST || "localhost",
@@ -35,9 +33,7 @@ export default new DataSource({
         SelectedCandidate,
         Notification,
         ApplicationDraft,
-        PasswordResetToken,
         RefreshToken,
-        UserSecurityAnswer,
     ],
     migrations: [path.join(__dirname, "../migrations/*.{ts,js}")],
     extra: {

@@ -47,7 +47,7 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
       setLecturerNotes("");
       return;
     }
-    ApplicationService.getLecturerNotes(parseInt(application.id, 10)).then(
+    ApplicationService.getLecturerNotes(application.id).then(
       (res) => {
         if (res.success && res.data) {
           setLecturerNotes(res.data.lecturerNotes || "");
@@ -390,7 +390,7 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
                   setNotesSaving(true);
                   try {
                     const res = await ApplicationService.updateLecturerNotes(
-                      parseInt(application.id, 10),
+                      application.id,
                       lecturerNotes
                     );
                     if (res.success) {

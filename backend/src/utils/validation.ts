@@ -1,8 +1,6 @@
 import { UserType } from "../entities/User";
 import { getAdminEmail, isCanonicalAdminEmail } from "./adminConfig";
 import { validateNewPassword } from "./passwordRules";
-import { SecurityQuestionService } from "../services/SecurityQuestionService";
-
 interface ValidationResult {
     isValid: boolean;
     errors: Record<string, string>;
@@ -139,37 +137,6 @@ export const validateSignupData = (data: any): ValidationResult => {
         errors.honorific = "Invalid title";
     }
 
-    const securityValidation = SecurityQuestionService.validateSecurityAnswersInput(
-        data.securityAnswers
-    );
-    if (!securityValidation.isValid) {
-        Object.assign(errors, securityValidation.errors);
-    }
-
-    return {
-        isValid: Object.keys(errors).length === 0,
-        errors,
-    };
-};
-
-export const validateForgotPasswordEmail = (email: string): ValidationResult => {
-    const errors: Record<string, string> = {};
-
-    if (!email?.trim()) {
-        errors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        errors.email = "Please enter a valid email address";
-    } else {
-        const emailLower = email.trim().toLowerCase();
-        const domainOk =
-            emailLower.endsWith("@candidate.edu.au") ||
-            emailLower.endsWith("@lecturer.edu.au");
-        if (!domainOk) {
-            errors.email =
-                "Password reset is only available for @candidate.edu.au and @lecturer.edu.au accounts";
-        }
-    }
-
     return {
         isValid: Object.keys(errors).length === 0,
         errors,
@@ -195,33 +162,6 @@ export const validateChangePasswordData = (data: {
     if (!data.confirmPassword) {
         errors.confirmPassword = "Please confirm your new password";
     } else if (data.newPassword !== data.confirmPassword) {
-        errors.confirmPassword = "Passwords do not match";
-    }
-
-    return {
-        isValid: Object.keys(errors).length === 0,
-        errors,
-    };
-};
-
-export const validateResetPasswordData = (data: {
-    token?: string;
-    password?: string;
-    confirmPassword?: string;
-}): ValidationResult => {
-    const errors: Record<string, string> = {};
-    if (!data.token?.trim()) {
-        errors.token = "Reset token is required";
-    }
-
-    const passwordError = validateNewPassword(data.password || "");
-    if (passwordError) {
-        errors.password = passwordError;
-    }
-
-    if (!data.confirmPassword) {
-        errors.confirmPassword = "Please confirm your password";
-    } else if (data.password !== data.confirmPassword) {
         errors.confirmPassword = "Passwords do not match";
     }
 
@@ -266,14 +206,14 @@ export const validateApplicationData = (data: any): ValidationResult => {
     // Course ID validation
     if (!data.courseId) {
         errors.courseId = "Course is required";
-    } else if (!Number.isInteger(data.courseId) || data.courseId <= 0) {
+    } else if (typeof data.courseId !== "string" || !data.courseId.trim()) {
         errors.courseId = "Invalid course selection";
     }
 
     // Role ID validation
     if (!data.roleId) {
         errors.roleId = "Role is required";
-    } else if (!Number.isInteger(data.roleId) || data.roleId <= 0) {
+    } else if (typeof data.roleId !== "string" || !data.roleId.trim()) {
         errors.roleId = "Invalid role selection";
     }
 

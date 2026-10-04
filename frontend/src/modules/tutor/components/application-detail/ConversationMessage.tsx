@@ -63,7 +63,7 @@ interface ConversationMessageProps {
 
   >;
 
-  currentUserId?: number;
+  currentUserId?: string;
 
   onToggleReaction: (messageId: ReactableMessageId, emoji: string) => void;
 

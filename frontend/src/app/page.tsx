@@ -11,6 +11,7 @@ import HeroSection from "@/modules/home/components/hero-section/HeroSection";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { PublicService } from "@/shared/services/publicService";
+import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
 
 function lecturerAvatarIndex(contact: string, fallbackIndex: number): number {
   const emailHash = contact
@@ -29,14 +30,19 @@ export default function HomePage() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const userRole = user?.userType || null;
 
+  const redirecting =
+    !authLoading &&
+    isAuthenticated &&
+    (user?.userType === "candidate" || user?.userType === "lecturer");
+
   useEffect(() => {
-    if (authLoading || !isAuthenticated || !user) return;
+    if (!redirecting || !user) return;
     if (user.userType === "candidate") {
       router.replace("/tutor");
     } else if (user.userType === "lecturer") {
       router.replace("/lecturer");
     }
-  }, [authLoading, isAuthenticated, user, router]);
+  }, [redirecting, user, router]);
 
   const loadLecturers = useCallback(async () => {
     setLecturersLoading(true);
@@ -55,8 +61,9 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
+    if (authLoading || redirecting) return;
     loadLecturers();
-  }, [loadLecturers]);
+  }, [authLoading, redirecting, loadLecturers]);
 
   const handleOpenLecturerModal = (lecturerId: string): void => {
     const lecturer = lecturers.find((l) => l.id === lecturerId);
@@ -70,6 +77,10 @@ export default function HomePage() {
   const activeLecturerImageIndex = activeLecturer
     ? lecturers.findIndex((l) => l.id === activeLecturer.id)
     : -1;
+
+  if (authLoading || redirecting) {
+    return <PageSkeleton variant="home" />;
+  }
 
   return (
     <main className={`flex-grow ${isAuthenticated ? "pt-0" : "pt-24"}`}>

@@ -1,6 +1,20 @@
 export const VN_TIMEZONE = "Asia/Ho_Chi_Minh";
 export const VN_LOCALE = "vi-VN";
 
+/** Calendar date YYYY-MM-DD in Vietnam. */
+export function vietnamTodayKey(date: Date = new Date()): string {
+  return date.toLocaleDateString("en-CA", { timeZone: VN_TIMEZONE });
+}
+
+export function vietnamYear(date: Date = new Date()): number {
+  return Number(
+    date.toLocaleDateString("en-CA", {
+      timeZone: VN_TIMEZONE,
+      year: "numeric",
+    })
+  );
+}
+
 /** Calendar date YYYY-MM-DD in Vietnam timezone. */
 export function vietnamDateKey(iso: string): string {
   return new Date(iso).toLocaleDateString("en-CA", { timeZone: VN_TIMEZONE });

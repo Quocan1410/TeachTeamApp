@@ -110,9 +110,16 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
 
   const body = renderBody();
 
+  const status = (
+    <p className={styles.status} role="status">
+      Loading…
+    </p>
+  );
+
   if (!fullPage) {
     return (
       <div aria-busy="true" aria-live="polite">
+        {status}
         {body}
       </div>
     );
@@ -120,7 +127,10 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
 
   return (
     <div className={styles.wrapper} aria-busy="true" aria-live="polite">
-      <div className={styles.container}>{body}</div>
+      <div className={styles.container}>
+        {status}
+        {body}
+      </div>
     </div>
   );
 };

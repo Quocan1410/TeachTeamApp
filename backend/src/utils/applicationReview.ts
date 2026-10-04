@@ -12,7 +12,7 @@ export function applicationHasLecturerReview(application: Application): boolean 
 /** Record that a lecturer opened/reviewed the application (idempotent). */
 export function touchApplicationReviewed(
     application: Application,
-    lecturerId: number
+    lecturerId: string
 ): boolean {
     if (application.reviewedAt) {
         return false;

@@ -9,7 +9,7 @@ import {
 const CHAT_POLL_MS = 8_000;
 
 type UseApplicationChatSyncOptions = {
-  applicationId: number;
+  applicationId: string;
   enabled: boolean;
   onApplicationUpdated: (application: ApplicationResponse) => void;
 };

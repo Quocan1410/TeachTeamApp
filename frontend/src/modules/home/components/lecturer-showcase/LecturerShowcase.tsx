@@ -54,9 +54,7 @@ const LecturerShowcase: React.FC<LecturerShowcaseProps> = ({
 
           {!isLoading && !error && displayedLecturers.length === 0 && (
             <p className={styles.statusMessage}>
-              Default lecturers are being set up. Restart the backend API, or
-              run <code>npm run db:reset</code> in the backend folder if this
-              message persists.
+              No lecturers are available yet.
             </p>
           )}
 

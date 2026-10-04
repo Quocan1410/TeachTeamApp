@@ -25,13 +25,13 @@ export const CANDIDATE_BLOCKING_SUBSCRIPTION = gql`
 `;
 
 export interface CandidateBlockedEvent {
-  candidateId: number;
+  candidateId: string;
   candidateName: string;
   candidateEmail: string;
   isBlocked: boolean;
   timestamp: string;
   candidate: {
-    id: number;
+    id: string;
     fullName: string;
     email: string;
     userType: string;
@@ -40,18 +40,18 @@ export interface CandidateBlockedEvent {
   };
   unselectedApplicationsCount?: number;
   unrankedApplicationsCount?: number;
-  affectedLecturerIds?: number[];
+  affectedLecturerIds?: string[];
 }
 
 export interface UserAccountEvent {
-  userId: number;
+  userId: string;
   userEmail: string;
   userName: string;
   userType: string;
   action: string; // "blocked" or "deleted"
   timestamp: string;
   user?: {
-    id: number;
+    id: string;
     email: string;
     fullName: string;
     userType: string;

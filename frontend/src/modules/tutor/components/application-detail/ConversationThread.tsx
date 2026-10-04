@@ -19,7 +19,7 @@ interface ConversationThreadProps {
   pinnedMessageId: string | null;
   canCompose: boolean;
   messageReactions: MessageReactionsMap;
-  currentUserId?: number;
+  currentUserId?: string;
   onToggleReaction: (messageId: ReactableMessageId, emoji: string) => void;
   onMessageAction: (
     action: MessageAction,

@@ -2,9 +2,7 @@ import "reflect-metadata";
 import "../config/loadEnv";
 import { AppDataSource } from "../config/database";
 import { User } from "../entities/User";
-import { UserSecurityAnswer } from "../entities/UserSecurityAnswer";
 import { RefreshToken } from "../entities/RefreshToken";
-import { PasswordResetToken } from "../entities/PasswordResetToken";
 
 async function main(): Promise<void> {
     const email = process.argv[2];
@@ -22,13 +20,7 @@ async function main(): Promise<void> {
         process.exit(0);
     }
 
-    await AppDataSource.getRepository(UserSecurityAnswer).delete({
-        userId: user.id,
-    });
     await AppDataSource.getRepository(RefreshToken).delete({
-        userId: user.id,
-    });
-    await AppDataSource.getRepository(PasswordResetToken).delete({
         userId: user.id,
     });
     await userRepo.delete({ id: user.id });

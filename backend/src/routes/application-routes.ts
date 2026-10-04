@@ -25,14 +25,14 @@ const validateApplicationFields = (req: any, res: any, next: any) => {
     // Course ID validation
     if (!courseId) {
         errors.courseId = "Course is required";
-    } else if (!Number.isInteger(Number(courseId)) || Number(courseId) <= 0) {
+    } else if (typeof courseId !== "string" || !courseId.trim()) {
         errors.courseId = "Invalid course selection";
     }
 
     // Role ID validation
     if (!roleId) {
         errors.roleId = "Role is required";
-    } else if (!Number.isInteger(Number(roleId)) || Number(roleId) <= 0) {
+    } else if (typeof roleId !== "string" || !roleId.trim()) {
         errors.roleId = "Invalid role selection";
     }
 

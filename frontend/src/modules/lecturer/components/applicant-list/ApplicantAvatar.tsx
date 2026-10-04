@@ -27,9 +27,8 @@ const ApplicantAvatar: React.FC<ApplicantAvatarProps> = ({
   avatarUrl,
 }) => {
   const custom = hasCustomAvatar(avatarUrl);
-  const candidateId = Number.parseInt(userId, 10);
   const imageUrl = useUserAvatarImage(
-    custom && Number.isFinite(candidateId) ? candidateId : undefined,
+    custom && userId.trim() ? userId : undefined,
     avatarUrl
   );
   const [loadFailed, setLoadFailed] = useState(false);

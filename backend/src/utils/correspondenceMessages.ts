@@ -8,7 +8,7 @@ export type CorrespondenceAuthorRole = "candidate" | "lecturer";
 export interface CorrespondenceMessage {
     id: string;
     authorRole: CorrespondenceAuthorRole;
-    authorId: number;
+    authorId: string;
     body: string;
     createdAt: string;
     editedAt?: string | null;
@@ -42,7 +42,8 @@ export function parseCorrespondenceMessages(
         const row = item as Record<string, unknown>;
         const id = typeof row.id === "string" ? row.id.trim() : "";
         const authorRole = row.authorRole;
-        const authorId = Number(row.authorId);
+        const authorId =
+            typeof row.authorId === "string" ? row.authorId.trim() : "";
         const body = typeof row.body === "string" ? row.body.trim() : "";
         const createdAt =
             typeof row.createdAt === "string" ? row.createdAt : "";
@@ -50,8 +51,7 @@ export function parseCorrespondenceMessages(
             !id ||
             !body ||
             !createdAt ||
-            !Number.isInteger(authorId) ||
-            authorId <= 0 ||
+            !authorId ||
             (authorRole !== "candidate" && authorRole !== "lecturer")
         ) {
             continue;
@@ -88,7 +88,7 @@ export function buildCorrespondenceFromLegacy(
         messages.push({
             id: LECTURER_PRIMARY_MESSAGE_ID,
             authorRole: "lecturer",
-            authorId: application.commentedBy ?? 0,
+            authorId: application.commentedBy ?? "",
             body: application.comment.trim(),
             createdAt: (
                 application.commentedAt ?? application.updatedAt
@@ -188,7 +188,7 @@ function resolveReplyToMessageId(
 
 export function appendCandidateMessage(
     application: Application,
-    candidateId: number,
+    candidateId: string,
     body: string,
     replyToMessageId?: string | null
 ): CorrespondenceMessage {
@@ -208,7 +208,7 @@ export function appendCandidateMessage(
 
 export function appendLecturerMessage(
     application: Application,
-    lecturerId: number,
+    lecturerId: string,
     body: string,
     replyToMessageId?: string | null
 ): CorrespondenceMessage {
@@ -229,7 +229,7 @@ export function appendLecturerMessage(
 
 export function syncLecturerCommentMessage(
     application: Application,
-    lecturerId: number,
+    lecturerId: string,
     comment: string
 ): void {
     const messages = getCorrespondenceMessages(application);
@@ -273,7 +273,7 @@ export function syncLecturerCommentMessage(
 
 export function updateCandidateMessage(
     application: Application,
-    candidateId: number,
+    candidateId: string,
     messageId: string,
     body: string
 ): CorrespondenceMessage | null {
@@ -305,7 +305,7 @@ export function updateCandidateMessage(
 
 export function deleteCorrespondenceMessage(
     application: Application,
-    candidateId: number,
+    candidateId: string,
     messageId: string
 ): boolean {
     const messages = getCorrespondenceMessages(application);

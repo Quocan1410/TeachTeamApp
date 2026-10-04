@@ -7,7 +7,7 @@ import { availableSkills } from "@/modules/tutor/utils/skillOptions";
 import SkillTag from "@/modules/tutor/components/skill-tag/skill-tag";
 import CloseIcon from "@/shared/components/common/icons/CloseIcon";
 import styles from "./apply-modal.module.css";
-import { getMelbourneTime, getMelbourneDateOnly } from "@/shared/utils/dateUtils";
+import { vietnamTodayKey } from "@/shared/utils/vietnamTime";
 import { DraftService } from "@/shared/services/draftService";
 
 /**
@@ -264,7 +264,7 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
     if (legacyProps) {
       // Legacy submission
     const application: TutorApplication = {
-        id: getMelbourneTime().getTime().toString(),
+        id: Date.now().toString(),
       userId: currentUserId,
         email: "",
         fullName: "",
@@ -273,7 +273,7 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
         availability: (course as CourseDetails).availability,
       skills: selectedSkills,
       academicCredentials: academicCredentials,
-      dateApplied: getMelbourneDateOnly(),
+      dateApplied: vietnamTodayKey(),
     };
       legacyProps.onSubmit(application);
     } else if (enhancedProps && role) {

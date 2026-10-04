@@ -9,15 +9,12 @@ import {
   type AvatarPerson,
 } from "./conversationUtils";
 import ConversationAvatar from "./ConversationAvatar";
+import { formatRoleLabel } from "@/shared/utils/applicationFormat";
 import styles from "./ConversationPanel.module.css";
 
 interface ConversationApplicationBlockProps {
   application: ApplicationResponse;
   authUser?: AvatarPerson | null;
-}
-
-function formatRoleLabel(roleName: string) {
-  return roleName === "tutor" ? "Tutor" : "Lab Assistant";
 }
 
 const ConversationApplicationBlock: React.FC<

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TutorApplication } from "@/modules/tutor/utils/tutorUtils"; // Updated import path
+import type { Application as TutorApplication } from "@/shared/types/application";
 import { motion } from "framer-motion";
 import {
   PieChart,
