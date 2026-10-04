@@ -16,13 +16,10 @@ import notificationRoutes from "./routes/notification-routes";
 import publicRoutes from "./routes/public-routes";
 import cookieParser from "cookie-parser";
 import { getAppTimestamp, getAppTimezoneLabel } from "./utils/appTime";
-import path from "path";
-import { ensureAvatarUploadDir } from "./utils/avatarUtils";
+import { ensureAvatarUploadDir, UPLOADS_DIR } from "./utils/avatarUtils";
 import { corsOptions } from "./config/corsConfig";
 import { initSocketServer } from "./socket/socketServer";
 import { generalRateLimiter } from "./middleware/rateLimiters";
-import { startEmailScheduler } from "./jobs/emailScheduler";
-
 ensureAvatarUploadDir();
 
 const app = express();
@@ -35,7 +32,7 @@ app.use(cors(corsOptions));
 app.use(generalRateLimiter);
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
-app.use("/uploads", express.static(path.resolve(__dirname, "../uploads")));
+app.use("/uploads", express.static(UPLOADS_DIR));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/applications", applicationRoutes);
@@ -66,7 +63,6 @@ const startServer = async () => {
     try {
         console.log(`Starting main API on port ${PORT}`);
         await initializeDatabase();
-        startEmailScheduler();
         initSocketServer(httpServer);
 
         httpServer.listen(PORT, () => {

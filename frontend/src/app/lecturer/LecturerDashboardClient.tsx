@@ -521,8 +521,8 @@ const LecturerDashboardInner: React.FC = () => {
         return;
       }
 
-      const numericId = parseInt(String(targetId), 10);
-      if (Number.isNaN(numericId)) {
+      const applicationId = String(targetId).trim();
+      if (!applicationId) {
         showToast("Invalid application", "error");
         return;
       }
@@ -556,8 +556,8 @@ const LecturerDashboardInner: React.FC = () => {
         if (response.success) {
           showToast("Application removed", "success");
           if (
-            rawSelectedApplication?.id === numericId ||
-            selectedApplication?.id === String(numericId)
+            String(rawSelectedApplication?.id) === applicationId ||
+            selectedApplication?.id === applicationId
           ) {
             setRawSelectedApplication(null);
           }
@@ -797,7 +797,7 @@ const LecturerDashboardInner: React.FC = () => {
 
     try {
       const response = await ApplicationService.updateApplicationRanking(
-        parseInt(app.id),
+        app.id,
         newRank,
         selectedRankingCourse
       );
@@ -805,7 +805,7 @@ const LecturerDashboardInner: React.FC = () => {
       if (response.success) {
         const appAbove = filteredRanked[currentIndex - 1];
         await ApplicationService.updateApplicationRanking(
-          parseInt(appAbove.id),
+          appAbove.id,
           currentRank,
           selectedRankingCourse
         );
@@ -837,7 +837,7 @@ const LecturerDashboardInner: React.FC = () => {
 
     try {
       const response = await ApplicationService.updateApplicationRanking(
-        parseInt(app.id),
+        app.id,
         newRank,
         selectedRankingCourse
       );
@@ -845,7 +845,7 @@ const LecturerDashboardInner: React.FC = () => {
       if (response.success) {
         const appBelow = filteredRanked[currentIndex + 1];
         await ApplicationService.updateApplicationRanking(
-          parseInt(appBelow.id),
+          appBelow.id,
           currentRank,
           selectedRankingCourse
         );
@@ -863,7 +863,7 @@ const LecturerDashboardInner: React.FC = () => {
   const handleRemoveFromRanking = async (id: string) => {
     try {
       const response = await ApplicationService.removeApplicationFromRanking(
-        parseInt(id)
+        id
       );
 
       if (response.success) {

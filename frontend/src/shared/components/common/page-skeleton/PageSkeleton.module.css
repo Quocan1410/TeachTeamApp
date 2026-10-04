@@ -10,6 +10,13 @@
   margin: 0 auto;
 }
 
+.status {
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-secondary, #6b7280);
+}
+
 .pulse {
   position: relative;
   overflow: hidden;

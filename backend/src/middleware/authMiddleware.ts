@@ -6,7 +6,7 @@ import { verifyAnyAppToken } from "../config/jwtConfig";
 import { getAuthTokenFromRequest } from "../utils/authCookie";
 
 interface JwtPayload {
-    userId: number;
+    userId: string;
     email: string;
     userType: string;
 }

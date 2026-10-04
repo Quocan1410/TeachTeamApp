@@ -11,19 +11,8 @@ import {
   getLecturerAvatarPerson,
   type AvatarPerson,
 } from "./conversationUtils";
+import { formatAppliedDate, formatRoleLabel } from "@/shared/utils/applicationFormat";
 import metaStyles from "./applicationMeta.module.css";
-
-function formatRoleLabel(roleName: string) {
-  return roleName === "tutor" ? "Tutor" : "Lab Assistant";
-}
-
-const formatAppliedDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-AU", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    timeZone: "Asia/Ho_Chi_Minh",
-  });
 
 interface PartyCardProps {
   heading: string;

@@ -25,11 +25,11 @@ export enum NotificationType {
 
 @Entity("notifications")
 export class Notification {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
 
-    @Column({ type: "int" })
-    userId: number;
+    @Column({ type: "varchar", length: 36 })
+    userId: string;
 
     @Column({ type: "varchar", length: 50 })
     type: NotificationType;

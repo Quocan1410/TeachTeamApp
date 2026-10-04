@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
 export interface AppJwtPayload {
-    userId: number;
+    userId: string;
     email: string;
     userType: string;
 }

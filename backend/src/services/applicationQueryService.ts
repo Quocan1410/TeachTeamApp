@@ -29,7 +29,7 @@ export class ApplicationQueryService {
         AppDataSource.getRepository(CourseAssignment);
 
     async getLecturerApplicationsPaginated(
-        lecturerId: number,
+        lecturerId: string,
         filters: LecturerApplicationFilters,
         attachShortlistFlags: <T extends Application>(
             applications: T[]

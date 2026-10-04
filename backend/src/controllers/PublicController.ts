@@ -65,7 +65,7 @@ export class PublicController {
                 order: { assignedAt: "ASC" },
             });
 
-            const assignmentsByLecturer = new Map<number, PublicLecturerCourse[]>();
+            const assignmentsByLecturer = new Map<string, PublicLecturerCourse[]>();
             for (const assignment of assignments) {
                 if (!assignment.course) continue;
                 const list = assignmentsByLecturer.get(assignment.lecturerId) ?? [];

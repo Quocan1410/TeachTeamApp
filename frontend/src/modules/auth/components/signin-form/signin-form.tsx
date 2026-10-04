@@ -327,11 +327,6 @@ export default function SignInForm() {
 
           <div className={styles.linkSection}>
             <p className={styles.linkText}>
-              <Link href="/forgot-password" className={styles.link}>
-                Forgot password?
-              </Link>
-            </p>
-            <p className={styles.linkText}>
               Don&apos;t have an account?{" "}
               <Link href="/signup" className={styles.link}>
                 Create one here

@@ -36,7 +36,7 @@ const serializeApplication = (application: Application): Record<string, unknown>
     JSON.parse(JSON.stringify(application)) as Record<string, unknown>;
 
 export async function notifyApplicationUpdated(
-    applicationId: number,
+    applicationId: string,
     reason: ApplicationUpdateReason
 ): Promise<void> {
     try {

@@ -14,7 +14,7 @@ import {
 } from "@/shared/socket/presenceEvents";
 
 /** Realtime online flag for a user (via Socket.IO). False when unknown or offline. */
-export function useUserPresence(userId: number | undefined): boolean {
+export function useUserPresence(userId: string | undefined): boolean {
   const [online, setOnline] = useState(false);
 
   useEffect(() => {

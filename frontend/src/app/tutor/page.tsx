@@ -196,7 +196,7 @@ const TutorDashboardPage: React.FC = () => {
 
   // Check if user has applied to any role in a course
   const hasAppliedToCourse = React.useCallback(
-    (courseId: number) => courseHasApplied(courseId, myApplications),
+    (courseId: string) => courseHasApplied(courseId, myApplications),
     [myApplications]
   );
 

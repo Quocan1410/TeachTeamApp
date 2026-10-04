@@ -53,7 +53,7 @@ export function getCandidateDisplayName(
 
 export function getCandidateFormattedName(
   application: ApplicationResponse,
-  authUser?: (AvatarPerson & { id?: number }) | null
+  authUser?: (AvatarPerson & { id?: string }) | null
 ): string {
   return formatCandidateDisplayName(
     getCandidateAvatarPerson(application, authUser),
@@ -63,7 +63,7 @@ export function getCandidateFormattedName(
 
 export function getLecturerFormattedName(
   application: ApplicationResponse,
-  authUser?: (AvatarPerson & { id?: number }) | null
+  authUser?: (AvatarPerson & { id?: string }) | null
 ): string {
   if (authUser?.email && authUser.userType === "lecturer") {
     return formatLecturerDisplayName(
@@ -122,7 +122,7 @@ export type AvatarPerson = {
 
 export function getCandidateAvatarPerson(
   application: ApplicationResponse,
-  authUser?: (AvatarPerson & { id?: number }) | null
+  authUser?: (AvatarPerson & { id?: string }) | null
 ): AvatarPerson {
   const authUserId = authUser?.userId ?? authUser?.id;
   const isCandidateViewer =
@@ -154,7 +154,7 @@ export function getCandidateAvatarPerson(
 
 export function getLecturerAvatarPerson(
   application: ApplicationResponse,
-  authUser?: (AvatarPerson & { id?: number }) | null
+  authUser?: (AvatarPerson & { id?: string }) | null
 ): AvatarPerson | null {
   if (authUser?.email && authUser.userType === "lecturer") {
     return getLecturerComposerPerson(authUser);
@@ -176,7 +176,7 @@ export function getLecturerAvatarPerson(
   const course = application.course as ApplicationResponse["course"] & {
     courseAssignments?: Array<{
       lecturer?: {
-        id?: number;
+        id?: string;
         firstName?: string;
         lastName?: string;
         email?: string;
@@ -200,7 +200,7 @@ export function getLecturerAvatarPerson(
 }
 
 export function getLecturerComposerPerson(
-  authUser?: (AvatarPerson & { id?: number }) | null
+  authUser?: (AvatarPerson & { id?: string }) | null
 ): AvatarPerson {
   return {
     userId: authUser?.userId ?? authUser?.id,
@@ -274,7 +274,7 @@ function truncateReplyQuoteBody(body: string): string {
 function replyQuoteSenderLabel(
   referenced: ApplicationTimelineItem,
   application: ApplicationResponse,
-  authUser?: (AvatarPerson & { id?: number }) | null
+  authUser?: (AvatarPerson & { id?: string }) | null
 ): string {
   const full =
     referenced.kind === "lecturer"
@@ -292,7 +292,7 @@ export function resolveReplyQuote(
   item: ApplicationTimelineItem,
   itemsById: Map<string, ApplicationTimelineItem>,
   application: ApplicationResponse,
-  authUser?: (AvatarPerson & { id?: number }) | null
+  authUser?: (AvatarPerson & { id?: string }) | null
 ): ReplyQuotePreview | null {
   const replyId = item.replyToMessageId?.trim();
   if (!replyId) return null;

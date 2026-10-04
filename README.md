@@ -21,7 +21,7 @@ Main web application for **candidates** and **lecturers** in a university Tutor 
 | Layer | Path | Technologies |
 |-------|------|--------------|
 | Frontend | `frontend/` | Next.js 15, React 19, Tailwind CSS 4, Axios, Socket.IO, Apollo (admin subscriptions) |
-| Backend | `backend/` | Express 5, TypeORM, MySQL, JWT + refresh cookie, Socket.IO, node-cron email queue |
+| Backend | `backend/` | Express 5, TypeORM, MySQL, JWT + refresh cookie, Socket.IO |
 | Database | — | MySQL 8, TypeORM migrations (`backend/src/migrations/`) |
 
 ---
@@ -30,7 +30,7 @@ Main web application for **candidates** and **lecturers** in a university Tutor 
 
 ```
 TeachTeamApp/
-├── package.json         # root scripts: install, dev, build, db:reset
+├── package.json         # root scripts: install, dev, build
 ├── frontend/            # Next.js user app (:3000), own frontend/.env
 │   └── src/
 │       ├── app/         # routes: /tutor, /lecturer, /profile, auth
@@ -42,8 +42,7 @@ TeachTeamApp/
         ├── controllers/
         ├── services/
         ├── entities/
-        ├── migrations/
-        └── seeds/
+        └── migrations/
 ```
 
 ---
@@ -138,7 +137,7 @@ cp backend/env.example backend/.env
 
 | Folder | What it owns |
 |--------|----------------|
-| `backend/.env` | MySQL, `BACKEND_PORT`, JWT, CORS, SMTP, seed admin |
+| `backend/.env` | MySQL, `BACKEND_PORT`, JWT, CORS, admin account |
 | `frontend/.env` | `NEXT_PUBLIC_*` and rewrite targets `MAIN_API_ORIGIN`, `ADMIN_GRAPHQL_ORIGIN` |
 
 `MAIN_API_ORIGIN` must use the same port as `BACKEND_PORT`. The root `env.example` is only a pointer.
@@ -153,8 +152,8 @@ cp backend/env.example backend/.env
 # Install dependencies
 npm install
 
-# Create schema + seed demo data (first run)
-npm run db:reset
+# Apply schema
+cd backend && npm run migration:run
 
 # Development
 npm run dev:windows    # Windows
@@ -187,9 +186,7 @@ npm run dev
 
 ---
 
-## Local dev accounts
-
-Run `npm run db:reset` before signing in. Seed includes roles, courses, and accounts only — no demo applications or chat threads.
+## Accounts in the database
 
 | Role | Email | Password | Notes |
 |------|-------|----------|-------|
@@ -210,7 +207,6 @@ Run `npm run db:reset` before signing in. Seed includes roles, courses, and acco
 | What city were you born in? | Melbourne |
 | What was the name of your first school? | Demo School |
 | What is your favorite book? | TeachTeam Guide |
-| What was your childhood nickname? | Demo |
 
 ---
 
@@ -232,14 +228,10 @@ Run `npm run db:reset` before signing in. Seed includes roles, courses, and acco
 **Base URL:** `http://localhost:5000`
 
 ### Health
-
-| Method | Path |
-|--------|------|
-| GET | `/health` |
-
-### Auth — `/api/auth`
-
-| Method | Path | Auth | Description |
+| POST | `/signup` | — | Register |
+| POST | `/signin` | — | Sign in |
+| POST | `/logout` | — | Sign out |
+| POST | `/refresh` | cookie | Refresh access token |
 |--------|------|------|-------------|
 | POST | `/signup` | — | Register (+ security answers) |
 | POST | `/signin` | — | Sign in |

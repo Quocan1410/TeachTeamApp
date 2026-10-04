@@ -1,10 +1,10 @@
 import fs from "fs";
 import path from "path";
 
-export const AVATAR_UPLOAD_DIR = path.resolve(
-    __dirname,
-    "../../uploads/avatars"
-);
+/** Always backend/uploads when npm scripts run with cwd = backend. */
+export const UPLOADS_DIR = path.resolve(process.cwd(), "uploads");
+
+export const AVATAR_UPLOAD_DIR = path.join(UPLOADS_DIR, "avatars");
 
 export const buildAvatarPublicPath = (filename: string): string =>
     `/uploads/avatars/${filename}`;
@@ -36,7 +36,7 @@ export const resolveAvatarFilePath = (
     }
 
     const filename = path.basename(avatarUrl);
-    if (!/^user-\d+-\d+\.(jpg|jpeg|png|webp)$/i.test(filename)) {
+    if (!/^user-(?:\d+|[0-9a-f-]{36})-\d+\.(jpg|jpeg|png|webp)$/i.test(filename)) {
         return null;
     }
 
@@ -58,9 +58,9 @@ export const getAvatarMimeType = (filePath: string): string => {
     }
 };
 
-/** Link uploaded files to users when avatarUrl was cleared (e.g. after db:reset). */
+/** Link uploaded files to users when avatarUrl is missing. */
 export const reconcileOrphanAvatarFiles = async (
-    userRepository: { findOne: (opts: { where: { id: number } }) => Promise<{ id: number; avatarUrl: string | null } | null>; save: (user: { id: number; avatarUrl: string | null }) => Promise<unknown> }
+    userRepository: { findOne: (opts: { where: { id: string } }) => Promise<{ id: string; avatarUrl: string | null } | null>; save: (user: { id: string; avatarUrl: string | null }) => Promise<unknown> }
 ): Promise<number> => {
     if (!fs.existsSync(AVATAR_UPLOAD_DIR)) {
         return 0;
@@ -70,12 +70,12 @@ export const reconcileOrphanAvatarFiles = async (
     const files = fs.readdirSync(AVATAR_UPLOAD_DIR);
 
     for (const file of files) {
-        const match = /^user-(\d+)-\d+\.(jpg|jpeg|png|webp)$/i.exec(file);
+        const match = /^user-([0-9a-f-]{36})-\d+\.(jpg|jpeg|png|webp)$/i.exec(file);
         if (!match) {
             continue;
         }
 
-        const userId = parseInt(match[1], 10);
+        const userId = match[1];
         const user = await userRepository.findOne({ where: { id: userId } });
         if (!user || user.avatarUrl) {
             continue;

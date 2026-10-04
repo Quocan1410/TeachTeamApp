@@ -3,7 +3,7 @@ export const PRESENCE_SYNC_EVENT = "presence:sync";
 export const PRESENCE_CHANGED_EVENT = "presence:changed";
 
 export type PresenceStatus = {
-  userId: number;
+  userId: string;
   online: boolean;
 };
 
@@ -12,10 +12,10 @@ export type PresenceSyncPayload = {
 };
 
 export type PresenceChangedPayload = {
-  userId: number;
+  userId: string;
   online: boolean;
 };
 
 export type PresenceSubscribePayload = {
-  userIds: number[];
+  userIds: string[];
 };

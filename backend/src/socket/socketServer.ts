@@ -6,7 +6,7 @@ import { corsOptions } from "../config/corsConfig";
 import { AUTH_COOKIE_NAME } from "../utils/authCookie";
 
 export type SocketUser = {
-    userId: number;
+    userId: string;
     email: string;
     userType: string;
 };
@@ -14,17 +14,17 @@ export type SocketUser = {
 let io: Server | null = null;
 
 /** Active socket count per authenticated user id */
-const onlineConnectionCounts = new Map<number, number>();
+const onlineConnectionCounts = new Map<string, number>();
 
 export const PRESENCE_SUBSCRIBE_EVENT = "presence:subscribe";
 export const PRESENCE_SYNC_EVENT = "presence:sync";
 export const PRESENCE_CHANGED_EVENT = "presence:changed";
 
-function isUserOnline(userId: number): boolean {
+function isUserOnline(userId: string): boolean {
     return (onlineConnectionCounts.get(userId) ?? 0) > 0;
 }
 
-function markUserConnected(userId: number): void {
+function markUserConnected(userId: string): void {
     const next = (onlineConnectionCounts.get(userId) ?? 0) + 1;
     onlineConnectionCounts.set(userId, next);
     if (next === 1) {
@@ -32,7 +32,7 @@ function markUserConnected(userId: number): void {
     }
 }
 
-function markUserDisconnected(userId: number): void {
+function markUserDisconnected(userId: string): void {
     const current = onlineConnectionCounts.get(userId) ?? 0;
     if (current <= 1) {
         onlineConnectionCounts.delete(userId);
@@ -96,7 +96,7 @@ export const initSocketServer = (httpServer: HttpServer): Server => {
 
         socket.on(
             PRESENCE_SUBSCRIBE_EVENT,
-            (payload: { userIds?: number[] } | undefined) => {
+            (payload: { userIds?: string[] } | undefined) => {
                 const ids = Array.isArray(payload?.userIds)
                     ? payload.userIds.filter(
                           (id): id is number =>
@@ -123,7 +123,7 @@ export const initSocketServer = (httpServer: HttpServer): Server => {
 export const getSocketServer = (): Server | null => io;
 
 export const emitToUser = (
-    userId: number,
+    userId: string,
     event: string,
     payload: unknown
 ): void => {

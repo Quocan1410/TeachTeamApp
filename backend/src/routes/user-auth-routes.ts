@@ -2,10 +2,7 @@ import { Router } from "express";
 import { AuthController } from "../controllers/AuthController";
 import { authenticateToken } from "../middleware/authMiddleware";
 import { avatarUpload } from "../middleware/uploadMiddleware";
-import {
-    authRateLimiter,
-    passwordResetRateLimiter,
-} from "../middleware/rateLimiters";
+import { authRateLimiter } from "../middleware/rateLimiters";
 import { validateSignupData } from "../utils/validation";
 
 const router = Router();
@@ -101,45 +98,6 @@ router.post("/logout", async (req, res) => {
 router.post("/refresh", authRateLimiter, async (req, res) => {
     await authController.refreshToken(req, res);
 });
-
-router.get("/security-questions", (req, res) => {
-    authController.getSecurityQuestions(req, res);
-});
-
-router.post(
-    "/forgot-password/challenge",
-    passwordResetRateLimiter,
-    validateRequestBody(["email"]),
-    async (req, res) => {
-        await authController.forgotPasswordChallenge(req, res);
-    }
-);
-
-router.post(
-    "/forgot-password/email",
-    passwordResetRateLimiter,
-    validateRequestBody(["email"]),
-    async (req, res) => {
-        await authController.forgotPasswordEmail(req, res);
-    }
-);
-
-router.post(
-    "/forgot-password/verify",
-    passwordResetRateLimiter,
-    async (req, res) => {
-        await authController.forgotPasswordVerify(req, res);
-    }
-);
-
-router.post(
-    "/reset-password",
-    passwordResetRateLimiter,
-    validateRequestBody(["token", "password", "confirmPassword"]),
-    async (req, res) => {
-        await authController.resetPassword(req, res);
-    }
-);
 
 // Protected routes
 router.get("/socket-token", authenticateToken, async (req, res) => {

@@ -56,9 +56,9 @@ export class NotificationController {
     ): Promise<void> {
         try {
             const userId = req.user?.userId;
-            const notificationId = parseInt(req.params.id, 10);
+            const notificationId = req.params.id;
 
-            if (!userId || Number.isNaN(notificationId)) {
+            if (!userId || !notificationId) {
                 res.status(400).json({
                     success: false,
                     message: "Invalid request",
@@ -128,9 +128,9 @@ export class NotificationController {
     ): Promise<void> {
         try {
             const userId = req.user?.userId;
-            const notificationId = parseInt(req.params.id, 10);
+            const notificationId = req.params.id;
 
-            if (!userId || Number.isNaN(notificationId)) {
+            if (!userId || !notificationId) {
                 res.status(400).json({
                     success: false,
                     message: "Invalid request",

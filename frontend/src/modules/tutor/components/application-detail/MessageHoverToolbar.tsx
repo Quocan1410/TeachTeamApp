@@ -49,7 +49,7 @@ function ReplyIcon() {
 interface MessageHoverToolbarProps {
   messageId: string;
   reactions: MessageReactionsMap;
-  currentUserId?: number;
+  currentUserId?: string;
   canReply: boolean;
   canEdit: boolean;
   canDelete: boolean;

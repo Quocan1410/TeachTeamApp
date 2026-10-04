@@ -20,7 +20,7 @@ export interface PaginatedResult<T> {
 }
 
 export interface Course {
-  id: number;
+  id: string;
   courseCode: string;
   courseName: string;
   semester: string;
@@ -38,14 +38,14 @@ export interface Course {
 }
 
 export interface Role {
-  id: number;
+  id: string;
   roleName: string;
   description?: string;
 }
 
 export interface ApplicationData {
-  courseId: number;
-  roleId: number;
+  courseId: string;
+  roleId: string;
   availability: "Part Time" | "Full Time";
   skills: string;
   experience?: string;
@@ -53,10 +53,10 @@ export interface ApplicationData {
 }
 
 export interface ApplicationResponse {
-  id: number;
-  candidateId: number;
-  courseId: number;
-  roleId: number;
+  id: string;
+  candidateId: string;
+  courseId: string;
+  roleId: string;
   status: "pending" | "selected" | "rejected";
   availability: { type: string };
   skills?: string;
@@ -66,10 +66,10 @@ export interface ApplicationResponse {
   updatedAt: string;
   // New lecturer fields
   comment?: string;
-  commentedBy?: number;
+  commentedBy?: string;
   commentedAt?: string;
   rank?: number;
-  rankedBy?: number;
+  rankedBy?: string;
   rankedAt?: string;
   rankedForCourse?: string;
   candidateResponse?: string | null;
@@ -77,14 +77,14 @@ export interface ApplicationResponse {
   offerResponse?: "pending" | "accepted" | "declined" | null;
   offerRespondedAt?: string | null;
   reviewedAt?: string | null;
-  reviewedBy?: number | null;
+  reviewedBy?: string | null;
   isWithdrawn?: boolean;
   withdrawnAt?: string | null;
-  messageReactions?: Record<string, Record<string, number[]>> | null;
+  messageReactions?: Record<string, Record<string, string[]>> | null;
   correspondenceMessages?: Array<{
     id: string;
     authorRole: "candidate" | "lecturer";
-    authorId: number;
+    authorId: string;
     body: string;
     createdAt: string;
     editedAt?: string | null;
@@ -95,7 +95,7 @@ export interface ApplicationResponse {
   course: Course;
   role: Role;
   candidate?: {
-    id: number;
+    id: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -104,7 +104,7 @@ export interface ApplicationResponse {
     avatarUrl?: string | null;
   };
   commentedByUser?: {
-    id: number;
+    id: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -112,7 +112,7 @@ export interface ApplicationResponse {
     avatarUrl?: string | null;
   };
   rankedByUser?: {
-    id: number;
+    id: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -179,7 +179,7 @@ export class ApplicationService {
   }
 
   static async getApplicationById(
-    applicationId: number
+    applicationId: string
   ): Promise<ApiResponse<ApplicationResponse>> {
     try {
       const response = await applicationAPI.get(`/${applicationId}`);
@@ -320,7 +320,7 @@ export class ApplicationService {
 
   // CR Part: Update application status
   static async updateApplicationStatus(
-    applicationId: number,
+    applicationId: string,
     status: "pending" | "selected" | "rejected",
     comment?: string,
     selectedCourses?: string[]
@@ -352,7 +352,7 @@ export class ApplicationService {
   }
 
   static async shortlistApplication(
-    applicationId: number
+    applicationId: string
   ): Promise<ApiResponse<ApplicationResponse>> {
     try {
       const response = await applicationAPI.post(`/${applicationId}/shortlist`);
@@ -370,7 +370,7 @@ export class ApplicationService {
   }
 
   static async removeShortlist(
-    applicationId: number
+    applicationId: string
   ): Promise<ApiResponse<ApplicationResponse>> {
     try {
       const response = await applicationAPI.delete(`/${applicationId}/shortlist`);
@@ -389,7 +389,7 @@ export class ApplicationService {
 
   // Comment management methods
   static async markApplicationReviewed(
-    applicationId: number
+    applicationId: string
   ): Promise<ApiResponse<ApplicationResponse>> {
     try {
       const response = await applicationAPI.post(`/${applicationId}/review`);
@@ -407,7 +407,7 @@ export class ApplicationService {
   }
 
   static async updateApplicationComment(
-    applicationId: number,
+    applicationId: string,
     comment: string,
     replyToMessageId?: string | null
   ): Promise<ApiResponse<ApplicationResponse>> {
@@ -430,7 +430,7 @@ export class ApplicationService {
   }
 
   static async deleteApplicationComment(
-    applicationId: number
+    applicationId: string
   ): Promise<ApiResponse<ApplicationResponse>> {
     try {
       const response = await applicationAPI.delete(`/${applicationId}/comment`);
@@ -449,7 +449,7 @@ export class ApplicationService {
 
   // Ranking management methods
   static async addApplicationToRanking(
-    applicationId: number,
+    applicationId: string,
     rank: number,
     courseCode: string
   ): Promise<ApiResponse<ApplicationResponse>> {
@@ -472,7 +472,7 @@ export class ApplicationService {
   }
 
   static async updateApplicationRanking(
-    applicationId: number,
+    applicationId: string,
     rank: number,
     courseCode: string
   ): Promise<ApiResponse<ApplicationResponse>> {
@@ -495,7 +495,7 @@ export class ApplicationService {
   }
 
   static async removeApplicationFromRanking(
-    applicationId: number
+    applicationId: string
   ): Promise<ApiResponse<ApplicationResponse>> {
     try {
       const response = await applicationAPI.delete(`/${applicationId}/ranking`);
@@ -513,7 +513,7 @@ export class ApplicationService {
   }
 
   static async deleteBlockedApplication(
-    applicationId: number
+    applicationId: string
   ): Promise<ApiResponse<void>> {
     try {
       const response = await applicationAPI.delete(`/${applicationId}/blocked`);
@@ -531,7 +531,7 @@ export class ApplicationService {
   }
 
   static async getLecturerNotes(
-    applicationId: number
+    applicationId: string
   ): Promise<ApiResponse<{ lecturerNotes: string }>> {
     try {
       const response = await applicationAPI.get(
@@ -548,7 +548,7 @@ export class ApplicationService {
   }
 
   static async updateLecturerNotes(
-    applicationId: number,
+    applicationId: string,
     lecturerNotes: string
   ): Promise<ApiResponse<{ lecturerNotes: string | null }>> {
     try {
@@ -567,7 +567,7 @@ export class ApplicationService {
   }
 
   static async respondToOffer(
-    applicationId: number,
+    applicationId: string,
     decision: "accept" | "decline",
     message: string
   ): Promise<ApiResponse<ApplicationResponse>> {
@@ -590,7 +590,7 @@ export class ApplicationService {
   }
 
   static async updateCandidateResponse(
-    applicationId: number,
+    applicationId: string,
     response: string,
     replyToMessageId?: string | null
   ): Promise<ApiResponse<ApplicationResponse>> {
@@ -616,7 +616,7 @@ export class ApplicationService {
   }
 
   static async deleteCandidateResponse(
-    applicationId: number,
+    applicationId: string,
     messageId: string
   ): Promise<ApiResponse<ApplicationResponse>> {
     try {
@@ -638,7 +638,7 @@ export class ApplicationService {
   }
 
   static async editCorrespondenceMessage(
-    applicationId: number,
+    applicationId: string,
     messageId: string,
     response: string
   ): Promise<ApiResponse<ApplicationResponse>> {
@@ -661,7 +661,7 @@ export class ApplicationService {
   }
 
   static async withdrawApplication(
-    applicationId: number
+    applicationId: string
   ): Promise<ApiResponse<ApplicationResponse>> {
     try {
       const apiResponse = await applicationAPI.put(`/${applicationId}/withdraw`);
@@ -679,7 +679,7 @@ export class ApplicationService {
   }
 
   static async toggleMessageReaction(
-    applicationId: number,
+    applicationId: string,
     messageId: string,
     emoji: string
   ): Promise<ApiResponse<ApplicationResponse>> {

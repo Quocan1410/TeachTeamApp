@@ -408,7 +408,7 @@ export const validateLecturerApplicationAccess = async (
             return;
         }
 
-        if (!id || !Number.isInteger(Number(id)) || Number(id) <= 0) {
+        if (!id || typeof id !== "string") {
             res.status(400).json({
                 success: false,
                 message: "Valid application ID is required",
@@ -419,8 +419,8 @@ export const validateLecturerApplicationAccess = async (
 
         // Store validated data for use in subsequent middleware/controllers
         req.validatedData = {
-            lecturerId: lecturerId.toString(),
-            applicationId: Number(id),
+            lecturerId,
+            applicationId: id,
         };
 
         next();
@@ -459,7 +459,7 @@ declare global {
         interface Request {
             validatedData?: {
                 lecturerId: string;
-                applicationId: number;
+                applicationId: string;
             };
         }
     }

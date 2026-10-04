@@ -8,14 +8,9 @@ import { Course } from "../entities/Course";
 import { CourseAssignment } from "../entities/CourseAssignment";
 import {
     validateSigninData,
-    validateForgotPasswordEmail,
-    validateResetPasswordData,
     validateChangePasswordData,
     getUserTypeFromEmail,
 } from "../utils/validation";
-import { PasswordResetService } from "../services/PasswordResetService";
-import { SecurityQuestionService } from "../services/SecurityQuestionService";
-import { SECURITY_QUESTIONS } from "../config/securityQuestions";
 import { RefreshTokenService } from "../services/RefreshTokenService";
 import { NotificationService } from "../services/NotificationService";
 import { NotificationType } from "../entities/Notification";
@@ -32,11 +27,10 @@ import {
     getRefreshTokenFromRequest,
     getAuthTokenFromRequest,
 } from "../utils/authCookie";
-import { enqueueEmail } from "../services/emailQueue";
 import { AuthService } from "../services/authService";
 
 interface AssignedCourse {
-    id: number;
+    id: string;
     courseCode: string;
     courseName: string;
     semester: string;
@@ -47,8 +41,6 @@ export class AuthController {
     private userRepository = AppDataSource.getRepository(User);
     private courseAssignmentRepository =
         AppDataSource.getRepository(CourseAssignment);
-    private passwordResetService = new PasswordResetService();
-    private securityQuestionService = new SecurityQuestionService();
 
     private async issueUserSession(
         res: Response,
@@ -661,7 +653,7 @@ export class AuthController {
     /** Avatar of another user (e.g. lecturer in correspondence) — requires login. */
     async getUserAvatar(req: Request, res: Response): Promise<void> {
         try {
-            const requesterId = (req as { user?: { userId?: number } }).user
+            const requesterId = (req as { user?: { userId?: string } }).user
                 ?.userId;
             if (!requesterId) {
                 res.status(401).json({
@@ -671,8 +663,8 @@ export class AuthController {
                 return;
             }
 
-            const targetUserId = parseInt(req.params.userId, 10);
-            if (!Number.isInteger(targetUserId) || targetUserId <= 0) {
+            const targetUserId = req.params.userId;
+            if (!targetUserId) {
                 res.status(400).json({
                     success: false,
                     message: "Invalid user id",
@@ -711,182 +703,5 @@ export class AuthController {
             });
         }
     }
-
-    getSecurityQuestions(_req: Request, res: Response): void {
-        res.status(200).json({
-            success: true,
-            data: { questions: SECURITY_QUESTIONS },
-        });
-    }
-
-    async forgotPasswordChallenge(req: Request, res: Response): Promise<void> {
-        try {
-            const { email } = req.body;
-            const validation = validateForgotPasswordEmail(email || "");
-            if (!validation.isValid) {
-                res.status(400).json({
-                    success: false,
-                    message: "",
-                    errors: validation.errors,
-                });
-                return;
-            }
-
-            const result =
-                await this.securityQuestionService.getChallengeForEmail(email);
-
-            if (!result.ok) {
-                res.status(400).json({
-                    success: false,
-                    message: result.message,
-                });
-                return;
-            }
-
-            res.status(200).json({
-                success: true,
-                data: { questions: result.questions },
-            });
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: "Unable to start password recovery",
-            });
-        }
-    }
-
-    /** Email reset link — queued via cron worker (SMTP optional in dev). */
-    async forgotPasswordEmail(req: Request, res: Response): Promise<void> {
-        try {
-            const { email } = req.body;
-            const validation = validateForgotPasswordEmail(email || "");
-            if (!validation.isValid) {
-                res.status(400).json({
-                    success: false,
-                    message: "",
-                    errors: validation.errors,
-                });
-                return;
-            }
-
-            const normalized = String(email).trim().toLowerCase();
-            const user = await this.userRepository.findOne({
-                where: { email: normalized },
-            });
-
-            if (
-                user &&
-                user.userType !== UserType.ADMIN &&
-                !user.isBlocked &&
-                !user.deletedAt
-            ) {
-                const { resetUrl } =
-                    await this.passwordResetService.createResetTokenForUser(
-                        user.id
-                    );
-                enqueueEmail({
-                    type: "password_reset",
-                    to: user.email,
-                    resetUrl,
-                });
-            }
-
-            res.status(200).json({
-                success: true,
-                message:
-                    "If an account exists for that email, a reset link has been queued.",
-            });
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: "Unable to queue password reset email",
-            });
-        }
-    }
-
-    async forgotPasswordVerify(req: Request, res: Response): Promise<void> {
-        try {
-            const { email, securityAnswers } = req.body;
-            const emailValidation = validateForgotPasswordEmail(email || "");
-            if (!emailValidation.isValid) {
-                res.status(400).json({
-                    success: false,
-                    message: "",
-                    errors: emailValidation.errors,
-                });
-                return;
-            }
-
-            const result =
-                await this.securityQuestionService.verifyAndIssueResetToken(
-                    email,
-                    securityAnswers
-                );
-
-            if (!result.ok) {
-                res.status(400).json({
-                    success: false,
-                    message: result.message,
-                    errors: result.errors,
-                });
-                return;
-            }
-
-            res.status(200).json({
-                success: true,
-                message: "Answers verified. You can set a new password.",
-                data: {
-                    resetToken: result.resetToken,
-                    resetUrl: result.resetUrl,
-                },
-            });
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: "Unable to verify security answers",
-            });
-        }
-    }
-
-    async resetPassword(req: Request, res: Response): Promise<void> {
-        try {
-            const { token, password, confirmPassword } = req.body;
-            const validation = validateResetPasswordData({
-                token,
-                password,
-                confirmPassword,
-            });
-            if (!validation.isValid) {
-                res.status(400).json({
-                    success: false,
-                    message: "",
-                    errors: validation.errors,
-                });
-                return;
-            }
-
-            const result = await this.passwordResetService.resetPassword(
-                token,
-                password
-            );
-
-            if (!result.success) {
-                res.status(400).json({
-                    success: false,
-                    message: result.message,
-                });
-                return;
-            }
-
-            res.status(200).json({
-                success: true,
-                message: result.message,
-            });
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: "Unable to reset password",
-            });
-        }
-    }
 }
+

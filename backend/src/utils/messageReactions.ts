@@ -6,7 +6,7 @@ export type MessageReactionEmoji = (typeof MESSAGE_REACTION_EMOJIS)[number];
 
 export type MessageReactionsMap = Record<
     string,
-    Record<string, number[]>
+    Record<string, string[]>
 >;
 
 export function normalizeMessageReactions(
@@ -59,7 +59,7 @@ export function toggleUserReaction(
     reactions: MessageReactionsMap,
     messageId: string,
     emoji: MessageReactionEmoji,
-    userId: number
+    userId: string
 ): MessageReactionsMap {
     const next: MessageReactionsMap = { ...reactions };
     const byEmoji = { ...(next[messageId] ?? {}) };

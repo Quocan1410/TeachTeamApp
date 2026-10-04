@@ -5,11 +5,7 @@ import {
   SigninData,
   UpdateProfileData,
   User,
-  PasswordResetRequestData,
-  PasswordResetConfirmData,
-  PasswordResetResponse,
   ChangePasswordData,
-  SecurityAnswerInput,
 } from "../types/user";
 import StorageManager from "../utils/storageManager";
 import { dedupeInFlight } from "../utils/inFlightRequest";
@@ -24,70 +20,6 @@ export class AuthService {
       return response.data;
     } catch (error: unknown) {
       const axiosError = error as AxiosError<AuthResponse>;
-      if (axiosError.response?.data) {
-        return axiosError.response.data;
-      }
-      return {
-        success: false,
-        message: "Network error occurred. Please try again.",
-      };
-    }
-  }
-
-  static async forgotPasswordChallenge(
-    email: string
-  ): Promise<PasswordResetResponse> {
-    try {
-      const response = await authAPI.post<PasswordResetResponse>(
-        "/forgot-password/challenge",
-        { email } satisfies PasswordResetRequestData
-      );
-      return response.data;
-    } catch (error: unknown) {
-      const axiosError = error as AxiosError<PasswordResetResponse>;
-      if (axiosError.response?.data) {
-        return axiosError.response.data;
-      }
-      return {
-        success: false,
-        message: "Network error occurred. Please try again.",
-      };
-    }
-  }
-
-  static async forgotPasswordVerify(
-    email: string,
-    securityAnswers: SecurityAnswerInput[]
-  ): Promise<PasswordResetResponse> {
-    try {
-      const response = await authAPI.post<PasswordResetResponse>(
-        "/forgot-password/verify",
-        { email, securityAnswers }
-      );
-      return response.data;
-    } catch (error: unknown) {
-      const axiosError = error as AxiosError<PasswordResetResponse>;
-      if (axiosError.response?.data) {
-        return axiosError.response.data;
-      }
-      return {
-        success: false,
-        message: "Network error occurred. Please try again.",
-      };
-    }
-  }
-
-  static async resetPassword(
-    data: PasswordResetConfirmData
-  ): Promise<PasswordResetResponse> {
-    try {
-      const response = await authAPI.post<PasswordResetResponse>(
-        "/reset-password",
-        data
-      );
-      return response.data;
-    } catch (error: unknown) {
-      const axiosError = error as AxiosError<PasswordResetResponse>;
       if (axiosError.response?.data) {
         return axiosError.response.data;
       }

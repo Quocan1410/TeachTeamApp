@@ -108,10 +108,10 @@ export const ProfilePage: React.FC = () => {
 
             let availableOpportunities = 0;
             courses.forEach(
-              (course: { id: number; courseCode: string; courseName: string }) => {
-                roles.forEach((role: { id: number; roleName: string }) => {
+              (course: { id: string; courseCode: string; courseName: string }) => {
+                roles.forEach((role: { id: string; roleName: string }) => {
                   const hasApplied = applications.some(
-                    (app: { courseId: number; roleId: number }) =>
+                    (app: { courseId: string; roleId: string }) =>
                       app.courseId === course.id && app.roleId === role.id
                   );
                   if (!hasApplied) {

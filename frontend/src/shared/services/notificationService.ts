@@ -26,8 +26,8 @@ export type NotificationType =
   | "course_assigned";
 
 export interface StoredNotification {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
   type: NotificationType;
   title: string;
   message: string;
@@ -69,7 +69,7 @@ export async function fetchNotifications(): Promise<{
 }
 
 export async function markNotificationAsRead(
-  id: number
+  id: string
 ): Promise<number> {
   const response = await notificationAPI.put<{
     success: boolean;
@@ -86,7 +86,7 @@ export async function markAllNotificationsAsRead(): Promise<number> {
   return response.data.data.unreadCount;
 }
 
-export async function deleteNotification(id: number): Promise<number> {
+export async function deleteNotification(id: string): Promise<number> {
   const response = await notificationAPI.delete<{
     success: boolean;
     data: { unreadCount: number };

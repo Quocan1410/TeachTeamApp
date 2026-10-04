@@ -9,15 +9,10 @@ import {
   getPasswordStrengthFeedback,
   validateFullName,
   containsEmojis,
-  validateSecurityAnswerRows,
   validateSignupPassword,
   splitSignupFullName,
   mapSignupApiErrors,
 } from "../../utils/authValidation.utils";
-import SecurityQuestionFields, {
-  createEmptySecurityRows,
-  type SecurityAnswerFormRow,
-} from "../security-question-fields/SecurityQuestionFields";
 import { AuthService } from "../../../../shared/services/authService";
 import { UserType } from "../../../../shared/types/user";
 import { useAuth } from "../../hooks/useAuth";
@@ -157,9 +152,6 @@ export default function SignUpForm() {
     if (!confirmPassword) {
       newErrors.confirmPassword = "Please confirm your password";
     } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
     const securityErrors = validateSecurityAnswerRows(securityRows);
     Object.assign(newErrors, securityErrors);
 
@@ -190,10 +182,6 @@ export default function SignUpForm() {
         email: email.trim(),
         password,
         firstName,
-        lastName,
-        userType,
-        honorific: honorific as Honorific,
-        securityAnswers: securityRows.map((row) => ({
           questionId: row.questionId,
           answer: row.answer.trim(),
         })),
@@ -463,28 +451,6 @@ export default function SignUpForm() {
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.securitySection}>
-            <SecurityQuestionFields
-              rows={securityRows}
-              onChange={(rows) => {
-                setSecurityRows(rows);
-                if (Object.keys(errors).some((k) => k.startsWith("securityAnswers"))) {
-                  setErrors((prev) => {
-                    const next = { ...prev };
-                    Object.keys(next).forEach((key) => {
-                      if (key.startsWith("securityAnswers")) {
-                        delete next[key];
-                      }
-                    });
-                    return next;
-                  });
-                }
-              }}
-              errors={errors}
               disabled={isLoading}
             />
           </div>

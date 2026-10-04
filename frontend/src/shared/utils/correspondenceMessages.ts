@@ -6,7 +6,7 @@ export type CorrespondenceAuthorRole = "candidate" | "lecturer";
 export interface CorrespondenceMessage {
   id: string;
   authorRole: CorrespondenceAuthorRole;
-  authorId: number;
+  authorId: string;
   body: string;
   createdAt: string;
   editedAt?: string | null;
@@ -32,7 +32,8 @@ export function parseCorrespondenceMessages(
     const row = item as Record<string, unknown>;
     const id = typeof row.id === "string" ? row.id.trim() : "";
     const authorRole = row.authorRole;
-    const authorId = Number(row.authorId);
+    const authorId =
+      typeof row.authorId === "string" ? row.authorId.trim() : "";
     const body = typeof row.body === "string" ? row.body.trim() : "";
     const createdAt =
       typeof row.createdAt === "string" ? row.createdAt : "";
@@ -40,8 +41,7 @@ export function parseCorrespondenceMessages(
       !id ||
       !body ||
       !createdAt ||
-      !Number.isInteger(authorId) ||
-      authorId <= 0 ||
+      !authorId ||
       (authorRole !== "candidate" && authorRole !== "lecturer")
     ) {
       continue;

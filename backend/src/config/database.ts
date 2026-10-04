@@ -10,9 +10,7 @@ import { SelectedCandidate } from "../entities/SelectedCandidate";
 import { Notification } from "../entities/Notification";
 import { NotificationService } from "../services/NotificationService";
 import { ApplicationDraft } from "../entities/ApplicationDraft";
-import { PasswordResetToken } from "../entities/PasswordResetToken";
 import { RefreshToken } from "../entities/RefreshToken";
-import { UserSecurityAnswer } from "../entities/UserSecurityAnswer";
 import path from "path";
 import { reconcileOrphanAvatarFiles } from "../utils/avatarUtils";
 
@@ -36,9 +34,7 @@ export const AppDataSource = new DataSource({
         SelectedCandidate,
         Notification,
         ApplicationDraft,
-        PasswordResetToken,
         RefreshToken,
-        UserSecurityAnswer,
     ],
     migrations: [path.join(__dirname, "../migrations/*.{ts,js}")],
     subscribers: ["src/subscribers/*.ts"],

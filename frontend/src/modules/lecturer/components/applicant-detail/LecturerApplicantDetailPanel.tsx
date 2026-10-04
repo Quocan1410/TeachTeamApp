@@ -32,7 +32,7 @@ import emptyStyles from "./LecturerApplicantDetailPanel.module.css";
 
 type DetailView = "overview" | "chat";
 
-const reviewMarkSentForApplicationIds = new Set<number>();
+const reviewMarkSentForApplicationIds = new Set<string>();
 
 
 

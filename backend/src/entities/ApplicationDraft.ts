@@ -22,17 +22,17 @@ export interface ApplicationDraftPayload {
 @Entity("application_drafts")
 @Index(["candidateId", "courseId", "roleId"], { unique: true })
 export class ApplicationDraft {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
 
-    @Column({ type: "int" })
-    candidateId: number;
+    @Column({ type: "varchar", length: 36 })
+    candidateId: string;
 
-    @Column({ type: "int" })
-    courseId: number;
+    @Column({ type: "varchar", length: 36 })
+    courseId: string;
 
-    @Column({ type: "int" })
-    roleId: number;
+    @Column({ type: "varchar", length: 36 })
+    roleId: string;
 
     @Column({ type: "json" })
     payload: ApplicationDraftPayload;

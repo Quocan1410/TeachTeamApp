@@ -5,9 +5,9 @@ type RoleName = "tutor" | "lab_assistant";
 
 export async function countActiveSelectedForRole(
     applicationRepository: Repository<Application> | EntityManager,
-    courseId: number,
+    courseId: string,
     roleName: RoleName,
-    excludeApplicationId?: number
+    excludeApplicationId?: string
 ): Promise<number> {
     const repo =
         "getRepository" in applicationRepository

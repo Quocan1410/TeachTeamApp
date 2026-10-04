@@ -11,7 +11,7 @@ import styles from "./MessageReactionBar.module.css";
 interface MessageReactionBarProps {
   messageId: string;
   reactions: MessageReactionsMap;
-  currentUserId?: number;
+  currentUserId?: string;
   onToggle: (emoji: string) => void;
 }
 

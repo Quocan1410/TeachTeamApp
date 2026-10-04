@@ -5,7 +5,6 @@ import {
     getUserTypeFromEmail,
     validateChangePasswordData,
 } from "../utils/validation";
-import { SecurityQuestionService } from "./SecurityQuestionService";
 import { NotificationService } from "./NotificationService";
 import { NotificationType } from "../entities/Notification";
 import { RefreshTokenService } from "./RefreshTokenService";
@@ -25,12 +24,10 @@ export interface SignupPayload {
     lastName: string;
     userType?: UserType;
     honorific?: string;
-    securityAnswers?: unknown;
 }
 
 export class AuthService {
     private static userRepository = AppDataSource.getRepository(User);
-    private static securityQuestionService = new SecurityQuestionService();
 
     static async registerUser(
         payload: SignupPayload
@@ -91,19 +88,6 @@ export class AuthService {
             };
         }
 
-        const securityValidation =
-            SecurityQuestionService.validateSecurityAnswersInput(
-                payload.securityAnswers
-            );
-        if (!securityValidation.isValid) {
-            return {
-                success: false,
-                statusCode: 400,
-                message: "Invalid security answers",
-                errors: securityValidation.errors,
-            };
-        }
-
         const hashedPassword = await bcrypt.hash(payload.password, 12);
         const resolvedHonorific =
             typeof payload.honorific === "string" && payload.honorific.trim()
@@ -122,20 +106,6 @@ export class AuthService {
         });
 
         const savedUser = await this.userRepository.save(newUser);
-
-        try {
-            await this.securityQuestionService.saveAnswers(
-                savedUser.id,
-                securityValidation.parsed
-            );
-        } catch {
-            await this.userRepository.delete({ id: savedUser.id });
-            return {
-                success: false,
-                statusCode: 500,
-                message: "Unable to save security questions. Please try again.",
-            };
-        }
 
         await NotificationService.notifyAdmins({
             type: NotificationType.USER_REGISTERED,
@@ -158,7 +128,7 @@ export class AuthService {
     }
 
     static async changePassword(
-        userId: number,
+        userId: string,
         body: {
             currentPassword: string;
             newPassword: string;
@@ -231,7 +201,7 @@ export class AuthService {
     }
 
     static async updateProfile(
-        userId: number,
+        userId: string,
         body: { firstName: string; lastName: string; honorific?: string }
     ): Promise<AuthServiceResult<{ user: User }>> {
         const user = await this.userRepository.findOne({
@@ -283,5 +253,7 @@ export class AuthService {
             message: "Profile updated successfully",
             data: { user: userProfile as User },
         };
+    }
+}
     }
 }

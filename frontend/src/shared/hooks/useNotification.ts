@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react";
-import { getMelbourneTime } from "@/shared/utils/dateUtils";
 
 export interface ToastState {
   message: string;
@@ -41,7 +40,7 @@ export const useToast = (
         message,
         type,
         visible: true,
-        id: getMelbourneTime().getTime().toString(),
+        id: Date.now().toString(),
       });
     },
     []
@@ -108,7 +107,7 @@ export const useToastQueue = (): UseToastQueueReturn => {
       message: string,
       type: "success" | "error" | "info" | "warning" = "info"
     ) => {
-      const id = getMelbourneTime().getTime().toString();
+      const id = Date.now().toString();
       const newToast: ToastState = {
         message,
         type,

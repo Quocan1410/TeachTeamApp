@@ -12,8 +12,8 @@ import { Application } from "./Application";
 
 @Entity("courses")
 export class Course {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
 
     @Column({
         type: "varchar",

@@ -13,7 +13,7 @@ export interface CourseDetails extends Course {
 }
 
 export interface AssignedCourse {
-  id: number;
+  id: string;
   courseCode: string;
   courseName: string;
   semester: string;

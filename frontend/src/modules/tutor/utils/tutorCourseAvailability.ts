@@ -5,7 +5,7 @@ import type {
 } from "@/shared/services/applicationService";
 
 export function courseHasApplied(
-  courseId: number,
+  courseId: string,
   applications: ApplicationResponse[]
 ): boolean {
   return applications.some((app) => app.courseId === courseId);

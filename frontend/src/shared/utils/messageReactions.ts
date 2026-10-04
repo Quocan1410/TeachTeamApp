@@ -15,7 +15,7 @@ export type MessageReactionEmoji =
 
 export type MessageReactionsMap = Record<
   string,
-  Record<string, number[]>
+  Record<string, string[]>
 >;
 
 export type ReactableMessageId = string;
@@ -31,7 +31,7 @@ export function userReactedWith(
   reactions: MessageReactionsMap | undefined,
   messageId: string,
   emoji: string,
-  userId: number | undefined
+  userId: string | undefined
 ): boolean {
   if (!userId || !reactions?.[messageId]?.[emoji]) return false;
   return reactions[messageId][emoji].includes(userId);

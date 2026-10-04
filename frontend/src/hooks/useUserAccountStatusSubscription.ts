@@ -91,7 +91,7 @@ export function useUserAccountStatusSubscription({
               type: "subscribe",
               payload: {
                 query: `
-                  subscription UserAccountUpdates($userId: Int!) {
+                  subscription UserAccountUpdates($userId: ID!) {
                     userAccountUpdates(userId: $userId) {
                       userId
                       userEmail

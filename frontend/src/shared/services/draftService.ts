@@ -10,10 +10,10 @@ export interface DraftPayload {
 }
 
 export const DraftService = {
-  getDraft: (courseId: number, roleId: number) =>
+  getDraft: (courseId: string, roleId: string) =>
     draftAPI.get(`/${courseId}/${roleId}`).then((r) => r.data),
-  saveDraft: (courseId: number, roleId: number, payload: DraftPayload) =>
+  saveDraft: (courseId: string, roleId: string, payload: DraftPayload) =>
     draftAPI.put(`/${courseId}/${roleId}`, { payload }).then((r) => r.data),
-  deleteDraft: (courseId: number, roleId: number) =>
+  deleteDraft: (courseId: string, roleId: string) =>
     draftAPI.delete(`/${courseId}/${roleId}`).then((r) => r.data),
 };
