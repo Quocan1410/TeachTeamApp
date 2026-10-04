@@ -390,7 +390,7 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
                   setNotesSaving(true);
                   try {
                     const res = await ApplicationService.updateLecturerNotes(
-                      parseInt(application.id, 10),
+                      application.id,
                       lecturerNotes
                     );
                     if (res.success) {

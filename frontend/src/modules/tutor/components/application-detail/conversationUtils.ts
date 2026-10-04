@@ -111,7 +111,7 @@ export function getLecturerDisplayName(application: ApplicationResponse): string
 }
 
 export type AvatarPerson = {
-  userId?: number;
+  userId?: string;
   firstName?: string;
   lastName?: string;
   email?: string;

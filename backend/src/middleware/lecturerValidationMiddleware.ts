@@ -165,7 +165,7 @@ export const validateStatusUpdate = (
 
     // Application ID validation
     const { id } = req.params;
-    if (!id || !Number.isInteger(Number(id)) || Number(id) <= 0) {
+    if (!id?.trim()) {
         errors.push({
             field: "applicationId",
             message: "Valid application ID is required",
@@ -194,7 +194,7 @@ export const validateCommentSubmission = (
     const errors: ValidationError[] = [];
 
     // Application ID validation
-    if (!id || !Number.isInteger(Number(id)) || Number(id) <= 0) {
+    if (!id?.trim()) {
         errors.push({
             field: "applicationId",
             message: "Valid application ID is required",
@@ -229,7 +229,7 @@ export const validateRankingOperation = (
     const errors: ValidationError[] = [];
 
     // Application ID validation
-    if (!id || !Number.isInteger(Number(id)) || Number(id) <= 0) {
+    if (!id?.trim()) {
         errors.push({
             field: "applicationId",
             message: "Valid application ID is required",

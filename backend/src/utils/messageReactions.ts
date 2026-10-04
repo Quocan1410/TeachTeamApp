@@ -22,14 +22,14 @@ export function normalizeMessageReactions(
         if (!byEmoji || typeof byEmoji !== "object" || Array.isArray(byEmoji)) {
             continue;
         }
-        const emojiMap: Record<string, number[]> = {};
+        const emojiMap: Record<string, string[]> = {};
         for (const [emoji, userIds] of Object.entries(
             byEmoji as Record<string, unknown>
         )) {
             if (!Array.isArray(userIds)) continue;
             const ids = userIds
-                .map((id) => Number(id))
-                .filter((id) => Number.isInteger(id) && id > 0);
+                .map((id) => String(id).trim())
+                .filter((id) => id.length > 0);
             if (ids.length > 0) {
                 emojiMap[emoji] = [...new Set(ids)];
             }

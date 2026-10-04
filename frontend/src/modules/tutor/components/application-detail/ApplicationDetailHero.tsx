@@ -8,20 +8,13 @@ import {
 } from "@/shared/utils/applicationStatus";
 import { getCourseLecturerName } from "@/shared/utils/courseLecturer";
 import { formatApplicationApplicantDisplayName } from "@/shared/utils/personDisplayName";
+import {
+  formatAppliedDate,
+  formatRoleLabel,
+} from "@/shared/utils/applicationFormat";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import styles from "./ApplicationDetailPanel.module.css";
 import ApplicationDetailHeroActions from "./ApplicationDetailHeroActions";
-
-function formatRoleLabel(roleName: string) {
-  return roleName === "tutor" ? "Tutor" : "Lab Assistant";
-}
-
-const formatAppliedDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-AU", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
 
 function getHeroStatusValueClass(
   status: ApplicationResponse["status"],

@@ -551,7 +551,7 @@ const LecturerDashboardInner: React.FC = () => {
 
       try {
         const response =
-          await ApplicationService.deleteBlockedApplication(numericId);
+          await ApplicationService.deleteBlockedApplication(applicationId);
 
         if (response.success) {
           showToast("Application removed", "success");
@@ -764,7 +764,7 @@ const LecturerDashboardInner: React.FC = () => {
       const nextRank = currentRankedForCourse.length + 1;
 
       const response = await ApplicationService.addApplicationToRanking(
-        parseInt(selectedApplication.id),
+        selectedApplication.id,
         nextRank,
         courseForRanking
       );

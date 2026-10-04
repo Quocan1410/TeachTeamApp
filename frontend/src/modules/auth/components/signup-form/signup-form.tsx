@@ -12,11 +12,10 @@ import {
   validateSignupPassword,
   splitSignupFullName,
   mapSignupApiErrors,
-} from "../../utils/authValidation.utils";
-import { AuthService } from "../../../../shared/services/authService";
-import { UserType } from "../../../../shared/types/user";
-import { useAuth } from "../../hooks/useAuth";
-import EmailAutocomplete from "../email-autocomplete/email-autocomplete";
+} from "@/modules/auth/utils/authValidation.utils";
+import { AuthService } from "@/shared/services/authService";
+import { UserType } from "@/shared/types/user";
+import EmailAutocomplete from "@/modules/auth/components/email-autocomplete/email-autocomplete";
 import AppSelect from "@/shared/components/common/app-select/AppSelect";
 import { type Honorific } from "@/shared/utils/personDisplayName";
 import grid from "@/modules/auth/styles/signup-grid.module.css";
@@ -37,7 +36,6 @@ type SignupHonorific = Honorific | "";
 
 export default function SignUpForm() {
   const router = useRouter();
-  const { } = useAuth(); // Removed login since we don't auto-login after signup
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -46,9 +44,6 @@ export default function SignUpForm() {
   const [honorific, setHonorific] = useState<SignupHonorific>(TITLE_PLACEHOLDER);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [securityRows, setSecurityRows] = useState<SecurityAnswerFormRow[]>(
-    createEmptySecurityRows
-  );
 
   // Validation states
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -152,8 +147,8 @@ export default function SignUpForm() {
     if (!confirmPassword) {
       newErrors.confirmPassword = "Please confirm your password";
     } else if (password !== confirmPassword) {
-    const securityErrors = validateSecurityAnswerRows(securityRows);
-    Object.assign(newErrors, securityErrors);
+      newErrors.confirmPassword = "Passwords do not match";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -182,9 +177,9 @@ export default function SignUpForm() {
         email: email.trim(),
         password,
         firstName,
-          questionId: row.questionId,
-          answer: row.answer.trim(),
-        })),
+        lastName,
+        userType,
+        honorific: honorific || undefined,
       };
 
       // Call the signup API
@@ -451,8 +446,8 @@ export default function SignUpForm() {
                     </div>
                   </div>
                 </div>
-              disabled={isLoading}
-            />
+              </div>
+            </div>
           </div>
         </div>
 

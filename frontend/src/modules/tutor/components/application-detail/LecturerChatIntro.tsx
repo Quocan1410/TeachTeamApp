@@ -5,14 +5,11 @@ import type { ApplicationResponse } from "@/shared/services/applicationService";
 import { useUserPresence } from "@/shared/hooks/useUserPresence";
 import ConversationAvatar from "./ConversationAvatar";
 import { getLecturerAvatarPerson, getLecturerFormattedName } from "./conversationUtils";
+import { formatRoleLabel } from "@/shared/utils/applicationFormat";
 import styles from "./LecturerChatIntro.module.css";
 
 interface LecturerChatIntroProps {
   application: ApplicationResponse;
-}
-
-function formatRoleLabel(roleName: string) {
-  return roleName === "tutor" ? "Tutor" : "Lab Assistant";
 }
 
 const LecturerChatIntro: React.FC<LecturerChatIntroProps> = ({ application }) => {

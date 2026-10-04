@@ -1,4 +1,3 @@
-// Based on TutorApplication from tutorUtils.ts
 export interface Application {
   id: string;
   userId: string; // Foreign key to UserAccount

@@ -255,5 +255,3 @@ export class AuthService {
         };
     }
 }
-    }
-}

@@ -61,8 +61,9 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
+    if (authLoading || redirecting) return;
     loadLecturers();
-  }, [loadLecturers]);
+  }, [authLoading, redirecting, loadLecturers]);
 
   const handleOpenLecturerModal = (lecturerId: string): void => {
     const lecturer = lecturers.find((l) => l.id === lecturerId);
@@ -77,13 +78,13 @@ export default function HomePage() {
     ? lecturers.findIndex((l) => l.id === activeLecturer.id)
     : -1;
 
-  return (
   if (authLoading || redirecting) {
     return <PageSkeleton variant="home" />;
   }
 
   return (
-    <main className="flex-grow pt-24">
+    <main className={`flex-grow ${isAuthenticated ? "pt-0" : "pt-24"}`}>
+      <HeroSection />
 
       <TimelineSection isLoggedIn={isAuthenticated} userRole={userRole} />
 

@@ -43,7 +43,7 @@ export class NotificationService {
         input: CreateNotificationInput
     ): Promise<boolean> {
         const applicationId = input.metadata?.applicationId;
-        if (typeof applicationId === "number") {
+        if (typeof applicationId === "string" && applicationId.trim()) {
             const exists = await this.hasNotificationForApplication(
                 input.userId,
                 input.type,
@@ -219,7 +219,7 @@ export class NotificationService {
         userIds: string[],
         input: Omit<CreateNotificationInput, "userId">
     ): Promise<void> {
-        const uniqueIds = [...new Set(userIds.filter((id) => id > 0))];
+        const uniqueIds = [...new Set(userIds.filter((id) => id.trim().length > 0))];
         if (uniqueIds.length === 0) return;
 
         await Promise.all(

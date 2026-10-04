@@ -282,11 +282,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   }, []);
 
   const removeNotification = useCallback(async (notificationId: string) => {
-    const numericId = parseInt(notificationId, 10);
-    if (Number.isNaN(numericId)) return;
+    if (!notificationId.trim()) return;
 
     try {
-      const count = await apiDeleteNotification(numericId);
+      const count = await apiDeleteNotification(notificationId);
       setUnreadCount(count);
       setNotifications((prev) =>
         prev.filter((notification) => notification.id !== notificationId)

@@ -206,14 +206,14 @@ export const validateApplicationData = (data: any): ValidationResult => {
     // Course ID validation
     if (!data.courseId) {
         errors.courseId = "Course is required";
-    } else if (!Number.isInteger(data.courseId) || data.courseId <= 0) {
+    } else if (typeof data.courseId !== "string" || !data.courseId.trim()) {
         errors.courseId = "Invalid course selection";
     }
 
     // Role ID validation
     if (!data.roleId) {
         errors.roleId = "Role is required";
-    } else if (!Number.isInteger(data.roleId) || data.roleId <= 0) {
+    } else if (typeof data.roleId !== "string" || !data.roleId.trim()) {
         errors.roleId = "Invalid role selection";
     }
 

@@ -73,7 +73,7 @@ function buildFromLegacy(application: ApplicationResponse): CorrespondenceMessag
     messages.push({
       id: "msg-lecturer-primary",
       authorRole: "lecturer",
-      authorId: application.commentedBy ?? 0,
+      authorId: application.commentedBy ?? "",
       body: application.comment.trim(),
       createdAt: application.commentedAt ?? application.updatedAt,
     });

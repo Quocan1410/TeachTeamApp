@@ -99,8 +99,8 @@ export const initSocketServer = (httpServer: HttpServer): Server => {
             (payload: { userIds?: string[] } | undefined) => {
                 const ids = Array.isArray(payload?.userIds)
                     ? payload.userIds.filter(
-                          (id): id is number =>
-                              typeof id === "number" && Number.isFinite(id)
+                          (id): id is string =>
+                              typeof id === "string" && id.trim().length > 0
                       )
                     : [];
                 socket.emit(PRESENCE_SYNC_EVENT, {

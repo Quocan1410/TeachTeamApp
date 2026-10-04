@@ -42,7 +42,8 @@ export function parseCorrespondenceMessages(
         const row = item as Record<string, unknown>;
         const id = typeof row.id === "string" ? row.id.trim() : "";
         const authorRole = row.authorRole;
-        const authorId = Number(row.authorId);
+        const authorId =
+            typeof row.authorId === "string" ? row.authorId.trim() : "";
         const body = typeof row.body === "string" ? row.body.trim() : "";
         const createdAt =
             typeof row.createdAt === "string" ? row.createdAt : "";

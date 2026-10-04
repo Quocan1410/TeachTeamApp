@@ -26,6 +26,10 @@ import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import ApplicationsHeroSection from "@/modules/tutor/components/hero-section/ApplicationsHeroSection";
 import ApplicationStatusBadge from "@/shared/components/common/application-status-badge/ApplicationStatusBadge";
 import { resolveApplicationStatusDisplay } from "@/shared/utils/applicationStatus";
+import {
+  formatAppliedDate,
+  formatRoleLabel,
+} from "@/shared/utils/applicationFormat";
 import PinIcon from "@/shared/components/common/icons/PinIcon";
 import ApplicationDetailPanel from "@/modules/tutor/components/application-detail/ApplicationDetailPanel";
 import ConfirmModal from "@/shared/components/common/modal/ConfirmModal";
@@ -49,16 +53,6 @@ const SORT_OPTIONS = [
 
 const APPLICATION_PAGE_SIZE = 8;
 
-const formatRoleLabel = (roleName: string) =>
-  roleName === "tutor" ? "Tutor" : "Lab Assistant";
-
-const formatAppliedDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-AU", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-
 export default function TutorApplicationsPage() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
@@ -72,8 +66,8 @@ export default function TutorApplicationsPage() {
   const [sortBy, setSortBy] = useState("date");
   const [page, setPage] = useState(1);
   const debouncedSearch = useDebouncedValue(searchQuery, 320);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [withdrawTargetId, setWithdrawTargetId] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [withdrawTargetId, setWithdrawTargetId] = useState<string | null>(null);
   const { toast, showSuccess, showError, hideToast } = useToast();
   const { togglePin, isPinned } = usePinnedApplications();
   const selectedIdRef = useRef<string | null>(null);
