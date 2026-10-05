@@ -18,6 +18,10 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Teaching App",
   description: "A teaching application",
+  icons: {
+    icon: "/letter-e.png",
+    apple: "/letter-e.png",
+  },
 };
 
 export default function RootLayout({
