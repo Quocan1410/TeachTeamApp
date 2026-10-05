@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import SigninForm from "../../../modules/auth/components/signin-form/signin-form";
+import SigninForm from "@/modules/auth/components/signin-form/signin-form";
 import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
 import styles from "./signin-page.module.css";
 

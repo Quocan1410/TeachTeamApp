@@ -2,7 +2,10 @@ import { Request, Response } from "express";
 import { In } from "typeorm";
 import { AppDataSource } from "../config/database";
 import { User, UserType } from "../entities/User";
+import { Course } from "../entities/Course";
 import { CourseAssignment } from "../entities/CourseAssignment";
+import { Application, ApplicationStatus } from "../entities/Application";
+import { getCourseApplicationWindow } from "../utils/courseDeadline";
 const FEATURED_LECTURER_EMAILS = ["jane.morrison@lecturer.edu.au"];
 
 export interface PublicLecturerCourse {
@@ -24,8 +27,10 @@ export interface PublicLecturerProfile {
 
 export class PublicController {
     private userRepository = AppDataSource.getRepository(User);
+    private courseRepository = AppDataSource.getRepository(Course);
     private courseAssignmentRepository =
         AppDataSource.getRepository(CourseAssignment);
+    private applicationRepository = AppDataSource.getRepository(Application);
 
     async getLecturers(_req: Request, res: Response): Promise<void> {
         try {
@@ -124,6 +129,96 @@ export class PublicController {
             res.status(500).json({
                 success: false,
                 message: "Failed to load lecturers",
+            });
+        }
+    }
+
+    async getOpenings(_req: Request, res: Response): Promise<void> {
+        try {
+            const courses = await this.courseRepository.find({
+                order: { courseCode: "ASC" },
+            });
+            const assignments = await this.courseAssignmentRepository.find({
+                relations: ["lecturer"],
+            });
+            const selectedRows = await this.applicationRepository
+                .createQueryBuilder("application")
+                .innerJoin("application.role", "role")
+                .select("application.courseId", "courseId")
+                .addSelect("role.roleName", "roleName")
+                .addSelect("COUNT(*)", "total")
+                .where("application.status = :status", {
+                    status: ApplicationStatus.SELECTED,
+                })
+                .andWhere("application.isWithdrawn = :isWithdrawn", {
+                    isWithdrawn: false,
+                })
+                .groupBy("application.courseId")
+                .addGroupBy("role.roleName")
+                .getRawMany<{
+                    courseId: string;
+                    roleName: string;
+                    total: string;
+                }>();
+
+            const selectedByCourse = new Map<string, number>();
+            for (const row of selectedRows) {
+                selectedByCourse.set(
+                    `${row.courseId}:${row.roleName}`,
+                    Number(row.total) || 0
+                );
+            }
+
+            const lecturersByCourse = new Map<string, string[]>();
+            for (const assignment of assignments) {
+                if (!assignment.lecturer || assignment.lecturer.isBlocked) {
+                    continue;
+                }
+                const name =
+                    `${assignment.lecturer.firstName} ${assignment.lecturer.lastName}`.trim();
+                const list = lecturersByCourse.get(assignment.courseId) ?? [];
+                if (!list.includes(name)) list.push(name);
+                lecturersByCourse.set(assignment.courseId, list);
+            }
+
+            const openings = courses.map((course) => {
+                const window = getCourseApplicationWindow(course);
+                const tutorPlacesLeft = Math.max(
+                    0,
+                    course.maxTutors -
+                        (selectedByCourse.get(`${course.id}:tutor`) ?? 0)
+                );
+                const labAssistantPlacesLeft = Math.max(
+                    0,
+                    course.maxLabAssistants -
+                        (selectedByCourse.get(`${course.id}:lab_assistant`) ??
+                            0)
+                );
+                return {
+                    courseId: course.id,
+                    courseCode: course.courseCode,
+                    courseName: course.courseName,
+                    semester: course.semester,
+                    applicationDeadline: window.applicationDeadline,
+                    isApplicationOpen: window.isApplicationOpen,
+                    tutorPlacesLeft,
+                    labAssistantPlacesLeft,
+                    lecturers: lecturersByCourse.get(course.id) ?? [],
+                };
+            });
+
+            openings.sort((a, b) => {
+                if (a.isApplicationOpen !== b.isApplicationOpen) {
+                    return a.isApplicationOpen ? -1 : 1;
+                }
+                return a.courseCode.localeCompare(b.courseCode);
+            });
+
+            res.json({ success: true, data: { openings } });
+        } catch {
+            res.status(500).json({
+                success: false,
+                message: "Failed to load open roles",
             });
         }
     }

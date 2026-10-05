@@ -8,8 +8,8 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import { AuthService } from "../../../shared/services/authService";
-import { User } from "../../../shared/types/user";
+import { AuthService } from "@/shared/services/authService";
+import { User } from "@/shared/types/user";
 
 interface AuthContextType {
   user: User | null;

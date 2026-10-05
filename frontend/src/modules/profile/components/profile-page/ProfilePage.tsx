@@ -3,18 +3,18 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { AuthService } from "../../../../shared/services/authService";
-import { ApplicationService } from "../../../../shared/services/applicationService";
-import { User, UserType } from "../../../../shared/types/user";
-import { AssignedCourse } from "../../../../shared/types/courseTypes";
-import { useAuth } from "../../../auth/hooks/useAuth";
+import { AuthService } from "@/shared/services/authService";
+import { ApplicationService } from "@/shared/services/applicationService";
+import { User, UserType } from "@/shared/types/user";
+import { AssignedCourse } from "@/shared/types/courseTypes";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
 import {
   getUserAvatarSrc,
   getUserInitials,
   hasCustomAvatar,
-} from "../../../../shared/utils/avatarUtils";
-import { clearAvatarFetchCache } from "../../../../shared/utils/avatarFetchCache";
-import { useProtectedAvatar } from "../../../../shared/hooks/useProtectedAvatar";
+} from "@/shared/utils/avatarUtils";
+import { clearAvatarFetchCache } from "@/shared/utils/avatarFetchCache";
+import { useProtectedAvatar } from "@/shared/hooks/useProtectedAvatar";
 import { getUserDisplayName, type Honorific } from "@/shared/utils/personDisplayName";
 import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
 import AppSelect from "@/shared/components/common/app-select/AppSelect";
