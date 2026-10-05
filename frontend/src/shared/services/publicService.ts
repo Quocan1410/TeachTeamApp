@@ -45,7 +45,35 @@ export function mapPublicLecturerToDisplay(dto: PublicLecturerDto): Lecturer {
   };
 }
 
+export interface PublicOpening {
+  courseId: string;
+  courseCode: string;
+  courseName: string;
+  semester: string;
+  applicationDeadline: string | null;
+  isApplicationOpen: boolean;
+  tutorPlacesLeft: number;
+  labAssistantPlacesLeft: number;
+  lecturers: string[];
+}
+
+interface PublicOpeningsResponse {
+  success: boolean;
+  data?: { openings: PublicOpening[] };
+  message?: string;
+}
+
 export class PublicService {
+  static async getOpenings(): Promise<PublicOpening[]> {
+    const response = await publicAPI.get<PublicOpeningsResponse>("/openings");
+    if (!response.data.success || !response.data.data) {
+      throw new Error(
+        response.data.message || "Failed to load open roles from server"
+      );
+    }
+    return response.data.data.openings;
+  }
+
   static async getLecturers(): Promise<Lecturer[]> {
     const response = await publicAPI.get<PublicLecturersResponse>("/lecturers");
     if (!response.data.success || !response.data.data) {

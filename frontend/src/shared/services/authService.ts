@@ -6,9 +6,9 @@ import {
   UpdateProfileData,
   User,
   ChangePasswordData,
-} from "../types/user";
-import StorageManager from "../utils/storageManager";
-import { dedupeInFlight } from "../utils/inFlightRequest";
+} from "@/shared/types/user";
+import StorageManager from "@/shared/utils/storageManager";
+import { dedupeInFlight } from "@/shared/utils/inFlightRequest";
 import { apiClient, createApiClient } from "./apiClient";
 
 const authAPI = createApiClient("/auth");

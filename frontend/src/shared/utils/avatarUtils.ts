@@ -1,4 +1,4 @@
-import { User, UserType } from "../types/user";
+import { User, UserType } from "@/shared/types/user";
 import { stripHonorificFromDisplayName } from "./personDisplayName";
 
 /** Avatar images are served via authenticated API, not public /uploads. */

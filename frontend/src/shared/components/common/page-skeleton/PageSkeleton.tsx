@@ -3,7 +3,14 @@ import styles from "./PageSkeleton.module.css";
 
 interface PageSkeletonProps {
   cards?: number;
-  variant?: "default" | "lecturer" | "tutor" | "profile" | "auth" | "home";
+  variant?:
+    | "default"
+    | "lecturer"
+    | "tutor"
+    | "profile"
+    | "auth"
+    | "home"
+    | "plain";
   /** Full viewport shell for route-level loading; false for in-page sections */
   fullPage?: boolean;
 }
@@ -14,6 +21,10 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
   fullPage = true,
 }) => {
   const renderBody = () => {
+    if (variant === "plain") {
+      return null;
+    }
+
     if (variant === "auth") {
       return (
         <div className={styles.authWrap}>

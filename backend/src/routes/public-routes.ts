@@ -8,5 +8,9 @@ router.get(
     "/lecturers",
     publicController.getLecturers.bind(publicController)
 );
+router.get(
+    "/openings",
+    publicController.getOpenings.bind(publicController)
+);
 
 export default router;

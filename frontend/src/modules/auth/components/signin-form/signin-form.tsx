@@ -2,14 +2,15 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AuthService } from "../../../../shared/services/authService";
+import { AuthService } from "@/shared/services/authService";
 import {
   containsEmojis,
-} from "../../utils/authValidation.utils";
-import { SigninData, User } from "../../../../shared/types/user";
-import { useAuth } from "../../hooks/useAuth";
-import { LoginSuccessModal } from "../../../../shared/components/common/modal/LoginSuccessModal";
-import { preloadDashboardRoute } from "../../utils/preloadDashboard";
+} from "@/modules/auth/utils/authValidation.utils";
+import { SigninData, User } from "@/shared/types/user";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
+import { LoginSuccessModal } from "@/shared/components/common/modal/LoginSuccessModal";
+import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
+import { preloadDashboardRoute } from "@/modules/auth/utils/preloadDashboard";
 import styles from "./signin-form.module.css";
 
 const PRELOAD_TIMEOUT_MS = 12000;
@@ -129,7 +130,7 @@ export default function SignInForm() {
   }, [showLoginSuccess, redirectPath, router]);
 
   if (!isAuthLoading && isAuthenticated && !showLoginSuccess) {
-    return null;
+    return <PageSkeleton variant="plain" />;
   }
 
   const handleInputChange = (field: keyof SigninData, value: string) => {

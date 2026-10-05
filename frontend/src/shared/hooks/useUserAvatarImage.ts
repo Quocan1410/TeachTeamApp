@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { env } from "@/lib/env";
-import { getAvatarCacheBuster, hasCustomAvatar } from "../utils/avatarUtils";
-import { fetchAvatarBlob } from "../utils/avatarFetchCache";
+import { getAvatarCacheBuster, hasCustomAvatar } from "@/shared/utils/avatarUtils";
+import { fetchAvatarBlob } from "@/shared/utils/avatarFetchCache";
 
 /** Load another user's uploaded avatar (not the logged-in user's). */
 export function useUserAvatarImage(

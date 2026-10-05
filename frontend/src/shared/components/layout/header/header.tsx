@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { useTheme } from "@/shared/contexts/ThemeContext";
-import UserDropdown from "../user-dropdown";
+import UserDropdown from "@/shared/components/layout/user-dropdown";
 import { hasCustomAvatar } from "@/shared/utils/avatarUtils";
 import { getUserDisplayName } from "@/shared/utils/personDisplayName";
 import NotificationBell from "@/shared/components/common/notification-bell/NotificationBell";
@@ -74,6 +74,12 @@ const Header: React.FC = () => {
     !isLoading && isAuthenticated && user?.userType === "lecturer";
   const showPublicLecturerLink =
     !isLoading && !isAuthenticated;
+  const homeHref =
+    !isLoading && user?.userType === "lecturer"
+      ? "/lecturer"
+      : !isLoading && user?.userType === "candidate"
+        ? "/tutor"
+        : "/";
 
   return (
     <header
@@ -82,7 +88,7 @@ const Header: React.FC = () => {
       <div className={styles["header-container"]}>
         <div className={styles["header-grid"]}>
           <div className={styles["logo-wrapper"]}>
-            <Link href="/" className={styles["logo-link"]}>
+            <Link href={homeHref} className={styles["logo-link"]}>
               <div className={styles["logo-container"]}>
                 <div className={styles["logo-image-container"]}>
                   <Image
@@ -109,8 +115,8 @@ const Header: React.FC = () => {
             ) : (
               <div className={styles["nav-links"]}>
                 <Link
-                  href="/"
-                  className={`${styles["nav-link"]} ${pathname === "/" ? styles.active : ""}`}
+                  href={homeHref}
+                  className={`${styles["nav-link"]} ${pathname === homeHref ? styles.active : ""}`}
                 >
                   Home
                 </Link>
