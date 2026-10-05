@@ -19,8 +19,8 @@ export const metadata: Metadata = {
   title: "Teaching App",
   description: "A teaching application",
   icons: {
-    icon: "/letter-e.png",
-    apple: "/letter-e.png",
+    icon: "/favicon.png",
+    apple: "/favicon.png",
   },
 };
 
