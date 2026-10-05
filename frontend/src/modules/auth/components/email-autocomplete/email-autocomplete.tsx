@@ -175,6 +175,7 @@ export default function EmailAutocomplete({
         autoComplete="email"
         required={required}
         aria-required={required}
+        aria-invalid={hasError}
       />
       
       {showSuggestions && suggestions.length > 0 && (
