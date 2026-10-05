@@ -12,6 +12,7 @@ import { SelectedCandidate } from "../entities/SelectedCandidate";
 import { Notification } from "../entities/Notification";
 import { ApplicationDraft } from "../entities/ApplicationDraft";
 import { RefreshToken } from "../entities/RefreshToken";
+import { mysqlPoolSize } from "./mysqlPool";
 
 /** CLI datasource — never auto-sync; use migration:run instead. */
 export default new DataSource({
@@ -36,6 +37,7 @@ export default new DataSource({
         RefreshToken,
     ],
     migrations: [path.join(__dirname, "../migrations/*.{ts,js}")],
+    poolSize: mysqlPoolSize(),
     extra: {
         charset: "utf8mb4_unicode_ci",
         connectTimeout: 60000,
