@@ -13,6 +13,7 @@ import { ApplicationDraft } from "../entities/ApplicationDraft";
 import { RefreshToken } from "../entities/RefreshToken";
 import path from "path";
 import { reconcileOrphanAvatarFiles } from "../utils/avatarUtils";
+import { mysqlPoolSize } from "./mysqlPool";
 
 export const AppDataSource = new DataSource({
     type: "mysql",
@@ -38,7 +39,7 @@ export const AppDataSource = new DataSource({
     ],
     migrations: [path.join(__dirname, "../migrations/*.{ts,js}")],
     subscribers: ["src/subscribers/*.ts"],
-    // Connection options for Cloud MySQL
+    poolSize: mysqlPoolSize(),
     extra: {
         charset: "utf8mb4_unicode_ci",
         connectTimeout: 60000,

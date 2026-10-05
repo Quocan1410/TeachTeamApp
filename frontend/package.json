@@ -9,6 +9,7 @@
     "build:full": "npm run build && npm run build --prefix ../backend",
     "start": "next start",
     "start:full": "concurrently \"npm run start\" \"npm run start --prefix ../backend\"",
+    "typecheck": "tsc --noEmit",
     "lint": "next lint",
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "format": "prettier --write ./**/*.{ts,tsx,css,md,json} --config ./.prettierrc.json",

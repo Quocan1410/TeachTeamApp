@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AuthService } from "../../../../shared/services/authService";
@@ -35,7 +35,7 @@ export default function SignInForm() {
   const [redirectPath, setRedirectPath] = useState<string>("");
   const [isDashboardReady, setIsDashboardReady] = useState(false);
 
-  const getRedirectPath = (targetUser: User) => {
+  const getRedirectPath = useCallback((targetUser: User) => {
     if (targetUser.userType === "admin") {
       return (
         process.env.NEXT_PUBLIC_ADMIN_APP_URL || "http://localhost:3001"
@@ -44,15 +44,15 @@ export default function SignInForm() {
     if (targetUser.userType === "lecturer") return "/lecturer";
     if (targetUser.userType === "candidate") return "/tutor";
     return "/";
-  };
+  }, []);
 
-  const navigateAfterLogin = (destination: string) => {
+  const navigateAfterLogin = useCallback((destination: string) => {
     if (/^https?:\/\//i.test(destination)) {
       window.location.assign(destination);
       return;
     }
     router.replace(destination);
-  };
+  }, [router]);
 
   const isExternalRedirect = (path: string) => /^https?:\/\//i.test(path);
 
@@ -82,7 +82,14 @@ export default function SignInForm() {
   useEffect(() => {
     if (isAuthLoading || !isAuthenticated || !user || showLoginSuccess) return;
     navigateAfterLogin(getRedirectPath(user));
-  }, [isAuthLoading, isAuthenticated, user, showLoginSuccess, router]);
+  }, [
+    isAuthLoading,
+    isAuthenticated,
+    user,
+    showLoginSuccess,
+    navigateAfterLogin,
+    getRedirectPath,
+  ]);
 
   useEffect(() => {
     if (!showLoginSuccess || !redirectPath) return;
