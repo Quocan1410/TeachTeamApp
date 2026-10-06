@@ -1,5 +1,8 @@
-import React from "react";
+"use client";
+
+import React, { useEffect } from "react";
 import styles from "./PageSkeleton.module.css";
+import { retainPageBusy } from "@/shared/components/route-pending/loadingIndicator";
 
 interface PageSkeletonProps {
   cards?: number;
@@ -79,11 +82,63 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
     }
 
     if (variant === "home") {
-      return (
-        <div className={styles.homeGrid}>
+      const lecturers = (
+        <div className={styles.homeLecturers}>
           {Array.from({ length: 4 }).map((_, index) => (
-            <div key={`home-${index}`} className={`${styles.pulse} ${styles.homeCard}`} />
+            <div key={`home-${index}`} className={styles.homeLecturer}>
+              <div className={`${styles.pulse} ${styles.homeLecturerPhoto}`} />
+              <div className={`${styles.pulse} ${styles.homeLecturerName}`} />
+              <div className={`${styles.pulse} ${styles.homeLecturerMeta}`} />
+            </div>
           ))}
+        </div>
+      );
+
+      if (!fullPage) {
+        return lecturers;
+      }
+
+      return (
+        <div className={styles.homeLayout}>
+          <div className={styles.homeHero}>
+            <div className={styles.homeCopy}>
+              <div className={`${styles.pulse} ${styles.homeTitle}`} />
+              <div className={`${styles.pulse} ${styles.homeTitle}`} />
+              <div className={`${styles.pulse} ${styles.homeTitleShort}`} />
+              <div className={`${styles.pulse} ${styles.homeSubtitle}`} />
+              <div className={`${styles.pulse} ${styles.homeButton}`} />
+            </div>
+            <div className={`${styles.pulse} ${styles.homeArt}`} />
+          </div>
+
+          <div className={styles.homeStats}>
+            <div className={`${styles.pulse} ${styles.homeStatNumber}`} />
+            <div className={styles.homeStatCopy}>
+              <div className={`${styles.pulse} ${styles.homeStatLine}`} />
+              <div className={`${styles.pulse} ${styles.homeStatLineShort}`} />
+              <div className={styles.homeAvatars}>
+                {Array.from({ length: 9 }).map((_, index) => (
+                  <div
+                    key={`avatar-${index}`}
+                    className={`${styles.pulse} ${styles.homeAvatar}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.homeTimeline}>
+            <div className={`${styles.pulse} ${styles.homeSectionTitle}`} />
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={`step-${index}`}
+                className={`${styles.pulse} ${styles.homeStep}`}
+              />
+            ))}
+          </div>
+
+          <div className={`${styles.pulse} ${styles.homeSectionTitle}`} />
+          {lecturers}
         </div>
       );
     }
@@ -107,7 +162,6 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
 
     return (
       <>
-        <div className={`${styles.pulse} ${styles.hero}`} />
         <div className={`${styles.pulse} ${styles.title}`} />
         <div className={`${styles.pulse} ${styles.subtitle}`} />
         <div className={styles.grid}>
@@ -119,10 +173,14 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
     );
   };
 
+  useEffect(() => {
+    return retainPageBusy();
+  }, []);
+
   const body = renderBody();
 
   const status = (
-    <p className={styles.status} role="status">
+    <p className={styles.srOnly} role="status">
       Loading…
     </p>
   );

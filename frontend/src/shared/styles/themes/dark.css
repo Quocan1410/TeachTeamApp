@@ -88,7 +88,7 @@
 
 .dark .course-card {
   background-color: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
+  border: 0.0625rem solid var(--color-border);
 }
 
 /* Dark theme styles */
@@ -146,5 +146,5 @@
 }
 
 [data-theme="dark"] .comment-textarea:focus {
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  box-shadow: 0 0 0 0.1875rem rgba(79, 70, 229, 0.2);
 }

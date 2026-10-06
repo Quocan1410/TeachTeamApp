@@ -130,7 +130,7 @@ export default function SignInForm() {
   }, [showLoginSuccess, redirectPath, router]);
 
   if (!isAuthLoading && isAuthenticated && !showLoginSuccess) {
-    return <PageSkeleton variant="plain" />;
+    return <PageSkeleton variant="auth" />;
   }
 
   const handleInputChange = (field: keyof SigninData, value: string) => {

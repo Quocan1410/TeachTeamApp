@@ -9,6 +9,7 @@ import UserDropdown from "@/shared/components/layout/user-dropdown";
 import { hasCustomAvatar } from "@/shared/utils/avatarUtils";
 import { getUserDisplayName } from "@/shared/utils/personDisplayName";
 import NotificationBell from "@/shared/components/common/notification-bell/NotificationBell";
+import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 import styles from "./header.module.css";
 
 const Header: React.FC = () => {
@@ -64,16 +65,11 @@ const Header: React.FC = () => {
     }
   };
 
-  // Navigation link visibility logic
-  // During loading: only show Home (no role-specific links)
-  // When not authenticated: show all links
-  // When authenticated: show role-appropriate links
+  const showGuestNav = isLoading || !isAuthenticated;
   const showTutorLink =
-    !isLoading && (!isAuthenticated || user?.userType === "candidate");
+    !isLoading && isAuthenticated && user?.userType === "candidate";
   const isLecturerUser =
     !isLoading && isAuthenticated && user?.userType === "lecturer";
-  const showPublicLecturerLink =
-    !isLoading && !isAuthenticated;
   const homeHref =
     !isLoading && user?.userType === "lecturer"
       ? "/lecturer"
@@ -94,8 +90,8 @@ const Header: React.FC = () => {
                   <Image
                     src="/letter-e.png"
                     alt="duTeam Logo"
-                    width={45}
-                    height={45}
+                    width={36}
+                    height={36}
                     className={styles["logo-image"]}
                   />
                 </div>
@@ -107,19 +103,21 @@ const Header: React.FC = () => {
           </div>
 
           <nav className={styles["main-nav"]}>
-            {isLoading ? (
-              <div className={styles.navSkeleton} aria-hidden>
-                <span className={styles.navSkeletonLink} />
-                <span className={styles.navSkeletonLink} />
-              </div>
-            ) : (
-              <div className={styles["nav-links"]}>
+            <div className={styles["nav-links"]}>
                 <Link
                   href={homeHref}
                   className={`${styles["nav-link"]} ${pathname === homeHref ? styles.active : ""}`}
                 >
                   Home
                 </Link>
+                {showGuestNav && (
+                  <Link
+                    href="/courses"
+                    className={`${styles["nav-link"]} ${pathname === "/courses" ? styles.active : ""}`}
+                  >
+                    Courses
+                  </Link>
+                )}
                 {showTutorLink && (
                   <Link
                     href="/tutor"
@@ -146,20 +144,19 @@ const Header: React.FC = () => {
                     Applicants
                   </Link>
                 )}
-                {showPublicLecturerLink && (
+                {showGuestNav && (
                   <Link
-                    href="/lecturer"
-                    className={`${styles["nav-link"]} ${pathname === "/lecturer" ? styles.active : ""}`}
+                    href="/lecturers"
+                    className={`${styles["nav-link"]} ${pathname === "/lecturers" ? styles.active : ""}`}
                   >
                     Lecturers
                   </Link>
                 )}
               </div>
-            )}
           </nav>
 
           <div className={styles["header-actions"]}>
-            {!isLoading && !isAuthenticated && (
+            {(isLoading || !isAuthenticated) && (
               <button
                 onClick={toggleDarkMode}
                 className={`${styles["theme-toggle-btn"]} ${
@@ -173,10 +170,10 @@ const Header: React.FC = () => {
               >
                 <div className={styles["theme-icon-wrapper"]}>
                   <span className={`${styles["theme-icon"]} ${styles.sun}`}>
-                    ☀️
+                    <SunIcon aria-hidden />
                   </span>
                   <span className={`${styles["theme-icon"]} ${styles.moon}`}>
-                    🌙
+                    <MoonIcon aria-hidden />
                   </span>
                 </div>
               </button>
@@ -208,7 +205,6 @@ const Header: React.FC = () => {
                 />
               </div>
             ) : (
-              !isLoading && (
                 <div className={styles.authButtons}>
                   <Link
                     href="/signin"
@@ -223,7 +219,6 @@ const Header: React.FC = () => {
                     Sign Up
                   </Link>
                 </div>
-              )
             )}
           </div>
         </div>

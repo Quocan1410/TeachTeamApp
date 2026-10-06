@@ -12,6 +12,7 @@ export interface Lecturer {
   bio: string;
   courses: string;
   contact: string;
+  yearsExperience?: number;
   assignedCourses?: LecturerCourseAssignment[];
   awards?: string;
   experience?: string;

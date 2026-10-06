@@ -1,4 +1,5 @@
 import React from "react";
+import LoadingIcon from "@/shared/components/common/loading-icon/LoadingIcon";
 import styles from "./LoadingWrapper.module.css";
 
 interface LoadingWrapperProps {
@@ -34,40 +35,7 @@ const LoadingWrapper: React.FC<LoadingWrapperProps> = ({
 
     return (
       <div className={styles.loadingContainer} style={containerStyle}>
-        <div className={styles.spinner}>
-          <svg className={styles.spinnerCircle} viewBox="0 0 24 24">
-            <circle
-              cx="12"
-              cy="12"
-              r="10"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              strokeDasharray="32"
-              strokeDashoffset="32"
-            >
-              <animateTransform
-                attributeName="transform"
-                type="rotate"
-                values="0 12 12;360 12 12"
-                dur="1.5s"
-                repeatCount="indefinite"
-              />
-              <animate
-                attributeName="strokeDasharray"
-                dur="2s"
-                values="0 32;16 16;0 32;0 32"
-                repeatCount="indefinite"
-              />
-              <animate
-                attributeName="strokeDashoffset"
-                dur="2s"
-                values="0;-16;-32;-32"
-                repeatCount="indefinite"
-              />
-            </circle>
-          </svg>
-        </div>
+        <LoadingIcon size={40} />
         <p className={styles.loadingMessage}>{loadingMessage}</p>
       </div>
     );
