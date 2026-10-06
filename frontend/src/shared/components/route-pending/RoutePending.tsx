@@ -1,32 +1,32 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { syncLoadingIndicator } from "@/shared/components/route-pending/loadingIndicator";
 
 declare global {
   interface Window {
-    __routePending?: boolean;
-    __hideRoutePending?: () => void;
+    __topLoading?: boolean;
+    __hideTopLoader?: () => void;
+    __syncLoadingIndicator?: () => void;
   }
 }
 
 export default function RoutePending() {
   const pathname = usePathname();
-  const skipFirstPath = useRef(true);
 
   useEffect(() => {
+    window.__syncLoadingIndicator = syncLoadingIndicator;
     document.documentElement.dataset.appReady = "1";
-    if (!window.__routePending) {
-      window.__hideRoutePending?.();
-    }
+    syncLoadingIndicator();
   }, []);
 
   useEffect(() => {
-    if (skipFirstPath.current) {
-      skipFirstPath.current = false;
-      return;
-    }
-    window.__hideRoutePending?.();
+    const timer = window.setTimeout(() => {
+      window.__topLoading = false;
+      syncLoadingIndicator();
+    }, 80);
+    return () => window.clearTimeout(timer);
   }, [pathname]);
 
   return null;

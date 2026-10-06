@@ -12,6 +12,7 @@ interface SearchFiltersProps {
   onFilterChange: (filter: CourseFilter) => void;
   sortBy?: string;
   onSortChange?: (sort: string) => void;
+  filters?: CourseFilter[];
 }
 
 const FILTERS: { id: CourseFilter; label: string }[] = [
@@ -28,7 +29,11 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   onFilterChange,
   sortBy = "relevance",
   onSortChange,
+  filters,
 }) => {
+  const visibleFilters = FILTERS.filter(
+    (filter) => !filters || filters.includes(filter.id)
+  );
   return (
     <motion.section
       className={styles.searchFiltersContainer}
@@ -50,7 +55,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           </div>
           <div className={styles.filterGroup} role="tablist" aria-label="Course filters">
             <span className={styles.filterLabel}>Filter</span>
-            {FILTERS.map((filter) => (
+            {visibleFilters.map((filter) => (
               <button
                 key={filter.id}
                 type="button"

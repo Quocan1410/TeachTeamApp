@@ -7,8 +7,11 @@ interface ModalProps {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  maxWidth?: string; // e.g., '500px', '800px', '90%'
+  maxWidth?: string;
+  closeVariant?: "default" | "danger" | "icon";
 }
+
+const CLOSE_MS = 220;
 
 const Modal: React.FC<ModalProps> = ({
   isOpen,
@@ -16,80 +19,88 @@ const Modal: React.FC<ModalProps> = ({
   title,
   children,
   maxWidth = "500px",
+  closeVariant = "default",
 }) => {
-  const modalRef = useRef<HTMLDivElement>(null);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const handleClose = useCallback(() => {
-    setIsAnimating(false);
-    // Clear any existing timeout
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    // Add gentle animation delay before closing
-    timeoutRef.current = setTimeout(() => {
-      // Check if component is still mounted before calling onClose
-      if (modalRef.current) {
-        onClose();
-      }
-    }, 200);
-  }, [onClose]);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const onCloseRef = useRef(onClose);
+  const [phase, setPhase] = useState<"from" | "open" | "leave">("from");
+  const [spinning, setSpinning] = useState(false);
 
   useEffect(() => {
-    const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        handleClose();
-      }
-    };
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-      document.addEventListener("keydown", handleEscapeKey);
-      setIsAnimating(true);
-    } else {
-      document.body.style.overflow = "unset";
-    }
+  const beginClose = useCallback(() => {
+    setSpinning(true);
+    setPhase("leave");
+  }, []);
+
+  useEffect(() => {
+    if (phase !== "leave") return;
+    const timer = window.setTimeout(() => {
+      onCloseRef.current();
+    }, CLOSE_MS);
+    return () => window.clearTimeout(timer);
+  }, [phase]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    setPhase("from");
+    setSpinning(false);
+    const frame = window.requestAnimationFrame(() => {
+      setPhase("open");
+    });
+
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") beginClose();
+    };
+    document.addEventListener("keydown", handleEscapeKey);
+    const root = document.documentElement;
+    const previousOverflow = root.style.overflow;
+    root.style.overflow = "hidden";
 
     return () => {
+      window.cancelAnimationFrame(frame);
       document.removeEventListener("keydown", handleEscapeKey);
-      document.body.style.overflow = "unset"; // Ensure overflow is reset on unmount
-      // Clear timeout on cleanup
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+      root.style.overflow = previousOverflow;
     };
-  }, [isOpen, handleClose]);
-
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (modalRef.current && e.target === modalRef.current) {
-      handleClose();
-    }
-  };
+  }, [isOpen, beginClose]);
 
   if (!isOpen) return null;
 
+  const shown = phase === "open";
+
   return (
     <div
-      className={`${styles.modalOverlay} ${isAnimating ? styles.modalOverlayActive : styles.modalOverlayClosing}`}
-      onClick={handleOverlayClick}
-      ref={modalRef}
+      className={`${styles.modalOverlay} ${shown ? styles.modalOverlayOpen : ""}`}
+      onClick={(event) => {
+        if (event.target === overlayRef.current) beginClose();
+      }}
+      ref={overlayRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? "modal-title" : undefined}
     >
       <div
-        className={`${styles.modalContainer} ${isAnimating ? styles.modalContainerActive : styles.modalContainerClosing}`}
+        className={`${styles.modalContainer} ${shown ? styles.modalContainerOpen : ""}`}
         style={{ maxWidth }}
       >
         <button
           type="button"
-          onClick={handleClose}
-          className={`${styles.modalClose} iconCloseHit iconCloseCircle`}
+          onClick={beginClose}
+          className={`${styles.modalClose} iconCloseHit iconCloseCircle ${
+            closeVariant === "danger" ? styles.modalCloseDanger : ""
+          } ${spinning ? styles.modalCloseSpin : ""}`}
           aria-label="Close modal"
         >
           <CloseIcon size={14} />
         </button>
+        {title ? (
+          <h2 id="modal-title" className="sr-only">
+            {title}
+          </h2>
+        ) : null}
         {children}
       </div>
     </div>

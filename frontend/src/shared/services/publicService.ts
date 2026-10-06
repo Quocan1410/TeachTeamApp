@@ -23,6 +23,8 @@ export interface PublicLecturerDto {
   bio: string;
   courses: string;
   contact: string;
+  yearsExperience?: number;
+  avatarPath?: string;
   assignedCourses: PublicLecturerCourse[];
 }
 
@@ -41,6 +43,8 @@ export function mapPublicLecturerToDisplay(dto: PublicLecturerDto): Lecturer {
     bio: dto.bio,
     courses: dto.courses,
     contact: dto.contact,
+    yearsExperience: dto.yearsExperience,
+    avatarPath: dto.avatarPath,
     assignedCourses: dto.assignedCourses,
   };
 }
@@ -50,6 +54,8 @@ export interface PublicOpening {
   courseCode: string;
   courseName: string;
   semester: string;
+  maxTutors: number;
+  maxLabAssistants: number;
   applicationDeadline: string | null;
   isApplicationOpen: boolean;
   tutorPlacesLeft: number;

@@ -1,8 +1,7 @@
 /* ======== CORE/GLOBAL STYLES ======== */
 /* This is the main entry point for all core/global styles */
 
-@import "tailwindcss/preflight"; /* Corrected Tailwind base import */
-@tailwind utilities;
+@import "tailwindcss";
 
 /* Core Foundation */
 @import "./variables.css"; /* CSS custom properties */

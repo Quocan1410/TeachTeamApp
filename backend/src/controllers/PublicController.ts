@@ -6,7 +6,75 @@ import { Course } from "../entities/Course";
 import { CourseAssignment } from "../entities/CourseAssignment";
 import { Application, ApplicationStatus } from "../entities/Application";
 import { getCourseApplicationWindow } from "../utils/courseDeadline";
-const FEATURED_LECTURER_EMAILS = ["jane.morrison@lecturer.edu.au"];
+const LECTURER_PROFILES: Record<
+    string,
+    { portrait: number; rank: string; years: number }
+> = {
+    "arthur.bell@lecturer.edu.au": {
+        portrait: 12,
+        rank: "Professor",
+        years: 28,
+    },
+    "wei.zhang@lecturer.edu.au": {
+        portrait: 4,
+        rank: "Associate Professor",
+        years: 18,
+    },
+    "tomas.rivera@lecturer.edu.au": {
+        portrait: 6,
+        rank: "Associate Professor",
+        years: 16,
+    },
+    "priya.sharma@lecturer.edu.au": {
+        portrait: 11,
+        rank: "Senior Lecturer",
+        years: 10,
+    },
+    "jane.morrison@lecturer.edu.au": {
+        portrait: 7,
+        rank: "Senior Lecturer",
+        years: 12,
+    },
+    "marcus.chen@lecturer.edu.au": {
+        portrait: 5,
+        rank: "Senior Lecturer",
+        years: 11,
+    },
+    "noah.fischer@lecturer.edu.au": {
+        portrait: 8,
+        rank: "Lecturer",
+        years: 6,
+    },
+    "rachel.okonkwo@lecturer.edu.au": {
+        portrait: 1,
+        rank: "Lecturer",
+        years: 5,
+    },
+    "elena.voss@lecturer.edu.au": {
+        portrait: 10,
+        rank: "Lecturer",
+        years: 4,
+    },
+    "yuki.nakamura@lecturer.edu.au": {
+        portrait: 2,
+        rank: "Lecturer",
+        years: 4,
+    },
+    "hannah.walsh@lecturer.edu.au": {
+        portrait: 9,
+        rank: "Lecturer",
+        years: 3,
+    },
+    "linh.tran@lecturer.edu.au": {
+        portrait: 3,
+        rank: "Lecturer",
+        years: 3,
+    },
+};
+
+function rankArticle(rank: string): string {
+    return /^[aeiou]/i.test(rank) ? "an" : "a";
+}
 
 export interface PublicLecturerCourse {
     courseCode: string;
@@ -22,6 +90,8 @@ export interface PublicLecturerProfile {
     bio: string;
     courses: string;
     contact: string;
+    yearsExperience: number;
+    avatarPath: string;
     assignedCourses: PublicLecturerCourse[];
 }
 
@@ -34,25 +104,12 @@ export class PublicController {
 
     async getLecturers(_req: Request, res: Response): Promise<void> {
         try {
-            const defaultEmails: string[] = FEATURED_LECTURER_EMAILS;
-
             const lecturers = await this.userRepository.find({
                 where: {
                     userType: UserType.LECTURER,
                     isBlocked: false,
                 },
                 order: { lastName: "ASC", firstName: "ASC" },
-            });
-
-            lecturers.sort((a, b) => {
-                const aDefault = defaultEmails.indexOf(a.email);
-                const bDefault = defaultEmails.indexOf(b.email);
-                if (aDefault !== -1 && bDefault !== -1) {
-                    return aDefault - bDefault;
-                }
-                if (aDefault !== -1) return -1;
-                if (bDefault !== -1) return 1;
-                return a.lastName.localeCompare(b.lastName);
             });
 
             if (lecturers.length === 0) {
@@ -104,19 +161,24 @@ export class PublicController {
                               .join(" · ")
                         : "Computer Science & Information Technology";
 
-                const bio =
-                    assignedCourses.length > 0
-                        ? `${lecturer.firstName} ${lecturer.lastName} supports teaching teams for ${assignedCourses.map((c) => c.courseCode).join(", ")}. View assigned courses and semester details below.`
-                        : `${lecturer.firstName} ${lecturer.lastName} is a lecturer on the TeachTeam platform. Course assignments will appear here once configured by an administrator.`;
+                const profile = LECTURER_PROFILES[lecturer.email.toLowerCase()] ?? {
+                    portrait: 1,
+                    rank: "Lecturer",
+                    years: 1,
+                };
+                const name = `${lecturer.firstName} ${lecturer.lastName}`;
+                const bio = `${name} is ${rankArticle(profile.rank)} ${profile.rank} with ${profile.years} years of university teaching experience.`;
 
                 return {
                     id: String(lecturer.id),
-                    name: `${lecturer.firstName} ${lecturer.lastName}`,
-                    title: "Lecturer",
+                    name,
+                    title: profile.rank,
                     specialization,
                     bio,
                     courses: coursesText,
                     contact: lecturer.email,
+                    yearsExperience: profile.years,
+                    avatarPath: `/lecturers/lecturer-${profile.portrait}.jpg`,
                     assignedCourses,
                 };
             });
@@ -199,6 +261,8 @@ export class PublicController {
                     courseCode: course.courseCode,
                     courseName: course.courseName,
                     semester: course.semester,
+                    maxTutors: course.maxTutors,
+                    maxLabAssistants: course.maxLabAssistants,
                     applicationDeadline: window.applicationDeadline,
                     isApplicationOpen: window.isApplicationOpen,
                     tutorPlacesLeft,

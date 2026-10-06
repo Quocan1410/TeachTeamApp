@@ -6,6 +6,9 @@ interface TutorHeroSectionProps {
   availableCourses: number;
   userApplications: number;
   openPositions: number;
+  title?: React.ReactNode;
+  subtitle?: string;
+  statLabels?: [string, string, string];
 }
 
 const TutorHeroSection: React.FC<TutorHeroSectionProps> = ({
