@@ -1,3 +1,5 @@
+import ScrollToTop from "./scroll-to-top";
+
 export default function AuthLayout({
   children,
 }: {
@@ -5,7 +7,7 @@ export default function AuthLayout({
 }) {
   return (
     <section>
-      {/* Include shared auth UI elements here if any, e.g., a specific header/footer for auth pages */}
+      <ScrollToTop />
       {children}
     </section>
   );

@@ -115,6 +115,199 @@
   color: white;
 }
 
+.directoryStage {
+  height: 100%;
+  perspective: 900px;
+}
+
+.directoryShell {
+  --rx: 0deg;
+  --ry: 0deg;
+  --lift: 0px;
+  position: relative;
+  display: flex;
+  height: 100%;
+  transform: rotateX(var(--rx)) rotateY(var(--ry)) translateY(var(--lift));
+  transform-style: preserve-3d;
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.directoryShell:hover {
+  --lift: -0.45rem;
+  transition: transform 0.08s linear;
+}
+
+.directoryShell::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 0.4rem;
+  left: 0.4rem;
+  width: 100%;
+  height: 100%;
+  border-radius: 1.15rem;
+  background: color-mix(in srgb, var(--color-primary) 55%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.directoryShell:hover::after {
+  opacity: 1;
+}
+
+.directoryShell:hover .directory {
+  border-color: rgba(249, 115, 22, 0.55);
+  transform: translateZ(1.1rem);
+}
+
+.directoryPhoto img {
+  transition: transform 0.35s ease;
+}
+
+.directoryShell:hover .directoryPhoto img {
+  transform: scale(1.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .directoryShell,
+  .directoryShell:hover,
+  .directory,
+  .directoryPhoto img {
+    transform: none;
+    transition: none;
+  }
+}
+
+.directory {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 1rem;
+  width: 100%;
+  min-height: 10.6rem;
+  margin: 0;
+  padding: 1.15rem 1.15rem 1.05rem;
+  border: 1px solid var(--color-border);
+  border-radius: 1.15rem;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(249, 115, 22, 0.14), transparent 8.5rem),
+    var(--color-bg-secondary);
+  overflow: hidden;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transform: translateZ(0);
+  transition: transform 0.35s ease, border-color 0.2s ease;
+}
+
+.ornament {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+}
+
+.gem {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 0.06rem;
+  background: var(--color-primary);
+  transform: rotate(45deg);
+}
+
+.dotBlue,
+.dotGreen {
+  width: 0.28rem;
+  height: 0.28rem;
+  border-radius: 999px;
+  opacity: 0.75;
+}
+
+.dotBlue {
+  background: #60a5fa;
+}
+
+.dotGreen {
+  background: #34d399;
+}
+
+.directoryTop {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-width: 0;
+  padding-right: 2.2rem;
+}
+
+.directoryPhoto {
+  display: block;
+  width: 5.05rem;
+  height: 5.05rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.45);
+}
+
+.directoryPhoto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 36%;
+}
+
+.directoryCopy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.directoryName {
+  color: var(--color-text-primary);
+  font-size: 1.22rem;
+  font-weight: 750;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.directoryRole {
+  margin-top: 0.2rem;
+  color: var(--color-primary);
+  font-size: 0.84rem;
+}
+
+.directoryCourses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.code {
+  display: inline-flex;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid rgba(249, 115, 22, 0.28);
+  border-radius: 999px;
+  background: rgba(249, 115, 22, 0.1);
+  color: var(--color-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.hit {
+  padding: 0 0.08rem;
+  border-radius: 0.2rem;
+  background: rgba(249, 115, 22, 0.28);
+  color: inherit;
+}
+
 /* Custom hover effects for each card - using global selectors for numbered classes */
 :global(.lecturer1):hover .lecturerDecoration {
   transform: scale(1.2) rotate(15deg) !important;
