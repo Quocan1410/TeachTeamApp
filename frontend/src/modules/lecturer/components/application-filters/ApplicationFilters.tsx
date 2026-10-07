@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDebouncedValue } from '@/shared/hooks/useDebouncedValue';
 import { motion, AnimatePresence } from 'framer-motion';
 import CloseIcon from '@/shared/components/common/icons/CloseIcon';
 import AppSelect from '@/shared/components/common/app-select/AppSelect';
@@ -64,6 +65,7 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [skillSearchQuery, setSkillSearchQuery] = useState('');
+  const debouncedSkillSearch = useDebouncedValue(skillSearchQuery, 280);
 
   // Auto-expand if filters are active
   useEffect(() => {
@@ -74,7 +76,7 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
 
   // Filter available skills based on search
   const filteredSkills = availableSkills.filter(skill =>
-    skill.toLowerCase().includes(skillSearchQuery.toLowerCase())
+    skill.toLowerCase().includes(debouncedSkillSearch.trim().toLowerCase())
   );
 
   const handleSkillToggle = (skill: string) => {
@@ -329,9 +331,9 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
                 ))}
               </div>
 
-              {filteredSkills.length === 0 && skillSearchQuery && (
+              {filteredSkills.length === 0 && debouncedSkillSearch.trim() && (
                 <div className={styles.noSkillsFound}>
-                  <p>No skills found matching &quot;{skillSearchQuery}&quot;</p>
+                  <p>No skills found matching &quot;{debouncedSkillSearch.trim()}&quot;</p>
                 </div>
               )}
               </div>

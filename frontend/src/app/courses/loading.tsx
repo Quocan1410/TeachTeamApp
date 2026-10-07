@@ -1,5 +1,5 @@
-import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
+import CoursesSkeleton from "./courses-skeleton";
 
 export default function CoursesLoading() {
-  return <PageSkeleton variant="tutor" />;
+  return <CoursesSkeleton />;
 }

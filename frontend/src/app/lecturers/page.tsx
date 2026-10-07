@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import {
   PublicService,
   type PublicOpening,
@@ -8,6 +9,10 @@ import {
 import type { Lecturer, LecturerCourseAssignment } from "@/shared/types/lecturer";
 import LecturerShowcase from "@/modules/home/components/lecturer-showcase/LecturerShowcase";
 import LecturerDetailModal from "@/modules/home/components/lecturer-card/LecturerDetailModal";
+import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
+import styles from "./lecturers.module.css";
+
+const PAGE_SIZE = 9;
 
 function semesterRank(semester: string): number {
   const year = Number(semester.match(/20\d{2}/)?.[0] ?? 0);
@@ -44,14 +49,28 @@ function coursesForWindow(
   );
 }
 
+function searchTerms(query: string): string[] {
+  return query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+}
+
+function lecturerMatches(lecturer: Lecturer, terms: string[]): boolean {
+  if (terms.length === 0) return true;
+  const courses = (lecturer.assignedCourses ?? [])
+    .map((course) => `${course.courseCode} ${course.courseName}`)
+    .join(" ");
+  const haystack = `${lecturer.name} ${lecturer.title} ${courses}`.toLowerCase();
+  return terms.every((term) => haystack.includes(term));
+}
+
 export default function LecturersPage() {
   const [lecturers, setLecturers] = useState<Lecturer[]>([]);
-  const [subtitle, setSubtitle] = useState(
-    "Lecturers assigned to courses, and the subjects they teach."
-  );
+  const [line, setLine] = useState("Hi! Try a name, or a course.");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeLecturer, setActiveLecturer] = useState<Lecturer | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 280);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -62,10 +81,12 @@ export default function LecturersPage() {
         PublicService.getOpenings(),
       ]);
       const window = relevantSemesters(openings);
-      setSubtitle(
-        window.next
-          ? `Courses taught in ${window.current} and ${window.next}.`
-          : `Courses taught in ${window.current ?? "the current semester"}.`
+      setLine(
+        window.current && window.next
+          ? `I'll show you who teaches ${window.current} and ${window.next}.`
+          : window.current
+            ? `I'll show you who teaches ${window.current}.`
+            : "Hi! Try a name, or a course."
       );
       setLecturers(
         lecturerRows
@@ -109,26 +130,115 @@ export default function LecturersPage() {
     void load();
   }, [load]);
 
+  const terms = useMemo(
+    () => searchTerms(debouncedSearchQuery),
+    [debouncedSearchQuery]
+  );
+
+  const visibleLecturers = useMemo(
+    () => lecturers.filter((lecturer) => lecturerMatches(lecturer, terms)),
+    [lecturers, terms]
+  );
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearchQuery]);
+
+  const totalPages = Math.max(1, Math.ceil(visibleLecturers.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const pageLecturers = visibleLecturers.slice(
+    (safePage - 1) * PAGE_SIZE,
+    safePage * PAGE_SIZE
+  );
+
   const activeIndex = activeLecturer
     ? lecturers.findIndex((lecturer) => lecturer.id === activeLecturer.id)
     : 0;
 
   return (
-    <div className="pt-24">
-      <LecturerShowcase
-        lecturers={lecturers}
-        isLoading={loading}
-        error={error}
-        onRetry={load}
-        onOpenLecturerModal={(lecturerId) => {
-          setActiveLecturer(
-            lecturers.find((lecturer) => lecturer.id === lecturerId) ?? null
-          );
-        }}
-        title="Meet Our Lecturers"
-        subtitle={subtitle}
-        limit={Math.max(lecturers.length, 1)}
-      />
+    <div className={styles.page}>
+      <header className={styles.stage}>
+        <div className={styles.intro}>
+          <div className={styles.titleRow}>
+            <h1 className={styles.title}>Lecturers</h1>
+            <span className={styles.ornament} aria-hidden="true">
+              <span className={styles.gem} />
+              <span className={styles.dotBlue} />
+              <span className={styles.dotGreen} />
+            </span>
+          </div>
+          <p className={styles.line}>{line}</p>
+          <label className={styles.search}>
+            <MagnifyingGlassIcon className={styles.searchIcon} aria-hidden="true" />
+            <input
+              className={styles.searchInput}
+              type="search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Name or course"
+              aria-label="Search lecturers by name or course"
+            />
+          </label>
+        </div>
+        <div className={styles.portrait}>
+          <span className={styles.halo} aria-hidden="true" />
+          <img src="/mascot/mascot-4.png?v=1" alt="" className={styles.sit} />
+        </div>
+      </header>
+      {!loading && !error && lecturers.length > 0 && visibleLecturers.length === 0 ? (
+        <div className={styles.miss}>
+          <img src="/mascot/mascot-4.png?v=1" alt="" className={styles.missMascot} />
+          <div>
+            <p className={styles.missTitle}>No lecturers match that search.</p>
+            <p className={styles.missText}>Try another name or course, or clear the search.</p>
+            <button type="button" className={styles.missClear} onClick={() => setSearchQuery("")}>
+              Clear search
+            </button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <LecturerShowcase
+            lecturers={pageLecturers}
+            isLoading={loading}
+            error={error}
+            onRetry={load}
+            onOpenLecturerModal={(lecturerId) => {
+              setActiveLecturer(
+                lecturers.find((lecturer) => lecturer.id === lecturerId) ?? null
+              );
+            }}
+            showHeading={false}
+            layout="directory"
+            limit={PAGE_SIZE}
+            highlightTerms={terms}
+            imageOffset={(safePage - 1) * PAGE_SIZE}
+          />
+          {totalPages > 1 && (
+            <div className={styles.pager}>
+              <button
+                type="button"
+                className={styles.pagerButton}
+                disabled={safePage <= 1}
+                onClick={() => setPage(safePage - 1)}
+              >
+                Previous
+              </button>
+              <span className={styles.pagerStatus}>
+                {safePage} of {totalPages}
+              </span>
+              <button
+                type="button"
+                className={styles.pagerButton}
+                disabled={safePage >= totalPages}
+                onClick={() => setPage(safePage + 1)}
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
+      )}
       <LecturerDetailModal
         lecturer={activeLecturer}
         imageIndex={Math.max(activeIndex, 0)}

@@ -1,9 +1,9 @@
 .pageContainer {
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 6rem 1rem 3rem;
+  padding: 9rem 1rem 3rem;
   background-color: var(--color-bg-primary);
   position: relative;
 }
@@ -11,7 +11,7 @@
 .pageContainer::before {
   content: "";
   position: absolute;
-  top: 15vh;
+  top: 11rem;
   right: 34vw;
   width: 200px;
   height: 200px;

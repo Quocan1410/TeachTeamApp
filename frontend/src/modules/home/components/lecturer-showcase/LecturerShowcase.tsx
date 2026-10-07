@@ -14,6 +14,10 @@ interface LecturerShowcaseProps {
   title?: string;
   subtitle?: string;
   limit?: number;
+  showHeading?: boolean;
+  layout?: "home" | "directory";
+  highlightTerms?: string[];
+  imageOffset?: number;
 }
 
 const LecturerShowcase: React.FC<LecturerShowcaseProps> = ({
@@ -25,20 +29,33 @@ const LecturerShowcase: React.FC<LecturerShowcaseProps> = ({
   title = "Meet Our Lecturers",
   subtitle = "Lecturers assigned to courses, and the subjects they teach.",
   limit = 4,
+  showHeading = true,
+  layout = "home",
+  highlightTerms = [],
+  imageOffset = 0,
 }) => {
   const displayedLecturers = lecturers.slice(0, limit);
+  const isDirectory = layout === "directory";
 
   return (
     <section
-      className="py-24"
+      className={isDirectory ? styles.directory : "py-24"}
       id="lecturers"
-      style={{ backgroundColor: "var(--color-bg-primary)" }}
+      style={isDirectory ? undefined : { backgroundColor: "var(--color-bg-primary)" }}
     >
-      <div className="container mx-auto">
-        <div className="max-w-6xl mx-auto">
-          <SectionTitle title={title} subtitle={subtitle} />
+      <div className={isDirectory ? undefined : "container mx-auto"}>
+        <div className={isDirectory ? undefined : "max-w-6xl mx-auto"}>
+          {showHeading && <SectionTitle title={title} subtitle={subtitle} />}
 
-          {isLoading && <PageSkeleton variant="home" fullPage={false} />}
+          {isLoading && !isDirectory && <PageSkeleton variant="home" fullPage={false} />}
+
+          {isLoading && isDirectory && (
+            <div className={styles.directoryGrid} aria-hidden="true">
+              {Array.from({ length: 9 }).map((_, index) => (
+                <div key={index} className={styles.skeletonCard} />
+              ))}
+            </div>
+          )}
 
           {!isLoading && error && (
             <div className={styles.statusBlock}>
@@ -62,13 +79,15 @@ const LecturerShowcase: React.FC<LecturerShowcaseProps> = ({
           )}
 
           {!isLoading && !error && displayedLecturers.length > 0 && (
-            <div className={styles.lecturerGrid}>
+            <div className={isDirectory ? styles.directoryGrid : styles.lecturerGrid}>
               {displayedLecturers.map((lecturer, index) => (
                 <LecturerCard
                   key={lecturer.id}
                   lecturer={lecturer}
                   onOpenModal={onOpenLecturerModal}
-                  imageIndex={index}
+                  imageIndex={imageOffset + index}
+                  variant={isDirectory ? "directory" : "home"}
+                  highlightTerms={isDirectory ? highlightTerms : undefined}
                 />
               ))}
             </div>
