@@ -1,5 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { HeartIcon as HeartOutline } from "@heroicons/react/24/outline";
+import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 import type { CourseDetails } from "@/shared/types/courseTypes";
 import {
   Course,
@@ -25,6 +27,9 @@ interface EnhancedCourseCardProps {
   roles: Role[];
   myApplications: ApplicationResponse[];
   onApplyForRole: (course: Course, role: Role) => void;
+  isFavourite?: boolean;
+  onToggleFavourite?: (courseId: string) => void;
+  remindApply?: boolean;
 }
 
 // Combined interface to support both legacy and new usage
@@ -164,11 +169,24 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
   if (enhancedProps) {
     const courseData = course as Course;
     return (
-      <motion.article
-        className={styles.enhancedCourseCard}
-        whileHover={{ y: -2 }}
-        transition={{ duration: 0.2, ease: "easeOut" }}
-      >
+      <motion.article className={styles.enhancedCourseCard}>
+        {enhancedProps.onToggleFavourite && (
+          <button
+            type="button"
+            className={`${styles.favourite} ${
+              enhancedProps.isFavourite ? styles.favouriteOn : ""
+            }`}
+            aria-pressed={Boolean(enhancedProps.isFavourite)}
+            aria-label={
+              enhancedProps.isFavourite
+                ? "Remove from apply later"
+                : "Save to apply later"
+            }
+            onClick={() => enhancedProps.onToggleFavourite?.(courseData.id)}
+          >
+            {enhancedProps.isFavourite ? <HeartSolid /> : <HeartOutline />}
+          </button>
+        )}
         <div className={styles.cardMain}>
           <p className={styles.eyebrow}>
             <span className={styles.eyebrowCode}>{courseData.courseCode}</span>
@@ -180,6 +198,9 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
 
           <div className={styles.titleRow}>
             <h3 className={styles.courseTitle}>{courseData.courseName}</h3>
+            {enhancedProps.remindApply && (
+              <span className={styles.remindText}>About a month left</span>
+            )}
             {enhancedCourse?.applicationDeadline && (
               <span
                 className={`${styles.deadlineText} ${

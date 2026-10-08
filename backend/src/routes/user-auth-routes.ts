@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { AuthController } from "../controllers/AuthController";
+import { PasskeyController } from "../controllers/PasskeyController";
 import { authenticateToken } from "../middleware/authMiddleware";
 import { avatarUpload } from "../middleware/uploadMiddleware";
 import { authRateLimiter } from "../middleware/rateLimiters";
@@ -7,6 +8,7 @@ import { validateSignupData } from "../utils/validation";
 
 const router = Router();
 const authController = new AuthController();
+const passkeyController = new PasskeyController();
 
 // Enhanced validation middleware
 const validateRequestBody = (requiredFields: string[]) => {
@@ -97,6 +99,22 @@ router.post("/logout", async (req, res) => {
 
 router.post("/refresh", authRateLimiter, async (req, res) => {
     await authController.refreshToken(req, res);
+});
+
+router.post("/passkey/register/options", authRateLimiter, authenticateToken, async (req, res) => {
+    await passkeyController.registrationOptions(req, res);
+});
+
+router.post("/passkey/register/verify", authRateLimiter, authenticateToken, async (req, res) => {
+    await passkeyController.verifyRegistration(req, res);
+});
+
+router.post("/passkey/login/options", authRateLimiter, async (req, res) => {
+    await passkeyController.loginOptions(req, res);
+});
+
+router.post("/passkey/login/verify", authRateLimiter, async (req, res) => {
+    await passkeyController.verifyLogin(req, res);
 });
 
 // Protected routes

@@ -1,5 +1,4 @@
 import { UserType } from "../entities/User";
-import { getAdminEmail, isCanonicalAdminEmail } from "./adminConfig";
 import { validateNewPassword } from "./passwordRules";
 interface ValidationResult {
     isValid: boolean;
@@ -14,8 +13,6 @@ export const getUserTypeFromEmail = (email: string): UserType | null => {
         return UserType.CANDIDATE;
     } else if (emailLowercase.endsWith("@lecturer.edu.au")) {
         return UserType.LECTURER;
-    } else if (isCanonicalAdminEmail(emailLowercase)) {
-        return UserType.ADMIN;
     }
 
     return null;
@@ -41,12 +38,7 @@ export const validateEmailDomain = (email: string, expectedUserType?: UserType):
         case UserType.LECTURER:
             return {
                 isValid: emailLowercase.endsWith("@lecturer.edu.au"),
-                expectedDomain: "@lecturer.edu.au"
-            };
-        case UserType.ADMIN:
-            return {
-                isValid: isCanonicalAdminEmail(emailLowercase),
-                expectedDomain: getAdminEmail(),
+                expectedDomain: "@lecturer.edu.au",
             };
         default:
             return { isValid: false };

@@ -14,11 +14,14 @@ import {
   mapSignupApiErrors,
 } from "@/modules/auth/utils/authValidation.utils";
 import { AuthService } from "@/shared/services/authService";
+import Toast from "@/shared/components/common/toast/toast";
+import { useToast } from "@/shared/hooks/useNotification";
 import { UserType } from "@/shared/types/user";
 import EmailAutocomplete from "@/modules/auth/components/email-autocomplete/email-autocomplete";
 import AppSelect from "@/shared/components/common/app-select/AppSelect";
 import { type Honorific } from "@/shared/utils/personDisplayName";
 import grid from "@/modules/auth/styles/signup-grid.module.css";
+import PasskeyOffer from "@/modules/auth/components/passkey-offer/PasskeyOffer";
 import styles from "./signup-form.module.css";
 
 const TITLE_PLACEHOLDER = "";
@@ -48,7 +51,9 @@ export default function SignUpForm() {
   // Validation states
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [apiError, setApiError] = useState("");
+  const [askPasskey, setAskPasskey] = useState(false);
+  const [createdEmail, setCreatedEmail] = useState("");
+  const { toast, showError, hideToast } = useToast();
 
   // Password strength calculation
   const passwordStrength = calculatePasswordStrength(password);
@@ -91,10 +96,6 @@ export default function SignUpForm() {
       }));
     }
 
-    // Clear API error
-    if (apiError) {
-      setApiError("");
-    }
   };
 
   const validateForm = (): boolean => {
@@ -157,7 +158,6 @@ export default function SignUpForm() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
-    setApiError("");
 
     // Validate form
     if (!validateForm()) {
@@ -173,8 +173,9 @@ export default function SignUpForm() {
         role === "tutor" ? UserType.CANDIDATE : UserType.LECTURER;
 
       // Prepare the signup data in the format expected by the backend
+      const signupEmail = email.trim().toLowerCase();
       const signupData = {
-        email: email.trim(),
+        email: signupEmail,
         password,
         firstName,
         lastName,
@@ -182,25 +183,21 @@ export default function SignUpForm() {
         honorific: honorific || undefined,
       };
 
-      // Call the signup API
       const response = await AuthService.signup(signupData);
 
       if (response.success && response.data) {
-        // Don't auto-login after signup - redirect to signin page instead
-        
-        // Redirect to signin page with success message and email
-        router.push(`/signin?message=Account created successfully! Please sign in.&email=${encodeURIComponent(email.trim())}`);
+        setCreatedEmail(signupEmail);
+        setAskPasskey(true);
       } else {
-        // Handle API errors
         if (response.errors) {
           setErrors(mapSignupApiErrors(response.errors));
         }
-        setApiError(
+        showError(
           response.message || "Failed to create account. Please try again."
         );
       }
     } catch {
-      setApiError(
+      showError(
         "Network error occurred. Please check your connection and try again."
       );
     } finally {
@@ -208,16 +205,31 @@ export default function SignUpForm() {
     }
   };
 
+  const finishSignup = (notice: string) => {
+    router.push(
+      `/signin?message=${encodeURIComponent(notice)}&email=${encodeURIComponent(createdEmail)}`
+    );
+  };
+
+  if (askPasskey) {
+    return (
+      <div className={styles.formContainer}>
+        <PasskeyOffer onDone={finishSignup} onError={showError} />
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          visible={toast.visible}
+          onClose={hideToast}
+          autoCloseDelay={5000}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={styles.formContainer}>
       <form className={styles.form} onSubmit={handleSubmit} noValidate>
         <h2 className={styles.title}>Create Account</h2>
-
-        {apiError && (
-          <div className={`${styles.alert} ${styles.alertError}`}>
-            {apiError}
-          </div>
-        )}
 
         <div className={styles.formStack}>
           <div className={styles.accountSection}>
@@ -241,11 +253,45 @@ export default function SignUpForm() {
                   )}
                 </div>
                 <div className={grid.cell}>
+                  <AppSelect
+                    id="honorific"
+                    value={honorific}
+                    onChange={(value) => {
+                      setHonorific(value as SignupHonorific);
+                      if (errors.honorific) {
+                        setErrors((prev) => ({ ...prev, honorific: "" }));
+                      }
+                    }}
+                    options={HONORIFIC_OPTIONS}
+                    variant="pill"
+                    hasError={!!errors.honorific}
+                    className={grid.selectWrap}
+                    aria-label="Title"
+                    aria-required="true"
+                  />
+                  {errors.honorific && (
+                    <span className={grid.fieldError}>
+                      {errors.honorific}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className={grid.row}>
+                <div className={grid.cell}>
                   <div className={grid.controlWrap}>
                     <input
                       type={showPassword ? "text" : "password"}
                       placeholder="Password"
                       value={password}
+                      onFocus={() => {
+                        if (!errors.password) return;
+                        handleInputChange("password", "");
+                      }}
+                      onClick={() => {
+                        if (!errors.password) return;
+                        handleInputChange("password", "");
+                      }}
                       onChange={(e) =>
                         handleInputChange("password", e.target.value)
                       }
@@ -289,58 +335,25 @@ export default function SignUpForm() {
                       )}
                     </button>
                   </div>
+                  {password && (
+                    <>
+                      <div
+                        className={`${styles.passwordStrengthMeter} ${styles[passwordFeedback.level]}`}
+                      >
+                        <div className={styles.segment} />
+                        <div className={styles.segment} />
+                        <div className={styles.segment} />
+                        <div className={styles.segment} />
+                      </div>
+                      <div
+                        className={`${styles.passwordStrengthText} ${styles[passwordFeedback.level + "Text"]}`}
+                      >
+                        {passwordFeedback.text}
+                      </div>
+                    </>
+                  )}
                   {errors.password && (
                     <span className={grid.fieldError}>{errors.password}</span>
-                  )}
-                </div>
-              </div>
-
-              {password && (
-                <div className={`${grid.row} ${grid.rowTight}`}>
-                  <div className={grid.cell} aria-hidden="true" />
-                  <div className={grid.cell}>
-                    <div
-                      className={`${styles.passwordStrengthMeter} ${styles[passwordFeedback.level]}`}
-                    >
-                      <div className={styles.segment} />
-                      <div className={styles.segment} />
-                      <div className={styles.segment} />
-                      <div className={styles.segment} />
-                    </div>
-                    <div
-                      className={`${styles.passwordStrengthText} ${styles[passwordFeedback.level + "Text"]}`}
-                    >
-                      {passwordFeedback.text}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className={grid.row}>
-                <div className={grid.cell}>
-                  <AppSelect
-                    id="honorific"
-                    value={honorific}
-                    onChange={(value) => {
-                      setHonorific(value as SignupHonorific);
-                      if (errors.honorific) {
-                        setErrors((prev) => ({ ...prev, honorific: "" }));
-                      }
-                      if (apiError) {
-                        setApiError("");
-                      }
-                    }}
-                    options={HONORIFIC_OPTIONS}
-                    variant="pill"
-                    hasError={!!errors.honorific}
-                    className={grid.selectWrap}
-                    aria-label="Title"
-                    aria-required="true"
-                  />
-                  {errors.honorific && (
-                    <span className={grid.fieldError}>
-                      {errors.honorific}
-                    </span>
                   )}
                 </div>
                 <div className={grid.cell}>
@@ -349,6 +362,14 @@ export default function SignUpForm() {
                       type={showConfirmPassword ? "text" : "password"}
                       placeholder="Confirm Password"
                       value={confirmPassword}
+                      onFocus={() => {
+                        if (!errors.confirmPassword) return;
+                        handleInputChange("confirmPassword", "");
+                      }}
+                      onClick={() => {
+                        if (!errors.confirmPassword) return;
+                        handleInputChange("confirmPassword", "");
+                      }}
                       onChange={(e) =>
                         handleInputChange("confirmPassword", e.target.value)
                       }
@@ -470,6 +491,13 @@ export default function SignUpForm() {
           </p>
         </div>
       </form>
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        visible={toast.visible}
+        onClose={hideToast}
+        autoCloseDelay={5000}
+      />
     </div>
   );
 }

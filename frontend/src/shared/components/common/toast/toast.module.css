@@ -92,7 +92,7 @@
 }
 
 .toastNotification.top-center {
-  top: 20px;
+  top: 5.5rem;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -224,6 +224,7 @@
 
 /* Inner Content - ensure all four corners are rounded */
 .toastInner {
+  position: relative;
   display: flex;
   height: 75px; /* 75% of 100px */
   max-width: 375px; /* 75% of 500px */
@@ -231,6 +232,52 @@
   overflow: hidden; /* clip content for rounded corners */
   border-radius: 0.75rem; /* rounded corners */
   width: 100%; /* full width */
+}
+
+.toastSuccess .toastTimer {
+  background: #22c55e;
+}
+
+.toastError .toastTimer {
+  background: #ef4444;
+}
+
+.toastInfo .toastTimer {
+  background: #3b82f6;
+}
+
+.toastWarning .toastTimer {
+  background: #f59e0b;
+}
+
+.toastTimer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 4;
+  width: 100%;
+  height: 3px;
+  background: currentColor;
+  transform-origin: left center;
+  animation-name: toastCountdown;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+  pointer-events: none;
+}
+
+@keyframes toastCountdown {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toastTimer {
+    animation: none;
+  }
 }
 
 /* Decorative area - adjusted for smaller size */
@@ -411,35 +458,49 @@
 
 /* Content Area */
 .toastContentArea {
-  flex: 1;
-  padding: 0 1rem;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  padding: 0 2.25rem;
+  text-align: center;
+  pointer-events: none;
 }
 
 /* Header - padding for close button */
 .toastHeader {
-  margin-bottom: 4px; /* mb-1 */
+  margin: 0;
   display: flex;
-  align-items: flex-start; /* items-start */
-  gap: 0.5rem; /* gap-2 */
-  padding-right: 1.5rem; /* space for close button */
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 0.5rem;
+  padding: 0;
 }
 
 /* Typography - 75% FONT SIZE */
 .toastTitle {
   font-size: 1.03rem; /* 75% of 1.375rem */
-  line-height: 1.31rem; /* 75% of 1.75rem */
+  line-height: 1.25;
   font-weight: 600;
   margin: 0;
+  width: 100%;
+  text-align: center;
   color: rgb(0, 0, 0);
   letter-spacing: -0.025em;
 }
 
 .toastMessage {
   margin: 0;
+  width: 100%;
+  text-align: center;
   font-size: 0.675rem; /* 75% of 0.9rem */
-  line-height: 1.05rem; /* 75% of 1.4rem */
+  line-height: 1.35;
   color: rgba(0, 0, 0, 0.85);
-  margin-top: 2px; /* 75% of 2px, rounded up */
 }
 
 /* Dark Mode Text - enhanced brightness and contrast for darker backgrounds */

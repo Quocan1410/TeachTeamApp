@@ -1,80 +1,123 @@
-import React from "react";
-import { motion } from "framer-motion";
+"use client";
+
+import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import styles from "./TutorHeroSection.module.css";
 
+export type ApplyLaterReminder = {
+  id: string;
+  courseCode: string;
+  daysLeft: number;
+};
+
 interface TutorHeroSectionProps {
-  availableCourses: number;
-  userApplications: number;
-  openPositions: number;
-  title?: React.ReactNode;
-  subtitle?: string;
-  statLabels?: [string, string, string];
+  children?: React.ReactNode;
+  reminders?: ApplyLaterReminder[];
 }
 
+const LINES = [
+  "Curious about the note?",
+  "Bits are in the note.",
+  "Tap me to open the note.",
+];
+
+const NOTES = [
+  "Each course can offer a tutor role and a lab-assistant role.",
+  "The date on a card is when applications close.",
+  "Heart a course to keep it and apply later.",
+  "About a month before that date, if you still have not applied, we remind you.",
+  "After you apply, follow the role under Applications.",
+];
+
 const TutorHeroSection: React.FC<TutorHeroSectionProps> = ({
-  availableCourses,
-  userApplications,
-  openPositions,
+  children,
+  reminders = [],
 }) => {
+  const [notesOpen, setNotesOpen] = useState(false);
+  const [line, setLine] = useState(0);
+  const [bubbleOn, setBubbleOn] = useState(true);
+  const notesWereOpen = useRef(false);
+
+  useEffect(() => {
+    if (notesOpen) {
+      notesWereOpen.current = true;
+      setBubbleOn(false);
+      return;
+    }
+
+    const startHidden = notesWereOpen.current;
+    notesWereOpen.current = false;
+    let showing = !startHidden;
+    setBubbleOn(showing);
+
+    const id = window.setInterval(() => {
+      showing = !showing;
+      if (!showing) {
+        setLine((current) => (current + 1) % LINES.length);
+      }
+      setBubbleOn(showing);
+    }, 9000);
+    return () => window.clearInterval(id);
+  }, [notesOpen]);
+
   return (
-    <motion.div
-      className={styles.tutorHeroSection}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
-    >
-      <div className="container">
-        <div className={styles.tutorHeroContent}>
-          <motion.h1
-            className={styles.tutorHeroTitle}
-            initial={{ y: -30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-          >
-            Find Your Perfect{" "}
-            <span className={styles.heroHighlight}>Teaching</span> Opportunity
-          </motion.h1>
-          <motion.p
-            className={styles.tutorHeroSubtitle}
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.4 }}
-          >
-            Browse available courses and apply for tutor or lab-assistant
-            positions with the School of Computer Science
-          </motion.p>
+    <section className={styles.tutorHeroSection}>
+      <div className={styles.inner}>
+        <h1 className={styles.tutorHeroTitle}>
+          Find your{" "}
+          <span className={styles.doubleWord} data-text="Teaching Roles">
+            Teaching Roles
+          </span>
+        </h1>
 
-          {/* Stats */}
-          <motion.div
-            className={styles.tutorStats}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.6 }}
-          >
-            <div className={styles.statItem}>
-              <div className={styles.statValue}>{availableCourses}</div>
-              <div className={styles.statLabel}>Available Courses</div>
-            </div>
-            <div className={styles.statDivider}></div>
-            <div className={styles.statItem}>
-              <div className={styles.statValue}>{userApplications}</div>
-              <div className={styles.statLabel}>Your Applications</div>
-            </div>
-            <div className={styles.statDivider}></div>
-            <div className={styles.statItem}>
-              <div className={styles.statValue}>{openPositions}</div>
-              <div className={styles.statLabel}>Open Positions</div>
-            </div>
-          </motion.div>
+        <div className={styles.heroRow}>
+          <div className={styles.searchCol}>{children}</div>
+          <div className={styles.mascotCol}>
+            <button
+              type="button"
+              className={styles.mascotButton}
+              aria-expanded={notesOpen}
+              onClick={() => setNotesOpen((open) => !open)}
+            >
+              {!notesOpen && bubbleOn && (
+                <span key={line} className={styles.bubble} aria-live="polite">
+                  {LINES[line]}
+                </span>
+              )}
+              <Image
+                src="/mascot/mascot-1.png"
+                alt=""
+                width={320}
+                height={320}
+                className={styles.mascot}
+              />
+            </button>
+            {notesOpen && (
+              <div className={styles.notes} role="note">
+                <p className={styles.notesTitle}>A few useful notes</p>
+                <ul>
+                  {NOTES.map((note) => (
+                    <li key={note}>{note}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className={styles.heroDecoration}>
-          <div className={`${styles.circleDecoration} ${styles.circle1}`}></div>
-          <div className={`${styles.circleDecoration} ${styles.circle2}`}></div>
-          <div className={`${styles.circleDecoration} ${styles.circle3}`}></div>
-        </div>
+        {reminders.length > 0 && (
+          <ul className={styles.reminders}>
+            {reminders.map((item) => (
+              <li key={item.id}>
+                {item.courseCode} has about {item.daysLeft}{" "}
+                {item.daysLeft === 1 ? "day" : "days"} left, and you have not
+                applied yet.
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
-    </motion.div>
+    </section>
   );
 };
 

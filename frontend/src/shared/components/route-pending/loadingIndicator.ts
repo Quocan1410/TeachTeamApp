@@ -116,7 +116,7 @@ function finishProgress() {
     if (fill) {
       fill.style.transition = "none";
       fill.style.transform = "scaleX(0)";
-      fill.offsetHeight;
+      fill.getBoundingClientRect();
       fill.style.transition = "";
     }
     progress = 0;

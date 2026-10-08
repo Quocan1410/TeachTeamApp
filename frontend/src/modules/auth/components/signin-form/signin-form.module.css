@@ -6,15 +6,38 @@
   margin: 0 auto;
   position: relative;
   z-index: 1;
+  padding-top: 4.6rem;
+}
+
+.mascotSeat {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  z-index: 3;
+  width: 9.5rem;
+  height: 5.5rem;
+  transform: translateX(-50%);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.mascot {
+  display: block;
+  width: 9.5rem;
+  height: auto;
+  margin-top: -4.15rem;
 }
 
 .form {
   /* Corresponds to .circle-form form */
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
   background-color: var(--color-bg-primary);
-  padding: 2.5rem;
+  padding: 2.4rem 2rem 2.6rem;
   border-radius: 20px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
   border: 1px solid var(--color-border);
   position: relative;
   z-index: 2;
@@ -27,44 +50,74 @@
 /* Title styling */
 .title {
   text-align: center;
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 1.5rem;
+  font-size: 2.15rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin: 0 0 0.35rem;
   color: var(--color-primary);
 }
 
 /* Input container styling */
-.inputContainer {
-  margin-bottom: 1rem;
-  position: relative;
-  min-height: 4rem; /* Fixed height to prevent jumping */
-}
-
+.inputContainer,
 .passwordContainer {
-  margin-bottom: 1rem;
+  margin: 0;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  min-height: 4rem; /* Fixed height to prevent jumping */
+  min-height: 0;
 }
 
 .inputField {
   /* Corresponds to .circle-form input */
   width: 100%;
-  padding: 1rem 1.5rem;
-  margin: 0.7rem 0;
+  height: 3.25rem;
+  line-height: 3.25rem;
+  box-sizing: border-box;
+  padding: 0 1.25rem;
+  margin: 0;
   border: 1px solid var(--color-border);
   background-color: var(--color-bg-secondary);
-  border-radius: 25px;
+  border-radius: 0.9rem;
   outline: none;
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
   color: var(--color-text-primary);
 }
 
 .passwordContainer .inputField {
   padding-right: 3rem; /* Make space for the password toggle button */
-  margin: 0; /* Remove margin for better positioning */
-  height: 3.25rem; /* Fixed height for consistency */
+}
+
+.inputError {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.shake {
+  animation: fieldShake 0.42s ease;
+}
+
+@keyframes fieldShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-8px);
+  }
+  40% {
+    transform: translateX(8px);
+  }
+  60% {
+    transform: translateX(-5px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shake {
+    animation: none;
+  }
 }
 
 .inputField:focus {
@@ -76,8 +129,10 @@
 /* Password toggle button */
 .passwordToggle {
   position: absolute;
-  right: 1rem;
-  top: 0.8125rem; /* Adjusted for fixed input height */
+  right: 0.35rem;
+  top: 0;
+  height: 3.25rem;
+  width: 2.75rem;
   background: none;
   border: none;
   color: var(--color-text-secondary);
@@ -87,8 +142,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
+  padding: 0;
 }
 
 .passwordToggle:hover {
@@ -102,10 +156,11 @@
 
 .submitButton {
   /* Corresponds to .sign-in-button */
-  width: auto;
-  min-width: 180px;
-  padding: 0.6rem 2.5rem;
-  margin: 2.5rem auto 0;
+  width: 100%;
+  height: 3.25rem;
+  box-sizing: border-box;
+  padding: 0 1.5rem;
+  margin: 0.7rem 0 0;
   display: block;
   border: none;
   border-radius: 25px;
@@ -132,6 +187,48 @@
   cursor: not-allowed;
   transform: none;
   box-shadow: 0 4px 6px rgba(249, 115, 22, 0.2);
+}
+
+.orDivider {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin: -0.45rem 0.1rem;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  line-height: 1;
+}
+
+.orDivider::before,
+.orDivider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: var(--color-border);
+}
+
+.passkeyButton {
+  width: 100%;
+  height: 3.25rem;
+  box-sizing: border-box;
+  margin: 0;
+  border-radius: 25px;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-primary);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.passkeyButton:hover:not(:disabled) {
+  border-color: rgba(249, 115, 22, 0.55);
+  color: #fdba74;
+}
+
+.passkeyButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* Password strength indicators */
@@ -234,12 +331,18 @@
 
 /* Link section styling */
 .linkSection {
-  margin-top: 1.5rem;
+  margin: 0.45rem 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
   text-align: center;
 }
 
 .linkText {
+  margin: 0;
   font-size: 0.875rem;
+  line-height: 1.4;
   color: var(--color-text-secondary);
 }
 
@@ -252,6 +355,14 @@
 
 .link:hover {
   text-decoration: underline;
+}
+
+.textButton {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
 }
 
 /* Alert styles */

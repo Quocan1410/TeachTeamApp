@@ -31,14 +31,17 @@ const Toast: React.FC<ToastProps> = ({
   title,
   darkMode = false,
 }) => {
+  const [timerKey, setTimerKey] = React.useState(0);
+
   React.useEffect(() => {
     if (visible && autoClose) {
+      setTimerKey((key) => key + 1);
       const timer = setTimeout(() => {
         onClose();
       }, autoCloseDelay);
       return () => clearTimeout(timer);
     }
-  }, [visible, autoClose, autoCloseDelay, onClose]);
+  }, [visible, autoClose, autoCloseDelay, onClose, message]);
 
   // Get default title based on type
   const getDefaultTitle = () => {
@@ -210,6 +213,14 @@ const Toast: React.FC<ToastProps> = ({
             </div>
             
             {/* Close button at top right corner */}
+            {autoClose && (
+              <span
+                key={timerKey}
+                className={styles.toastTimer}
+                style={{ animationDuration: `${autoCloseDelay}ms` }}
+              />
+            )}
+
             {showCloseButton && (
               <button
                 type="button"

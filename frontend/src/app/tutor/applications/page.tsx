@@ -476,7 +476,7 @@ export default function TutorApplicationsPage() {
   };
 
   if (authLoading || loading) {
-    return <PageSkeleton variant="tutor" />;
+    return <PageSkeleton variant="applications" />;
   }
 
   const hasSelection = selectedApplication !== null;

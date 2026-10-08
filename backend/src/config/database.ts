@@ -11,6 +11,8 @@ import { Notification } from "../entities/Notification";
 import { NotificationService } from "../services/NotificationService";
 import { ApplicationDraft } from "../entities/ApplicationDraft";
 import { RefreshToken } from "../entities/RefreshToken";
+import { PasskeyCredential } from "../entities/PasskeyCredential";
+import { PasskeyChallenge } from "../entities/PasskeyChallenge";
 import path from "path";
 import { reconcileOrphanAvatarFiles } from "../utils/avatarUtils";
 import { mysqlPoolSize } from "./mysqlPool";
@@ -36,6 +38,8 @@ export const AppDataSource = new DataSource({
         Notification,
         ApplicationDraft,
         RefreshToken,
+        PasskeyCredential,
+        PasskeyChallenge,
     ],
     migrations: [path.join(__dirname, "../migrations/*.{ts,js}")],
     subscribers: ["src/subscribers/*.ts"],
@@ -87,6 +91,41 @@ const ensureColumn = async (
         if (!exists) {
             await queryRunner.query(ddl);
         }
+    } finally {
+        await queryRunner.release();
+    }
+};
+
+const ensurePasskeyTables = async (): Promise<void> => {
+    const queryRunner = AppDataSource.createQueryRunner();
+    try {
+        await queryRunner.query(`
+            CREATE TABLE IF NOT EXISTS \`passkey_credentials\` (
+                \`id\` varchar(36) NOT NULL,
+                \`userId\` varchar(36) NOT NULL,
+                \`credentialId\` varchar(512) NOT NULL,
+                \`publicKey\` text NOT NULL,
+                \`counter\` int NOT NULL DEFAULT 0,
+                \`transports\` varchar(255) NULL,
+                \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+                PRIMARY KEY (\`id\`),
+                UNIQUE INDEX \`IDX_passkey_credential_id\` (\`credentialId\`),
+                UNIQUE INDEX \`IDX_passkey_user\` (\`userId\`),
+                CONSTRAINT \`FK_passkey_user\` FOREIGN KEY (\`userId\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE
+            ) ENGINE=InnoDB
+        `);
+        await queryRunner.query(`
+            CREATE TABLE IF NOT EXISTS \`passkey_challenges\` (
+                \`id\` varchar(36) NOT NULL,
+                \`userId\` varchar(36) NULL,
+                \`challenge\` varchar(512) NOT NULL,
+                \`purpose\` varchar(16) NOT NULL,
+                \`expiresAt\` datetime NOT NULL,
+                \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+                PRIMARY KEY (\`id\`),
+                UNIQUE INDEX \`IDX_passkey_challenge\` (\`challenge\`)
+            ) ENGINE=InnoDB
+        `);
     } finally {
         await queryRunner.release();
     }
@@ -155,6 +194,7 @@ export const initializeDatabase = async () => {
         await initializeDataSource();
         console.log("MySQL connected");
         await ensureSchemaColumns();
+        await ensurePasskeyTables();
         await syncNotificationsIfNeeded();
         await syncOrphanAvatarsIfNeeded();
 

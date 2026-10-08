@@ -92,6 +92,18 @@
   transition: all 0.3s ease;
 }
 
+.searchGroupFull {
+  max-width: none;
+  width: 100%;
+}
+
+.searchInput.fullWidth,
+.searchInputContainer.fullWidth .searchInput.rounded {
+  max-width: none;
+  min-height: 3.5rem;
+  font-size: 1.08rem;
+}
+
 .searchInput.rounded:focus {
   outline: none;
   border-color: var(--color-primary);

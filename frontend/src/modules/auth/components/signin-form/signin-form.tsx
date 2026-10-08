@@ -1,5 +1,6 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AuthService } from "@/shared/services/authService";
@@ -9,8 +10,10 @@ import {
 import { SigninData, User } from "@/shared/types/user";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { LoginSuccessModal } from "@/shared/components/common/modal/LoginSuccessModal";
-import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
+import Toast from "@/shared/components/common/toast/toast";
+import { useToast } from "@/shared/hooks/useNotification";
 import { preloadDashboardRoute } from "@/modules/auth/utils/preloadDashboard";
+import { signInWithPasskey } from "@/modules/auth/utils/passkey";
 import styles from "./signin-form.module.css";
 
 const PRELOAD_TIMEOUT_MS = 12000;
@@ -26,9 +29,11 @@ export default function SignInForm() {
 
   const [errors, setErrors] = useState<Partial<SigninData>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [apiError, setApiError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
+  const [clearPasswordOnEdit, setClearPasswordOnEdit] = useState(false);
+  const [shakeEmail, setShakeEmail] = useState(false);
+  const [shakePassword, setShakePassword] = useState(false);
+  const { toast, showSuccess, showError, hideToast } = useToast();
   
   // New state for login success modal
   const [showLoginSuccess, setShowLoginSuccess] = useState(false);
@@ -48,6 +53,7 @@ export default function SignInForm() {
   }, []);
 
   const navigateAfterLogin = useCallback((destination: string) => {
+    window.scrollTo(0, 0);
     if (/^https?:\/\//i.test(destination)) {
       window.location.assign(destination);
       return;
@@ -63,7 +69,7 @@ export default function SignInForm() {
     const email = searchParams.get('email');
     
     if (message) {
-      setSuccessMessage(message);
+      showSuccess(message);
     }
     
     if (email) {
@@ -73,12 +79,7 @@ export default function SignInForm() {
       }));
     }
     
-    // Clear URL parameters after processing
-    if (message || email) {
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
-    }
-  }, [searchParams]);
+  }, [searchParams, showSuccess]);
 
   useEffect(() => {
     if (isAuthLoading || !isAuthenticated || !user || showLoginSuccess) return;
@@ -130,8 +131,19 @@ export default function SignInForm() {
   }, [showLoginSuccess, redirectPath, router]);
 
   if (!isAuthLoading && isAuthenticated && !showLoginSuccess) {
-    return <PageSkeleton variant="auth" />;
+    return null;
   }
+
+  const shakeFields = (email: boolean, password: boolean) => {
+    setShakeEmail(false);
+    setShakePassword(false);
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        setShakeEmail(email);
+        setShakePassword(password);
+      });
+    });
+  };
 
   const handleInputChange = (field: keyof SigninData, value: string) => {
     setFormData((prev) => ({
@@ -147,10 +159,6 @@ export default function SignInForm() {
       }));
     }
 
-    // Clear API error
-    if (apiError) {
-      setApiError("");
-    }
   };
 
   const validateForm = (): boolean => {
@@ -171,6 +179,10 @@ export default function SignInForm() {
     }
 
     setErrors(newErrors);
+    if (newErrors.email || newErrors.password) {
+      shakeFields(Boolean(newErrors.email), Boolean(newErrors.password));
+      showError(newErrors.email || newErrors.password || "Invalid email or password");
+    }
     return Object.keys(newErrors).length === 0;
   };
 
@@ -183,7 +195,6 @@ export default function SignInForm() {
     }
 
     setIsLoading(true);
-    setApiError("");
 
     if (!validateForm()) {
       setIsLoading(false);
@@ -194,31 +205,56 @@ export default function SignInForm() {
       const response = await AuthService.signin(formData);
 
       if (response.success && response.data) {
-        
-        // Use auth context to login - ensure token exists
-        login(response.data.user);
-        
-        // Store user data and show success modal
-        const nextPath = getRedirectPath(response.data.user);
-        setRedirectPath(nextPath);
-        setIsDashboardReady(false);
-        setLoggedInUser(response.data.user);
-        setShowLoginSuccess(true);
-        if (!isExternalRedirect(nextPath)) {
-          void preloadDashboardRoute(nextPath);
-        } else {
-          setIsDashboardReady(true);
-        }
+        beginSignedInSession(response.data.user);
       } else {
-        // Handle validation errors from backend
+        setClearPasswordOnEdit(true);
+        const emailWrong = Boolean(response.errors?.email);
+        const passwordWrong = Boolean(response.errors?.password);
         if (response.errors) {
           setErrors(response.errors);
-        } else if (response.message) {
-          setApiError(response.message);
         }
+        showError(
+          response.message?.trim() ||
+            response.errors?.email ||
+            response.errors?.password ||
+            "Invalid email or password",
+        );
+        const genericFailure = !emailWrong && !passwordWrong;
+        shakeFields(emailWrong || genericFailure, passwordWrong || genericFailure);
       }
     } catch {
-      setApiError("An unexpected error occurred. Please try again.");
+      showError("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const beginSignedInSession = (nextUser: User) => {
+    login(nextUser);
+    const nextPath = getRedirectPath(nextUser);
+    setRedirectPath(nextPath);
+    setIsDashboardReady(false);
+    setLoggedInUser(nextUser);
+    setShowLoginSuccess(true);
+    if (!isExternalRedirect(nextPath)) {
+      void preloadDashboardRoute(nextPath);
+    } else {
+      setIsDashboardReady(true);
+    }
+  };
+
+  const handlePasskey = async () => {
+    if (showLoginSuccess || isLoading) return;
+    setIsLoading(true);
+    try {
+      const response = await signInWithPasskey();
+      if (response.success && response.data?.user) {
+        beginSignedInSession(response.data.user);
+      } else {
+        showError(response.message?.trim() || "Passkey could not be verified.");
+      }
+    } catch {
+      showError("Passkey could not be verified.");
     } finally {
       setIsLoading(false);
     }
@@ -234,6 +270,16 @@ export default function SignInForm() {
   return (
     <>
       <div className={styles.formContainer}>
+        <div className={styles.mascotSeat} aria-hidden="true">
+          <Image
+            src="/mascot/mascot-3.png"
+            alt=""
+            width={377}
+            height={661}
+            priority
+            className={styles.mascot}
+          />
+        </div>
         <form
           onSubmit={handleSubmit}
           className={styles.form}
@@ -241,19 +287,9 @@ export default function SignInForm() {
         >
           <h2 className={styles.title}>Welcome Back</h2>
 
-          {successMessage && (
-            <div className={`${styles.alert} ${styles.alertSuccess}`}>
-              {successMessage}
-            </div>
-          )}
-
-          {apiError && (
-            <div className={`${styles.alert} ${styles.alertError}`}>
-              {apiError}
-            </div>
-          )}
-
-          <div className={styles.inputContainer}>
+          <div
+            className={`${styles.inputContainer} ${shakeEmail ? styles.shake : ""}`}
+          >
             <input
               id="email"
               type="email"
@@ -271,11 +307,23 @@ export default function SignInForm() {
             )}
           </div>
 
-          <div className={styles.passwordContainer}>
+          <div
+            className={`${styles.passwordContainer} ${shakePassword ? styles.shake : ""}`}
+          >
             <input
               id="password"
               type={showPassword ? "text" : "password"}
               value={formData.password}
+              onFocus={() => {
+                if (!clearPasswordOnEdit) return;
+                setClearPasswordOnEdit(false);
+                handleInputChange("password", "");
+              }}
+              onClick={() => {
+                if (!clearPasswordOnEdit) return;
+                setClearPasswordOnEdit(false);
+                handleInputChange("password", "");
+              }}
               onChange={(e) => handleInputChange("password", e.target.value)}
               className={`${styles.inputField} ${errors.password ? styles.inputError : ""}`}
               placeholder="Password"
@@ -333,7 +381,25 @@ export default function SignInForm() {
             {isLoading ? "Signing In..." : "Sign In"}
           </button>
 
+          <div className={styles.orDivider} role="separator">
+            <span>or</span>
+          </div>
+
+          <button
+            type="button"
+            className={styles.passkeyButton}
+            disabled={isLoading || showLoginSuccess}
+            onClick={handlePasskey}
+          >
+            Use a passkey
+          </button>
+
           <div className={styles.linkSection}>
+            <p className={styles.linkText}>
+              <Link href="/forgot-password" className={styles.link}>
+                Forgot password?
+              </Link>
+            </p>
             <p className={styles.linkText}>
               Don&apos;t have an account?{" "}
               <Link href="/signup" className={styles.link}>
@@ -354,6 +420,13 @@ export default function SignInForm() {
           isPreparing={!isDashboardReady}
         />
       )}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        visible={toast.visible}
+        onClose={hideToast}
+        autoCloseDelay={5000}
+      />
     </>
   );
 }

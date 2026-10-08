@@ -246,6 +246,35 @@
   border-radius: 0.95rem;
 }
 
+.skel {
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.06);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.skelCard {
+  height: 10.6rem;
+  border-radius: 1.15rem;
+}
+
+.skel.skelSit {
+  border-radius: 999px;
+}
+
+.skel.skelSearch {
+  border-radius: 0.95rem;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
 @media (max-width: 760px) {
   .stage {
     grid-template-columns: 1fr;

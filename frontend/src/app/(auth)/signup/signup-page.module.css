@@ -1,11 +1,19 @@
 .pageContainer {
-  min-height: 100vh;
+  min-height: calc(100vh / 0.9);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6rem 1rem 3rem;
+  flex-direction: column;
   background-color: var(--color-bg-primary);
   position: relative;
+}
+
+.stage {
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  align-items: safe center;
+  justify-content: center;
+  flex: 0 0 auto;
+  padding: var(--app-header-height) 1rem 0;
 }
 
 .pageContainer::before {

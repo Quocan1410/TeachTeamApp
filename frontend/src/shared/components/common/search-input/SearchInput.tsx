@@ -10,6 +10,7 @@ interface SearchInputProps {
   showLabel?: boolean;
   variant?: "default" | "rounded";
   className?: string;
+  fullWidth?: boolean;
 }
 
 const SearchInput: React.FC<SearchInputProps> = ({
@@ -21,16 +22,19 @@ const SearchInput: React.FC<SearchInputProps> = ({
   showLabel = true,
   variant = "default",
   className = "",
+  fullWidth = false,
 }) => {
   const handleClear = () => {
     onChange("");
   };
 
-  const containerClass = `${styles.searchInputContainer} ${styles[variant]} ${className}`;
+  const containerClass = `${styles.searchInputContainer} ${styles[variant]} ${
+    fullWidth ? styles.fullWidth : ""
+  } ${className}`;
   const inputClass = `${styles.searchInput} ${styles[variant]}`;
 
   return (
-    <div className={styles.searchGroup}>
+    <div className={`${styles.searchGroup} ${fullWidth ? styles.searchGroupFull : ""}`}>
       {showLabel && (
         <label htmlFor={id} className={styles.searchLabel}>
           {label}:

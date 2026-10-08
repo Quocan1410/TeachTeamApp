@@ -12,6 +12,8 @@ import { SelectedCandidate } from "../entities/SelectedCandidate";
 import { Notification } from "../entities/Notification";
 import { ApplicationDraft } from "../entities/ApplicationDraft";
 import { RefreshToken } from "../entities/RefreshToken";
+import { PasskeyCredential } from "../entities/PasskeyCredential";
+import { PasskeyChallenge } from "../entities/PasskeyChallenge";
 import { mysqlPoolSize } from "./mysqlPool";
 
 /** CLI datasource — never auto-sync; use migration:run instead. */
@@ -35,6 +37,8 @@ export default new DataSource({
         Notification,
         ApplicationDraft,
         RefreshToken,
+        PasskeyCredential,
+        PasskeyChallenge,
     ],
     migrations: [path.join(__dirname, "../migrations/*.{ts,js}")],
     poolSize: mysqlPoolSize(),

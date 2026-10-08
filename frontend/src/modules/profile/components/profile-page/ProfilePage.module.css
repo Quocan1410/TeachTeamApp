@@ -2,7 +2,8 @@
 .profileContainer {
   width: 100%;
   max-width: 100%;
-  padding: 5.25rem 1rem 2rem;
+  min-height: calc(100vh / 0.9);
+  padding: 7rem 1.5rem 3.5rem;
   background: linear-gradient(135deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 100%);
   overflow-x: hidden;
   box-sizing: border-box;
@@ -15,8 +16,8 @@
   margin: 0 auto;
   display: grid;
   grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
-  gap: 1rem;
-  align-items: stretch;
+  gap: 1.5rem;
+  align-items: start;
 }
 
 /* Left Panel - User Information */
@@ -30,8 +31,6 @@
   gap: 0;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   border: 1px solid var(--color-border);
-  height: 100%;
-  min-height: 0;
 }
 
 .userPanelTop {
@@ -396,9 +395,8 @@
 .infoPanel {
   display: flex;
   flex-direction: column;
+  gap: 1rem;
   min-width: 0;
-  height: 100%;
-  min-height: 0;
 }
 
 .infoCardMain {
@@ -408,10 +406,6 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   border: 1px solid var(--color-border);
   min-width: 0;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
 }
 
 .infoSection {
@@ -1199,4 +1193,56 @@
 :global(.dark) .statCard,
 :global(.dark) .feature {
   border-color: var(--color-border);
+}
+
+.profileContainer {
+  min-height: calc(100vh / 0.9);
+  padding: 6.25rem 1.25rem 3rem;
+}
+
+.profileGrid {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 40rem);
+  max-width: 40rem;
+  gap: 1rem;
+}
+
+.userPanel,
+.infoCardMain {
+  width: 100%;
+}
+
+.userPanelTop,
+.quickStats,
+.candidateActions,
+.actionButtonGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+
+.userInfo {
+  align-items: center;
+  text-align: center;
+}
+
+.infoGrid,
+.candidateStatsGrid,
+.featureGrid {
+  grid-template-columns: 1fr;
+}
+
+.sidebarSecurityCard {
+  width: 100%;
+  margin-top: 0.85rem;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--color-border);
+  border-left: 0;
+}
+
+.primaryButton,
+.secondaryButton {
+  width: 100%;
 }

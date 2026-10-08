@@ -1,280 +1,77 @@
 # TeachTeamApp
 
-Main web application for **candidates** and **lecturers** in a university Tutor / Lab Assistant hiring system. The **admin CMS** lives in a separate repo: [TeachTeamApp-Admin](../TeachTeamApp-Admin/).
+Web app for university **Tutor** and **Lab Assistant** hiring.
 
----
+Candidates browse courses and apply. Lecturers review those applications. The admin site is a separate repo, [TeachTeamApp-Admin](../TeachTeamApp-Admin/).
 
-## Overview
+| | |
+|---|---|
+| App | http://localhost:3000 |
+| API | http://localhost:5000 |
 
-| Role | Features |
-|------|----------|
-| **Candidate** | Browse courses, submit applications, track status, chat with lecturers, notifications |
-| **Lecturer** | Review applications, filter/sort/paginate, shortlist, rank, select candidates, realtime chat |
-| **Auth** | Email-domain signup, security-question password reset, change password, avatar upload |
+Frontend is Next.js. Backend is Express, TypeORM, and MySQL. Each folder has its own `.env`.
 
-**Default ports:** frontend `3000`, backend `5000`
+## Run
 
----
-
-## Tech stack
-
-| Layer | Path | Technologies |
-|-------|------|--------------|
-| Frontend | `frontend/` | Next.js 15, React 19, Tailwind CSS 4, Axios, Socket.IO, Apollo (admin subscriptions) |
-| Backend | `backend/` | Express 5, TypeORM, MySQL, JWT + refresh cookie, Socket.IO |
-| Database | — | MySQL 8, TypeORM migrations (`backend/src/migrations/`) |
-
----
-
-## Project structure
-
-```
-TeachTeamApp/
-├── package.json         # root scripts: install, dev, build
-├── frontend/            # Next.js user app (:3000), own frontend/.env
-│   └── src/
-│       ├── app/         # routes: /tutor, /lecturer, /profile, auth
-│       ├── modules/     # auth, lecturer, tutor, profile
-│       └── shared/      # contexts, services, hooks, components
-└── backend/             # REST API (:5000), own backend/.env
-    └── src/
-        ├── routes/
-        ├── controllers/
-        ├── services/
-        ├── entities/
-        └── migrations/
-```
-
----
-
-## Architecture
-
-```mermaid
-flowchart TB
-    subgraph UserApp["TeachTeamApp"]
-        FE["frontend :3000"]
-        BE["backend :5000"]
-        FE -->|"/api, /socket.io"| BE
-    end
-  BE --> DB[(MySQL)]
-  FE -.->|subscriptions| AdminGQL["Admin GraphQL :4002"]
-```
-
-**Next.js rewrites** (`frontend/next.config.js`):
-
-| Path | Target |
-|------|--------|
-| `/api/*` | Main backend |
-| `/socket.io/*` | Main backend |
-| `/admin-graphql` | Admin GraphQL (lecturer subscriptions) |
-| `/uploads/*` | Static avatars |
-
-**Backend layers:** Routes → Middleware (auth, rate limit, validation) → Controllers → Services → TypeORM.
-
----
-
-## Database (ERD)
-
-```mermaid
-erDiagram
-    users ||--o{ applications : candidateId
-    users ||--o{ course_assignments : lecturerId
-    users ||--o{ notifications : userId
-    users ||--o{ refresh_tokens : userId
-    users ||--o{ user_security_answers : userId
-    users ||--o{ password_reset_tokens : userId
-    users ||--o{ selected_candidates : selectedBy
-
-    courses ||--o{ applications : courseId
-    courses ||--o{ course_assignments : courseId
-    courses ||--o{ application_drafts : courseId
-
-    roles ||--o{ applications : roleId
-    roles ||--o{ application_drafts : roleId
-
-    applications ||--o{ selected_candidates : may_have
-
-    users {
-        int id PK
-        string email UK
-        string userType
-        boolean isBlocked
-    }
-    courses {
-        int id PK
-        string courseCode UK
-    }
-    applications {
-        int id PK
-        int candidateId FK
-        int courseId FK
-        int roleId FK
-        string status
-    }
-    announcements {
-        int id PK
-        boolean isActive
-    }
-```
-
-**12 tables:** `users`, `courses`, `roles`, `course_assignments`, `applications`, `application_drafts`, `selected_candidates`, `announcements`, `notifications`, `refresh_tokens`, `password_reset_tokens`, `user_security_answers`.
-
-**Migrations:**
-1. `1749200000000-InitialBaseline.ts`
-2. `1749200001000-AddListPerformanceIndexes.ts`
-3. `1749200002000-AddApplicationReviewForeignKey.ts`
-
----
-
-## Environment variables
-
-Frontend and backend each load only the `.env` in their own folder.
+Node.js 20+ and MySQL 8.
 
 ```bash
 cp frontend/env.example frontend/.env
 cp backend/env.example backend/.env
-```
 
-| Folder | What it owns |
-|--------|----------------|
-| `backend/.env` | MySQL, `BACKEND_PORT`, JWT, CORS, admin account |
-| `frontend/.env` | `NEXT_PUBLIC_*` and rewrite targets `MAIN_API_ORIGIN`, `ADMIN_GRAPHQL_ORIGIN` |
-
-`MAIN_API_ORIGIN` must use the same port as `BACKEND_PORT`. The root `env.example` is only a pointer.
-
----
-
-## Getting started
-
-**Requirements:** Node.js 20+, MySQL 8+
-
-```bash
-# Install dependencies
 npm install
+cd backend && npm run migration:run && cd ..
 
-# Apply schema
-cd backend && npm run migration:run
-
-# Development
-npm run dev:windows    # Windows
-npm run dev:unix       # macOS / Linux
-
-# Production
-npm run build
-npm run start:windows  # or start:unix
+npm run dev:windows
 ```
 
-**Backend only:**
+On macOS or Linux, use `npm run dev:unix` instead.
 
-```bash
-cd backend
-npm run dev
-npm run migration:run
-```
+## Who can sign up
 
-**Frontend only:**
+The email domain sets the role:
 
-```bash
-cd frontend
-npm run dev
-```
+- `@candidate.edu.au` → candidate (`/tutor`)
+- `@lecturer.edu.au` → lecturer (`/lecturer`)
 
-| Service | URL |
-|---------|-----|
-| User app | http://localhost:3000 |
-| API health | http://localhost:5000/health |
+## Sign in and password
 
----
+Sign in with email and password, or with a passkey on this device.
 
-## Accounts in the database
+**Forgot password** asks which method to use:
 
-| Role | Email | Password | Notes |
-|------|-------|----------|-------|
-| Lecturer | `jane.morrison@lecturer.edu.au` | `Password123!` | Dr. — Software Engineering (`/lecturer`) |
-| Lecturer | `marcus.chen@lecturer.edu.au` | `Password123!` | Dr. — ML & Business Analytics |
-| Lecturer | `priya.sharma@lecturer.edu.au` | `Password123!` | Prof. — Mathematics & Science |
-| Candidate | `alex.nguyen@candidate.edu.au` | `Password123!` | `/tutor` |
-| Candidate | `samira.patel@candidate.edu.au` | `Password123!` | |
-| Candidate | `james.oconnor@candidate.edu.au` | `Password123!` | |
-| Admin | `admin@admin.com` | `admin` | Login at http://localhost:3001 (admin repo) |
+- **Passkey** signs you in. It does not show or email the password.
+- **Email** and **Authenticator** are not built yet.
 
-**Signup:** only `@candidate.edu.au` or `@lecturer.edu.au` (admin cannot register via REST).
+On the profile page, changing the password still needs the current password.
 
-**Forgot password** (all seeded users — security questions):
+## Candidate page
 
-| Question | Answer |
-|----------|--------|
-| What city were you born in? | Melbourne |
-| What was the name of your first school? | Demo School |
-| What is your favorite book? | TeachTeam Guide |
+`/tutor` is “Find your Teaching Roles”.
 
----
+- Search waits a moment after you stop typing, then filters.
+- Three filters sit under that search: status, role, and course-code order.
+- Six course cards per page, three on each row.
+- The heart saves a course on this browser to apply later. If it closes within about a month and you have not applied, the page reminds you.
+- The monkey in the corner has a short note. Open it and the speech bubble pauses.
 
-## Main routes (frontend)
+`/tutor/applications` is the candidate’s own applications.
 
-| Path | Role |
-|------|------|
-| `/signin`, `/signup` | Guest |
-| `/forgot-password`, `/reset-password` | Guest |
-| `/tutor` | Candidate — browse & apply |
-| `/tutor/applications` | Candidate — my applications |
-| `/lecturer` | Lecturer — application dashboard |
-| `/profile` | Authenticated — profile, avatar, change password |
+## Lecturer page
 
----
+`/lecturer` is the application list: filter, sort, shortlist, rank, and select.
 
-## REST API endpoints
+## Demo accounts
 
-**Base URL:** `http://localhost:5000`
+Password for every lecturer and candidate below: `Password123!`
 
-### Health
-| POST | `/signup` | — | Register |
-| POST | `/signin` | — | Sign in |
-| POST | `/logout` | — | Sign out |
-| POST | `/refresh` | cookie | Refresh access token |
-|--------|------|------|-------------|
-| POST | `/signup` | — | Register (+ security answers) |
-| POST | `/signin` | — | Sign in |
-| POST | `/logout` | — | Sign out |
-| POST | `/refresh` | cookie | Refresh access token |
-| GET | `/security-questions` | — | List security questions |
-| POST | `/forgot-password/challenge` | — | Start forgot-password flow |
-| POST | `/forgot-password/verify` | — | Verify security answers |
-| POST | `/reset-password` | — | Set new password (token) |
-| GET | `/profile` | JWT | Profile + assigned courses |
-| PUT | `/profile` | JWT | Update name, honorific |
-| POST | `/change-password` | JWT | Change password |
-| PATCH | `/theme` | JWT | dark / light |
-| POST | `/avatar` | JWT | Upload avatar (multipart) |
-| DELETE | `/avatar` | JWT | Remove avatar |
+| Role | Email |
+|------|--------|
+| Lecturer | `jane.morrison@lecturer.edu.au` |
+| Lecturer | `marcus.chen@lecturer.edu.au` |
+| Lecturer | `priya.sharma@lecturer.edu.au` |
+| Candidate | `alex.nguyen@candidate.edu.au` |
+| Candidate | `samira.patel@candidate.edu.au` |
+| Candidate | `james.oconnor@candidate.edu.au` |
 
-### Applications — `/api/applications`
-
-| Method | Path | Role | Description |
-|--------|------|------|-------------|
-| POST | `/` | candidate | Create application |
-| GET | `/my-applications` | candidate | My applications |
-| GET | `/courses-and-roles` | candidate | Open courses & roles |
-| PUT | `/:id/withdraw` | candidate | Withdraw |
-| PUT | `/:id/candidate-response` | candidate | Reply to lecturer |
-| POST | `/:id/offer-response` | candidate | Accept / decline offer |
-| GET | `/lecturer` | lecturer | List applications (paginate, filter, sort) |
-| GET | `/statistics` | lecturer | Dashboard stats |
-| PUT | `/:id/status` | lecturer | Select / reject |
-| POST / DELETE | `/:id/shortlist` | lecturer | Shortlist |
-| POST / PUT / DELETE | `/:id/ranking` | lecturer | Ranking |
-| POST / PUT / DELETE | `/:id/comment` | lecturer | Comments |
-| GET / PUT | `/:id/lecturer-notes` | lecturer | Private notes |
-| POST | `/:id/review` | lecturer | Mark reviewed |
-| GET | `/lecturer-assigned-courses` | lecturer | Assigned courses |
-
-### Other
-
-| Prefix | Endpoints |
-|--------|-----------|
-| `/api/application-drafts` | CRUD drafts (candidate) |
-| `/api/announcements/active` | Active announcements (JWT) |
-| `/api/notifications` | List (paginated), read, delete |
-| `/api/public/lecturers` | Public lecturer list |
-| `/uploads/*` | Avatar files |
-| `WS /socket.io` | Realtime application events |
+Admin (`admin@admin.com` / `admin`) signs in on the admin app at http://localhost:3001.

@@ -1,0 +1,8 @@
+{
+  "watch": ["src"],
+  "ext": "ts,json",
+  "legacyWatch": true,
+  "pollingInterval": 1000,
+  "signal": "SIGTERM",
+  "exec": "node -r ts-node/register src/index.ts"
+}

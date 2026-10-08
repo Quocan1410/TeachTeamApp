@@ -4,7 +4,9 @@ import styles from "./signup-page.module.css";
 export default function SignupPage() {
   return (
     <div className={styles.pageContainer}>
-      <SignupForm />
+      <div className={styles.stage}>
+        <SignupForm />
+      </div>
     </div>
   );
 }

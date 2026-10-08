@@ -1,95 +1,129 @@
 import React from "react";
-import { motion } from "framer-motion";
-import SearchInput from "@/shared/components/common/search-input/SearchInput";
+import Link from "next/link";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import AppSelect from "@/shared/components/common/app-select/AppSelect";
 import styles from "./SearchFilters.module.css";
 
-export type CourseFilter = "all" | "applied" | "available" | "unavailable";
+export type CourseFilter = "all" | "applied" | "available" | "unavailable" | "soon";
+export type CourseRoleFilter = "all" | "tutor" | "lab";
+export type CourseSortOrder = "asc" | "desc";
 
 interface SearchFiltersProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  activeFilter: CourseFilter;
-  onFilterChange: (filter: CourseFilter) => void;
-  sortBy?: string;
-  onSortChange?: (sort: string) => void;
-  filters?: CourseFilter[];
+  status: CourseFilter;
+  onStatusChange: (status: CourseFilter) => void;
+  role: CourseRoleFilter;
+  onRoleChange: (role: CourseRoleFilter) => void;
+  sortOrder: CourseSortOrder;
+  onSortOrderChange: (order: CourseSortOrder) => void;
+  onClear: () => void;
 }
-
-const FILTERS: { id: CourseFilter; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: "available", label: "Available" },
-  { id: "applied", label: "Applied" },
-  { id: "unavailable", label: "Closed" },
-];
 
 const SearchFilters: React.FC<SearchFiltersProps> = ({
   searchQuery,
   onSearchChange,
-  activeFilter,
-  onFilterChange,
-  sortBy = "relevance",
-  onSortChange,
-  filters,
+  status,
+  onStatusChange,
+  role,
+  onRoleChange,
+  sortOrder,
+  onSortOrderChange,
+  onClear,
 }) => {
-  const visibleFilters = FILTERS.filter(
-    (filter) => !filters || filters.includes(filter.id)
-  );
   return (
-    <motion.section
-      className={styles.searchFiltersContainer}
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay: 0.2 }}
-      aria-label="Course search and filters"
-    >
-      <div className={styles.searchCard}>
-        <div className={styles.searchRow}>
-          <div className={styles.searchFieldWrap}>
-            <SearchInput
-              value={searchQuery}
-              onChange={onSearchChange}
-              placeholder="Search courses, codes, positions..."
-              showLabel={false}
-              variant="rounded"
-            />
-          </div>
-          <div className={styles.filterGroup} role="tablist" aria-label="Course filters">
-            <span className={styles.filterLabel}>Filter</span>
-            {visibleFilters.map((filter) => (
-              <button
-                key={filter.id}
-                type="button"
-                role="tab"
-                aria-selected={activeFilter === filter.id}
-                className={`${styles.filterPill} ${
-                  activeFilter === filter.id ? styles.filterPillActive : ""
-                }`}
-                onClick={() => onFilterChange(filter.id)}
-              >
-                {filter.label}
-              </button>
-            ))}
-          </div>
-          {onSortChange && (
-            <div className={styles.sortGroup}>
-              <label htmlFor="course-sort" className={styles.filterLabel}>
-                Sort
-              </label>
-              <select
-                id="course-sort"
-                className={styles.sortSelect}
-                value={sortBy}
-                onChange={(e) => onSortChange(e.target.value)}
-              >
-                <option value="relevance">Relevance</option>
-                <option value="code">Course code</option>
-                <option value="name">Course name</option>
-              </select>
-            </div>
-          )}
-        </div>
+    <section className={styles.panel} aria-label="Search courses">
+      <div className={styles.panelHead}>
+        <h2 className={styles.panelTitle}>Search courses</h2>
+        <button type="button" className={styles.clearLink} onClick={onClear}>
+          Clear filters
+        </button>
       </div>
-    </motion.section>
+
+      <form
+        className={styles.field}
+        onSubmit={(event) => {
+          event.preventDefault();
+          document.getElementById("course-results")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }}
+      >
+        <input
+          className={styles.fieldInput}
+          type="search"
+          value={searchQuery}
+          onChange={(event) => onSearchChange(event.target.value)}
+          placeholder="Search course, code, or role"
+          aria-label="Search course, code, or role"
+        />
+        <MagnifyingGlassIcon className={styles.fieldIcon} aria-hidden="true" />
+      </form>
+
+      <div className={styles.filterHead}>
+        <p className={styles.filterLabel}>Filter courses</p>
+      </div>
+      <div className={styles.filterRow}>
+        <AppSelect
+          className={styles.filterSelect}
+          id="course-status"
+          aria-label="Status"
+          value={status}
+          onChange={(value) => onStatusChange(value as CourseFilter)}
+          options={[
+            { value: "all", label: "All statuses" },
+            { value: "available", label: "Available" },
+            { value: "applied", label: "Applied" },
+            { value: "unavailable", label: "Closed" },
+            { value: "soon", label: "Closing soon" },
+          ]}
+        />
+        <AppSelect
+          className={styles.filterSelect}
+          id="course-role"
+          aria-label="Role"
+          value={role}
+          onChange={(value) => onRoleChange(value as CourseRoleFilter)}
+          options={[
+            { value: "all", label: "All roles" },
+            { value: "tutor", label: "Tutor" },
+            { value: "lab", label: "Lab assistant" },
+          ]}
+        />
+        <AppSelect
+          className={styles.filterSelect}
+          id="course-order"
+          aria-label="Order"
+          value={sortOrder}
+          onChange={(value) => onSortOrderChange(value as CourseSortOrder)}
+          options={[
+            { value: "asc", label: "Course code A–Z" },
+            { value: "desc", label: "Course code Z–A" },
+          ]}
+        />
+      </div>
+
+      <button
+        type="button"
+        className={styles.applyButton}
+        onClick={() => {
+          document.getElementById("course-results")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }}
+      >
+        Apply filters
+      </button>
+
+      <div className={styles.notice}>
+        <p>Heart a course to apply later. We remind you when about a month is left.</p>
+        <Link href="/tutor/applications" className={styles.noticeLink}>
+          Your applications
+        </Link>
+      </div>
+    </section>
   );
 };
 
