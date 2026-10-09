@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   AcademicCapIcon,
@@ -212,7 +213,13 @@ export default function CoursesPage() {
       <header className={styles.hero}>
         <h1 className={styles.srOnly}>Courses</h1>
         <div className={styles.mascotWell}>
-          <img src="/mascot/mascot-1.png?v=1" alt="" className={styles.mascot} />
+          <Image
+            src="/mascot/mascot-1.png"
+            alt=""
+            width={292}
+            height={341}
+            className={styles.mascot}
+          />
         </div>
         <div className={styles.searchColumn}>
           <p className={styles.bubble} aria-live="polite">
@@ -368,7 +375,13 @@ export default function CoursesPage() {
           <div className={styles.results}>
       {filtered.length === 0 && (
         <div className={styles.empty}>
-          <img src="/mascot/mascot-1.png?v=1" alt="" className={styles.emptyMascot} />
+          <Image
+            src="/mascot/mascot-1.png"
+            alt=""
+            width={292}
+            height={341}
+            className={styles.emptyMascot}
+          />
           <div>
             <p className={styles.emptyTitle}>No courses match that search.</p>
             <p className={styles.emptyText}>
@@ -497,7 +510,13 @@ export default function CoursesPage() {
         <div className={styles.dialog}>
           {selected && (
             <div className={styles.dialogCourse}>
-              <img src="/mascot/mascot-1.png?v=1" alt="" className={styles.dialogMascot} />
+              <Image
+                src="/mascot/mascot-1.png"
+                alt=""
+                width={292}
+                height={341}
+                className={styles.dialogMascot}
+              />
               <div className={styles.dialogCourseBody}>
                 <p className={styles.dialogKicker}>Applying for</p>
                 <p className={styles.dialogCode}>{selected.courseCode}</p>

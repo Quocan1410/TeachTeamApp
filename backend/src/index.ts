@@ -59,10 +59,37 @@ app.get("/health", async (_req, res) => {
     res.json(payload);
 });
 
+let stopping = false;
+
+const closeResources = async () => {
+    if (httpServer.listening) {
+        await new Promise<void>((resolve) => {
+            httpServer.close(() => resolve());
+        });
+    }
+    if (AppDataSource.isInitialized) {
+        await AppDataSource.destroy();
+    }
+};
+
+const shutdown = (signal: string) => {
+    if (stopping) return;
+    stopping = true;
+    console.log(`Stopping main API (${signal})`);
+    void closeResources().finally(() => process.exit(0));
+};
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
+
 const startServer = async () => {
     try {
         console.log(`Starting main API on port ${PORT}`);
         await initializeDatabase();
+        if (stopping) {
+            await closeResources();
+            return;
+        }
         initSocketServer(httpServer);
 
         httpServer.listen(PORT, () => {
@@ -70,6 +97,7 @@ const startServer = async () => {
         });
     } catch (error) {
         console.error("Server startup failed:", error);
+        await closeResources().catch(() => undefined);
         process.exit(1);
     }
 };

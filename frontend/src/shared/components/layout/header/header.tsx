@@ -104,12 +104,14 @@ const Header: React.FC = () => {
 
           <nav className={styles["main-nav"]}>
             <div className={styles["nav-links"]}>
-                <Link
-                  href={homeHref}
-                  className={`${styles["nav-link"]} ${pathname === homeHref ? styles.active : ""}`}
-                >
-                  Home
-                </Link>
+                {!user && (
+                  <Link
+                    href="/"
+                    className={`${styles["nav-link"]} ${pathname === "/" ? styles.active : ""}`}
+                  >
+                    Home
+                  </Link>
+                )}
                 {showGuestNav && (
                   <Link
                     href="/courses"

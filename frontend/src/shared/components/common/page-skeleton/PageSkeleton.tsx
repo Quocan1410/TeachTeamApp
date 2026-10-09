@@ -13,6 +13,7 @@ interface PageSkeletonProps {
     | "profile"
     | "auth"
     | "home"
+    | "applications"
     | "plain";
   /** Full viewport shell for route-level loading; false for in-page sections */
   fullPage?: boolean;
@@ -43,21 +44,34 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
 
     if (variant === "profile") {
       return (
-        <>
-          <div className={styles.profileHeader}>
+        <div className={styles.profileColumn}>
+          <div className={`${styles.profileCard} ${styles.profileCardCenter}`}>
             <div className={`${styles.pulse} ${styles.avatar}`} />
-            <div className={styles.profileTextWrap}>
-              <div className={`${styles.pulse} ${styles.profileName}`} />
-              <div className={`${styles.pulse} ${styles.profileLine}`} />
-              <div className={`${styles.pulse} ${styles.profileLineShort}`} />
+            <div className={`${styles.pulse} ${styles.profileName}`} />
+            <div className={`${styles.pulse} ${styles.profileBadge}`} />
+            <div className={`${styles.pulse} ${styles.profileLineShort}`} />
+            <div className={`${styles.pulse} ${styles.profileStat}`} />
+            <div className={`${styles.pulse} ${styles.profileStat}`} />
+            <div className={`${styles.pulse} ${styles.profileSecurity}`} />
+          </div>
+          <div className={styles.profileCard}>
+            <div className={`${styles.pulse} ${styles.profileSectionTitle}`} />
+            <div className={styles.fieldList}>
+              {Array.from({ length: 4 }).map((_, index) => (
+                <div key={`field-${index}`} className={styles.fieldRow}>
+                  <div className={`${styles.pulse} ${styles.fieldLabel}`} />
+                  <div className={`${styles.pulse} ${styles.fieldValue}`} />
+                </div>
+              ))}
             </div>
           </div>
-          <div className={styles.grid}>
-            {Array.from({ length: Math.max(cards, 4) }).map((_, index) => (
-              <div key={index} className={`${styles.pulse} ${styles.card}`} />
-            ))}
+          <div className={styles.profileCard}>
+            <div className={`${styles.pulse} ${styles.profileSectionTitle}`} />
+            <div className={`${styles.pulse} ${styles.profileStat}`} />
+            <div className={`${styles.pulse} ${styles.profileStat}`} />
+            <div className={`${styles.pulse} ${styles.profileButton}`} />
           </div>
-        </>
+        </div>
       );
     }
 
@@ -143,12 +157,43 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
       );
     }
 
-    if (variant === "tutor") {
+    if (variant === "applications") {
       return (
         <>
-          <div className={`${styles.pulse} ${styles.hero}`} />
           <div className={`${styles.pulse} ${styles.filterBar}`} />
-          <div className={styles.grid}>
+          <div className={styles.applicationList}>
+            {Array.from({ length: Math.max(cards, 4) }).map((_, index) => (
+              <div
+                key={`application-${index}`}
+                className={`${styles.pulse} ${styles.listItem}`}
+              />
+            ))}
+          </div>
+        </>
+      );
+    }
+
+    if (variant === "tutor") {
+      return (
+        <div className={styles.tutorPage}>
+          <div className={`${styles.pulse} ${styles.tutorTitle}`} />
+          <div className={styles.tutorSearchHead}>
+            <div className={`${styles.pulse} ${styles.tutorSearchLabel}`} />
+            <div className={`${styles.pulse} ${styles.tutorClear}`} />
+          </div>
+          <div className={`${styles.pulse} ${styles.tutorSearchField}`} />
+          <div className={`${styles.pulse} ${styles.tutorFilterLabel}`} />
+          <div className={styles.tutorFilters}>
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={`tutor-filter-${index}`}
+                className={`${styles.pulse} ${styles.tutorFilter}`}
+              />
+            ))}
+          </div>
+          <div className={`${styles.pulse} ${styles.tutorApply}`} />
+          <div className={`${styles.pulse} ${styles.tutorNotice}`} />
+          <div className={styles.tutorGrid}>
             {Array.from({ length: Math.max(cards, 6) }).map((_, index) => (
               <div
                 key={`tutor-${index}`}
@@ -156,7 +201,7 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
               />
             ))}
           </div>
-        </>
+        </div>
       );
     }
 
@@ -195,7 +240,13 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
   }
 
   return (
-    <div className={styles.wrapper} aria-busy="true" aria-live="polite">
+    <div
+      className={`${styles.wrapper} ${
+        variant === "tutor" ? styles.wrapperTutor : ""
+      }`}
+      aria-busy="true"
+      aria-live="polite"
+    >
       <div className={styles.container}>
         {status}
         {body}

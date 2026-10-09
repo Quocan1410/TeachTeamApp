@@ -56,6 +56,8 @@ export const ProfilePage: React.FC = () => {
     honorific: "Mr." as Honorific,
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const contextUserRef = useRef(contextUser);
+  contextUserRef.current = contextUser;
   const { toast, showSuccess, showError, hideToast } = useToast();
   const protectedAvatarUrl = useProtectedAvatar(
     !!user && hasCustomAvatar(user.avatarUrl),
@@ -64,26 +66,23 @@ export const ProfilePage: React.FC = () => {
 
   useEffect(() => {
     if (authLoading) return;
-    const savedUser = contextUser || AuthService.getUser();
-    if (!savedUser) {
+    if (!contextUser) {
       router.replace("/signin");
+      return;
     }
-  }, [authLoading, contextUserId, contextUser, router]);
+    setUser(contextUser);
+    setIsLoading(false);
+  }, [authLoading, contextUser, router]);
 
   useEffect(() => {
-    if (authLoading || !contextUserId) {
+    const savedUser = contextUserRef.current;
+    if (authLoading || !contextUserId || !savedUser) {
       return;
     }
 
     let cancelled = false;
 
     const loadProfile = async () => {
-      const savedUser = AuthService.getUser();
-      if (!savedUser || savedUser.id !== contextUserId) {
-        return;
-      }
-
-      setUser(savedUser);
 
       try {
         if (savedUser.userType === UserType.CANDIDATE) {
@@ -277,6 +276,14 @@ export const ProfilePage: React.FC = () => {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const clearRejectedPassword = (
+    field: "currentPassword" | "newPassword" | "confirmPassword"
+  ) => {
+    if (!passwordErrors[field]) return;
+    setPasswordForm((prev) => ({ ...prev, [field]: "" }));
+    setPasswordErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
   const handleChangePassword = async (event: React.FormEvent) => {
@@ -628,6 +635,8 @@ export const ProfilePage: React.FC = () => {
                         passwordErrors.currentPassword ? styles.formInputError : ""
                       }`}
                       value={passwordForm.currentPassword}
+                      onFocus={() => clearRejectedPassword("currentPassword")}
+                      onClick={() => clearRejectedPassword("currentPassword")}
                       onChange={(event) =>
                         setPasswordForm((prev) => ({
                           ...prev,
@@ -655,6 +664,8 @@ export const ProfilePage: React.FC = () => {
                         passwordErrors.newPassword ? styles.formInputError : ""
                       }`}
                       value={passwordForm.newPassword}
+                      onFocus={() => clearRejectedPassword("newPassword")}
+                      onClick={() => clearRejectedPassword("newPassword")}
                       onChange={(event) =>
                         setPasswordForm((prev) => ({
                           ...prev,
@@ -682,6 +693,8 @@ export const ProfilePage: React.FC = () => {
                         passwordErrors.confirmPassword ? styles.formInputError : ""
                       }`}
                       value={passwordForm.confirmPassword}
+                      onFocus={() => clearRejectedPassword("confirmPassword")}
+                      onClick={() => clearRejectedPassword("confirmPassword")}
                       onChange={(event) =>
                         setPasswordForm((prev) => ({
                           ...prev,

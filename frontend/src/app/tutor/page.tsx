@@ -15,8 +15,14 @@ import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton"
 import { useToast } from "@/shared/hooks/useNotification";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import TutorHeroSection from "@/modules/tutor/components/hero-section/TutorHeroSection";
-import SearchFilters from "@/modules/tutor/components/search-filters/SearchFilters";
+import TutorHeroSection, {
+  type ApplyLaterReminder,
+} from "@/modules/tutor/components/hero-section/TutorHeroSection";
+import SearchFilters, {
+  type CourseFilter,
+  type CourseRoleFilter,
+  type CourseSortOrder,
+} from "@/modules/tutor/components/search-filters/SearchFilters";
 import PaginationBar from "@/shared/components/common/pagination-bar/PaginationBar";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { useApplicationRealtime } from "@/shared/hooks/useApplicationRealtime";
@@ -24,14 +30,18 @@ import { getApplicationApplyBlockMessage } from "@/shared/utils/applicationApply
 import type { ApplicationUpdatedPayload } from "@/shared/socket/applicationEvents";
 import {
   courseHasApplied,
-  getTutorDashboardStats,
   isAvailableCourseForCandidate,
   isClosedCourse,
 } from "@/modules/tutor/utils/tutorCourseAvailability";
 
 import styles from "./TutorPage.module.css";
 
-const COURSE_PAGE_SIZE = 9;
+const COURSE_PAGE_SIZE = 6;
+const APPLY_LATER_MONTH_MS = 30 * 24 * 60 * 60 * 1000;
+
+function favouriteStorageKey(userId: string) {
+  return `teachteam-favourites:${userId}`;
+}
 
 const TutorDashboardPage: React.FC = () => {
   const router = useRouter();
@@ -53,11 +63,11 @@ const TutorDashboardPage: React.FC = () => {
 
   // Search and filter state
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeFilter, setActiveFilter] = useState<
-    "all" | "applied" | "available" | "unavailable"
-  >("all");
-  const [courseSortBy, setCourseSortBy] = useState("relevance");
+  const [activeFilter, setActiveFilter] = useState<CourseFilter>("all");
+  const [roleFilter, setRoleFilter] = useState<CourseRoleFilter>("all");
+  const [sortOrder, setSortOrder] = useState<CourseSortOrder>("asc");
   const [coursePage, setCoursePage] = useState(1);
+  const [favouriteIds, setFavouriteIds] = useState<string[]>([]);
   const debouncedSearchQuery = useDebouncedValue(searchQuery, 320);
 
   // Toast notifications
@@ -69,6 +79,28 @@ const TutorDashboardPage: React.FC = () => {
   const { toast: errorToast, showError, hideToast: hideError } = useToast();
 
   const isCandidate = user?.userType === "candidate";
+
+  useEffect(() => {
+    if (!user) return;
+    try {
+      const raw = localStorage.getItem(favouriteStorageKey(user.id));
+      const parsed = raw ? (JSON.parse(raw) as unknown) : [];
+      setFavouriteIds(Array.isArray(parsed) ? parsed.filter((id) => typeof id === "string") : []);
+    } catch {
+      setFavouriteIds([]);
+    }
+  }, [user]);
+
+  const toggleFavourite = (courseId: string) => {
+    if (!user) return;
+    setFavouriteIds((current) => {
+      const next = current.includes(courseId)
+        ? current.filter((id) => id !== courseId)
+        : [...current, courseId];
+      localStorage.setItem(favouriteStorageKey(user.id), JSON.stringify(next));
+      return next;
+    });
+  };
 
   // Authentication and authorization check (client navigation — not redirect())
   useEffect(() => {
@@ -191,14 +223,27 @@ const TutorDashboardPage: React.FC = () => {
     onApplicationUpdated: handleApplicationRealtimeUpdate,
   });
 
-  // Dashboard stats aligned with filter tabs (Available / Applied / Closed)
-  const stats = getTutorDashboardStats(courses, roles, myApplications);
-
   // Check if user has applied to any role in a course
   const hasAppliedToCourse = React.useCallback(
     (courseId: string) => courseHasApplied(courseId, myApplications),
     [myApplications]
   );
+
+  const applyLaterReminders = React.useMemo<ApplyLaterReminder[]>(() => {
+    return courses.flatMap((course) => {
+      if (!favouriteIds.includes(course.id)) return [];
+      if (hasAppliedToCourse(course.id)) return [];
+      if (course.closesInMs == null || course.closesInMs <= 0) return [];
+      if (course.closesInMs > APPLY_LATER_MONTH_MS) return [];
+      return [
+        {
+          id: course.id,
+          courseCode: course.courseCode,
+          daysLeft: Math.max(1, Math.ceil(course.closesInMs / 86400000)),
+        },
+      ];
+    });
+  }, [courses, favouriteIds, hasAppliedToCourse]);
 
   // Smart search utility functions
   const fuzzyMatch = React.useCallback(
@@ -361,16 +406,29 @@ const TutorDashboardPage: React.FC = () => {
         case "unavailable":
           matchesFilter = isClosedCourse(course, roles);
           break;
+        case "soon":
+          matchesFilter =
+            course.closesInMs != null &&
+            course.closesInMs > 0 &&
+            course.closesInMs <= 21 * 86400000;
+          break;
         case "all":
         default:
           matchesFilter = true;
           break;
       }
 
+      const matchesRole =
+        roleFilter === "all" ||
+        (roleFilter === "tutor"
+          ? (course.maxTutors ?? 0) > 0 || (course.availableTutors ?? 0) > 0
+          : (course.maxLabAssistants ?? 0) > 0 ||
+            (course.availableLabAssistants ?? 0) > 0);
+
       return {
         course,
         score: searchScore,
-        matches: matchesSearch && matchesFilter,
+        matches: matchesSearch && matchesFilter && matchesRole,
       };
     });
 
@@ -385,20 +443,18 @@ const TutorDashboardPage: React.FC = () => {
     myApplications,
     debouncedSearchQuery,
     activeFilter,
+    roleFilter,
     hasAppliedToCourse,
     calculateSearchScore,
   ]);
 
   const sortedFilteredCourses = React.useMemo(() => {
     const list = [...filteredCourses];
-    if (courseSortBy === "code") {
-      return list.sort((a, b) => a.courseCode.localeCompare(b.courseCode));
-    }
-    if (courseSortBy === "name") {
-      return list.sort((a, b) => a.courseName.localeCompare(b.courseName));
-    }
-    return list;
-  }, [filteredCourses, courseSortBy]);
+    const direction = sortOrder === "asc" ? 1 : -1;
+    const byCode = (a: Course, b: Course) =>
+      a.courseCode.localeCompare(b.courseCode);
+    return list.sort((a, b) => direction * byCode(a, b));
+  }, [filteredCourses, sortOrder]);
 
   const courseTotalPages = Math.max(
     1,
@@ -412,7 +468,7 @@ const TutorDashboardPage: React.FC = () => {
 
   React.useEffect(() => {
     setCoursePage(1);
-  }, [debouncedSearchQuery, activeFilter, courseSortBy]);
+  }, [debouncedSearchQuery, activeFilter, roleFilter, sortOrder]);
 
   React.useEffect(() => {
     if (coursePage > courseTotalPages) {
@@ -499,11 +555,24 @@ const TutorDashboardPage: React.FC = () => {
   return (
     <>
       {/* Hero Section with improved statistics */}
-      <TutorHeroSection
-        availableCourses={stats.availableCourses}
-        userApplications={stats.totalApplications}
-        openPositions={stats.openPositions}
-      />
+      <TutorHeroSection reminders={applyLaterReminders}>
+        <SearchFilters
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          status={activeFilter}
+          onStatusChange={setActiveFilter}
+          role={roleFilter}
+          onRoleChange={setRoleFilter}
+          sortOrder={sortOrder}
+          onSortOrderChange={setSortOrder}
+          onClear={() => {
+            setSearchQuery("");
+            setActiveFilter("all");
+            setRoleFilter("all");
+            setSortOrder("asc");
+          }}
+        />
+      </TutorHeroSection>
 
       {/* Main Content */}
       <main className={`flex-grow pt-0 ${styles.tutorContainer}`}>
@@ -529,49 +598,40 @@ const TutorDashboardPage: React.FC = () => {
           autoClose={false}
         />
 
-        {/* Search and Filters */}
-        <SearchFilters
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
-          sortBy={courseSortBy}
-          onSortChange={setCourseSortBy}
-        />
-
-        {/* Course Cards Grid - Modified to show 3 cards per row */}
-        <div className="container mx-auto px-4 py-8">
+        <div className={styles.results} id="course-results">
           {sortedFilteredCourses.length === 0 ? (
             <div className={styles.emptyStateCard}>
               <p className={styles.emptyTitle}>
-                {debouncedSearchQuery || activeFilter !== "all"
-                  ? "No courses match your current filters."
-                  : "No courses available at the moment."}
+                {activeFilter === "available"
+                  ? "No available courses"
+                  : activeFilter === "applied"
+                    ? "No applications yet"
+                    : activeFilter === "unavailable"
+                      ? "No closed courses"
+                      : activeFilter === "soon"
+                        ? "No courses closing soon"
+                        : "No courses match"}
               </p>
-              {activeFilter === "available" && stats.availableCourses === 0 && (
-                <p className={styles.emptySubtitle}>
-                  No courses are open for new applications right now. Check
-                  &quot;Closed&quot; or &quot;Applied&quot; for other courses.
-                </p>
-              )}
-              {activeFilter === "applied" && myApplications.length === 0 && (
-                <p className={styles.emptySubtitle}>
-                  You haven&apos;t applied to any courses yet. Check the
-                  &quot;Available&quot; filter to see opportunities.
-                </p>
-              )}
-              {activeFilter === "unavailable" &&
-                courses.filter((course) => isClosedCourse(course, roles))
-                  .length === 0 && (
-                <p className={styles.emptySubtitle}>
-                  There are no closed courses right now.
-                </p>
-              )}
+              <p className={styles.emptySubtitle}>
+                Try another search, or clear the filters.
+              </p>
+              <button
+                type="button"
+                className={styles.emptyClear}
+                onClick={() => {
+                  setSearchQuery("");
+                  setActiveFilter("all");
+                  setRoleFilter("all");
+                  setSortOrder("asc");
+                }}
+              >
+                Clear filters
+              </button>
             </div>
           ) : (
             <>
             <div
-              className={`${styles.courseGrid} grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6`}
+              className={styles.courseGrid}
             >
               {paginatedCourses.map((course) => (
                 <CourseCard
@@ -580,6 +640,11 @@ const TutorDashboardPage: React.FC = () => {
                   roles={roles}
                   myApplications={myApplications}
                   onApplyForRole={openApplyModal}
+                  isFavourite={favouriteIds.includes(course.id)}
+                  onToggleFavourite={toggleFavourite}
+                  remindApply={applyLaterReminders.some(
+                    (item) => item.id === course.id
+                  )}
                 />
               ))}
             </div>

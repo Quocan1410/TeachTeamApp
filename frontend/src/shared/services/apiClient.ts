@@ -33,7 +33,8 @@ const refreshSession = async (): Promise<boolean> => {
 const shouldSkipRefresh = (url: string): boolean =>
   url.includes("/auth/refresh") ||
   url.includes("/auth/signin") ||
-  url.includes("/auth/signup");
+  url.includes("/auth/signup") ||
+  url.includes("/auth/passkey/login");
 
 export const attachRefreshInterceptor = (client: AxiosInstance): void => {
   client.interceptors.response.use(

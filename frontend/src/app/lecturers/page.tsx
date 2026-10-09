@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import {
   PublicService,
@@ -182,12 +183,24 @@ export default function LecturersPage() {
         </div>
         <div className={styles.portrait}>
           <span className={styles.halo} aria-hidden="true" />
-          <img src="/mascot/mascot-4.png?v=1" alt="" className={styles.sit} />
+          <Image
+            src="/mascot/mascot-4.png"
+            alt=""
+            width={377}
+            height={661}
+            className={styles.sit}
+          />
         </div>
       </header>
       {!loading && !error && lecturers.length > 0 && visibleLecturers.length === 0 ? (
         <div className={styles.miss}>
-          <img src="/mascot/mascot-4.png?v=1" alt="" className={styles.missMascot} />
+          <Image
+            src="/mascot/mascot-4.png"
+            alt=""
+            width={377}
+            height={661}
+            className={styles.missMascot}
+          />
           <div>
             <p className={styles.missTitle}>No lecturers match that search.</p>
             <p className={styles.missText}>Try another name or course, or clear the search.</p>

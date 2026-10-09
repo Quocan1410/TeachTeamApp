@@ -95,7 +95,8 @@ export class AuthController {
 
     async signin(req: Request, res: Response): Promise<void> {
         try {
-            const { email, password } = req.body;
+            const email = String(req.body.email || "").trim().toLowerCase();
+            const { password } = req.body;
 
             // Validate input data
             const validation = validateSigninData(req.body);
@@ -109,9 +110,10 @@ export class AuthController {
             }
 
             // Find user by email
-            const user = await this.userRepository.findOne({
-                where: { email },
-            });
+            const user = await this.userRepository
+                .createQueryBuilder("user")
+                .where("LOWER(user.email) = :email", { email })
+                .getOne();
 
             if (!user || user.deletedAt) {
                 res.status(401).json({
@@ -146,11 +148,9 @@ export class AuthController {
             }
 
             if (user.userType === UserType.ADMIN) {
-                const adminPanelUrl =
-                    process.env.ADMIN_FRONTEND_URL || "http://localhost:3001";
-                res.status(403).json({
+                res.status(401).json({
                     success: false,
-                    message: `Admin accounts must sign in at the admin panel (${adminPanelUrl}).`,
+                    message: "Invalid email or password",
                 });
                 return;
             }
@@ -232,9 +232,10 @@ export class AuthController {
 
             if (user.userType === UserType.ADMIN) {
                 clearAuthCookie(res);
-                res.status(403).json({
+                res.status(401).json({
                     success: false,
-                    message: "Admin accounts use the admin panel",
+                    message: "Invalid or expired refresh token",
+                    code: "REFRESH_TOKEN_INVALID",
                 });
                 return;
             }

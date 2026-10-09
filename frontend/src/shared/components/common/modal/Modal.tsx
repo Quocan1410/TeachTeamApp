@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import CloseIcon from "@/shared/components/common/icons/CloseIcon";
+import { lockBodyScroll, unlockBodyScroll } from "@/shared/utils/bodyScrollLock";
 import styles from "./Modal.module.css";
 
 interface ModalProps {
@@ -56,14 +57,12 @@ const Modal: React.FC<ModalProps> = ({
       if (event.key === "Escape") beginClose();
     };
     document.addEventListener("keydown", handleEscapeKey);
-    const root = document.documentElement;
-    const previousOverflow = root.style.overflow;
-    root.style.overflow = "hidden";
+    lockBodyScroll();
 
     return () => {
       window.cancelAnimationFrame(frame);
       document.removeEventListener("keydown", handleEscapeKey);
-      root.style.overflow = previousOverflow;
+      unlockBodyScroll();
     };
   }, [isOpen, beginClose]);
 

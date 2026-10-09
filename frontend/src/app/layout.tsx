@@ -11,6 +11,7 @@ import GlobalWelcomeBanner from "@/shared/components/welcome/GlobalWelcomeBanner
 import AppInitializer from "@/shared/components/app-initialization/AppInitializer";
 import AccountStatusMonitor from "@/shared/components/common/AccountStatusMonitor";
 import RoutePending from "@/shared/components/route-pending/RoutePending";
+import ReleaseScrollLock from "@/shared/components/route-pending/ReleaseScrollLock";
 import { ROUTE_PENDING_BOOT } from "@/shared/components/route-pending/routePendingBoot";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -42,7 +43,7 @@ export default function RootLayout({
           #app-top-progress[hidden] { display: none !important; }
           #app-top-progress {
             position: fixed;
-            z-index: 80;
+            z-index: 1200;
             top: 0;
             left: 0;
             right: 0;
@@ -68,6 +69,7 @@ export default function RootLayout({
         `}</style>
         <script dangerouslySetInnerHTML={{ __html: ROUTE_PENDING_BOOT }} />
         <RoutePending />
+        <ReleaseScrollLock />
         <AuthProvider>
           <ThemeProvider>
             <NotificationProvider>

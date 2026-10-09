@@ -33,7 +33,7 @@ export class AuthService {
         payload: SignupPayload
     ): Promise<AuthServiceResult<{ user: User }>> {
         let finalUserType = payload.userType;
-        const email = payload.email;
+        const email = payload.email.trim().toLowerCase();
 
         if (!finalUserType) {
             const inferred = getUserTypeFromEmail(email);
@@ -69,15 +69,18 @@ export class AuthService {
         if (finalUserType === UserType.ADMIN) {
             return {
                 success: false,
-                statusCode: 403,
-                message:
-                    "Admin accounts cannot be created via signup. Sign in at the admin panel.",
+                statusCode: 400,
+                message: "Invalid email domain",
+                errors: {
+                    email: "Email must end with @candidate.edu.au (for candidates) or @lecturer.edu.au (for lecturers)",
+                },
             };
         }
 
-        const existingUser = await this.userRepository.findOne({
-            where: { email },
-        });
+        const existingUser = await this.userRepository
+            .createQueryBuilder("user")
+            .where("LOWER(user.email) = :email", { email })
+            .getOne();
         if (existingUser) {
             return {
                 success: false,
@@ -160,7 +163,7 @@ export class AuthService {
             return {
                 success: false,
                 statusCode: 403,
-                message: "Admin password is managed in the admin panel",
+                message: "Password can't be changed here",
             };
         }
 
