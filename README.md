@@ -106,7 +106,7 @@ cd backend && npm run test:coverage
 cd frontend && npm run test:coverage
 ```
 
-Those coverage reports target the listed utility modules, not every React page or Express route. CI fails if that scoped coverage drops below 80% lines.
+Those coverage reports target the listed utility modules, not every React page or Express route. CI fails if **any** of those files drops below 80% lines, statements, or functions.
 
 ### End-to-end (Playwright)
 
