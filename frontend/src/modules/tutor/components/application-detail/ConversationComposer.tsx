@@ -55,7 +55,7 @@ const ConversationComposer: React.FC<ConversationComposerProps> = ({
     viewerRole === "lecturer" ? "Editing your feedback" : "Editing your message";
 
   return (
-    <footer className={styles.composer} aria-label="Write a reply">
+    <footer className={styles.conversationPanel__composer} aria-label="Write a reply">
       {replyQuote && onClearReply ? (
         <ComposerReplyPreview
           senderName={replyQuote.senderName}
@@ -65,18 +65,18 @@ const ConversationComposer: React.FC<ConversationComposerProps> = ({
         />
       ) : null}
       {isEditing && (
-        <p className={styles.composerEditHint}>{editHint}</p>
+        <p className={styles.conversationPanel__composerEditHint}>{editHint}</p>
       )}
-      <div className={styles.composerRow}>
+      <div className={styles.conversationPanel__composerRow}>
         <ConversationAvatar
           person={avatarPerson}
           variant={viewerRole === "lecturer" ? "lecturer" : "you"}
-          className={styles.composerAvatar}
+          className={styles.conversationPanel__composerAvatar}
         />
-        <div className={styles.composerField}>
+        <div className={styles.conversationPanel__composerField}>
           <textarea
             id={composerId}
-            className={styles.composerTextarea}
+            className={styles.conversationPanel__composerTextarea}
             value={draft}
             onChange={(e) => onDraftChange(e.target.value)}
             placeholder={placeholder}
@@ -86,10 +86,10 @@ const ConversationComposer: React.FC<ConversationComposerProps> = ({
             }
           />
           {(isDraftDirty || draft.trim() || replyQuote || isEditing) && (
-            <div className={styles.composerActions}>
+            <div className={styles.conversationPanel__composerActions}>
               <button
                 type="button"
-                className={`${styles.composerBtn} ${styles.composerBtnGhost}`}
+                className={`${styles.conversationPanel__composerBtn} ${styles.conversationPanel__composerBtnGhost}`}
                 onClick={onCancelDraft}
                 disabled={busy || (!isDraftDirty && !replyQuote && !isEditing)}
               >
@@ -97,7 +97,7 @@ const ConversationComposer: React.FC<ConversationComposerProps> = ({
               </button>
               <button
                 type="button"
-                className={`${styles.composerBtn} ${styles.composerBtnPrimary}`}
+                className={`${styles.conversationPanel__composerBtn} ${styles.conversationPanel__composerBtnPrimary}`}
                 onClick={onSend}
                 disabled={busy || !draft.trim()}
               >

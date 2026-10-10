@@ -1,6 +1,6 @@
 /* ======== MODAL STYLES ======== */
 
-.modalOverlay {
+.modal__modalOverlay {
   position: fixed;
   inset: 0;
   width: 100%;
@@ -18,11 +18,11 @@
   transition: opacity 0.22s ease;
 }
 
-.modalOverlayOpen {
+.modal__modalOverlayOpen {
   opacity: 1;
 }
 
-.modalContainer {
+.modal__modalContainer {
   position: relative;
   background-color: var(--color-bg-primary);
   border-radius: 15px;
@@ -35,29 +35,29 @@
   transition: transform 0.22s ease;
 }
 
-.modalContainerOpen {
+.modal__modalContainerOpen {
   transform: none;
 }
 
-.modalImageSection {
+.modal__modalImageSection {
   width: 40%;
   position: relative;
   overflow: hidden;
 }
 
-.modalImageContainer {
+.modal__modalImageContainer {
   position: relative;
   width: 100%;
   height: 100%;
 }
 
-.modalImageContainer .lecturerImage {
+.modal__modalImageContainer .modal__lecturerImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.modalDecoration {
+.modal__modalDecoration {
   position: absolute;
   width: 300px;
   height: 300px;
@@ -68,13 +68,13 @@
   z-index: 0;
 }
 
-.modalContent {
+.modal__modalContent {
   width: 60%;
   padding: 3rem;
   position: relative;
 }
 
-.modalClose {
+.modal__modalClose {
   position: absolute;
   top: 20px;
   right: 20px;
@@ -93,24 +93,24 @@
   z-index: 10;
 }
 
-.modalClose:hover {
+.modal__modalClose:hover {
   background-color: var(--color-primary-dark);
   color: white;
   box-shadow: none;
 }
 
-.modalCloseDanger {
+.modal__modalCloseDanger {
   background-color: transparent;
   color: #ff3b30;
   border: 1.5px solid #ff3b30;
 }
 
-.modalCloseDanger:hover {
+.modal__modalCloseDanger:hover {
   background-color: rgba(255, 59, 48, 0.12);
   box-shadow: none;
 }
 
-.modalCloseIcon {
+.modal__modalCloseIcon {
   background-color: var(--color-bg-primary);
   color: #ff3b30;
   border: 1.5px solid var(--color-primary);
@@ -118,7 +118,7 @@
   opacity: 1;
 }
 
-.modalCloseIcon:hover {
+.modal__modalCloseIcon:hover {
   background-color: var(--color-bg-primary);
   color: #ff3b30;
   border-color: var(--color-primary);
@@ -126,49 +126,49 @@
   opacity: 1;
 }
 
-.modalClose svg {
+.modal__modalClose svg {
   transition: transform 0.28s ease;
 }
 
-.modalCloseSpin svg {
+.modal__modalCloseSpin svg {
   transform: rotate(180deg);
 }
 
-.modalTitle {
+.modal__modalTitle {
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
   color: var(--color-text-primary);
 }
 
-.modalSubtitle {
+.modal__modalSubtitle {
   font-size: 1.2rem;
   color: var(--color-primary);
   margin-bottom: 1.5rem;
   font-weight: 500;
 }
 
-.modalText {
+.modal__modalText {
   color: var(--color-text-primary);
   line-height: 1.6;
   margin-bottom: 1.5rem;
   opacity: 0.9;
 }
 
-.modalInfoList {
+.modal__modalInfoList {
   list-style: none;
   padding: 0;
   margin-bottom: 1.5rem;
 }
 
-.modalInfoItem {
+.modal__modalInfoItem {
   display: flex;
   align-items: center;
   margin-bottom: 0.75rem;
   color: var(--color-text-primary);
 }
 
-.modalInfoIcon {
+.modal__modalInfoIcon {
   background-color: rgba(249, 115, 22, 0.2);
   color: var(--color-primary);
   width: 30px;
@@ -181,7 +181,7 @@
   font-size: 1rem;
 }
 
-.modalContactBtn {
+.modal__modalContactBtn {
   background-color: var(--color-primary);
   color: white;
   border: none;
@@ -193,7 +193,7 @@
   display: inline-block;
 }
 
-.modalContactBtn:hover {
+.modal__modalContactBtn:hover {
   background-color: #e86207;
   transform: translateY(-3px);
   box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4);
@@ -201,34 +201,34 @@
 
 /* Responsive modal */
 @media (max-width: 768px) {
-  .modalContainer {
+  .modal__modalContainer {
     flex-direction: column;
     width: 95%;
     max-height: 90vh;
     overflow: hidden;
   }
 
-  .modalImageSection {
+  .modal__modalImageSection {
     width: 100%;
     height: 250px;
   }
 
-  .modalContent {
+  .modal__modalContent {
     width: 100%;
     padding: 2rem;
   }
 
-  .modalTitle {
+  .modal__modalTitle {
     font-size: 1.5rem;
   }
 }
 
 @media (max-width: 480px) {
-  .modalContent {
+  .modal__modalContent {
     padding: 1.5rem;
   }
 
-  .modalImageSection {
+  .modal__modalImageSection {
     height: 200px;
   }
 }

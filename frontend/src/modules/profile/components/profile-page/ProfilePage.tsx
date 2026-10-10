@@ -20,7 +20,38 @@ import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton"
 import AppSelect from "@/shared/components/common/app-select/AppSelect";
 import Toast from "@/shared/components/common/toast/toast";
 import { useToast } from "@/shared/hooks/useNotification";
+import {
+  ArrowUpTrayIcon,
+  DevicePhoneMobileIcon,
+  EnvelopeIcon,
+  FingerPrintIcon,
+  LockClosedIcon,
+  PencilSquareIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
+import { createPasskey, fetchPasskeyStatus } from "@/modules/auth/utils/passkey";
+import { availableSkills } from "@/modules/tutor/utils/skillOptions";
+import CloseIcon from "@/shared/components/common/icons/CloseIcon";
 import styles from "./ProfilePage.module.css";
+
+const AVATAR_MIME_TYPES = new Set([
+  "image/jpeg",
+  "image/jpg",
+  "image/pjpeg",
+  "image/png",
+  "image/x-png",
+  "image/webp",
+  "image/gif",
+  "image/avif",
+  "image/bmp",
+  "image/x-ms-bmp",
+]);
+
+function isAllowedAvatarFile(file: File): boolean {
+  if (AVATAR_MIME_TYPES.has(file.type)) return true;
+  if (file.type && file.type !== "application/octet-stream") return false;
+  return /\.(jpe?g|png|webp|gif|avif|bmp)$/i.test(file.name);
+}
 
 export const ProfilePage: React.FC = () => {
   const { user: contextUser, updateUser, isLoading: authLoading } = useAuth();
@@ -35,7 +66,13 @@ export const ProfilePage: React.FC = () => {
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [showAvatarInitials, setShowAvatarInitials] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [editingSection, setEditingSection] = useState<
+    "name" | "description" | "skills" | "website" | null
+  >(null);
+  const [description, setDescription] = useState("");
+  const [skills, setSkills] = useState("");
+  const [customSkill, setCustomSkill] = useState("");
+  const [website, setWebsite] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [profileMessage, setProfileMessage] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -50,12 +87,19 @@ export const ProfilePage: React.FC = () => {
   const [passwordMessage, setPasswordMessage] = useState("");
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
+  const [settingsSection, setSettingsSection] = useState<"personal" | "security">("personal");
+  const [fullName, setFullName] = useState("");
+  const [hasPasskey, setHasPasskey] = useState<boolean | null>(null);
+  const [passkeyBusy, setPasskeyBusy] = useState(false);
+  const [passwordMethod, setPasswordMethod] = useState<"choose" | "current">("choose");
+  const [laterMethod, setLaterMethod] = useState<null | "passkey" | "authenticator" | "email">(null);
   const [editForm, setEditForm] = useState({
     firstName: "",
     lastName: "",
     honorific: "Mr." as Honorific,
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const accountRef = useRef<HTMLElement>(null);
   const contextUserRef = useRef(contextUser);
   contextUserRef.current = contextUser;
   const { toast, showSuccess, showError, hideToast } = useToast();
@@ -167,6 +211,41 @@ export const ProfilePage: React.FC = () => {
     }
   }, [user, avatarUrl]);
 
+  useEffect(() => {
+    if (!user) return;
+    setFullName(`${user.firstName} ${user.lastName}`.trim());
+    setDescription(user.description ?? "");
+    setSkills(user.skills ?? "");
+    setWebsite(user.website ?? "");
+    setEditForm({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      honorific:
+        (user.honorific as Honorific) ||
+        (user.userType === UserType.LECTURER ? "Dr." : "Mr."),
+    });
+  }, [
+    user?.id,
+    user?.firstName,
+    user?.lastName,
+    user?.honorific,
+    user?.userType,
+    user?.description,
+    user?.skills,
+    user?.website,
+  ]);
+
+  useEffect(() => {
+    if (settingsSection !== "security") return;
+    let cancelled = false;
+    void fetchPasskeyStatus().then((saved) => {
+      if (!cancelled) setHasPasskey(saved);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [settingsSection]);
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -198,10 +277,15 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
-  const startEditing = () => {
+  const startEditing = (section: "name" | "description" | "skills" | "website") => {
     if (!user) {
       return;
     }
+    setFullName(`${user.firstName} ${user.lastName}`.trim());
+    setDescription(user.description ?? "");
+    setSkills(user.skills ?? "");
+    setCustomSkill("");
+    setWebsite(user.website ?? "");
     setEditForm({
       firstName: user.firstName,
       lastName: user.lastName,
@@ -211,13 +295,13 @@ export const ProfilePage: React.FC = () => {
     });
     setFieldErrors({});
     setProfileMessage("");
+    setEditingSection(section);
     setIsEditingPassword(false);
     resetPasswordForm();
-    setIsEditing(true);
   };
 
   const cancelEditing = () => {
-    setIsEditing(false);
+    setEditingSection(null);
     setFieldErrors({});
     setProfileMessage("");
   };
@@ -236,7 +320,7 @@ export const ProfilePage: React.FC = () => {
     if (!user) {
       return;
     }
-    setIsEditing(false);
+    setEditingSection(null);
     setFieldErrors({});
     setProfileMessage("");
     resetPasswordForm();
@@ -253,17 +337,32 @@ export const ProfilePage: React.FC = () => {
       return;
     }
 
+    const trimmedName = fullName.trim().replace(/\s+/g, " ");
+    const splitAt = trimmedName.indexOf(" ");
+    if (splitAt <= 0 || !trimmedName.slice(splitAt + 1).trim()) {
+      setFieldErrors({ fullName: "Enter your first and last name." });
+      showError("Enter your first and last name.");
+      return;
+    }
+
     setIsSaving(true);
     setProfileMessage("");
     setFieldErrors({});
 
     try {
-      const response = await AuthService.updateProfile(editForm);
+      const response = await AuthService.updateProfile({
+        firstName: trimmedName.slice(0, splitAt),
+        lastName: trimmedName.slice(splitAt + 1).trim(),
+        honorific: editForm.honorific,
+        description,
+        skills,
+        website,
+      });
       if (response.success && response.data?.user) {
         setUser(response.data.user);
         updateUser(response.data.user);
         AuthService.saveUser(response.data.user);
-        setIsEditing(false);
+        setEditingSection(null);
         showSuccess("Profile saved successfully.");
       } else if (response.errors) {
         setFieldErrors(response.errors);
@@ -323,8 +422,8 @@ export const ProfilePage: React.FC = () => {
       return;
     }
 
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-      showError("Please upload a JPEG, PNG, or WebP image.");
+    if (!isAllowedAvatarFile(file)) {
+      showError("Use a JPG, PNG, WebP, GIF, AVIF, or BMP image.");
       return;
     }
 
@@ -420,625 +519,747 @@ export const ProfilePage: React.FC = () => {
     return null;
   }
 
-  return (
-    <div className={styles.profileContainer}>
-      <div className={styles.profileGrid}>
-        {/* Left Panel - User Information */}
-        <div className={styles.userPanel}>
-          <div className={styles.userPanelTop}>
-          <div className={styles.avatarSection}>
-            <button
-              type="button"
-              className={styles.avatarTrigger}
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploadingAvatar}
-              aria-label="Change profile photo"
-            >
-              <div className={styles.avatarRing}>
-                {showAvatarInitials && !user.avatarUrl && !avatarPreview ? (
-                  <span className={styles.avatarInitials}>{displayInitials}</span>
-                ) : (
-                  <Image
-                    src={avatarSrc}
-                    alt={`${getUserDisplayName({
-                      firstName: user.firstName,
-                      lastName: user.lastName,
-                      email: user.email,
-                      userType: user.userType,
-                    })} avatar`}
-                    width={84}
-                    height={84}
-                    className={styles.avatarImage}
-                    unoptimized={!!user.avatarUrl || !!avatarPreview}
-                    onError={() => setShowAvatarInitials(true)}
-                  />
-                )}
-                <span className={styles.avatarOverlay} aria-hidden="true">
-                  {isUploadingAvatar ? (
-                    <span className={styles.avatarOverlaySpinner} />
-                  ) : (
-                    <>
-                      <svg
-                        className={styles.avatarOverlayIcon}
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                        <circle cx="12" cy="13" r="4" />
-                      </svg>
-                      <span className={styles.avatarOverlayText}>
-                        Change photo
-                      </span>
-                    </>
-                  )}
-                </span>
-              </div>
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className={styles.avatarFileInput}
-              onChange={handleAvatarFileChange}
-            />
+  const displayName = getUserDisplayName({
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    userType: user.userType,
+    honorific: user.honorific,
+  });
+  const savedHonorific =
+    (user.honorific as Honorific) ||
+    (user.userType === UserType.LECTURER ? "Dr." : "Mr.");
+  const savedFullName = `${user.firstName} ${user.lastName}`.trim();
+  const profileDirty =
+    editingSection === "name"
+      ? fullName.trim().replace(/\s+/g, " ") !== savedFullName ||
+        editForm.honorific !== savedHonorific
+      : editingSection === "description"
+        ? description.trim() !== (user.description ?? "").trim()
+        : editingSection === "skills"
+          ? skills.trim() !== (user.skills ?? "").trim()
+          : editingSection === "website"
+            ? website.trim() !== (user.website ?? "").trim()
+            : false;
+  const honorificOptions =
+    user.userType === UserType.LECTURER
+      ? [
+          { value: "Dr.", label: "Dr." },
+          { value: "Prof.", label: "Prof." },
+        ]
+      : [
+          { value: "Mr.", label: "Mr." },
+          { value: "Ms.", label: "Ms." },
+          { value: "Mrs.", label: "Mrs." },
+        ];
 
-            <div className={styles.avatarMeta}>
-              {user.avatarUrl && (
+  const resetAccountForm = () => {
+    setFullName(savedFullName);
+    setDescription(user.description ?? "");
+    setSkills(user.skills ?? "");
+    setCustomSkill("");
+    setWebsite(user.website ?? "");
+    setEditForm({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      honorific: savedHonorific,
+    });
+    setFieldErrors({});
+    setProfileMessage("");
+    setEditingSection(null);
+  };
+
+  const showAccountSection = (section: "personal" | "security") => {
+    setSettingsSection(section);
+    setLaterMethod(null);
+    setPasswordMethod("choose");
+  };
+
+  const savePasskey = async () => {
+    setPasskeyBusy(true);
+    const response = await createPasskey();
+    setPasskeyBusy(false);
+    if (response.success) {
+      setHasPasskey(true);
+      showSuccess("Passkey saved.");
+      return;
+    }
+    showError(response.message || "Passkey could not be saved.");
+  };
+
+  const selectedSkills = skills
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  const addProfileSkill = (value: string) => {
+    const next = value.trim().replace(/\s+/g, " ");
+    if (!next) return;
+    if (next.length < 2) {
+      setFieldErrors((prev) => ({ ...prev, skills: "Skills must be at least 2 characters." }));
+      return;
+    }
+    if (!/^[a-zA-Z0-9\s.+#/-]+$/.test(next)) {
+      setFieldErrors((prev) => ({ ...prev, skills: "Use letters, numbers, and spaces." }));
+      return;
+    }
+    if (selectedSkills.some((item) => item.toLowerCase() === next.toLowerCase())) {
+      setCustomSkill("");
+      return;
+    }
+    if (selectedSkills.length >= 10) {
+      setFieldErrors((prev) => ({ ...prev, skills: "You can add up to 10 skills." }));
+      return;
+    }
+    const joined = [...selectedSkills, next].join(", ");
+    if (joined.length > 500) {
+      setFieldErrors((prev) => ({ ...prev, skills: "Skills must be 500 characters or less." }));
+      return;
+    }
+    setSkills(joined);
+    setCustomSkill("");
+    setFieldErrors((prev) => ({ ...prev, skills: "" }));
+  };
+
+  const removeProfileSkill = (value: string) => {
+    setSkills(selectedSkills.filter((item) => item !== value).join(", "));
+    setFieldErrors((prev) => ({ ...prev, skills: "" }));
+  };
+
+  const fieldEdit = (section: "name" | "description" | "skills" | "website", label: string) => (
+    <button
+      type="button"
+      className={`${styles.profilePage__editIcon} ${
+        editingSection === section ? styles["profilePage__editIcon--active"] : ""
+      }`}
+      onClick={() => (editingSection === section ? resetAccountForm() : startEditing(section))}
+      disabled={user.isBlocked || isSaving}
+      aria-label={editingSection === section ? `Cancel editing ${label}` : `Edit ${label}`}
+      title={`Edit ${label}`}
+    >
+      <PencilSquareIcon aria-hidden="true" />
+    </button>
+  );
+
+  const avatarNode = (large: boolean) => (
+    <span
+      className={`${styles.profilePage__accountAvatar} ${
+        large ? styles["profilePage__accountAvatar--large"] : ""
+      }`}
+    >
+      {showAvatarInitials && !user.avatarUrl && !avatarPreview ? (
+        <span className={styles.profilePage__accountInitials}>{displayInitials}</span>
+      ) : (
+        <Image
+          src={avatarSrc}
+          alt=""
+          width={large ? 72 : 40}
+          height={large ? 72 : 40}
+          className={styles.profilePage__accountAvatarImage}
+          unoptimized={!!user.avatarUrl || !!avatarPreview}
+          onError={() => setShowAvatarInitials(true)}
+        />
+      )}
+    </span>
+  );
+
+  return (
+    <div className={styles.profilePage__profileContainer}>
+      <div className={styles.profilePage__accountShell}>
+        <aside className={styles.profilePage__accountSide} aria-label="Settings">
+          <div className={styles.profilePage__accountIdentity}>
+            {avatarNode(true)}
+            <span className={styles.profilePage__accountIdentityCopy}>
+              <span className={styles.profilePage__accountIdentityName}>{displayName}</span>
+              <span className={styles.profilePage__accountIdentityRole}>
+                {getUserTypeLabel(user.userType)}
+              </span>
+            </span>
+          </div>
+          <p className={styles.profilePage__accountGroup}>Your account</p>
+          <button
+            type="button"
+            className={`${styles.profilePage__accountNavItem} ${
+              settingsSection === "personal" ? styles["profilePage__accountNavItem--active"] : ""
+            }`}
+            onClick={() => showAccountSection("personal")}
+          >
+            <UserIcon className={styles.profilePage__accountNavIcon} aria-hidden="true" />
+            Profile
+          </button>
+          <button
+            type="button"
+            className={`${styles.profilePage__accountNavItem} ${
+              settingsSection === "security" ? styles["profilePage__accountNavItem--active"] : ""
+            }`}
+            onClick={() => showAccountSection("security")}
+          >
+            <LockClosedIcon className={styles.profilePage__accountNavIcon} aria-hidden="true" />
+            Login & security
+          </button>
+        </aside>
+
+        <section className={styles.profilePage__accountMain} ref={accountRef}>
+          <header className={styles.profilePage__accountHeader}>
+            <h1 className={styles.profilePage__accountTitle}>
+              {settingsSection === "personal" ? "Profile" : "Login & security"}
+            </h1>
+            {settingsSection === "personal" && (
+              <p className={styles.profilePage__accountMeta}>
+                {getUserTypeLabel(user.userType)} · Joined {formatDate(user.createdAt)}
+              </p>
+            )}
+          </header>
+
+          {settingsSection === "personal" ? (
+            <>
+          <div className={styles.profilePage__editBlock}>
+          <div className={styles.profilePage__pictureRow}>
+            {avatarNode(true)}
+            <div className={styles.profilePage__pictureCopy}>
+              <h2 className={styles.profilePage__pictureTitle}>Profile picture</h2>
+              <div className={styles.profilePage__pictureActions}>
                 <button
                   type="button"
-                  className={styles.removeAvatarLink}
-                  onClick={handleRemoveAvatar}
-                  disabled={isUploadingAvatar}
+                  className={styles.profilePage__uploadButton}
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploadingAvatar || user.isBlocked}
                 >
-                  Remove photo
+                  <ArrowUpTrayIcon className={styles.profilePage__uploadIcon} aria-hidden="true" />
+                  {isUploadingAvatar ? "Uploading..." : "Upload image"}
                 </button>
-              )}
+                <button
+                  type="button"
+                  className={styles.profilePage__removeButton}
+                  onClick={handleRemoveAvatar}
+                  disabled={isUploadingAvatar || !user.avatarUrl}
+                >
+                  Remove
+                </button>
+              </div>
+              <p className={styles.profilePage__pictureHint}>
+                JPG, PNG, WebP, GIF, AVIF or BMP under 2MB
+              </p>
               {avatarMessage && (
                 <p
-                  className={`${styles.avatarMessage} ${
+                  className={`${styles.profilePage__avatarMessage} ${
                     avatarMessage.toLowerCase().includes("success") ||
                     avatarMessage.toLowerCase().includes("removed")
-                      ? styles.avatarMessageSuccess
-                      : styles.avatarMessageError
+                      ? styles.profilePage__avatarMessageSuccess
+                      : styles.profilePage__avatarMessageError
                   }`}
                 >
                   {avatarMessage}
                 </p>
               )}
             </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif,image/avif,image/bmp,.jpg,.jpeg,.png,.webp,.gif,.avif,.bmp"
+              className={styles.profilePage__avatarFileInput}
+              onChange={handleAvatarFileChange}
+            />
+          </div>
           </div>
 
-          <div className={styles.userInfo}>
-            <h1 className={styles.userName}>
-              {getUserDisplayName({
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                userType: user.userType,
-                honorific: user.honorific,
-              })}
-            </h1>
-            <div className={styles.userRole}>
-              <span className={`${styles.roleBadge} ${styles[user.userType]}`}>
-                {getUserTypeLabel(user.userType)}
+          <div className={styles.profilePage__editBlock}>
+          <div className={styles.profilePage__nameRow}>
+            <div className={styles.profilePage__field}>
+              <span className={styles.profilePage__fieldHead}>
+                <label className={styles.profilePage__fieldLabel} htmlFor="profile-full-name">
+                  Full name
+                </label>
+                {fieldEdit("name", "full name")}
               </span>
+              <input
+                id="profile-full-name"
+                type="text"
+                className={`${styles.profilePage__accountInput} ${
+                  fieldErrors.fullName ? styles.profilePage__formInputError : ""
+                }`}
+                value={fullName}
+                onChange={(event) => setFullName(event.target.value)}
+                disabled={editingSection !== "name" || isSaving || user.isBlocked}
+                autoComplete="name"
+              />
+              {fieldErrors.fullName && (
+                <span className={styles.profilePage__fieldError}>{fieldErrors.fullName}</span>
+              )}
             </div>
-            <p className={styles.userEmail}>{user.email}</p>
-          </div>
-
-          <div className={styles.quickStats}>
-            <div className={styles.statCard}>
-              <div className={styles.statIconWrapper}>
-                <div className={styles.statIcon}>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                    <line x1="16" y1="2" x2="16" y2="6"/>
-                    <line x1="8" y1="2" x2="8" y2="6"/>
-                    <line x1="3" y1="10" x2="21" y2="10"/>
-                  </svg>
-                </div>
-              </div>
-              <div className={styles.statContent}>
-                <span className={styles.statLabel}>MEMBER SINCE</span>
-                <span className={styles.statValue}>
-                  {formatDate(user.createdAt)}
-                </span>
-              </div>
-            </div>
-            <div className={styles.statCard}>
-              <div className={styles.statIconWrapper}>
-                <div className={`${styles.statIcon} ${user.isBlocked ? styles.statusBlocked : styles.statusActive}`}>
-                  {user.isBlocked ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10"/>
-                      <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
-                    </svg>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                      <polyline points="22,4 12,14.01 9,11.01"/>
-                    </svg>
-                  )}
-                </div>
-              </div>
-              <div className={styles.statContent}>
-                <span className={styles.statLabel}>STATUS</span>
-                <span
-                  className={`${styles.statusBadge} ${user.isBlocked ? styles.blocked : styles.active}`}
-                >
-                  {user.isBlocked ? "Blocked" : "Active"}
-                </span>
-              </div>
-            </div>
-          </div>
-          </div>
-
-          <div className={styles.sidebarSecurityCard}>
-            <div className={styles.cardHeader}>
-              <h3 className={styles.cardTitle}>Security</h3>
-              <div className={styles.cardHeaderActions}>
-                {isEditingPassword ? (
-                  <>
-                    <button
-                      type="button"
-                      className={styles.cancelButton}
-                      onClick={cancelPasswordEditing}
-                      disabled={isChangingPassword}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      form="profile-change-password-form"
-                      className={styles.saveButton}
-                      disabled={isChangingPassword}
-                    >
-                      {isChangingPassword ? "Updating..." : "Update"}
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    type="button"
-                    className={styles.editButton}
-                    onClick={startPasswordEditing}
-                    disabled={user.isBlocked}
-                    title={
-                      user.isBlocked
-                        ? "Blocked accounts cannot change their password"
-                        : "Change password"
-                    }
-                  >
-                    Change
-                  </button>
-                )}
-              </div>
-            </div>
-            <div className={styles.cardContent}>
-              {isEditingPassword ? (
-                <form
-                  id="profile-change-password-form"
-                  onSubmit={handleChangePassword}
-                  className={styles.passwordForm}
-                >
-                  <div className={styles.infoItem}>
-                    <label className={styles.infoLabel} htmlFor="currentPassword">
-                      Current password
-                    </label>
-                    <input
-                      id="currentPassword"
-                      type="password"
-                      className={`${styles.formInput} ${
-                        passwordErrors.currentPassword ? styles.formInputError : ""
-                      }`}
-                      value={passwordForm.currentPassword}
-                      onFocus={() => clearRejectedPassword("currentPassword")}
-                      onClick={() => clearRejectedPassword("currentPassword")}
-                      onChange={(event) =>
-                        setPasswordForm((prev) => ({
-                          ...prev,
-                          currentPassword: event.target.value,
-                        }))
-                      }
-                      autoComplete="current-password"
-                      required
-                      disabled={isChangingPassword}
-                    />
-                    {passwordErrors.currentPassword && (
-                      <span className={styles.fieldError}>
-                        {passwordErrors.currentPassword}
-                      </span>
-                    )}
-                  </div>
-                  <div className={styles.infoItem}>
-                    <label className={styles.infoLabel} htmlFor="newPassword">
-                      New password
-                    </label>
-                    <input
-                      id="newPassword"
-                      type="password"
-                      className={`${styles.formInput} ${
-                        passwordErrors.newPassword ? styles.formInputError : ""
-                      }`}
-                      value={passwordForm.newPassword}
-                      onFocus={() => clearRejectedPassword("newPassword")}
-                      onClick={() => clearRejectedPassword("newPassword")}
-                      onChange={(event) =>
-                        setPasswordForm((prev) => ({
-                          ...prev,
-                          newPassword: event.target.value,
-                        }))
-                      }
-                      autoComplete="new-password"
-                      required
-                      disabled={isChangingPassword}
-                    />
-                    {passwordErrors.newPassword && (
-                      <span className={styles.fieldError}>
-                        {passwordErrors.newPassword}
-                      </span>
-                    )}
-                  </div>
-                  <div className={styles.infoItem}>
-                    <label className={styles.infoLabel} htmlFor="confirmPassword">
-                      Confirm new password
-                    </label>
-                    <input
-                      id="confirmPassword"
-                      type="password"
-                      className={`${styles.formInput} ${
-                        passwordErrors.confirmPassword ? styles.formInputError : ""
-                      }`}
-                      value={passwordForm.confirmPassword}
-                      onFocus={() => clearRejectedPassword("confirmPassword")}
-                      onClick={() => clearRejectedPassword("confirmPassword")}
-                      onChange={(event) =>
-                        setPasswordForm((prev) => ({
-                          ...prev,
-                          confirmPassword: event.target.value,
-                        }))
-                      }
-                      autoComplete="new-password"
-                      required
-                      disabled={isChangingPassword}
-                    />
-                    {passwordErrors.confirmPassword && (
-                      <span className={styles.fieldError}>
-                        {passwordErrors.confirmPassword}
-                      </span>
-                    )}
-                  </div>
-                  {passwordMessage && (
-                    <p
-                      className={`${styles.profileMessage} ${
-                        passwordMessage.toLowerCase().includes("success")
-                          ? styles.profileMessageSuccess
-                          : styles.profileMessageError
-                      }`}
-                    >
-                      {passwordMessage}
-                    </p>
-                  )}
-                </form>
-              ) : (
-                <div className={styles.infoGrid}>
-                  <div className={`${styles.infoItem} ${styles.infoItemFull}`}>
-                    <span className={styles.infoLabel}>Password</span>
-                    <span className={styles.infoValue}>••••••••</span>
-                  </div>
-                </div>
+            <div className={styles.profilePage__field}>
+              <span className={styles.profilePage__fieldHead}>
+                <label className={styles.profilePage__fieldLabel} htmlFor="profile-honorific">
+                  Title
+                </label>
+                {fieldEdit("name", "title")}
+              </span>
+              <AppSelect
+                id="profile-honorific"
+                className={styles.profilePage__titleSelect}
+                value={editForm.honorific}
+                onChange={(value) =>
+                  setEditForm((prev) => ({ ...prev, honorific: value as Honorific }))
+                }
+                options={honorificOptions}
+                hasError={!!fieldErrors.honorific}
+                disabled={editingSection !== "name" || isSaving || user.isBlocked}
+                aria-label="Title"
+              />
+              {fieldErrors.honorific && (
+                <span className={styles.profilePage__fieldError}>{fieldErrors.honorific}</span>
               )}
             </div>
           </div>
-        </div>
-
-        {/* Right Panel - Information Cards */}
-        <div className={styles.infoPanel}>
-          <div className={styles.infoCardMain}>
-          <div className={styles.infoSection}>
-            <div className={styles.cardHeader}>
-              <h3 className={styles.cardTitle}>Account Information</h3>
-              <div className={styles.cardHeaderActions}>
-                {isEditing ? (
-                  <>
-                    <button
-                      type="button"
-                      className={styles.cancelButton}
-                      onClick={cancelEditing}
-                      disabled={isSaving}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.saveButton}
-                      onClick={handleSaveProfile}
-                      disabled={isSaving}
-                    >
-                      {isSaving ? "Saving..." : "Save"}
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    type="button"
-                    className={styles.editButton}
-                    onClick={startEditing}
-                    disabled={user.isBlocked}
-                    title={
-                      user.isBlocked
-                        ? "Blocked accounts cannot edit their profile"
-                        : "Edit profile"
-                    }
-                  >
-                    Edit
-                  </button>
-                )}
-              </div>
+          {editingSection === "name" && (
+            <div className={styles.profilePage__sectionActions}>
+              <button
+                type="button"
+                className={styles.profilePage__ghostButton}
+                onClick={resetAccountForm}
+                disabled={isSaving}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={styles.profilePage__primaryButton}
+                onClick={handleSaveProfile}
+                disabled={!profileDirty || isSaving || user.isBlocked}
+              >
+                {isSaving ? "Saving..." : "Save"}
+              </button>
             </div>
-            <div className={styles.cardContent}>
-              {profileMessage && (
-                <p
-                  className={`${styles.profileMessage} ${
-                    profileMessage.toLowerCase().includes("success")
-                      ? styles.profileMessageSuccess
-                      : styles.profileMessageError
-                  }`}
-                >
-                  {profileMessage}
-                </p>
-              )}
-              <div className={styles.infoGrid}>
-                <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>Account Type</span>
-                  <span className={styles.infoValue}>
-                    {getUserTypeLabel(user.userType)}
-                  </span>
-                </div>
-                <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>Join Date</span>
-                  <span className={styles.infoValue}>
-                    {formatDate(user.createdAt)}
-                  </span>
-                </div>
-                <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>First Name</span>
-                  {isEditing ? (
-                    <>
-                      <input
-                        id="profile-first-name"
-                        type="text"
-                        className={`${styles.formInput} ${
-                          fieldErrors.firstName ? styles.formInputError : ""
-                        }`}
-                        value={editForm.firstName}
-                        onChange={(e) =>
-                          setEditForm((prev) => ({
-                            ...prev,
-                            firstName: e.target.value,
-                          }))
-                        }
-                        disabled={isSaving}
-                        autoComplete="given-name"
-                      />
-                      {fieldErrors.firstName && (
-                        <span className={styles.fieldError}>
-                          {fieldErrors.firstName}
-                        </span>
-                      )}
-                    </>
-                  ) : (
-                    <span className={styles.infoValue}>{user.firstName}</span>
-                  )}
-                </div>
-                <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>Last Name</span>
-                  {isEditing ? (
-                    <>
-                      <input
-                        id="profile-last-name"
-                        type="text"
-                        className={`${styles.formInput} ${
-                          fieldErrors.lastName ? styles.formInputError : ""
-                        }`}
-                        value={editForm.lastName}
-                        onChange={(e) =>
-                          setEditForm((prev) => ({
-                            ...prev,
-                            lastName: e.target.value,
-                          }))
-                        }
-                        disabled={isSaving}
-                        autoComplete="family-name"
-                      />
-                      {fieldErrors.lastName && (
-                        <span className={styles.fieldError}>
-                          {fieldErrors.lastName}
-                        </span>
-                      )}
-                    </>
-                  ) : (
-                    <span className={styles.infoValue}>{user.lastName}</span>
-                  )}
-                </div>
-                <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>Title</span>
-                  {isEditing ? (
-                    <>
-                      <AppSelect
-                        id="profile-honorific"
-                        value={editForm.honorific}
-                        onChange={(value) =>
-                          setEditForm((prev) => ({
-                            ...prev,
-                            honorific: value as Honorific,
-                          }))
-                        }
-                        options={
-                          user.userType === UserType.LECTURER
-                            ? [
-                                { value: "Dr.", label: "Dr." },
-                                { value: "Prof.", label: "Prof." },
-                              ]
-                            : [
-                                { value: "Mr.", label: "Mr." },
-                                { value: "Ms.", label: "Ms." },
-                                { value: "Mrs.", label: "Mrs." },
-                              ]
-                        }
-                        hasError={!!fieldErrors.honorific}
-                        disabled={isSaving}
-                        aria-label="Title"
-                      />
-                      {fieldErrors.honorific && (
-                        <span className={styles.fieldError}>
-                          {fieldErrors.honorific}
-                        </span>
-                      )}
-                    </>
-                  ) : (
-                    <span className={styles.infoValue}>
-                      {user.honorific ||
-                        (user.userType === UserType.LECTURER ? "Dr." : "Mr.")}
-                    </span>
-                  )}
-                </div>
-                <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>Email</span>
-                  <span className={styles.infoValue}>{user.email}</span>
-                  {isEditing && (
-                    <span className={styles.fieldHint}>
-                      Email cannot be changed.
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
+          )}
           </div>
 
-          <div className={styles.infoSectionDivider} aria-hidden="true" />
+          <div className={styles.profilePage__editBlock}>
+            <label className={styles.profilePage__field} htmlFor="profile-email">
+              <span className={styles.profilePage__fieldHead}>
+                <span className={styles.profilePage__fieldLabel}>Email</span>
+              </span>
+              <input
+                id="profile-email"
+                type="email"
+                className={styles.profilePage__accountInput}
+                value={user.email}
+                readOnly
+                disabled
+              />
+              <span className={styles.profilePage__fieldHint}>Used to sign in to your account</span>
+            </label>
+          </div>
 
-          <div className={`${styles.infoSection} ${styles.infoSectionGrow}`}>
-            <div className={styles.cardHeader}>
-              <h3 className={styles.cardTitle}>
-                {user.userType === UserType.LECTURER
-                  ? "Assigned Courses"
-                  : "Role Details"}
-              </h3>
-              {user.userType === UserType.LECTURER && assignedCourses.length > 0 && (
-                <p className={styles.courseCount}>
-                  You are currently assigned to {assignedCourses.length}{" "}
-                  course{assignedCourses.length !== 1 ? "s" : ""}
-                </p>
+          <div className={styles.profilePage__editBlock}>
+            <div className={styles.profilePage__field}>
+              <span className={styles.profilePage__fieldHead}>
+                <label className={styles.profilePage__fieldLabel} htmlFor="profile-description">
+                  Description
+                </label>
+                {fieldEdit("description", "description")}
+              </span>
+              <textarea
+                id="profile-description"
+                className={`${styles.profilePage__accountInput} ${styles.profilePage__accountTextarea}`}
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                disabled={editingSection !== "description" || isSaving || user.isBlocked}
+                placeholder="Tell people a little about yourself"
+                rows={4}
+                maxLength={1000}
+              />
+              {fieldErrors.description && (
+                <span className={styles.profilePage__fieldError}>{fieldErrors.description}</span>
               )}
             </div>
-            <div className={styles.cardContentExpandable}>
-              {user.userType === UserType.LECTURER ? (
-                <>
-                  {assignedCourses.length > 0 ? (
-                    <>
-                      <div className={styles.courseList}>
-                        {assignedCourses.map((course) => (
-                          <div key={course.id} className={styles.courseItem}>
-                            <div className={styles.courseInfo}>
-                              <div className={styles.courseCode}>
-                                {course.courseCode}
-                              </div>
-                              <div className={styles.courseName}>
-                                {course.courseName}
-                              </div>
-                              <div className={styles.courseSemester}>
-                                {course.semester}
-                              </div>
-                            </div>
-                            <div className={styles.courseDate}>
-                              <span className={styles.courseAssignedLabel}>
-                                Assigned
-                              </span>
-                              <span className={styles.courseAssignedDate}>
-                                {formatAssignedDate(
-                                  course.assignedAt.toString()
-                                )}
-                              </span>
-                            </div>
-                          </div>
+            {editingSection === "description" && (
+              <div className={styles.profilePage__sectionActions}>
+                <button type="button" className={styles.profilePage__ghostButton} onClick={resetAccountForm} disabled={isSaving}>
+                  Cancel
+                </button>
+                <button type="button" className={styles.profilePage__primaryButton} onClick={handleSaveProfile} disabled={!profileDirty || isSaving || user.isBlocked}>
+                  {isSaving ? "Saving..." : "Save"}
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className={styles.profilePage__editBlock}>
+            <div className={styles.profilePage__field}>
+              <span className={styles.profilePage__fieldHead}>
+                <span className={styles.profilePage__fieldLabel}>Skills</span>
+                {fieldEdit("skills", "skills")}
+              </span>
+              {editingSection === "skills" ? (
+                <div className={styles.profilePage__skillsPanel}>
+                  {selectedSkills.length > 0 && (
+                    <div className={styles.profilePage__skillsSelected}>
+                      <span className={styles.profilePage__skillsLabel}>
+                        Selected{" "}
+                        <span className={styles.profilePage__skillsCount}>
+                          {selectedSkills.length}/10
+                        </span>
+                      </span>
+                      <div className={styles.profilePage__skillTags}>
+                        {selectedSkills.map((skill) => (
+                          <span key={skill} className={styles.profilePage__skillTag}>
+                            {skill}
+                            <button
+                              type="button"
+                              className={styles.profilePage__skillRemove}
+                              onClick={() => removeProfileSkill(skill)}
+                              aria-label={`Remove ${skill}`}
+                            >
+                              <CloseIcon size={12} />
+                            </button>
+                          </span>
                         ))}
                       </div>
-                    </>
-                  ) : (
-                    <div className={styles.emptyCourses}>
-                      <div className={styles.emptyCoursesIcon}>📚</div>
-                      <div className={styles.emptyCoursesTitle}>
-                        No Courses Assigned
-                      </div>
-                      <div className={styles.emptyCoursesText}>
-                        You haven&apos;t been assigned to any courses yet.
-                        <br />
-                        Please contact the administrator to request course
-                        assignments.
-                      </div>
                     </div>
                   )}
-                </>
+                  <span className={styles.profilePage__skillsLabel}>Suggested skills</span>
+                  <div className={styles.profilePage__skillGrid}>
+                    {availableSkills.map((skill) => (
+                      <button
+                        key={skill}
+                        type="button"
+                        className={`${styles.profilePage__skillChip} ${
+                          selectedSkills.includes(skill) ? styles["profilePage__skillChip--active"] : ""
+                        }`}
+                        onClick={() => addProfileSkill(skill)}
+                        disabled={
+                          selectedSkills.includes(skill) ||
+                          selectedSkills.length >= 10 ||
+                          isSaving ||
+                          user.isBlocked
+                        }
+                      >
+                        {skill}
+                      </button>
+                    ))}
+                  </div>
+                  <div className={styles.profilePage__skillAddRow}>
+                    <input
+                      type="text"
+                      value={customSkill}
+                      onChange={(event) => setCustomSkill(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          event.preventDefault();
+                          addProfileSkill(customSkill);
+                        }
+                      }}
+                      placeholder="Add a custom skill…"
+                      className={styles.profilePage__skillAddInput}
+                      disabled={selectedSkills.length >= 10 || isSaving || user.isBlocked}
+                    />
+                    <button
+                      type="button"
+                      className={styles.profilePage__skillAddButton}
+                      onClick={() => addProfileSkill(customSkill)}
+                      disabled={
+                        !customSkill.trim() ||
+                        selectedSkills.length >= 10 ||
+                        isSaving ||
+                        user.isBlocked
+                      }
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+              ) : selectedSkills.length > 0 ? (
+                <div className={styles.profilePage__skillTags}>
+                  {selectedSkills.map((skill) => (
+                    <span key={skill} className={styles.profilePage__skillTag}>
+                      {skill}
+                    </span>
+                  ))}
+                </div>
               ) : (
-                <>
-                  <div className={styles.candidateOverview}>
-                    <div className={styles.candidateStatsGrid}>
-                      <div className={styles.candidateStat}>
-                        <div className={styles.candidateStatIcon}>
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="3"/>
-                            <path d="M12 1v6m0 6v6"/>
-                            <path d="m15.5 7.5 3 3-3 3"/>
-                            <path d="m8.5 16.5-3-3 3-3"/>
-                          </svg>
-                        </div>
-                        <div className={styles.candidateStatContent}>
-                          <span className={styles.candidateStatLabel}>Available Positions</span>
-                          <span className={styles.candidateStatValue}>
-                            {availablePositions} Position{availablePositions !== 1 ? 's' : ''}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <div className={styles.candidateStat}>
-                        <div className={styles.candidateStatIcon}>
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14,2 14,8 20,8"/>
-                            <line x1="16" y1="13" x2="8" y2="13"/>
-                            <line x1="16" y1="17" x2="8" y2="17"/>
-                            <polyline points="10,9 9,9 8,9"/>
-                          </svg>
-                        </div>
-                        <div className={styles.candidateStatContent}>
-                          <span className={styles.candidateStatLabel}>Applied</span>
-                          <span className={styles.candidateStatValue}>
-                            {appliedApplications} Application{appliedApplications !== 1 ? 's' : ''}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={styles.candidateActions}>
-                    <p className={styles.roleDescription}>
-                      Explore and apply for tutor and lab assistant positions across various courses. Browse available opportunities and submit your applications.
-                    </p>
-                    <div className={styles.actionButton}>
-                      <a href="/tutor" className={styles.primaryButton}>
-                        View Opportunities
-                      </a>
-                    </div>
-                  </div>
-                </>
+                <p className={styles.profilePage__skillsEmpty}>No skills yet</p>
+              )}
+              {fieldErrors.skills && (
+                <span className={styles.profilePage__fieldError}>{fieldErrors.skills}</span>
               )}
             </div>
+            {editingSection === "skills" && (
+              <div className={styles.profilePage__sectionActions}>
+                <button type="button" className={styles.profilePage__ghostButton} onClick={resetAccountForm} disabled={isSaving}>
+                  Cancel
+                </button>
+                <button type="button" className={styles.profilePage__primaryButton} onClick={handleSaveProfile} disabled={!profileDirty || isSaving || user.isBlocked}>
+                  {isSaving ? "Saving..." : "Save"}
+                </button>
+              </div>
+            )}
           </div>
+
+          <div className={styles.profilePage__editBlock}>
+            <div className={styles.profilePage__field}>
+              <span className={styles.profilePage__fieldHead}>
+                <label className={styles.profilePage__fieldLabel} htmlFor="profile-website">
+                  Website
+                </label>
+                {fieldEdit("website", "website")}
+              </span>
+              <input
+                id="profile-website"
+                type="text"
+                className={`${styles.profilePage__accountInput} ${
+                  fieldErrors.website ? styles.profilePage__formInputError : ""
+                }`}
+                value={website}
+                onChange={(event) => setWebsite(event.target.value)}
+                disabled={editingSection !== "website" || isSaving || user.isBlocked}
+                placeholder="https://example.com"
+                autoComplete="url"
+              />
+              {fieldErrors.website && (
+                <span className={styles.profilePage__fieldError}>{fieldErrors.website}</span>
+              )}
+            </div>
+            {editingSection === "website" && (
+              <div className={styles.profilePage__sectionActions}>
+                <button type="button" className={styles.profilePage__ghostButton} onClick={resetAccountForm} disabled={isSaving}>
+                  Cancel
+                </button>
+                <button type="button" className={styles.profilePage__primaryButton} onClick={handleSaveProfile} disabled={!profileDirty || isSaving || user.isBlocked}>
+                  {isSaving ? "Saving..." : "Save"}
+                </button>
+              </div>
+            )}
           </div>
-        </div>
+            </>
+          ) : (
+            <div className={styles.profilePage__securityPage}>
+              <section className={styles.profilePage__securityBlock}>
+                <h2 className={styles.profilePage__passwordTitle}>Sign-in methods</h2>
+                <p className={styles.profilePage__passwordText}>
+                  See what this account can use to sign in.
+                </p>
+                <div className={styles.profilePage__methodList}>
+                  <div className={styles.profilePage__methodRow}>
+                    <span className={styles.profilePage__methodIcon} aria-hidden="true">
+                      <FingerPrintIcon />
+                    </span>
+                    <span className={styles.profilePage__methodCopy}>
+                      <span className={styles.profilePage__methodTitle}>Passkey</span>
+                      <span className={styles.profilePage__methodHint}>
+                        {hasPasskey ? "Set up on this account" : "Not set up yet"}
+                      </span>
+                    </span>
+                    {hasPasskey ? (
+                      <span className={styles.profilePage__methodBadge}>Active</span>
+                    ) : (
+                      <button
+                        type="button"
+                        className={styles.profilePage__changePassword}
+                        onClick={savePasskey}
+                        disabled={passkeyBusy || user.isBlocked || hasPasskey === null}
+                      >
+                        {passkeyBusy ? "Waiting…" : "Set up"}
+                      </button>
+                    )}
+                  </div>
+                  <div className={styles.profilePage__methodRow}>
+                    <span className={styles.profilePage__methodIcon} aria-hidden="true">
+                      <DevicePhoneMobileIcon />
+                    </span>
+                    <span className={styles.profilePage__methodCopy}>
+                      <span className={styles.profilePage__methodTitle}>Authenticator</span>
+                      <span className={styles.profilePage__methodHint}>Not set up yet</span>
+                    </span>
+                    <button
+                      type="button"
+                      className={styles.profilePage__changePassword}
+                      onClick={() => setLaterMethod("authenticator")}
+                    >
+                      Set up
+                    </button>
+                  </div>
+                </div>
+              </section>
+
+              <section className={styles.profilePage__securityBlock}>
+                <h2 className={styles.profilePage__passwordTitle}>Change password</h2>
+                <p className={styles.profilePage__passwordText}>
+                  Confirm it is you, then choose a new password. The current password is required for that method.
+                </p>
+                {laterMethod ? (
+                  <div className={styles.profilePage__laterPanel}>
+                    <h3 className={styles.profilePage__laterTitle}>Sorry</h3>
+                    <p className={styles.profilePage__passwordText}>
+                      This feature will be implemented later.
+                    </p>
+                    <button
+                      type="button"
+                      className={styles.profilePage__laterBack}
+                      onClick={() => setLaterMethod(null)}
+                    >
+                      ← Back
+                    </button>
+                  </div>
+                ) : passwordMethod === "current" ? (
+                  <form
+                    id="profile-change-password-form"
+                    onSubmit={handleChangePassword}
+                    className={styles.profilePage__passwordFields}
+                  >
+                    <label className={styles.profilePage__field} htmlFor="currentPassword">
+                      <span className={styles.profilePage__fieldLabel}>Current password</span>
+                      <input
+                        id="currentPassword"
+                        type="password"
+                        className={`${styles.profilePage__accountInput} ${
+                          passwordErrors.currentPassword ? styles.profilePage__formInputError : ""
+                        }`}
+                        value={passwordForm.currentPassword}
+                        onFocus={() => clearRejectedPassword("currentPassword")}
+                        onClick={() => clearRejectedPassword("currentPassword")}
+                        onChange={(event) =>
+                          setPasswordForm((prev) => ({ ...prev, currentPassword: event.target.value }))
+                        }
+                        autoComplete="current-password"
+                        required
+                        disabled={isChangingPassword}
+                      />
+                      {passwordErrors.currentPassword && (
+                        <span className={styles.profilePage__fieldError}>{passwordErrors.currentPassword}</span>
+                      )}
+                    </label>
+                    <label className={styles.profilePage__field} htmlFor="newPassword">
+                      <span className={styles.profilePage__fieldLabel}>New password</span>
+                      <input
+                        id="newPassword"
+                        type="password"
+                        className={`${styles.profilePage__accountInput} ${
+                          passwordErrors.newPassword ? styles.profilePage__formInputError : ""
+                        }`}
+                        value={passwordForm.newPassword}
+                        onFocus={() => clearRejectedPassword("newPassword")}
+                        onClick={() => clearRejectedPassword("newPassword")}
+                        onChange={(event) =>
+                          setPasswordForm((prev) => ({ ...prev, newPassword: event.target.value }))
+                        }
+                        autoComplete="new-password"
+                        required
+                        disabled={isChangingPassword}
+                      />
+                      {passwordErrors.newPassword && (
+                        <span className={styles.profilePage__fieldError}>{passwordErrors.newPassword}</span>
+                      )}
+                    </label>
+                    <label className={styles.profilePage__field} htmlFor="confirmPassword">
+                      <span className={styles.profilePage__fieldLabel}>Confirm new password</span>
+                      <input
+                        id="confirmPassword"
+                        type="password"
+                        className={`${styles.profilePage__accountInput} ${
+                          passwordErrors.confirmPassword ? styles.profilePage__formInputError : ""
+                        }`}
+                        value={passwordForm.confirmPassword}
+                        onFocus={() => clearRejectedPassword("confirmPassword")}
+                        onClick={() => clearRejectedPassword("confirmPassword")}
+                        onChange={(event) =>
+                          setPasswordForm((prev) => ({ ...prev, confirmPassword: event.target.value }))
+                        }
+                        autoComplete="new-password"
+                        required
+                        disabled={isChangingPassword}
+                      />
+                      {passwordErrors.confirmPassword && (
+                        <span className={styles.profilePage__fieldError}>{passwordErrors.confirmPassword}</span>
+                      )}
+                    </label>
+                    <div className={styles.profilePage__passwordActions}>
+                      <button
+                        type="button"
+                        className={styles.profilePage__ghostButton}
+                        onClick={() => {
+                          cancelPasswordEditing();
+                          setPasswordMethod("choose");
+                        }}
+                        disabled={isChangingPassword}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className={styles.profilePage__primaryButton}
+                        disabled={isChangingPassword}
+                      >
+                        {isChangingPassword ? "Updating..." : "Update password"}
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <div className={styles.profilePage__methodList}>
+                    <button
+                      type="button"
+                      className={styles.profilePage__methodRow}
+                      onClick={() => {
+                        setLaterMethod(null);
+                        startPasswordEditing();
+                        setPasswordMethod("current");
+                      }}
+                      disabled={user.isBlocked}
+                    >
+                      <span className={styles.profilePage__methodIcon} aria-hidden="true">
+                        <LockClosedIcon />
+                      </span>
+                      <span className={styles.profilePage__methodCopy}>
+                        <span className={styles.profilePage__methodTitle}>Current password</span>
+                        <span className={styles.profilePage__methodHint}>Confirm with the password you use now</span>
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.profilePage__methodRow}
+                      onClick={() => setLaterMethod("passkey")}
+                    >
+                      <span className={styles.profilePage__methodIcon} aria-hidden="true">
+                        <FingerPrintIcon />
+                      </span>
+                      <span className={styles.profilePage__methodCopy}>
+                        <span className={styles.profilePage__methodTitle}>Passkey</span>
+                        <span className={styles.profilePage__methodHint}>
+                          {hasPasskey ? "Use the passkey on this account" : "Set up a passkey first"}
+                        </span>
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.profilePage__methodRow}
+                      onClick={() => setLaterMethod("authenticator")}
+                    >
+                      <span className={styles.profilePage__methodIcon} aria-hidden="true">
+                        <DevicePhoneMobileIcon />
+                      </span>
+                      <span className={styles.profilePage__methodCopy}>
+                        <span className={styles.profilePage__methodTitle}>Authenticator</span>
+                        <span className={styles.profilePage__methodHint}>One-time code from an authenticator app</span>
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.profilePage__methodRow}
+                      onClick={() => setLaterMethod("email")}
+                    >
+                      <span className={styles.profilePage__methodIcon} aria-hidden="true">
+                        <EnvelopeIcon />
+                      </span>
+                      <span className={styles.profilePage__methodCopy}>
+                        <span className={styles.profilePage__methodTitle}>Email</span>
+                        <span className={styles.profilePage__methodHint}>A code sent to your school email</span>
+                      </span>
+                    </button>
+                  </div>
+                )}
+              </section>
+            </div>
+          )}
+        </section>
       </div>
       <Toast
         message={toast.message}

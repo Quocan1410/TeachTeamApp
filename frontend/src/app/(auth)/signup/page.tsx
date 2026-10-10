@@ -3,8 +3,8 @@ import styles from "./signup-page.module.css";
 
 export default function SignupPage() {
   return (
-    <div className={styles.pageContainer}>
-      <div className={styles.stage}>
+    <div className={styles.signupPage__pageContainer}>
+      <div className={styles.signupPage__stage}>
         <SignupForm />
       </div>
     </div>

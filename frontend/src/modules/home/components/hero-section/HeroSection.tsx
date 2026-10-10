@@ -45,37 +45,37 @@ const HeroSection: React.FC<HeroSectionProps> = ({
       <div className="container mx-auto relative z-10">
         {/* Decorative elements */}
         <div className="absolute top-20 left-10 animate-pulse">
-          <div className={`${styles.decorationCircle} bg-orange-200`}></div>
+          <div className={`${styles.heroSection__decorationCircle} bg-orange-200`}></div>
         </div>
-        <div className={`absolute bottom-10 right-20 ${styles.animateFloat}`}>
-          <div className={styles.decorationCircleOutline}></div>
+        <div className={`absolute bottom-10 right-20 ${styles.heroSection__animateFloat}`}>
+          <div className={styles.heroSection__decorationCircleOutline}></div>
         </div>
         <div className="absolute top-40 right-40">
           <div
-            className={`${styles.decorationGradientCircle} ${styles.animateSlowSpin}`}
+            className={`${styles.heroSection__decorationGradientCircle} ${styles.heroSection__animateSlowSpin}`}
           ></div>
         </div>
 
-        <div className={styles.heroGrid}>
+        <div className={styles.heroSection__heroGrid}>
           <div>
-            <h1 className={styles.heroTitle}>
+            <h1 className={styles.heroSection__heroTitle}>
               Apply & Join <br />
               as a Tutor or <br />
               Lab Assistant
             </h1>
-            <p className={styles.heroSubtitle}>
+            <p className={styles.heroSection__heroSubtitle}>
               Connect with the School of Computer Science and apply for tutor
               and lab-assistant positions
             </p>
             <button
               type="button"
-              className={`${styles.heroBtn} scroll-link`}
+              className={`${styles.heroSection__heroBtn} scroll-link`}
               onClick={scrollToApplySteps}
             >
               Get Started
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className={styles.heroBtnIcon}
+                className={styles.heroSection__heroBtnIcon}
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -87,9 +87,9 @@ const HeroSection: React.FC<HeroSectionProps> = ({
               </svg>
             </button>
           </div>
-          <div className={`${styles.heroImageContainer} relative`}>
-            <div className={styles.pulseBackground}></div>
-            <div className={`${styles.imageWrapper} relative z-10`}>
+          <div className={`${styles.heroSection__heroImageContainer} relative`}>
+            <div className={styles.heroSection__pulseBackground}></div>
+            <div className={`${styles.heroSection__imageWrapper} relative z-10`}>
               <Image
                 src="/university-classroom.svg"
                 alt="University classroom"
@@ -100,12 +100,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
 
             {/* Floating elements */}
-            <div className={`${styles.floatingCardTop} ${styles.animateFloat}`}>
-              <div className={styles.floatingCard}>
-                <div className={styles.floatingIconGreen}>
+            <div className={`${styles.heroSection__floatingCardTop} ${styles.heroSection__animateFloat}`}>
+              <div className={styles.heroSection__floatingCard}>
+                <div className={styles.heroSection__floatingIconGreen}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className={styles.floatingIconSvg}
+                    className={styles.heroSection__floatingIconSvg}
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -116,24 +116,24 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                     />
                   </svg>
                 </div>
-                <span className={styles.floatingCardText}>Tutor</span>
+                <span className={styles.heroSection__floatingCardText}>Tutor</span>
               </div>
             </div>
             <div
-              className={`${styles.floatingCardBottom} ${styles.animateFloatDelayed}`}
+              className={`${styles.heroSection__floatingCardBottom} ${styles.heroSection__animateFloatDelayed}`}
             >
-              <div className={styles.floatingCard}>
-                <div className={styles.floatingIconBlue}>
+              <div className={styles.heroSection__floatingCard}>
+                <div className={styles.heroSection__floatingIconBlue}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className={styles.floatingIconSvg}
+                    className={styles.heroSection__floatingIconSvg}
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
                     <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
                   </svg>
                 </div>
-                <span className={styles.floatingCardText}>Lab assistant</span>
+                <span className={styles.heroSection__floatingCardText}>Lab assistant</span>
               </div>
             </div>
           </div>
@@ -141,17 +141,17 @@ const HeroSection: React.FC<HeroSectionProps> = ({
       </div>
 
       {/* Stats Section */}
-      <div className={styles.statsContainer}>
+      <div className={styles.heroSection__statsContainer}>
         <div className="container mx-auto">
-          <div className={styles.statsCard}>
-            <div className={styles.statsSection}>
-              <div className={styles.statsNumber}>
+          <div className={styles.heroSection__statsCard}>
+            <div className={styles.heroSection__statsSection}>
+              <div className={styles.heroSection__statsNumber}>
                 22<sup>+</sup>
               </div>
-              <p className={styles.statsLabel}>Places open</p>
+              <p className={styles.heroSection__statsLabel}>Places open</p>
             </div>
-            <div className={styles.statsContent}>
-              <p className={styles.statsText}>
+            <div className={styles.heroSection__statsContent}>
+              <p className={styles.heroSection__statsText}>
                 {placesLoading
                   ? "Checking tutor and lab assistant places for this semester."
                   : placesOpen === null
@@ -162,10 +162,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({
               </p>
 
               {/* Avatar row */}
-              <div className={styles.statsActions}>
-                <div className={styles.avatarGroup}>
+              <div className={styles.heroSection__statsActions}>
+                <div className={styles.heroSection__avatarGroup}>
                   {[...Array(9)].map((_, i) => (
-                    <div className={styles.avatar} key={i}>
+                    <div className={styles.heroSection__avatar} key={i}>
                       <Image
                         src={`/avatars/avatar-${i + 1}.jpg`}
                         alt="User avatar"
@@ -176,10 +176,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                       />
                     </div>
                   ))}
-                  <div className={`${styles.avatar} ${styles.plusAvatar}`}>
+                  <div className={`${styles.heroSection__avatar} ${styles.heroSection__plusAvatar}`}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className={styles.plusIcon}
+                      className={styles.heroSection__plusIcon}
                       viewBox="0 0 20 20"
                       fill="currentColor"
                     >
@@ -194,15 +194,15 @@ const HeroSection: React.FC<HeroSectionProps> = ({
 
                 <button
                   type="button"
-                  className={styles.moreLink}
+                  className={styles.heroSection__moreLink}
                   onClick={scrollToApplySteps}
                 >
-                  <div className={styles.moreButton}>
-                    <div className={styles.moreButtonInner}>
-                      <span className={styles.moreText}>Explore more</span>
+                  <div className={styles.heroSection__moreButton}>
+                    <div className={styles.heroSection__moreButtonInner}>
+                      <span className={styles.heroSection__moreText}>Explore more</span>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className={styles.moreButtonIcon}
+                        className={styles.heroSection__moreButtonIcon}
                         viewBox="0 0 20 20"
                         fill="currentColor"
                       >

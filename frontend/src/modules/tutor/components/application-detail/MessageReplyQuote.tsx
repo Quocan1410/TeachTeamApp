@@ -23,8 +23,8 @@ const MessageReplyQuote: React.FC<MessageReplyQuoteProps> = ({
   };
 
   const quoteContent = (
-    <p className={styles.quoteBody}>
-      <span className={styles.quoteName}>{senderName}:</span> {body}
+    <p className={styles.messageReplyQuote__quoteBody}>
+      <span className={styles.messageReplyQuote__quoteName}>{senderName}:</span> {body}
     </p>
   );
 
@@ -32,7 +32,7 @@ const MessageReplyQuote: React.FC<MessageReplyQuoteProps> = ({
     return (
       <button
         type="button"
-        className={`${styles.quote} ${styles.quoteInteractive}`}
+        className={`${styles.messageReplyQuote__quote} ${styles.messageReplyQuote__quoteInteractive}`}
         onClick={handleJump}
         aria-label={`Jump to message from ${senderName}`}
       >
@@ -42,7 +42,7 @@ const MessageReplyQuote: React.FC<MessageReplyQuoteProps> = ({
   }
 
   return (
-    <blockquote className={styles.quote} cite={senderName}>
+    <blockquote className={styles.messageReplyQuote__quote} cite={senderName}>
       {quoteContent}
     </blockquote>
   );

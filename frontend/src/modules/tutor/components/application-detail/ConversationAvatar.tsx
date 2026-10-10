@@ -48,9 +48,9 @@ const ConversationAvatar: React.FC<ConversationAvatarProps> = ({
 
   const variantClass =
     variant === "you"
-      ? styles.avatarYou
+      ? styles.conversationPanel__avatarYou
       : variant === "lecturer"
-        ? styles.avatarLecturer
+        ? styles.conversationPanel__avatarLecturer
         : "";
 
   const initials = getPersonInitials(person);
@@ -58,7 +58,7 @@ const ConversationAvatar: React.FC<ConversationAvatarProps> = ({
 
   return (
     <span
-      className={`${styles.avatar} ${variantClass} ${className ?? ""}`}
+      className={`${styles.conversationPanel__avatar} ${variantClass} ${className ?? ""}`}
       style={{ width: size, height: size, fontSize: size * 0.32 }}
       aria-hidden={showImage}
       role={showImage ? undefined : "img"}
@@ -70,7 +70,7 @@ const ConversationAvatar: React.FC<ConversationAvatarProps> = ({
           alt=""
           width={size}
           height={size}
-          className={styles.avatarImage}
+          className={styles.conversationPanel__avatarImage}
           unoptimized={custom}
           onError={() => setLoadFailed(true)}
         />

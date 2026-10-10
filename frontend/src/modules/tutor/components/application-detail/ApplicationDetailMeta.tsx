@@ -32,20 +32,20 @@ function PartyCard({
   secondaryLine,
 }: PartyCardProps) {
   return (
-    <section className={metaStyles.partyBox} aria-labelledby={headingId}>
-      <h4 className={metaStyles.partyHeading} id={headingId}>
+    <section className={metaStyles.applicationMeta__partyBox} aria-labelledby={headingId}>
+      <h4 className={metaStyles.applicationMeta__partyHeading} id={headingId}>
         {heading}
       </h4>
-      <div className={metaStyles.partyBody}>
+      <div className={metaStyles.applicationMeta__partyBody}>
         <ConversationAvatar
           person={person}
           variant={avatarVariant}
-          className={metaStyles.partyAvatar}
+          className={metaStyles.applicationMeta__partyAvatar}
           size={44}
         />
-        <div className={metaStyles.partyLines}>
-          <p className={metaStyles.partyPrimary}>{primaryLine}</p>
-          <p className={metaStyles.partySecondary}>{secondaryLine}</p>
+        <div className={metaStyles.applicationMeta__partyLines}>
+          <p className={metaStyles.applicationMeta__partyPrimary}>{primaryLine}</p>
+          <p className={metaStyles.applicationMeta__partySecondary}>{secondaryLine}</p>
         </div>
       </div>
     </section>
@@ -104,10 +104,10 @@ const ApplicationDetailMeta: React.FC<ApplicationDetailMetaProps> = ({
 
   return (
     <div
-      className={`${metaStyles.partyGrid} ${className ?? ""}`}
+      className={`${metaStyles.applicationMeta__partyGrid} ${className ?? ""}`}
       aria-label="Application overview"
     >
-      <div className={metaStyles.partyFlow}>
+      <div className={metaStyles.applicationMeta__partyFlow}>
         <PartyCard
         heading="From"
         headingId="meta-from-heading"
@@ -116,19 +116,19 @@ const ApplicationDetailMeta: React.FC<ApplicationDetailMetaProps> = ({
         primaryLine={applicantName ?? "—"}
         secondaryLine={
           <>
-            <span className={metaStyles.partySecondaryStrong}>{roleLabel}</span>
-            <span className={metaStyles.partyDot} aria-hidden>
+            <span className={metaStyles.applicationMeta__partySecondaryStrong}>{roleLabel}</span>
+            <span className={metaStyles.applicationMeta__partyDot} aria-hidden>
               ·
             </span>
-            <span className={metaStyles.partySecondaryLabel}>Applied</span>{" "}
+            <span className={metaStyles.applicationMeta__partySecondaryLabel}>Applied</span>{" "}
             <time dateTime={application.appliedAt}>{appliedLabel}</time>
           </>
         }
       />
 
-        <div className={metaStyles.partyBridge} aria-hidden>
-          <span className={metaStyles.partyBridgeRail} />
-          <span className={metaStyles.partyBridgeIcon}>
+        <div className={metaStyles.applicationMeta__partyBridge} aria-hidden>
+          <span className={metaStyles.applicationMeta__partyBridgeRail} />
+          <span className={metaStyles.applicationMeta__partyBridgeIcon}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
               <path
                 d="M12 5v12m0 0l-4-4m4 4l4-4"
@@ -148,16 +148,16 @@ const ApplicationDetailMeta: React.FC<ApplicationDetailMetaProps> = ({
         avatarVariant="lecturer"
         primaryLine={
           lecturerName ?? (
-            <span className={metaStyles.muted}>Not assigned yet</span>
+            <span className={metaStyles.applicationMeta__muted}>Not assigned yet</span>
           )
         }
         secondaryLine={
           courseCode ? (
             <>
-              <span className={metaStyles.partySecondaryStrong}>
+              <span className={metaStyles.applicationMeta__partySecondaryStrong}>
                 {courseCode}
                 {courseName ? (
-                  <span className={metaStyles.courseSub}>
+                  <span className={metaStyles.applicationMeta__courseSub}>
                     {" "}
                     · {courseName}
                   </span>
@@ -165,7 +165,7 @@ const ApplicationDetailMeta: React.FC<ApplicationDetailMetaProps> = ({
               </span>
               {semester ? (
                 <>
-                  <span className={metaStyles.partyDot} aria-hidden>
+                  <span className={metaStyles.applicationMeta__partyDot} aria-hidden>
                     ·
                   </span>
                   <span>{semester}</span>

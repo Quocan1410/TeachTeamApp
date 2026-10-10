@@ -221,7 +221,7 @@ const LecturerApplicationChatScreen: React.FC<
   }, [replyToMessageId, chatItemsById, application, authPerson]);
 
   return (
-    <div className={styles.screen}>
+    <div className={styles.applicationChatScreen__screen}>
       <ChatConversationToolbar
         isPinned={false}
         onBack={onBack}
@@ -230,18 +230,18 @@ const LecturerApplicationChatScreen: React.FC<
         showActions={false}
       />
 
-      <div className={conversationStyles.conversationShell}>
-        <div className={`${conversationStyles.threadScroll} thinOrangeScroll`}>
+      <div className={conversationStyles.conversationPanel__conversationShell}>
+        <div className={`${conversationStyles.conversationPanel__threadScroll} scrollbar__thin`}>
           <CandidateChatIntro application={application} />
           <div
-            className={`${conversationStyles.dateDivider} ${conversationStyles.dateDividerAppliedIntro}`}
+            className={`${conversationStyles.conversationPanel__dateDivider} ${conversationStyles.conversationPanel__dateDividerAppliedIntro}`}
             role="separator"
             aria-label={formatAppliedDateDivider(application.appliedAt)}
           >
             {formatAppliedDateDivider(application.appliedAt)}
           </div>
           <section
-            className={conversationStyles.submissionSection}
+            className={conversationStyles.conversationPanel__submissionSection}
             aria-label="Application submission"
           >
             <ConversationApplicationBlock application={application} />
@@ -260,17 +260,17 @@ const LecturerApplicationChatScreen: React.FC<
           />
 
           {!canCompose && !application.isWithdrawn && !application.candidate?.isBlocked && closedNotice && (
-            <p className={conversationStyles.closedNotice}>{closedNotice}</p>
+            <p className={conversationStyles.conversationPanel__closedNotice}>{closedNotice}</p>
           )}
 
           {application.candidate?.isBlocked && (
-            <p className={conversationStyles.closedNotice}>
+            <p className={conversationStyles.conversationPanel__closedNotice}>
               Account blocked — chat history is read-only.
             </p>
           )}
 
           {application.isWithdrawn && (
-            <p className={conversationStyles.closedNotice}>
+            <p className={conversationStyles.conversationPanel__closedNotice}>
               Withdrawn{" "}
               {application.withdrawnAt
                 ? formatFullTimestamp(application.withdrawnAt)

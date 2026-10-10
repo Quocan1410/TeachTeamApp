@@ -15,6 +15,9 @@ export interface User {
   honorific?: string | null;
   isBlocked: boolean;
   avatarUrl?: string | null;
+  description?: string | null;
+  skills?: string | null;
+  website?: string | null;
   theme?: "light" | "dark";
   createdAt: string;
   updatedAt: string;
@@ -55,4 +58,7 @@ export interface UpdateProfileData {
   firstName: string;
   lastName: string;
   honorific?: string;
+  description?: string;
+  skills?: string;
+  website?: string;
 }

@@ -6,29 +6,29 @@ const Footer = () => {
   return (
     <footer className={`${styles.footer} py-16 mt-auto`}>
       <div className="container mx-auto px-6">
-        <div className={styles.footerLinksContainer}>
-          <a href="#!" className={styles.footerLinkItem}>
+        <div className={styles.footer__footerLinksContainer}>
+          <a href="#!" className={styles.footer__footerLinkItem}>
             About
           </a>
-          <a href="#!" className={styles.footerLinkItem}>
+          <a href="#!" className={styles.footer__footerLinkItem}>
             Blog
           </a>
-          <a href="#!" className={styles.footerLinkItem}>
+          <a href="#!" className={styles.footer__footerLinkItem}>
             Team
           </a>
-          <a href="#!" className={styles.footerLinkItem}>
+          <a href="#!" className={styles.footer__footerLinkItem}>
             Contact
           </a>
-          <a href="#!" className={styles.footerLinkItem}>
+          <a href="#!" className={styles.footer__footerLinkItem}>
             Terms
           </a>
         </div>
 
-        <div className={styles.socialIconsContainer}>
-          <a href="#!" className={styles.socialIconLink}>
-            <span className={styles.srOnly}>Facebook</span>
+        <div className={styles.footer__socialIconsContainer}>
+          <a href="#!" className={styles.footer__socialIconLink}>
+            <span className={styles.footer__srOnly}>Facebook</span>
             <svg
-              className={styles.socialIconSvg}
+              className={styles.footer__socialIconSvg}
               fill="currentColor"
               viewBox="0 0 24 24"
               aria-hidden="true"
@@ -40,10 +40,10 @@ const Footer = () => {
               />
             </svg>
           </a>
-          <a href="#!" className={styles.socialIconLink}>
-            <span className={styles.srOnly}>Instagram</span>
+          <a href="#!" className={styles.footer__socialIconLink}>
+            <span className={styles.footer__srOnly}>Instagram</span>
             <svg
-              className={styles.socialIconSvg}
+              className={styles.footer__socialIconSvg}
               fill="currentColor"
               viewBox="0 0 24 24"
               aria-hidden="true"
@@ -55,10 +55,10 @@ const Footer = () => {
               />
             </svg>
           </a>
-          <a href="#!" className={styles.socialIconLink}>
-            <span className={styles.srOnly}>Twitter</span>
+          <a href="#!" className={styles.footer__socialIconLink}>
+            <span className={styles.footer__srOnly}>Twitter</span>
             <svg
-              className={styles.socialIconSvg}
+              className={styles.footer__socialIconSvg}
               fill="currentColor"
               viewBox="0 0 24 24"
               aria-hidden="true"
@@ -66,10 +66,10 @@ const Footer = () => {
               <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
             </svg>
           </a>
-          <a href="#!" className={styles.socialIconLink}>
-            <span className={styles.srOnly}>GitHub</span>
+          <a href="#!" className={styles.footer__socialIconLink}>
+            <span className={styles.footer__srOnly}>GitHub</span>
             <svg
-              className={styles.socialIconSvg}
+              className={styles.footer__socialIconSvg}
               fill="currentColor"
               viewBox="0 0 24 24"
               aria-hidden="true"
@@ -81,10 +81,10 @@ const Footer = () => {
               />
             </svg>
           </a>
-          <a href="#!" className={styles.socialIconLink}>
-            <span className={styles.srOnly}>Website</span>
+          <a href="#!" className={styles.footer__socialIconLink}>
+            <span className={styles.footer__srOnly}>Website</span>
             <svg
-              className={styles.socialIconSvg}
+              className={styles.footer__socialIconSvg}
               fill="currentColor"
               viewBox="0 0 24 24"
               aria-hidden="true"
@@ -98,7 +98,7 @@ const Footer = () => {
           </a>
         </div>
 
-        <div className={styles.copyrightText}>
+        <div className={styles.footer__copyrightText}>
           &copy; {vietnamYear()} EduTeach, School of Computer
           Science. All rights reserved.
         </div>

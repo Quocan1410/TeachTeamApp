@@ -240,8 +240,8 @@ const ApplicantStatsVisualization: React.FC<
   const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
       return (
-        <div className={styles.customTooltip}>
-          <p className={styles.tooltipValue}>{`${payload[0].value}`}</p>
+        <div className={styles.applicantStatsVisualization__customTooltip}>
+          <p className={styles.applicantStatsVisualization__tooltipValue}>{`${payload[0].value}`}</p>
         </div>
       );
     }
@@ -250,11 +250,11 @@ const ApplicantStatsVisualization: React.FC<
 
   if (applications.length === 0) {
     return (
-      <div className={styles.emptyStats}>
-        <div className={styles.emptyStatsIcon}>
+      <div className={styles.applicantStatsVisualization__emptyStats}>
+        <div className={styles.applicantStatsVisualization__emptyStatsIcon}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className={styles.iconLarge}
+            className={styles.applicantStatsVisualization__iconLarge}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -267,10 +267,10 @@ const ApplicantStatsVisualization: React.FC<
             />
           </svg>
         </div>
-        <h3 className={styles.emptyStatsTitle}>
+        <h3 className={styles.applicantStatsVisualization__emptyStatsTitle}>
           No Application Data Available
         </h3>
-        <p className={styles.emptyStatsText}>
+        <p className={styles.applicantStatsVisualization__emptyStatsText}>
           Statistics will be displayed when applications are submitted.
         </p>
       </div>
@@ -279,18 +279,18 @@ const ApplicantStatsVisualization: React.FC<
 
   return (
     <motion.div
-      className={styles.statsVisualizationContainer}
+      className={styles.applicantStatsVisualization__statsVisualizationContainer}
       variants={containerVariants}
       initial="hidden"
       animate="show"
     >
-      <motion.div className={styles.statsHeader} variants={itemVariants}>
-        <div className={styles.statsSummaryCards}>
-          <div className={styles.summaryCard}>
-            <div className={`${styles.summaryIcon} ${styles.totalIcon}`}>
+      <motion.div className={styles.applicantStatsVisualization__statsHeader} variants={itemVariants}>
+        <div className={styles.applicantStatsVisualization__statsSummaryCards}>
+          <div className={styles.applicantStatsVisualization__summaryCard}>
+            <div className={`${styles.applicantStatsVisualization__summaryIcon} ${styles.applicantStatsVisualization__totalIcon}`}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className={styles.iconMedium}
+                className={styles.applicantStatsVisualization__iconMedium}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -303,20 +303,20 @@ const ApplicantStatsVisualization: React.FC<
                 />
               </svg>
             </div>
-            <div className={styles.summaryContent}>
-              <div className={styles.summaryLabel}>Total Applications</div>
-              <div className={styles.summaryValue}>{applications.length}</div>
-              <div className={styles.summaryDesc}>
+            <div className={styles.applicantStatsVisualization__summaryContent}>
+              <div className={styles.applicantStatsVisualization__summaryLabel}>Total Applications</div>
+              <div className={styles.applicantStatsVisualization__summaryValue}>{applications.length}</div>
+              <div className={styles.applicantStatsVisualization__summaryDesc}>
                 All submitted applications
               </div>
             </div>
           </div>
 
-          <div className={styles.summaryCard}>
-            <div className={`${styles.summaryIcon} ${styles.selectedIcon}`}>
+          <div className={styles.applicantStatsVisualization__summaryCard}>
+            <div className={`${styles.applicantStatsVisualization__summaryIcon} ${styles.applicantStatsVisualization__selectedIcon}`}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className={styles.iconMedium}
+                className={styles.applicantStatsVisualization__iconMedium}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -329,20 +329,20 @@ const ApplicantStatsVisualization: React.FC<
                 />
               </svg>
             </div>
-            <div className={styles.summaryContent}>
-              <div className={styles.summaryLabel}>Selected</div>
-              <div className={styles.summaryValue}>
+            <div className={styles.applicantStatsVisualization__summaryContent}>
+              <div className={styles.applicantStatsVisualization__summaryLabel}>Selected</div>
+              <div className={styles.applicantStatsVisualization__summaryValue}>
                 {applicantStats.selectedCount}
               </div>
-              <div className={styles.summaryDesc}>Approved applicants</div>
+              <div className={styles.applicantStatsVisualization__summaryDesc}>Approved applicants</div>
             </div>
           </div>
 
-          <div className={styles.summaryCard}>
-            <div className={`${styles.summaryIcon} ${styles.pendingIcon}`}>
+          <div className={styles.applicantStatsVisualization__summaryCard}>
+            <div className={`${styles.applicantStatsVisualization__summaryIcon} ${styles.applicantStatsVisualization__pendingIcon}`}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className={styles.iconMedium}
+                className={styles.applicantStatsVisualization__iconMedium}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -355,20 +355,20 @@ const ApplicantStatsVisualization: React.FC<
                 />
               </svg>
             </div>
-            <div className={styles.summaryContent}>
-              <div className={styles.summaryLabel}>Pending</div>
-              <div className={styles.summaryValue}>
+            <div className={styles.applicantStatsVisualization__summaryContent}>
+              <div className={styles.applicantStatsVisualization__summaryLabel}>Pending</div>
+              <div className={styles.applicantStatsVisualization__summaryValue}>
                 {applicantStats.notSelected}
               </div>
-              <div className={styles.summaryDesc}>Awaiting review</div>
+              <div className={styles.applicantStatsVisualization__summaryDesc}>Awaiting review</div>
             </div>
           </div>
 
-          <div className={styles.summaryCard}>
-            <div className={`${styles.summaryIcon} ${styles.rateIcon}`}>
+          <div className={styles.applicantStatsVisualization__summaryCard}>
+            <div className={`${styles.applicantStatsVisualization__summaryIcon} ${styles.applicantStatsVisualization__rateIcon}`}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className={styles.iconMedium}
+                className={styles.applicantStatsVisualization__iconMedium}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -381,9 +381,9 @@ const ApplicantStatsVisualization: React.FC<
                 />
               </svg>
             </div>
-            <div className={styles.summaryContent}>
-              <div className={styles.summaryLabel}>Selection Rate</div>
-              <div className={styles.summaryValue}>
+            <div className={styles.applicantStatsVisualization__summaryContent}>
+              <div className={styles.applicantStatsVisualization__summaryLabel}>Selection Rate</div>
+              <div className={styles.applicantStatsVisualization__summaryValue}>
                 {applications.length > 0
                   ? Math.round(
                       (applicantStats.selectedCount / applications.length) * 100
@@ -391,16 +391,16 @@ const ApplicantStatsVisualization: React.FC<
                   : 0}
                 %
               </div>
-              <div className={styles.summaryDesc}>Overall acceptance rate</div>
+              <div className={styles.applicantStatsVisualization__summaryDesc}>Overall acceptance rate</div>
             </div>
           </div>
         </div>
       </motion.div>
 
-      <div className={styles.statsChartsContainer}>
-        <motion.div className={styles.statsChartCard} variants={itemVariants}>
-          <h3 className={styles.chartTitle}>Selection Status</h3>
-          <div className={styles.pieChartContainer}>
+      <div className={styles.applicantStatsVisualization__statsChartsContainer}>
+        <motion.div className={styles.applicantStatsVisualization__statsChartCard} variants={itemVariants}>
+          <h3 className={styles.applicantStatsVisualization__chartTitle}>Selection Status</h3>
+          <div className={styles.applicantStatsVisualization__pieChartContainer}>
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie
@@ -424,40 +424,40 @@ const ApplicantStatsVisualization: React.FC<
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className={styles.chartStats}>
-            <div className={`${styles.chartStatItem} ${styles.selected}`}>
-              <div className={styles.statTitle}>Selected</div>
-              <div className={styles.statValue}>
+          <div className={styles.applicantStatsVisualization__chartStats}>
+            <div className={`${styles.applicantStatsVisualization__chartStatItem} ${styles["applicantStatsVisualization--selected"]}`}>
+              <div className={styles.applicantStatsVisualization__statTitle}>Selected</div>
+              <div className={styles.applicantStatsVisualization__statValue}>
                 {applicantStats.selectedCount}
               </div>
-              <div className={styles.statDesc}>Confirmed positions</div>
-              <div className={styles.statDetails}>
-                <div className={styles.statDetailItem}>
-                  <span className={styles.detailLabel}>Last selected:</span>
-                  <span className={styles.detailValue}>Today</span>
+              <div className={styles.applicantStatsVisualization__statDesc}>Confirmed positions</div>
+              <div className={styles.applicantStatsVisualization__statDetails}>
+                <div className={styles.applicantStatsVisualization__statDetailItem}>
+                  <span className={styles.applicantStatsVisualization__detailLabel}>Last selected:</span>
+                  <span className={styles.applicantStatsVisualization__detailValue}>Today</span>
                 </div>
-                <div className={styles.statDetailItem}>
-                  <span className={styles.detailLabel}>Status:</span>
-                  <span className={`${styles.detailBadge} ${styles.success}`}>
+                <div className={styles.applicantStatsVisualization__statDetailItem}>
+                  <span className={styles.applicantStatsVisualization__detailLabel}>Status:</span>
+                  <span className={`${styles.applicantStatsVisualization__detailBadge} ${styles["applicantStatsVisualization--success"]}`}>
                     Active
                   </span>
                 </div>
               </div>
             </div>
-            <div className={`${styles.chartStatItem} ${styles.pending}`}>
-              <div className={styles.statTitle}>Pending</div>
-              <div className={styles.statValue}>
+            <div className={`${styles.applicantStatsVisualization__chartStatItem} ${styles["applicantStatsVisualization--pending"]}`}>
+              <div className={styles.applicantStatsVisualization__statTitle}>Pending</div>
+              <div className={styles.applicantStatsVisualization__statValue}>
                 {applicantStats.notSelected}
               </div>
-              <div className={styles.statDesc}>Under review</div>
-              <div className={styles.statDetails}>
-                <div className={styles.statDetailItem}>
-                  <span className={styles.detailLabel}>Updated:</span>
-                  <span className={styles.detailValue}>2 hrs ago</span>
+              <div className={styles.applicantStatsVisualization__statDesc}>Under review</div>
+              <div className={styles.applicantStatsVisualization__statDetails}>
+                <div className={styles.applicantStatsVisualization__statDetailItem}>
+                  <span className={styles.applicantStatsVisualization__detailLabel}>Updated:</span>
+                  <span className={styles.applicantStatsVisualization__detailValue}>2 hrs ago</span>
                 </div>
-                <div className={styles.statDetailItem}>
-                  <span className={styles.detailLabel}>Priority:</span>
-                  <span className={`${styles.detailBadge} ${styles.warning}`}>
+                <div className={styles.applicantStatsVisualization__statDetailItem}>
+                  <span className={styles.applicantStatsVisualization__detailLabel}>Priority:</span>
+                  <span className={`${styles.applicantStatsVisualization__detailBadge} ${styles["applicantStatsVisualization--warning"]}`}>
                     High
                   </span>
                 </div>
@@ -466,9 +466,9 @@ const ApplicantStatsVisualization: React.FC<
           </div>
         </motion.div>
 
-        <motion.div className={styles.statsChartCard} variants={itemVariants}>
-          <h3 className={styles.chartTitle}>Top Selected Applicants</h3>
-          <div className={styles.barChartContainer}>
+        <motion.div className={styles.applicantStatsVisualization__statsChartCard} variants={itemVariants}>
+          <h3 className={styles.applicantStatsVisualization__chartTitle}>Top Selected Applicants</h3>
+          <div className={styles.applicantStatsVisualization__barChartContainer}>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart
                 data={getTopApplicantsData()}
@@ -495,28 +495,28 @@ const ApplicantStatsVisualization: React.FC<
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <div className={styles.chartInfo}>
+          <div className={styles.applicantStatsVisualization__chartInfo}>
             {applicantStats.mostChosen ? (
-              <div className={styles.topApplicant}>
-                <span className={styles.infoLabel}>Most Selected: </span>
-                <span className={styles.infoValue}>
+              <div className={styles.applicantStatsVisualization__topApplicant}>
+                <span className={styles.applicantStatsVisualization__infoLabel}>Most Selected: </span>
+                <span className={styles.applicantStatsVisualization__infoValue}>
                   {applicantStats.mostChosen.name}
                 </span>
-                <span className={styles.infoCount}>
+                <span className={styles.applicantStatsVisualization__infoCount}>
                   ({applicantStats.mostChosen.count} selections)
                 </span>
               </div>
             ) : (
-              <div className={styles.noData}>No selection data available</div>
+              <div className={styles.applicantStatsVisualization__noData}>No selection data available</div>
             )}
           </div>
         </motion.div>
       </div>
 
-      <div className={styles.statsChartsContainer}>
-        <motion.div className={styles.statsChartCard} variants={itemVariants}>
-          <h3 className={styles.chartTitle}>Course Distribution</h3>
-          <div className={styles.barChartContainer}>
+      <div className={styles.applicantStatsVisualization__statsChartsContainer}>
+        <motion.div className={styles.applicantStatsVisualization__statsChartCard} variants={itemVariants}>
+          <h3 className={styles.applicantStatsVisualization__chartTitle}>Course Distribution</h3>
+          <div className={styles.applicantStatsVisualization__barChartContainer}>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart
                 data={courseDistribution}
@@ -546,9 +546,9 @@ const ApplicantStatsVisualization: React.FC<
           </div>
         </motion.div>
 
-        <motion.div className={styles.statsChartCard} variants={itemVariants}>
-          <h3 className={styles.chartTitle}>Availability Distribution</h3>
-          <div className={styles.pieChartContainer}>
+        <motion.div className={styles.applicantStatsVisualization__statsChartCard} variants={itemVariants}>
+          <h3 className={styles.applicantStatsVisualization__chartTitle}>Availability Distribution</h3>
+          <div className={styles.applicantStatsVisualization__pieChartContainer}>
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie
@@ -575,11 +575,11 @@ const ApplicantStatsVisualization: React.FC<
         </motion.div>
       </div>
 
-      <motion.div className={styles.statsInsights} variants={itemVariants}>
-        <h3 className={styles.insightsTitle}>Key Insights</h3>
-        <div className={styles.insightsContent}>
+      <motion.div className={styles.applicantStatsVisualization__statsInsights} variants={itemVariants}>
+        <h3 className={styles.applicantStatsVisualization__insightsTitle}>Key Insights</h3>
+        <div className={styles.applicantStatsVisualization__insightsContent}>
           {/* Application Trends */}
-          <div className={styles.trendChart}>
+          <div className={styles.applicantStatsVisualization__trendChart}>
             <h4>Application Trends</h4>
             <ResponsiveContainer width="100%" height={100}>
               <LineChart data={timelineData}>
@@ -592,7 +592,7 @@ const ApplicantStatsVisualization: React.FC<
           </div>
 
           {/* Top Skills Distribution - Using skillsListContainer instead of skillsDistribution */}
-          <div className={styles.skillsListContainer}>
+          <div className={styles.applicantStatsVisualization__skillsListContainer}>
             <h4>Top Skills</h4>
             <ResponsiveContainer width="100%" height={100}>
               <BarChart
@@ -607,11 +607,11 @@ const ApplicantStatsVisualization: React.FC<
             </ResponsiveContainer>
           </div>
 
-          <div className={styles.insightItem}>
-            <div className={styles.insightIcon}>
+          <div className={styles.applicantStatsVisualization__insightItem}>
+            <div className={styles.applicantStatsVisualization__insightIcon}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className={styles.iconSmall}
+                className={styles.applicantStatsVisualization__iconSmall}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -624,7 +624,7 @@ const ApplicantStatsVisualization: React.FC<
                 />
               </svg>
             </div>
-            <div className={styles.insightContent}>
+            <div className={styles.applicantStatsVisualization__insightContent}>
               <h4>Selection Rate</h4>
               <p>
                 {applications.length > 0
@@ -638,11 +638,11 @@ const ApplicantStatsVisualization: React.FC<
             </div>
           </div>
 
-          <div className={styles.insightItem}>
-            <div className={styles.insightIcon}>
+          <div className={styles.applicantStatsVisualization__insightItem}>
+            <div className={styles.applicantStatsVisualization__insightIcon}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className={styles.iconSmall}
+                className={styles.applicantStatsVisualization__iconSmall}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -655,7 +655,7 @@ const ApplicantStatsVisualization: React.FC<
                 />
               </svg>
             </div>
-            <div className={styles.insightContent}>
+            <div className={styles.applicantStatsVisualization__insightContent}>
               <h4>Course Distribution</h4>
               <p>
                 {courseDistribution.length > 0
@@ -665,11 +665,11 @@ const ApplicantStatsVisualization: React.FC<
             </div>
           </div>
 
-          <div className={styles.insightItem}>
-            <div className={styles.insightIcon}>
+          <div className={styles.applicantStatsVisualization__insightItem}>
+            <div className={styles.applicantStatsVisualization__insightIcon}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className={styles.iconSmall}
+                className={styles.applicantStatsVisualization__iconSmall}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -682,7 +682,7 @@ const ApplicantStatsVisualization: React.FC<
                 />
               </svg>
             </div>
-            <div className={styles.insightContent}>
+            <div className={styles.applicantStatsVisualization__insightContent}>
               <h4>Top Performer</h4>
               <p>
                 {applicantStats.mostChosen
@@ -692,11 +692,11 @@ const ApplicantStatsVisualization: React.FC<
             </div>
           </div>
 
-          <div className={styles.insightItem}>
-            <div className={styles.insightIcon}>
+          <div className={styles.applicantStatsVisualization__insightItem}>
+            <div className={styles.applicantStatsVisualization__insightIcon}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className={styles.iconSmall}
+                className={styles.applicantStatsVisualization__iconSmall}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -709,7 +709,7 @@ const ApplicantStatsVisualization: React.FC<
                 />
               </svg>
             </div>
-            <div className={styles.insightContent}>
+            <div className={styles.applicantStatsVisualization__insightContent}>
               <h4>Availability Trend</h4>
               <p>
                 {availabilityData.length > 0

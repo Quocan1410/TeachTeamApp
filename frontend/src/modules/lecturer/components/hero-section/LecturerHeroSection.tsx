@@ -30,18 +30,18 @@ const LecturerHeroSection: React.FC<LecturerHeroSectionProps> = ({
       transition={{ duration: 0.6 }}
     >
       <div className="container">
-        <div className={styles.lecturerHeroContent}>
+        <div className={styles.lecturerHeroSection__lecturerHeroContent}>
           <motion.h1
-            className={styles.lecturerHeroTitle}
+            className={styles.lecturerHeroSection__lecturerHeroTitle}
             initial={{ y: -24, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.7, delay: 0.15 }}
           >
             {title}{" "}
-            <span className={styles.heroHighlight}>{highlight}</span>
+            <span className={styles.lecturerHeroSection__heroHighlight}>{highlight}</span>
           </motion.h1>
           <motion.p
-            className={styles.lecturerHeroSubtitle}
+            className={styles.lecturerHeroSection__lecturerHeroSubtitle}
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.7, delay: 0.3 }}
@@ -50,27 +50,27 @@ const LecturerHeroSection: React.FC<LecturerHeroSectionProps> = ({
           </motion.p>
 
           <motion.div
-            className={styles.lecturerStats}
+            className={styles.lecturerHeroSection__lecturerStats}
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.45 }}
           >
             {stats.map((stat, index) => (
               <React.Fragment key={stat.label}>
-                {index > 0 && <div className={styles.statDivider} />}
-                <div className={styles.statItem}>
-                  <div className={styles.statValue}>{stat.value}</div>
-                  <div className={styles.statLabel}>{stat.label}</div>
+                {index > 0 && <div className={styles.lecturerHeroSection__statDivider} />}
+                <div className={styles.lecturerHeroSection__statItem}>
+                  <div className={styles.lecturerHeroSection__statValue}>{stat.value}</div>
+                  <div className={styles.lecturerHeroSection__statLabel}>{stat.label}</div>
                 </div>
               </React.Fragment>
             ))}
           </motion.div>
         </div>
 
-        <div className={styles.heroDecoration}>
-          <div className={`${styles.circleDecoration} ${styles.circle1}`} />
-          <div className={`${styles.circleDecoration} ${styles.circle2}`} />
-          <div className={`${styles.circleDecoration} ${styles.circle3}`} />
+        <div className={styles.lecturerHeroSection__heroDecoration}>
+          <div className={`${styles.lecturerHeroSection__circleDecoration} ${styles.lecturerHeroSection__circle1}`} />
+          <div className={`${styles.lecturerHeroSection__circleDecoration} ${styles.lecturerHeroSection__circle2}`} />
+          <div className={`${styles.lecturerHeroSection__circleDecoration} ${styles.lecturerHeroSection__circle3}`} />
         </div>
       </div>
     </motion.section>

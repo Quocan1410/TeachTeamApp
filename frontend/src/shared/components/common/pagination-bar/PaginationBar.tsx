@@ -26,24 +26,24 @@ export default function PaginationBar({
 
   return (
     <div className={styles.paginationBar}>
-      <p className={styles.summary}>
+      <p className={styles.paginationBar__summary}>
         Showing {start}–{end} of {totalCount}
       </p>
-      <div className={styles.controls}>
+      <div className={styles.paginationBar__controls}>
         <button
           type="button"
-          className={styles.button}
+          className={styles.paginationBar__button}
           disabled={loading || page <= 1}
           onClick={() => onPageChange(page - 1)}
         >
           Previous
         </button>
-        <span className={styles.pageInfo}>
+        <span className={styles.paginationBar__pageInfo}>
           Page {page} of {totalPages}
         </span>
         <button
           type="button"
-          className={styles.button}
+          className={styles.paginationBar__button}
           disabled={loading || page >= totalPages}
           onClick={() => onPageChange(page + 1)}
         >

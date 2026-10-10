@@ -1,16 +1,1037 @@
 /* Modern Profile Page - Compact Two-Panel Layout */
-.profileContainer {
+.profilePage__profileContainer {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 100%;
-  min-height: calc(100vh / 0.9);
-  padding: 7rem 1.5rem 3.5rem;
-  background: linear-gradient(135deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 100%);
-  overflow-x: hidden;
+  height: calc(100vh / 0.9 + 1rem);
+  min-height: calc(100vh / 0.9 + 1rem);
+  padding: 6.25rem 1.5rem 1.25rem;
+  background: #eef1f4;
+  overflow: hidden;
   box-sizing: border-box;
 }
 
+.profilePage__accountShell {
+  width: min(100%, 1080px);
+  max-width: 1080px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 1.15rem;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.profilePage__accountSide {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.2rem;
+  min-height: 0;
+  padding: 1.15rem 0.85rem 1.5rem;
+  border-right: 1px solid var(--color-border);
+  background: #f7f8fa;
+  overflow: hidden;
+}
+
+.profilePage__accountIdentity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 0;
+  margin-bottom: 1.15rem;
+  padding: 0.45rem 0.6rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.profilePage__accountIdentityCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.profilePage__accountIdentityName {
+  min-width: 0;
+  color: var(--color-text-primary);
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.profilePage__accountIdentityRole {
+  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.profilePage__accountIdentity .profilePage__accountAvatar {
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.28);
+}
+
+.profilePage__accountGroup {
+  margin: 0.35rem 0 0.35rem;
+  padding: 0 0.7rem;
+  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.profilePage__accountNavItem {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.62rem 0.7rem;
+  border: 0;
+  border-radius: 0.65rem;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: 0.94rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.profilePage__accountNavItem:hover {
+  background: rgba(15, 23, 42, 0.04);
+  color: var(--color-text-primary);
+}
+
+.profilePage__accountNavItem--active,
+.profilePage__accountNavItem--active:hover {
+  background: #fff;
+  color: var(--color-text-primary);
+  box-shadow: inset 3px 0 0 var(--color-primary);
+}
+
+.profilePage__accountNavItem--active .profilePage__accountNavIcon {
+  color: var(--color-primary);
+}
+
+.profilePage__accountNavIcon {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0;
+}
+
+.profilePage__accountMain {
+  min-width: 0;
+  min-height: 0;
+  padding: 1.35rem 1.15rem 1.5rem 1.6rem;
+  background: #fff;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(249, 115, 22, 0.55) transparent;
+}
+
+.profilePage__accountMain::-webkit-scrollbar {
+  width: 0.45rem;
+}
+
+.profilePage__accountMain::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(249, 115, 22, 0.55);
+}
+
+.profilePage__accountMain::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.profilePage__accountHeader {
+  margin: 0 0 1.15rem;
+  padding-bottom: 0.95rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.profilePage__accountTitle {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 1.65rem;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+}
+
+.profilePage__accountTitle::after {
+  content: "";
+  width: 2.25rem;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--color-primary);
+}
+
+.profilePage__accountMeta {
+  margin: 0.3rem 0 0;
+  color: var(--color-text-secondary);
+  font-size: 0.88rem;
+}
+
+.profilePage__accountAvatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: linear-gradient(145deg, rgba(249, 115, 22, 0.9), rgba(234, 88, 12, 0.95));
+}
+
+.profilePage__accountAvatar--large {
+  width: 4.5rem;
+  height: 4.5rem;
+}
+
+.profilePage__accountAvatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profilePage__accountInitials {
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.profilePage__accountAvatar--large .profilePage__accountInitials {
+  font-size: 1.15rem;
+}
+
+.profilePage__pictureRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.profilePage__pictureCopy {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+}
+
+.profilePage__pictureTitle,
+.profilePage__passwordTitle {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.profilePage__pictureActions,
+.profilePage__passwordActions,
+.profilePage__accountFooter {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.profilePage__pictureActions {
+  margin-top: 0.55rem;
+}
+
+.profilePage__uploadButton,
+.profilePage__primaryButton,
+.profilePage__removeButton,
+.profilePage__ghostButton,
+.profilePage__changePassword {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.35rem;
+  padding: 0.4rem 0.95rem;
+  border-radius: 0.65rem;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.profilePage__uploadButton,
+.profilePage__primaryButton {
+  border: 0;
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.profilePage__uploadButton:hover:not(:disabled),
+.profilePage__primaryButton:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.profilePage__removeButton,
+.profilePage__ghostButton,
+.profilePage__changePassword {
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+}
+
+.profilePage__removeButton:hover:not(:disabled),
+.profilePage__ghostButton:hover:not(:disabled),
+.profilePage__changePassword:hover:not(:disabled) {
+  background: rgba(15, 23, 42, 0.04);
+}
+
+.profilePage__uploadButton:disabled,
+.profilePage__primaryButton:disabled,
+.profilePage__removeButton:disabled,
+.profilePage__ghostButton:disabled,
+.profilePage__changePassword:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.profilePage__uploadIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.profilePage__pictureHint,
+.profilePage__passwordText,
+.profilePage__fieldHint {
+  margin: 0.4rem 0 0;
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+}
+
+.profilePage__editBlock {
+  margin: 0 0 0.15rem;
+  padding: 0.15rem 0 1.05rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.profilePage__editBlock .profilePage__pictureRow {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.profilePage__sectionActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.85rem;
+}
+
+.profilePage__sectionActions .profilePage__primaryButton,
+.profilePage__sectionActions .profilePage__ghostButton,
+.profilePage__passwordActions .profilePage__primaryButton,
+.profilePage__passwordActions .profilePage__ghostButton {
+  width: auto;
+  min-width: 5.25rem;
+  padding: 0.4rem 0.95rem;
+  border-radius: 0.65rem;
+  background: var(--color-primary);
+  box-shadow: none;
+  font-size: 0.92rem;
+}
+
+.profilePage__sectionActions .profilePage__ghostButton,
+.profilePage__passwordActions .profilePage__ghostButton {
+  background: var(--color-bg-surface);
+}
+
+.profilePage__skillsPanel {
+  padding: 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.7rem;
+  background: #f8f9fb;
+}
+
+.profilePage__skillsSelected {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.profilePage__skillsLabel {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.profilePage__skillsCount {
+  color: var(--color-primary);
+}
+
+.profilePage__skillTags,
+.profilePage__skillGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.profilePage__skillGrid {
+  margin-bottom: 0.75rem;
+}
+
+.profilePage__skillChip,
+.profilePage__skillTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.32rem 0.72rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 550;
+  line-height: 1.2;
+}
+
+.profilePage__skillChip {
+  cursor: pointer;
+}
+
+.profilePage__skillChip:hover:not(:disabled) {
+  border-color: rgba(249, 115, 22, 0.4);
+  background: rgba(249, 115, 22, 0.06);
+  color: #c2410c;
+}
+
+.profilePage__skillChip--active,
+.profilePage__skillTag {
+  border-color: rgba(249, 115, 22, 0.35);
+  background: rgba(249, 115, 22, 0.1);
+  color: #c2410c;
+}
+
+.profilePage__skillChip:disabled {
+  cursor: default;
+}
+
+.profilePage__skillChip--active:disabled {
+  opacity: 1;
+}
+
+:global(.dark) .profilePage__skillsPanel {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+:global(.dark) .profilePage__skillChip {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:global(.dark) .profilePage__skillChip:hover:not(:disabled),
+:global(.dark) .profilePage__skillChip--active,
+:global(.dark) .profilePage__skillTag {
+  border-color: rgba(249, 115, 22, 0.45);
+  background: rgba(249, 115, 22, 0.16);
+  color: #fdba74;
+}
+
+.profilePage__skillAddRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.profilePage__skillAddInput {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  height: 2.9rem;
+  padding: 0 1.15rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.55rem;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: 0.86rem;
+}
+
+.profilePage__skillAddInput:focus {
+  outline: none;
+  border-color: rgba(249, 115, 22, 0.4);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.08);
+}
+
+.profilePage__skillRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.95rem;
+  height: 0.95rem;
+  margin-right: -0.15rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.profilePage__skillRemove:hover {
+  color: #ef4444;
+}
+
+.profilePage__skillAddButton {
+  flex-shrink: 0;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 0.55rem;
+  background: var(--color-primary);
+  color: #fff;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.profilePage__skillAddButton:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.profilePage__skillAddButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.profilePage__skillsEmpty {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.profilePage__accountInput.profilePage__accountTextarea {
+  height: auto;
+  min-height: 7.25rem;
+  padding: 1rem 1.15rem;
+  overflow: auto;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.profilePage__nameRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 12.5rem;
+  gap: 1rem;
+  align-items: start;
+  margin-bottom: 0;
+}
+
+.profilePage__nameRow .profilePage__field {
+  margin-bottom: 0;
+}
+
+.profilePage__fieldHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 1.65rem;
+}
+
+.profilePage__editIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.65rem;
+  height: 1.65rem;
+  border: 0;
+  border-radius: 0.45rem;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.profilePage__editIcon svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.profilePage__editIcon:hover:not(:disabled),
+.profilePage__editIcon--active {
+  color: var(--color-primary);
+  background: rgba(249, 115, 22, 0.1);
+}
+
+.profilePage__editIcon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.profilePage__securityPage {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.profilePage__securityBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.profilePage__methodList {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: 0.85rem;
+  overflow: hidden;
+}
+
+.profilePage__methodRow {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: default;
+}
+
+.profilePage__methodList > .profilePage__methodRow:last-child {
+  border-bottom: 0;
+}
+
+button.profilePage__methodRow {
+  cursor: pointer;
+}
+
+button.profilePage__methodRow:hover:not(:disabled) {
+  background: rgba(249, 115, 22, 0.08);
+}
+
+.profilePage__methodIcon {
+  display: inline-flex;
+  width: 1.3rem;
+  height: 1.3rem;
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+}
+
+.profilePage__methodIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.profilePage__methodCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.profilePage__methodTitle {
+  color: var(--color-text-primary);
+  font-weight: 700;
+}
+
+.profilePage__methodHint {
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+}
+
+.profilePage__methodBadge {
+  color: var(--color-primary);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.profilePage__laterPanel {
+  padding-top: 0.35rem;
+}
+
+.profilePage__laterTitle {
+  margin: 0 0 0.3rem;
+  color: var(--color-text-primary);
+  font-size: 1.35rem;
+  font-weight: 750;
+}
+
+.profilePage__laterBack {
+  margin-top: 0.85rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.profilePage__fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.profilePage__field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.4rem;
+  min-width: 0;
+  margin-bottom: 1rem;
+}
+
+.profilePage__fieldGrid .profilePage__field {
+  margin-bottom: 0;
+}
+
+.profilePage__accountMain > .profilePage__field {
+  max-width: calc((100% - 1.25rem) / 2);
+}
+
+.profilePage__fieldLabel {
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.profilePage__editBlock .profilePage__field {
+  margin-bottom: 0;
+}
+
+.profilePage__accountInput {
+  box-sizing: border-box;
+  width: 100%;
+  height: 2.9rem;
+  padding: 0 1.15rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background: #fff;
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.profilePage__accountInput::placeholder {
+  color: #9ca3af;
+}
+
+.profilePage__titleSelect button {
+  box-sizing: border-box;
+  height: 2.9rem;
+  min-height: 2.9rem;
+  padding: 0 1.15rem;
+  border-radius: 0.75rem;
+  border-color: var(--color-border);
+  background: #fff;
+  font-size: 0.95rem;
+  font-weight: 450;
+  line-height: 1.4;
+}
+
+.profilePage__titleSelect button:disabled {
+  opacity: 1;
+  color: var(--color-text-primary);
+  background: #f8f9fb;
+}
+
+.profilePage__accountInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.16);
+}
+
+.profilePage__accountInput:disabled,
+.profilePage__accountInput:read-only {
+  color: var(--color-text-primary);
+  background: #f8f9fb;
+  -webkit-text-fill-color: var(--color-text-primary);
+  opacity: 1;
+}
+
+.profilePage__accountDivider {
+  height: 1px;
+  margin: 0.35rem 0 1.15rem;
+  background: var(--color-border);
+}
+
+.profilePage__passwordHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.profilePage__passwordFields {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+}
+
+.profilePage__passwordActions,
+.profilePage__accountFooter {
+  justify-content: flex-end;
+}
+
+.profilePage__accountFooter {
+  margin-top: 0.4rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+:global(.dark) .profilePage__accountShell,
+:global(.dark) .profilePage__accountMain {
+  background: #1b2433;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+}
+
+:global(.dark) .profilePage__accountSide {
+  border-right-color: rgba(255, 255, 255, 0.06);
+  background: #151c29;
+}
+
+:global(.dark) .profilePage__accountNavItem--active,
+:global(.dark) .profilePage__accountNavItem--active:hover {
+  background: rgba(249, 115, 22, 0.12);
+  color: #fff7ed;
+  box-shadow: inset 3px 0 0 #f97316;
+}
+
+:global(.dark) .profilePage__accountNavItem--active .profilePage__accountNavIcon {
+  color: #fdba74;
+}
+
+:global(.dark) .profilePage__methodList {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+:global(.dark) .profilePage__accountInput,
+:global(.dark) .profilePage__titleSelect button,
+:global(.dark) .profilePage__skillAddInput {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--color-text-primary);
+}
+
+:global(.dark) .profilePage__accountInput::placeholder,
+:global(.dark) .profilePage__skillAddInput::placeholder {
+  color: #9ca3af;
+}
+
+:global(.dark) .profilePage__accountNavItem:hover,
+:global(.dark) .profilePage__removeButton:hover:not(:disabled),
+:global(.dark) .profilePage__ghostButton:hover:not(:disabled),
+:global(.dark) .profilePage__changePassword:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+:global(.dark) .profilePage__accountInput:disabled,
+:global(.dark) .profilePage__accountInput:read-only,
+:global(.dark) .profilePage__titleSelect button:disabled {
+  color: #e5e7eb;
+  background: rgba(255, 255, 255, 0.04);
+  -webkit-text-fill-color: #e5e7eb;
+  opacity: 1;
+}
+
+@media (max-width: 800px) {
+  .profilePage__accountShell {
+    grid-template-columns: 1fr;
+  }
+
+  .profilePage__accountSide {
+    border-right: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .profilePage__fieldGrid,
+  .profilePage__nameRow {
+    grid-template-columns: 1fr;
+  }
+
+  .profilePage__accountMain > .profilePage__field {
+    max-width: none;
+  }
+
+  .profilePage__passwordHead,
+  .profilePage__pictureRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.profilePage__settingsShell {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.profilePage__settingsNav {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.2rem;
+  position: sticky;
+  top: 6.5rem;
+}
+
+.profilePage__settingsTitle {
+  margin: 0 0 0.85rem;
+  padding: 0 0.75rem;
+  color: var(--color-text-primary);
+  font-size: 1.45rem;
+  font-weight: 750;
+}
+
+.profilePage__settingsNavItem {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 0;
+  border-radius: 0.55rem;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+}
+
+.profilePage__settingsNavItem:hover {
+  background: rgba(15, 23, 42, 0.05);
+  color: var(--color-text-primary);
+}
+
+.profilePage__settingsNavItem--active,
+.profilePage__settingsNavItem--active:hover {
+  background: rgba(249, 115, 22, 0.12);
+  color: var(--color-primary);
+}
+
+.profilePage__settingsMain {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  padding: 1.5rem 1.75rem 0.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.profilePage__settingsCard {
+  min-width: 0;
+}
+
+.profilePage__settingsShell .profilePage__userPanelTop,
+.profilePage__settingsShell .profilePage__avatarSection,
+.profilePage__settingsShell .profilePage__avatarMeta {
+  align-items: flex-start;
+}
+
+.profilePage__settingsShell .profilePage__avatarSection {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.profilePage__settingsShell .profilePage__avatarRing {
+  width: 96px;
+  height: 96px;
+}
+
+.profilePage__settingsShell .profilePage__infoCardMain,
+.profilePage__settingsShell .profilePage__sidebarSecurityCard {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.profilePage__settingsShell .profilePage__infoGrid {
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+.profilePage__settingsShell .profilePage__infoItem {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.95rem 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.profilePage__settingsShell .profilePage__infoLabel {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: var(--color-text-primary);
+  flex: 0 0 9.5rem;
+}
+
+.profilePage__settingsShell .profilePage__infoValue {
+  margin-left: auto;
+  text-align: right;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.profilePage__settingsShell .profilePage__formInput {
+  margin-left: auto;
+  max-width: 16rem;
+}
+
+:global(.dark) .profilePage__settingsNavItem:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+@media (max-width: 680px) {
+  .profilePage__settingsShell {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .profilePage__settingsNav {
+    position: static;
+  }
+}
+
 /* Main Grid Layout */
-.profileGrid {
+.profilePage__profileGrid {
   width: 100%;
   max-width: 1080px;
   margin: 0 auto;
@@ -21,7 +1042,7 @@
 }
 
 /* Left Panel - User Information */
-.userPanel {
+.profilePage__userPanel {
   background: var(--color-bg-surface);
   border-radius: 14px;
   padding: 1.25rem 1.125rem;
@@ -33,7 +1054,7 @@
   border: 1px solid var(--color-border);
 }
 
-.userPanelTop {
+.profilePage__userPanelTop {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -43,7 +1064,7 @@
   min-height: 0;
 }
 
-.sidebarSecurityCard {
+.profilePage__sidebarSecurityCard {
   width: 100%;
   margin-top: auto;
   padding-top: 0.875rem;
@@ -51,17 +1072,17 @@
   flex-shrink: 0;
 }
 
-.sidebarSecurityCard .cardHeader {
+.profilePage__sidebarSecurityCard .profilePage__cardHeader {
   margin-bottom: 0.625rem;
   padding-bottom: 0.5rem;
 }
 
-.sidebarSecurityCard .infoGrid {
+.profilePage__sidebarSecurityCard .profilePage__infoGrid {
   grid-template-columns: 1fr;
 }
 
 /* Avatar Section */
-.avatarSection {
+.profilePage__avatarSection {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -71,7 +1092,7 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-.avatarTrigger {
+.profilePage__avatarTrigger {
   padding: 0;
   border: none;
   background: transparent;
@@ -80,16 +1101,16 @@
   transition: transform 0.2s ease;
 }
 
-.avatarTrigger:hover:not(:disabled) {
+.profilePage__avatarTrigger:hover:not(:disabled) {
   transform: translateY(-1px);
 }
 
-.avatarTrigger:disabled {
+.profilePage__avatarTrigger:disabled {
   cursor: wait;
   opacity: 0.85;
 }
 
-.avatarRing {
+.profilePage__avatarRing {
   position: relative;
   width: 84px;
   height: 84px;
@@ -100,7 +1121,7 @@
   background: var(--color-bg-primary);
 }
 
-.avatarInitials {
+.profilePage__avatarInitials {
   width: 100%;
   height: 100%;
   display: flex;
@@ -117,7 +1138,7 @@
   );
 }
 
-.avatarOverlay {
+.profilePage__avatarOverlay {
   position: absolute;
   inset: 0;
   display: flex;
@@ -131,35 +1152,35 @@
   transition: opacity 0.2s ease;
 }
 
-.avatarTrigger:hover .avatarOverlay,
-.avatarTrigger:focus-visible .avatarOverlay {
+.profilePage__avatarTrigger:hover .profilePage__avatarOverlay,
+.profilePage__avatarTrigger:focus-visible .profilePage__avatarOverlay {
   opacity: 1;
 }
 
 @media (hover: none) {
-  .avatarOverlay {
+  .profilePage__avatarOverlay {
     opacity: 1;
     background: rgba(15, 23, 42, 0.38);
   }
 
-  .avatarOverlayText {
+  .profilePage__avatarOverlayText {
     display: none;
   }
 }
 
-.avatarOverlayIcon {
+.profilePage__avatarOverlayIcon {
   width: 22px;
   height: 22px;
 }
 
-.avatarOverlayText {
+.profilePage__avatarOverlayText {
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
-.avatarOverlaySpinner {
+.profilePage__avatarOverlaySpinner {
   width: 24px;
   height: 24px;
   border: 2px solid rgba(255, 255, 255, 0.35);
@@ -174,11 +1195,11 @@
   }
 }
 
-.avatarFileInput {
+.profilePage__avatarFileInput {
   display: none;
 }
 
-.avatarMeta {
+.profilePage__avatarMeta {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -186,7 +1207,7 @@
   width: 100%;
 }
 
-.removeAvatarLink {
+.profilePage__removeAvatarLink {
   border: none;
   background: transparent;
   color: var(--color-text-secondary);
@@ -199,38 +1220,38 @@
   transition: color 0.2s ease;
 }
 
-.removeAvatarLink:hover:not(:disabled) {
+.profilePage__removeAvatarLink:hover:not(:disabled) {
   color: #ef4444;
 }
 
-.removeAvatarLink:disabled {
+.profilePage__removeAvatarLink:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.avatarMessage {
+.profilePage__avatarMessage {
   margin: 0.25rem 0 0;
   font-size: 0.8125rem;
   text-align: center;
   line-height: 1.4;
 }
 
-.avatarMessageSuccess {
+.profilePage__avatarMessageSuccess {
   color: #16a34a;
 }
 
-.avatarMessageError {
+.profilePage__avatarMessageError {
   color: #ef4444;
 }
 
-.avatarImage {
+.profilePage__avatarImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
 /* User Info */
-.userInfo {
+.profilePage__userInfo {
   text-align: center;
   width: 100%;
   display: flex;
@@ -240,7 +1261,7 @@
   padding-top: 0.25rem;
 }
 
-.userName {
+.profilePage__userName {
   font-size: 1.125rem;
   font-weight: 700;
   margin: 0;
@@ -253,11 +1274,11 @@
   text-overflow: ellipsis;
 }
 
-.userRole {
+.profilePage__userRole {
   margin: 0;
 }
 
-.roleBadge {
+.profilePage__roleBadge {
   display: inline-flex;
   align-items: center;
   padding: 0.3rem 0.75rem;
@@ -271,7 +1292,7 @@
   text-transform: uppercase;
 }
 
-.userEmail {
+.profilePage__userEmail {
   color: var(--color-text-secondary);
   font-size: 0.875rem;
   margin: 0.125rem 0 0;
@@ -280,7 +1301,7 @@
 }
 
 /* Quick Stats */
-.quickStats {
+.profilePage__quickStats {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -288,7 +1309,7 @@
   margin-top: 0.25rem;
 }
 
-.statCard {
+.profilePage__statCard {
   display: flex;
   align-items: center;
   gap: 0.625rem;
@@ -301,19 +1322,19 @@
   overflow: hidden;
 }
 
-.statCard:hover {
+.profilePage__statCard:hover {
   border-color: rgba(249, 115, 22, 0.25);
   background: rgba(249, 115, 22, 0.03);
 }
 
 
 
-.statIconWrapper {
+.profilePage__statIconWrapper {
   position: relative;
   flex-shrink: 0;
 }
 
-.statIcon {
+.profilePage__statIcon {
   width: 32px;
   height: 32px;
   background: rgba(249, 115, 22, 0.12);
@@ -327,23 +1348,23 @@
   transition: background 0.2s ease;
 }
 
-.statIcon svg {
+.profilePage__statIcon svg {
   width: 16px;
   height: 16px;
   stroke-width: 2.5;
 }
 
-.statIcon.statusActive,
-.statIcon.statusBlocked {
+.profilePage__statIcon.profilePage--statusActive,
+.profilePage__statIcon.profilePage--statusBlocked {
   background: rgba(249, 115, 22, 0.12);
   color: var(--color-primary);
 }
 
-.statCard:hover .statIcon {
+.profilePage__statCard:hover .profilePage__statIcon {
   background: rgba(249, 115, 22, 0.18);
 }
 
-.statContent {
+.profilePage__statContent {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -351,7 +1372,7 @@
   min-width: 0;
 }
 
-.statLabel {
+.profilePage__statLabel {
   font-size: 0.625rem;
   color: var(--color-text-tertiary);
   font-weight: 700;
@@ -360,14 +1381,14 @@
   margin: 0;
 }
 
-.statValue {
+.profilePage__statValue {
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--color-text-primary);
   line-height: 1.2;
 }
 
-.statusBadge {
+.profilePage__statusBadge {
   font-size: 0.75rem;
   font-weight: 600;
   padding: 0.3rem 0.65rem;
@@ -379,27 +1400,27 @@
   transition: all 0.2s ease;
 }
 
-.statusBadge.active {
+.profilePage__statusBadge.profilePage--active {
   background: rgba(249, 115, 22, 0.12);
   color: var(--color-primary);
   border-color: rgba(249, 115, 22, 0.28);
 }
 
-.statusBadge.blocked {
+.profilePage__statusBadge.profilePage--blocked {
   background: rgba(249, 115, 22, 0.15);
   color: var(--color-primary);
   border-color: rgba(249, 115, 22, 0.3);
 }
 
 /* Right Panel - Information Cards */
-.infoPanel {
+.profilePage__infoPanel {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   min-width: 0;
 }
 
-.infoCardMain {
+.profilePage__infoCardMain {
   background: var(--color-bg-surface);
   border-radius: 14px;
   padding: 1.25rem 1.125rem;
@@ -408,25 +1429,25 @@
   min-width: 0;
 }
 
-.infoSection {
+.profilePage__infoSection {
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
 
-.infoSectionGrow {
+.profilePage__infoSectionGrow {
   flex: 1;
   min-height: 0;
 }
 
-.infoSectionDivider {
+.profilePage__infoSectionDivider {
   height: 1px;
   background: var(--color-border);
   margin: 0.875rem 0;
   flex-shrink: 0;
 }
 
-.infoCard {
+.profilePage__infoCard {
   background: var(--color-bg-surface);
   border-radius: 12px;
   padding: 1rem 1.125rem;
@@ -435,7 +1456,7 @@
   min-width: 0;
 }
 
-.infoCardExpandable {
+.profilePage__infoCardExpandable {
   background: var(--color-bg-surface);
   border-radius: 12px;
   padding: 1rem 1.125rem;
@@ -444,7 +1465,7 @@
   min-width: 0;
 }
 
-.cardHeader {
+.profilePage__cardHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -454,20 +1475,20 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-.cardTitle {
+.profilePage__cardTitle {
   font-size: 0.9375rem;
   font-weight: 600;
   margin: 0;
   color: var(--color-text-primary);
 }
 
-.cardContent {
+.profilePage__cardContent {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.cardContentExpandable {
+.profilePage__cardContentExpandable {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -477,20 +1498,20 @@
 }
 
 /* Info Grid for Account Information */
-.infoGrid {
+.profilePage__infoGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.625rem 0.875rem;
 }
 
-.infoItem {
+.profilePage__infoItem {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
   min-width: 0;
 }
 
-.infoLabel {
+.profilePage__infoLabel {
   font-size: 0.6875rem;
   color: var(--color-text-secondary);
   font-weight: 500;
@@ -498,33 +1519,33 @@
   letter-spacing: 0.5px;
 }
 
-.infoValue {
+.profilePage__infoValue {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-text-primary);
   word-break: break-word;
 }
 
-.infoItemFull {
+.profilePage__infoItemFull {
   grid-column: 1 / -1;
 }
 
-.passwordForm {
+.profilePage__passwordForm {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.cardHeaderActions {
+.profilePage__cardHeaderActions {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   flex-shrink: 0;
 }
 
-.editButton,
-.saveButton,
-.cancelButton {
+.profilePage__editButton,
+.profilePage__saveButton,
+.profilePage__cancelButton {
   padding: 0.4rem 0.9rem;
   border-radius: 8px;
   font-size: 0.8125rem;
@@ -534,49 +1555,49 @@
   border: 1px solid transparent;
 }
 
-.editButton {
+.profilePage__editButton {
   background: rgba(249, 115, 22, 0.1);
   color: var(--color-primary);
   border-color: rgba(249, 115, 22, 0.35);
 }
 
-.editButton:hover:not(:disabled) {
+.profilePage__editButton:hover:not(:disabled) {
   background: rgba(249, 115, 22, 0.18);
 }
 
-.editButton:disabled {
+.profilePage__editButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.saveButton {
+.profilePage__saveButton {
   background: var(--color-primary);
   color: #fff;
   border-color: var(--color-primary);
 }
 
-.saveButton:hover:not(:disabled) {
+.profilePage__saveButton:hover:not(:disabled) {
   filter: brightness(1.05);
 }
 
-.saveButton:disabled,
-.cancelButton:disabled {
+.profilePage__saveButton:disabled,
+.profilePage__cancelButton:disabled {
   opacity: 0.65;
   cursor: wait;
 }
 
-.cancelButton {
+.profilePage__cancelButton {
   background: transparent;
   color: var(--color-text-secondary);
   border-color: var(--color-border);
 }
 
-.cancelButton:hover:not(:disabled) {
+.profilePage__cancelButton:hover:not(:disabled) {
   background: var(--color-bg-primary);
   color: var(--color-text-primary);
 }
 
-.formInput {
+.profilePage__formInput {
   width: 100%;
   padding: 0.55rem 0.75rem;
   border-radius: 8px;
@@ -588,38 +1609,38 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.formInput:focus {
+.profilePage__formInput:focus {
   outline: none;
   border-color: rgba(249, 115, 22, 0.6);
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
 }
 
-.formInput:disabled {
+.profilePage__formInput:disabled {
   opacity: 0.7;
   cursor: wait;
 }
 
-.formInputError {
+.profilePage__formInputError {
   border-color: #ef4444;
 }
 
-.formInputError:focus {
+.profilePage__formInputError:focus {
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
 }
 
-.fieldError {
+.profilePage__fieldError {
   font-size: 0.75rem;
   color: #ef4444;
   font-weight: 500;
 }
 
-.fieldHint {
+.profilePage__fieldHint {
   font-size: 0.75rem;
   color: var(--color-text-tertiary);
   font-weight: 400;
 }
 
-.profileMessage {
+.profilePage__profileMessage {
   margin: 0 0 0.75rem;
   padding: 0.5rem 0.75rem;
   border-radius: 8px;
@@ -627,20 +1648,20 @@
   font-weight: 500;
 }
 
-.profileMessageSuccess {
+.profilePage__profileMessageSuccess {
   background: rgba(34, 197, 94, 0.12);
   color: #16a34a;
   border: 1px solid rgba(34, 197, 94, 0.25);
 }
 
-.profileMessageError {
+.profilePage__profileMessageError {
   background: rgba(239, 68, 68, 0.1);
   color: #dc2626;
   border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
 /* Role Description */
-.roleDescription {
+.profilePage__roleDescription {
   color: var(--color-text-secondary);
   line-height: 1.5;
   margin: 0 0 0.75rem;
@@ -648,14 +1669,14 @@
 }
 
 /* Feature Grid */
-.featureGrid {
+.profilePage__featureGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
   margin-bottom: 1.5rem;
 }
 
-.feature {
+.profilePage__feature {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -669,7 +1690,7 @@
   transition: all 0.3s ease;
 }
 
-.feature:hover {
+.profilePage__feature:hover {
   background: var(--color-primary);
   color: white;
   transform: translateY(-1px);
@@ -677,17 +1698,17 @@
 }
 
 /* Candidate Specific Styles */
-.candidateOverview {
+.profilePage__candidateOverview {
   margin-bottom: 0.75rem;
 }
 
-.candidateStatsGrid {
+.profilePage__candidateStatsGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.625rem;
 }
 
-.candidateStat {
+.profilePage__candidateStat {
   display: flex;
   align-items: center;
   gap: 0.625rem;
@@ -699,13 +1720,13 @@
   transition: all 0.3s ease;
 }
 
-.candidateStat:hover {
+.profilePage__candidateStat:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   border-color: var(--color-primary);
 }
 
-.candidateStatIcon {
+.profilePage__candidateStatIcon {
   width: 32px;
   height: 32px;
   background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
@@ -719,24 +1740,24 @@
   transition: all 0.3s ease;
 }
 
-.candidateStatIcon svg {
+.profilePage__candidateStatIcon svg {
   width: 16px;
   height: 16px;
   stroke-width: 2.5;
 }
 
-.candidateStat:hover .candidateStatIcon {
+.profilePage__candidateStat:hover .profilePage__candidateStatIcon {
   transform: scale(1.05);
   box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
 }
 
-.candidateStatContent {
+.profilePage__candidateStatContent {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
 
-.candidateStatLabel {
+.profilePage__candidateStatLabel {
   font-size: 0.7rem;
   color: var(--color-text-secondary);
   font-weight: 500;
@@ -744,17 +1765,17 @@
   letter-spacing: 0.5px;
 }
 
-.candidateStatValue {
+.profilePage__candidateStatValue {
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--color-text-primary);
 }
 
-.candidateFeatures {
+.profilePage__candidateFeatures {
   margin-bottom: 1.5rem;
 }
 
-.candidateSectionTitle {
+.profilePage__candidateSectionTitle {
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--color-text-primary);
@@ -763,26 +1784,26 @@
   letter-spacing: 0.5px;
 }
 
-.candidateActions {
+.profilePage__candidateActions {
   margin-top: auto;
 }
 
-.infoSectionGrow .courseList {
+.profilePage__infoSectionGrow .profilePage__courseList {
   flex: 1;
   align-content: start;
 }
 
-.infoSectionGrow .candidateOverview {
+.profilePage__infoSectionGrow .profilePage__candidateOverview {
   flex: 1;
 }
 
-.actionButtonGroup {
+.profilePage__actionButtonGroup {
   display: flex;
   gap: 0.75rem;
   margin-top: 1rem;
 }
 
-.secondaryButton {
+.profilePage__secondaryButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -800,25 +1821,25 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.secondaryButton:hover {
+.profilePage__secondaryButton:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-color: var(--color-primary);
   background: var(--color-bg-secondary);
 }
 
-.secondaryButton svg {
+.profilePage__secondaryButton svg {
   width: 18px;
   height: 18px;
   stroke-width: 2;
 }
 
 /* Action Button */
-.actionButton {
+.profilePage__actionButton {
   margin-top: auto;
 }
 
-.primaryButton {
+.profilePage__primaryButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -836,13 +1857,13 @@
   box-shadow: 0 2px 8px rgba(249, 115, 22, 0.25);
 }
 
-.primaryButton:hover {
+.profilePage__primaryButton:hover {
   filter: brightness(1.05);
 }
 
 /* Loading and Error States */
-.loadingWrapper,
-.errorWrapper {
+.profilePage__loadingWrapper,
+.profilePage__errorWrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -851,7 +1872,7 @@
   text-align: center;
 }
 
-.loadingSpinner {
+.profilePage__loadingSpinner {
   width: 40px;
   height: 40px;
   border: 3px solid var(--color-border);
@@ -871,18 +1892,18 @@
   }
 }
 
-.loadingText,
-.errorMessage {
+.profilePage__loadingText,
+.profilePage__errorMessage {
   color: var(--color-text-secondary);
   font-size: 1rem;
 }
 
-.errorIcon {
+.profilePage__errorIcon {
   font-size: 3rem;
   margin-bottom: 1rem;
 }
 
-.errorTitle {
+.profilePage__errorTitle {
   color: var(--color-text-primary);
   margin: 0 0 0.5rem 0;
   font-size: 1.25rem;
@@ -890,7 +1911,7 @@
 }
 
 /* Course List Styles */
-.courseList {
+.profilePage__courseList {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 0.625rem;
@@ -899,7 +1920,7 @@
   padding: 0;
 }
 
-.courseItem {
+.profilePage__courseItem {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -915,12 +1936,12 @@
   box-sizing: border-box;
 }
 
-.courseItem:hover {
+.profilePage__courseItem:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   border-color: var(--color-primary);
 }
 
-.courseInfo {
+.profilePage__courseInfo {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -929,27 +1950,27 @@
   width: 100%;
 }
 
-.courseCode {
+.profilePage__courseCode {
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--color-primary);
   letter-spacing: 0.5px;
 }
 
-.courseName {
+.profilePage__courseName {
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--color-text-primary);
   line-height: 1.2;
 }
 
-.courseSemester {
+.profilePage__courseSemester {
   font-size: 0.7rem;
   color: var(--color-text-secondary);
   font-weight: 500;
 }
 
-.courseDate {
+.profilePage__courseDate {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -960,7 +1981,7 @@
   border-top: 1px solid var(--color-border);
 }
 
-.courseAssignedLabel {
+.profilePage__courseAssignedLabel {
   font-size: 0.65rem;
   color: var(--color-text-secondary);
   font-weight: 500;
@@ -968,13 +1989,13 @@
   letter-spacing: 0.5px;
 }
 
-.courseAssignedDate {
+.profilePage__courseAssignedDate {
   font-size: 0.7rem;
   color: var(--color-text-primary);
   font-weight: 600;
 }
 
-.emptyCourses {
+.profilePage__emptyCourses {
   text-align: center;
   padding: 1.5rem 1rem;
   background: var(--color-bg-primary);
@@ -989,26 +2010,26 @@
   min-height: 8rem;
 }
 
-.emptyCoursesIcon {
+.profilePage__emptyCoursesIcon {
   font-size: 2.5rem;
   opacity: 0.6;
 }
 
-.emptyCoursesTitle {
+.profilePage__emptyCoursesTitle {
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin: 0;
 }
 
-.emptyCoursesText {
+.profilePage__emptyCoursesText {
   font-size: 0.9rem;
   color: var(--color-text-secondary);
   line-height: 1.5;
   max-width: 500px;
 }
 
-.courseCount {
+.profilePage__courseCount {
   font-size: 0.75rem;
   color: var(--color-text-secondary);
   margin: 0;
@@ -1017,13 +2038,13 @@
 }
 
 /* Courses card specific styles */
-.coursesCard {
+.profilePage__coursesCard {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-.coursesCard .cardContent {
+.profilePage__coursesCard .profilePage__cardContent {
   flex: 1;
   overflow: hidden;
   display: flex;
@@ -1032,26 +2053,26 @@
 
 /* Responsive Design */
 @media (max-width: 1200px) {
-  .profileContainer {
+  .profilePage__profileContainer {
     padding: 5rem 0.875rem 1rem;
   }
 
-  .profileGrid {
+  .profilePage__profileGrid {
     grid-template-columns: minmax(200px, 240px) minmax(0, 1fr);
   }
 }
 
 @media (max-width: 1024px) {
-  .profileContainer {
+  .profilePage__profileContainer {
     padding: 5rem 0.75rem 1rem;
   }
 
-  .profileGrid {
+  .profilePage__profileGrid {
     grid-template-columns: 1fr;
     gap: 0.75rem;
   }
 
-  .userPanel {
+  .profilePage__userPanel {
     flex-direction: column;
     align-items: stretch;
     gap: 0;
@@ -1059,7 +2080,7 @@
     height: auto;
   }
 
-  .userPanelTop {
+  .profilePage__userPanelTop {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-start;
@@ -1067,24 +2088,24 @@
     flex: none;
   }
 
-  .sidebarSecurityCard {
+  .profilePage__sidebarSecurityCard {
     margin-top: 0.75rem;
   }
 
-  .infoCardMain {
+  .profilePage__infoCardMain {
     height: auto;
   }
 
-  .avatarSection {
+  .profilePage__avatarSection {
     margin-bottom: 0;
   }
 
-  .userInfo {
+  .profilePage__userInfo {
     text-align: left;
     flex: 1;
   }
 
-  .quickStats {
+  .profilePage__quickStats {
     flex-direction: row;
     gap: 0.5rem;
     margin-top: 0;
@@ -1092,115 +2113,119 @@
     flex: 1;
   }
 
-  .statCard {
+  .profilePage__statCard {
     flex: 1;
     min-width: 0;
   }
 
-  .infoGrid {
+  .profilePage__infoGrid {
     grid-template-columns: 1fr;
   }
 
-  .featureGrid {
+  .profilePage__featureGrid {
     grid-template-columns: 1fr;
   }
 
-  .candidateStatsGrid {
+  .profilePage__candidateStatsGrid {
     grid-template-columns: 1fr;
   }
 
-  .actionButtonGroup {
+  .profilePage__actionButtonGroup {
     flex-direction: column;
   }
 }
 
 @media (max-width: 768px) {
-  .profileContainer {
+  .profilePage__profileContainer {
     padding: 4.5rem 0.625rem 1rem;
   }
 
-  .userPanel {
+  .profilePage__userPanel {
     flex-direction: column;
     align-items: center;
     gap: 0.75rem;
     padding: 1rem;
   }
 
-  .userInfo {
+  .profilePage__userInfo {
     text-align: center;
   }
 
-  .quickStats {
+  .profilePage__quickStats {
     flex-direction: column;
     width: 100%;
   }
 
-  .infoCard,
-  .infoCardExpandable {
+  .profilePage__infoCard,
+  .profilePage__infoCardExpandable {
     padding: 0.875rem 1rem;
   }
 
-  .candidateStatsGrid {
+  .profilePage__candidateStatsGrid {
     grid-template-columns: 1fr;
   }
 
-  .courseList {
+  .profilePage__courseList {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 640px) {
-  .profileContainer {
+  .profilePage__profileContainer {
     padding: 4rem 0.5rem 1rem;
   }
 
-  .avatarRing {
+  .profilePage__avatarRing {
     width: 96px;
     height: 96px;
   }
 
-  .userName {
+  .profilePage__userName {
     font-size: 1.5rem;
   }
 
-  .cardTitle {
+  .profilePage__cardTitle {
     font-size: 1rem;
   }
 
-  .courseList {
+  .profilePage__courseList {
     grid-template-columns: 1fr;
   }
 }
 
 /* Dark mode support */
-:global(.dark) .profileContainer {
-  background: linear-gradient(135deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 100%);
+:global(.dark) .profilePage__profileContainer {
+  background: #0f1722;
 }
 
-:global(.dark) .userPanel,
-:global(.dark) .infoCard,
-:global(.dark) .infoCardExpandable,
-:global(.dark) .infoCardMain {
+:global(.dark) .profilePage__skillsPanel {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+:global(.dark) .profilePage__userPanel,
+:global(.dark) .profilePage__infoCard,
+:global(.dark) .profilePage__infoCardExpandable,
+:global(.dark) .profilePage__infoCardMain {
   border-color: var(--color-border);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
-:global(.dark) .avatarRing {
+:global(.dark) .profilePage__avatarRing {
   border-color: rgba(249, 115, 22, 0.45);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
 }
 
-:global(.dark) .statCard,
-:global(.dark) .feature {
+:global(.dark) .profilePage__statCard,
+:global(.dark) .profilePage__feature {
   border-color: var(--color-border);
 }
 
-.profileContainer {
-  min-height: calc(100vh / 0.9);
-  padding: 6.25rem 1.25rem 3rem;
+.profilePage__profileContainer {
+  padding: 6.25rem 1.25rem 1.25rem;
 }
 
-.profileGrid {
+.profilePage__profileGrid {
   display: flex;
   flex-direction: column;
   width: min(100%, 40rem);
@@ -1208,33 +2233,33 @@
   gap: 1rem;
 }
 
-.userPanel,
-.infoCardMain {
+.profilePage__userPanel,
+.profilePage__infoCardMain {
   width: 100%;
 }
 
-.userPanelTop,
-.quickStats,
-.candidateActions,
-.actionButtonGroup {
+.profilePage__userPanelTop,
+.profilePage__quickStats,
+.profilePage__candidateActions,
+.profilePage__actionButtonGroup {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   width: 100%;
 }
 
-.userInfo {
+.profilePage__userInfo {
   align-items: center;
   text-align: center;
 }
 
-.infoGrid,
-.candidateStatsGrid,
-.featureGrid {
+.profilePage__infoGrid,
+.profilePage__candidateStatsGrid,
+.profilePage__featureGrid {
   grid-template-columns: 1fr;
 }
 
-.sidebarSecurityCard {
+.profilePage__sidebarSecurityCard {
   width: 100%;
   margin-top: 0.85rem;
   padding-top: 0.875rem;
@@ -1242,7 +2267,7 @@
   border-left: 0;
 }
 
-.primaryButton,
-.secondaryButton {
+.profilePage__primaryButton,
+.profilePage__secondaryButton {
   width: 100%;
 }

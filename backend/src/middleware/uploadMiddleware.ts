@@ -6,11 +6,37 @@ import {
 } from "../utils/avatarUtils";
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
-const ALLOWED_MIME_TYPES = new Set([
-    "image/jpeg",
-    "image/png",
-    "image/webp",
-]);
+const MIME_EXTENSION: Record<string, string> = {
+    "image/jpeg": ".jpg",
+    "image/jpg": ".jpg",
+    "image/pjpeg": ".jpg",
+    "image/png": ".png",
+    "image/x-png": ".png",
+    "image/webp": ".webp",
+    "image/gif": ".gif",
+    "image/avif": ".avif",
+    "image/bmp": ".bmp",
+    "image/x-ms-bmp": ".bmp",
+};
+const NAME_EXTENSION: Record<string, string> = {
+    ".jpg": ".jpg",
+    ".jpeg": ".jpg",
+    ".png": ".png",
+    ".webp": ".webp",
+    ".gif": ".gif",
+    ".avif": ".avif",
+    ".bmp": ".bmp",
+};
+
+function resolvedAvatarExtension(file: { mimetype: string; originalname: string }): string | null {
+    const fromMime = MIME_EXTENSION[file.mimetype];
+    const fromName = NAME_EXTENSION[path.extname(file.originalname).toLowerCase()];
+    if (fromMime) return fromMime;
+    if ((file.mimetype === "" || file.mimetype === "application/octet-stream") && fromName) {
+        return fromName;
+    }
+    return null;
+}
 
 ensureAvatarUploadDir();
 
@@ -21,19 +47,14 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
         const userId = (req as { user?: { userId?: string } }).user?.userId ?? "unknown";
-        const ext = path.extname(file.originalname).toLowerCase() || ".jpg";
-        const safeExt = [".jpg", ".jpeg", ".png", ".webp"].includes(ext)
-            ? ext === ".jpeg"
-                ? ".jpg"
-                : ext
-            : ".jpg";
+        const safeExt = resolvedAvatarExtension(file) ?? ".jpg";
         cb(null, `user-${userId}-${Date.now()}${safeExt}`);
     },
 });
 
 const fileFilter: multer.Options["fileFilter"] = (_req, file, cb) => {
-    if (!ALLOWED_MIME_TYPES.has(file.mimetype)) {
-        cb(new Error("Only JPEG, PNG, and WebP images are allowed"));
+    if (!resolvedAvatarExtension(file)) {
+        cb(new Error("Use a JPG, PNG, WebP, GIF, AVIF, or BMP image"));
         return;
     }
     cb(null, true);

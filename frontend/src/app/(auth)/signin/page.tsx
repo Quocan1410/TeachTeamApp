@@ -5,8 +5,8 @@ import styles from "./signin-page.module.css";
 
 export default function SigninPage() {
   return (
-    <div className={styles.pageContainer}>
-      <div className={styles.stage}>
+    <div className={styles.signinPage__pageContainer}>
+      <div className={styles.signinPage__stage}>
         <Suspense fallback={<PageSkeleton variant="auth" />}>
           <SigninForm />
         </Suspense>

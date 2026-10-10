@@ -9,21 +9,21 @@ export default function LecturersSkeleton() {
   useEffect(() => retainPageBusy(), []);
 
   return (
-    <div className={styles.page} aria-busy="true">
+    <div className={styles.lecturers__page} aria-busy="true">
       <p className="sr-only">Loading…</p>
-      <header className={styles.stage}>
-        <div className={styles.intro}>
-          <div className={`${styles.skel} ${styles.skelTitle}`} />
-          <div className={`${styles.skel} ${styles.skelLine}`} />
-          <div className={`${styles.skel} ${styles.skelSearch}`} />
+      <header className={styles.lecturers__stage}>
+        <div className={styles.lecturers__intro}>
+          <div className={`${styles.lecturers__skel} ${styles.lecturers__skelTitle}`} />
+          <div className={`${styles.lecturers__skel} ${styles.lecturers__skelLine}`} />
+          <div className={`${styles.lecturers__skel} ${styles.lecturers__skelSearch}`} />
         </div>
-        <div className={styles.portrait}>
-          <div className={`${styles.skel} ${styles.skelSit}`} />
+        <div className={styles.lecturers__portrait}>
+          <div className={`${styles.lecturers__skel} ${styles.lecturers__skelSit}`} />
         </div>
       </header>
-      <div className={showcaseStyles.directoryGrid}>
+      <div className={showcaseStyles.lecturerShowcase__directoryGrid}>
         {Array.from({ length: 9 }).map((_, index) => (
-          <div key={index} className={`${styles.skel} ${styles.skelCard}`} />
+          <div key={index} className={`${styles.lecturers__skel} ${styles.lecturers__skelCard}`} />
         ))}
       </div>
     </div>

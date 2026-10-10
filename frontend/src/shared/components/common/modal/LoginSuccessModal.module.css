@@ -1,5 +1,5 @@
 /* Modal Overlay */
-.modalOverlay {
+.loginSuccessModal__modalOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -16,18 +16,18 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.modalOverlay.visible {
+.loginSuccessModal__modalOverlay.loginSuccessModal--visible {
   opacity: 1;
   pointer-events: all;
 }
 
-.modalOverlay.hidden {
+.loginSuccessModal__modalOverlay.loginSuccessModal--hidden {
   opacity: 0;
   pointer-events: none;
 }
 
 /* Modal Content */
-.modalContent {
+.loginSuccessModal__modalContent {
   background: var(--color-bg-primary);
   border-radius: 20px;
   padding: 2.5rem 2rem;
@@ -41,19 +41,19 @@
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.modalContent.animated {
+.loginSuccessModal__modalContent.loginSuccessModal--animated {
   transform: scale(1) translateY(0);
 }
 
 /* Enhanced Success Icon */
-.successIcon {
+.loginSuccessModal__successIcon {
   margin-bottom: 1.5rem;
   display: flex;
   justify-content: center;
   position: relative;
 }
 
-.checkmark {
+.loginSuccessModal__checkmark {
   width: 80px;
   height: 80px;
   border-radius: 50%;
@@ -65,7 +65,7 @@
   z-index: 2;
 }
 
-.checkmarkSvg {
+.loginSuccessModal__checkmarkSvg {
   width: 80px;
   height: 80px;
   border-radius: 50%;
@@ -77,7 +77,7 @@
   animation: checkmarkPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-.checkmarkCircle {
+.loginSuccessModal__checkmarkCircle {
   stroke-dasharray: 166;
   stroke-dashoffset: 166;
   stroke-width: 3;
@@ -87,7 +87,7 @@
   animation: checkmarkCircle 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
 }
 
-.checkmarkCheck {
+.loginSuccessModal__checkmarkCheck {
   transform-origin: 50% 50%;
   stroke-dasharray: 48;
   stroke-dashoffset: 48;
@@ -96,7 +96,7 @@
 }
 
 /* Pulse rings for enhanced effect */
-.pulseRing {
+.loginSuccessModal__pulseRing {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -110,11 +110,11 @@
 }
 
 /* Simplified Message Section */
-.messageSection {
+.loginSuccessModal__messageSection {
   margin-bottom: 2rem;
 }
 
-.welcomeTitle {
+.loginSuccessModal__welcomeTitle {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--color-text-primary);
@@ -122,7 +122,7 @@
   animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
 }
 
-.welcomeMessage {
+.loginSuccessModal__welcomeMessage {
   font-size: 1.125rem;
   font-weight: 500;
   color: var(--color-text-secondary);
@@ -131,13 +131,13 @@
 }
 
 /* Continue Button with Fireworks */
-.buttonContainer {
+.loginSuccessModal__buttonContainer {
   position: relative;
   display: flex;
   justify-content: center;
 }
 
-.continueButton {
+.loginSuccessModal__continueButton {
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: white;
   border: none;
@@ -153,23 +153,23 @@
   overflow: hidden;
 }
 
-.continueButton:hover {
+.loginSuccessModal__continueButton:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px 0 rgba(59, 130, 246, 0.4);
   background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
 }
 
-.continueButton:active {
+.loginSuccessModal__continueButton:active {
   transform: translateY(0);
 }
 
-.buttonText {
+.loginSuccessModal__buttonText {
   position: relative;
   z-index: 2;
 }
 
 /* Fireworks Animation */
-.fireworksContainer {
+.loginSuccessModal__fireworksContainer {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -177,7 +177,7 @@
   pointer-events: none;
 }
 
-.firework {
+.loginSuccessModal__firework {
   position: absolute;
   width: 6px;
   height: 6px;
@@ -255,21 +255,21 @@
 
 /* Responsive Design */
 @media (max-width: 640px) {
-  .modalContent {
+  .loginSuccessModal__modalContent {
     padding: 2rem 1.5rem;
     margin: 1rem;
   }
   
-  .welcomeTitle {
+  .loginSuccessModal__welcomeTitle {
     font-size: 1.375rem;
   }
   
-  .welcomeMessage {
+  .loginSuccessModal__welcomeMessage {
     font-size: 1rem;
   }
   
-  .checkmark,
-  .checkmarkSvg {
+  .loginSuccessModal__checkmark,
+  .loginSuccessModal__checkmarkSvg {
     width: 70px;
     height: 70px;
   }

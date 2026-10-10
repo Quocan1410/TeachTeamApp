@@ -14,7 +14,7 @@ const ApplicationLeftSummary: React.FC<ApplicationLeftSummaryProps> = ({
   application,
   className,
 }) => (
-  <div className={`${styles.shell} ${className ?? ""}`}>
+  <div className={`${styles.applicationLeftSummary__shell} ${className ?? ""}`}>
     <ApplicationSummaryCard application={application} />
   </div>
 );

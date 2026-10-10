@@ -4,9 +4,14 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getUserInitials } from "@/shared/utils/avatarUtils";
-import { getUserDisplayName, splitDisplayName } from "@/shared/utils/personDisplayName";
+import { getUserDisplayName } from "@/shared/utils/personDisplayName";
 import { useProtectedAvatar } from "@/shared/hooks/useProtectedAvatar";
-import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightOnRectangleIcon,
+  Cog6ToothIcon,
+  MoonIcon,
+  SunIcon,
+} from "@heroicons/react/24/outline";
 import styles from "./UserDropdown.module.css";
 
 export interface UserDropdownProps {
@@ -60,20 +65,6 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
   const avatarImageSrc =
     user.hasCustomAvatar && protectedAvatarUrl ? protectedAvatarUrl : null;
 
-  // Function to get display role
-  const getDisplayRole = () => {
-    switch (user.role) {
-      case "candidate":
-        return "Candidate";
-      case "lecturer":
-        return "Lecturer";
-      case "admin":
-        return "Admin";
-      default:
-        return user.role;
-    }
-  };
-
   // Toggle dropdown
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -96,7 +87,6 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
     };
   }, []);
 
-  // Split formatted display name for styling (honorific + rest)
   const displayName =
     user.firstName || user.lastName
       ? getUserDisplayName({
@@ -106,23 +96,22 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
           userType: user.userType ?? user.role,
         })
       : user.fullName;
-  const { leading, rest } = splitDisplayName(displayName);
 
   return (
-    <div className={styles.userDropdownContainer} ref={dropdownRef} data-testid="user-dropdown">
+    <div className={styles.userDropdown__userDropdownContainer} ref={dropdownRef} data-testid="user-dropdown">
       {/* Avatar Button */}
-      <div className={styles.avatarButton} onClick={toggleDropdown}>
-        <div className={styles.avatarWrapper}>
-          <div className={styles.avatarContent}>
+      <div className={styles.userDropdown__avatarButton} onClick={toggleDropdown}>
+        <div className={styles.userDropdown__avatarWrapper}>
+          <div className={styles.userDropdown__avatarContent}>
             {showInitials || !avatarImageSrc ? (
-              <span className={styles.avatarInitials}>{initials}</span>
+              <span className={styles.userDropdown__avatarInitials}>{initials}</span>
             ) : (
               <Image
                 src={avatarImageSrc}
                 alt={user.fullName}
                 width={40}
                 height={40}
-                className={styles.avatarImage}
+                className={styles.userDropdown__avatarImage}
                 unoptimized
                 onError={() => setAvatarLoadFailed(true)}
               />
@@ -133,139 +122,58 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className={styles.userDropdownMenu}>
-          <div className={styles.dropdownHeader}>
+        <div className={styles.userDropdown__userDropdownMenu} role="menu">
+          <div className={styles.userDropdown__dropdownHeader}>
             {showInitials || !avatarImageSrc ? (
-              <div className={styles.dropdownAvatarInitials}>{initials}</div>
+              <div className={styles.userDropdown__dropdownAvatarInitials}>{initials}</div>
             ) : (
-            <Image
-              src={avatarImageSrc}
-              alt={user.fullName}
-              width={60}
-              height={60}
-              className={styles.dropdownAvatar}
-              unoptimized
-              onError={() => setAvatarLoadFailed(true)}
-            />
+              <Image
+                src={avatarImageSrc}
+                alt=""
+                width={40}
+                height={40}
+                className={styles.userDropdown__dropdownAvatar}
+                unoptimized
+                onError={() => setAvatarLoadFailed(true)}
+              />
             )}
-            <div className={styles.userInfo}>
-              <h3 className={styles.userName}>
-                <span className={styles.firstName}>{leading}</span>
-                {rest ? (
-                  <span className={styles.lastName}> {rest}</span>
-                ) : null}
-              </h3>
-              <p className={styles.userEmail}>{user.email}</p>
-              <div className={styles.userRole}>{getDisplayRole()}</div>
-            </div>
-            <button
-              type="button"
-              className={`${styles.closeButton} iconCloseHit iconCloseCircle`}
-              onClick={() => setIsOpen(false)}
-              aria-label="Close dropdown"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className={styles.closeIcon}
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
+            <h3 className={styles.userDropdown__userName}>{displayName}</h3>
           </div>
 
-          <div className={styles.dropdownContent}>
-            {/* Profile Navigation */}
-            <div className={styles.menuSection}>
-              <Link
-                href="/profile"
-                className={styles.menuItem}
-                onClick={() => setIsOpen(false)}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={styles.menuIcon}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
-                View Profile
-              </Link>
-            </div>
-
-            {/* Actions Row - Dark Mode Toggle and Sign Out on same row */}
-            <div className={styles.actionsRow}>
-              {/* Theme Toggle */}
-              <div className={styles.themeToggleContainer}>
-                <div className={styles.themeToggleLabel}>
-                  <SunIcon
-                    className={`${styles.themeIcon} ${styles.lightIcon}`}
-                    aria-hidden
-                  />
-                  <MoonIcon
-                    className={`${styles.themeIcon} ${styles.darkIcon}`}
-                    aria-hidden
-                  />
-                </div>
-
-                <div
-                  className={`${styles.themeToggle} ${isDarkMode ? styles.active : ""}`}
-                  onClick={onToggleDarkMode}
-                  aria-label="Toggle dark mode"
-                >
-                  <div className={styles.toggleHandle}></div>
-                </div>
-              </div>
-
-              {/* Sign Out Button */}
-              <button 
-                className={styles.signOutButton} 
-                onClick={onSignOut}
-                disabled={isLoggingOut}
-              >
-                {isLoggingOut ? (
-                  <>
-                    <svg className={styles.actionIcon} viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="32" strokeDashoffset="32">
-                        <animateTransform attributeName="transform" type="rotate" values="0 12 12;360 12 12" dur="1s" repeatCount="indefinite"/>
-                        <animate attributeName="strokeDasharray" dur="1s" values="0 32;16 16;0 32;0 32" repeatCount="indefinite"/>
-                      </circle>
-                    </svg>
-                    Signing Out...
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className={styles.actionIcon}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                      />
-                    </svg>
-                    Sign Out
-                  </>
-                )}
-              </button>
-            </div>
+          <div className={styles.userDropdown__dropdownContent}>
+            <Link
+              href="/profile"
+              className={`${styles.userDropdown__menuItem} ${styles["userDropdown__menuItem--settings"]}`}
+              role="menuitem"
+              onClick={() => setIsOpen(false)}
+            >
+              <span className={styles.userDropdown__settingsIcon} aria-hidden="true">
+                <Cog6ToothIcon className={styles.userDropdown__menuIcon} />
+              </span>
+              <span>Settings</span>
+            </Link>
+            <button
+              type="button"
+              className={`${styles.userDropdown__menuItem} ${styles["userDropdown__menuItem--theme"]}`}
+              role="menuitem"
+              onClick={onToggleDarkMode}
+            >
+              <span className={styles.userDropdown__themeSlot} aria-hidden="true">
+                <SunIcon className={`${styles.userDropdown__menuIcon} ${styles["userDropdown__themeIcon--sun"]}`} />
+                <MoonIcon className={`${styles.userDropdown__menuIcon} ${styles["userDropdown__themeIcon--moon"]}`} />
+              </span>
+              <span>Theme</span>
+            </button>
+            <button
+              type="button"
+              className={`${styles.userDropdown__menuItem} ${styles["userDropdown__menuItem--logout"]}`}
+              role="menuitem"
+              onClick={onSignOut}
+              disabled={isLoggingOut}
+            >
+              <ArrowRightOnRectangleIcon className={styles.userDropdown__menuIcon} aria-hidden="true" />
+              <span>{isLoggingOut ? "Logging out…" : "Log out"}</span>
+            </button>
           </div>
         </div>
       )}

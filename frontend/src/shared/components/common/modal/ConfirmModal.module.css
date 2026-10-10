@@ -1,4 +1,4 @@
-.backdrop {
+.confirmModal__backdrop {
   position: fixed;
   inset: 0;
   z-index: 1100;
@@ -11,7 +11,7 @@
   animation: fadeIn 0.18s ease-out;
 }
 
-.panel {
+.confirmModal__panel {
   width: 100%;
   max-width: 19.5rem;
   border-radius: 1rem;
@@ -26,8 +26,8 @@
   animation: riseIn 0.22s ease-out;
 }
 
-:global(.dark) .panel,
-:global(html[data-theme="dark"]) .panel {
+:global(.dark) .confirmModal__panel,
+:global(html[data-theme="dark"]) .confirmModal__panel {
   border-color: color-mix(in srgb, var(--color-primary) 22%, var(--color-border));
   background:
     radial-gradient(
@@ -38,7 +38,7 @@
     var(--color-bg-secondary);
 }
 
-.iconWrap {
+.confirmModal__iconWrap {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -48,22 +48,22 @@
   border-radius: 999px;
 }
 
-.iconWrap svg {
+.confirmModal__iconWrap svg {
   width: 1.15rem;
   height: 1.15rem;
 }
 
-.iconWrapDefault {
+.confirmModal__iconWrapDefault {
   background: color-mix(in srgb, var(--color-primary) 14%, transparent);
   color: var(--color-primary);
 }
 
-.iconWrapDanger {
+.confirmModal__iconWrapDanger {
   background: rgba(239, 68, 68, 0.12);
   color: #f87171;
 }
 
-.title {
+.confirmModal__title {
   margin: 0;
   font-size: 0.98rem;
   font-weight: 700;
@@ -71,21 +71,21 @@
   letter-spacing: -0.01em;
 }
 
-.message {
+.confirmModal__message {
   margin: 0.35rem 0 0;
   font-size: 0.78rem;
   line-height: 1.45;
   color: var(--color-text-tertiary);
 }
 
-.actions {
+.confirmModal__actions {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
   margin-top: 1rem;
 }
 
-.actionsSplit {
+.confirmModal__actionsSplit {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -94,8 +94,8 @@
   margin-top: 0.95rem;
 }
 
-.cancelBtn,
-.confirmBtn {
+.confirmModal__cancelBtn,
+.confirmModal__confirmBtn {
   border: none;
   border-radius: 999px;
   padding: 0.52rem 1rem;
@@ -108,52 +108,52 @@
     transform 0.12s ease;
 }
 
-.actionsSplit .cancelBtn,
-.actionsSplit .confirmBtn {
+.confirmModal__actionsSplit .confirmModal__cancelBtn,
+.confirmModal__actionsSplit .confirmModal__confirmBtn {
   flex: 1;
   min-width: 0;
 }
 
-.cancelBtn {
+.confirmModal__cancelBtn {
   background: transparent;
   color: var(--color-text-secondary);
   border: 1px solid color-mix(in srgb, var(--color-border) 90%, transparent);
 }
 
-.cancelBtnSplit {
+.confirmModal__cancelBtnSplit {
   background: color-mix(in srgb, var(--color-bg-primary) 55%, transparent);
 }
 
-.cancelBtn:hover:not(:disabled) {
+.confirmModal__cancelBtn:hover:not(:disabled) {
   background: color-mix(in srgb, var(--color-bg-primary) 70%, transparent);
   border-color: var(--color-border);
 }
 
-.confirmBtn {
+.confirmModal__confirmBtn {
   background: var(--color-primary);
   color: #fff;
 }
 
-.confirmBtnSplit {
+.confirmModal__confirmBtnSplit {
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset;
 }
 
-.confirmBtn:hover:not(:disabled) {
+.confirmModal__confirmBtn:hover:not(:disabled) {
   filter: brightness(1.05);
   transform: translateY(-1px);
 }
 
-.confirmBtnDanger {
+.confirmModal__confirmBtnDanger {
   background: #dc2626;
 }
 
-.confirmBtnDanger:hover:not(:disabled) {
+.confirmModal__confirmBtnDanger:hover:not(:disabled) {
   background: #b91c1c;
   filter: none;
 }
 
-.cancelBtn:disabled,
-.confirmBtn:disabled {
+.confirmModal__cancelBtn:disabled,
+.confirmModal__confirmBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;

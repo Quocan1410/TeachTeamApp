@@ -4,12 +4,12 @@
   background: var(--color-bg-primary);
 }
 
-.inner {
+.tutorHeroSection__inner {
   max-width: 1140px;
   margin: 0 auto;
 }
 
-.tutorHeroTitle {
+.tutorHeroSection__tutorHeroTitle {
   margin: 0 0 1.6rem;
   font-size: clamp(2.6rem, 5vw, 3.7rem);
   font-weight: 750;
@@ -19,7 +19,7 @@
   color: var(--color-text-primary);
 }
 
-.doubleWord {
+.tutorHeroSection__doubleWord {
   position: relative;
   display: inline-block;
   white-space: nowrap;
@@ -28,7 +28,7 @@
   font-weight: 650;
 }
 
-.doubleWord::after {
+.tutorHeroSection__doubleWord::after {
   content: attr(data-text);
   position: absolute;
   left: 1.5px;
@@ -38,15 +38,15 @@
   pointer-events: none;
 }
 
-.heroRow {
+.tutorHeroSection__heroRow {
   display: block;
 }
 
-.searchCol {
+.tutorHeroSection__searchCol {
   min-width: 0;
 }
 
-.mascotCol {
+.tutorHeroSection__mascotCol {
   position: fixed;
   right: 1.25rem;
   bottom: 1.25rem;
@@ -55,7 +55,7 @@
   justify-content: flex-end;
 }
 
-.mascotButton {
+.tutorHeroSection__mascotButton {
   position: relative;
   display: flex;
   flex-direction: row;
@@ -66,7 +66,7 @@
   cursor: pointer;
 }
 
-.bubble {
+.tutorHeroSection__bubble {
   position: absolute;
   right: calc(100% + 0.35rem);
   bottom: calc(6.2rem * 2 / 3);
@@ -83,7 +83,7 @@
   animation: bubbleIn 0.35s ease both;
 }
 
-.bubble::after {
+.tutorHeroSection__bubble::after {
   content: "";
   position: absolute;
   right: -0.42rem;
@@ -105,18 +105,18 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bubble {
+  .tutorHeroSection__bubble {
     animation: none;
     opacity: 1;
   }
 }
 
-.mascot {
+.tutorHeroSection__mascot {
   width: calc(6.4rem * 2 / 3);
   height: auto;
 }
 
-.notes {
+.tutorHeroSection__notes {
   position: absolute;
   z-index: 5;
   right: calc(100% + 0.75rem);
@@ -141,23 +141,23 @@
   text-align: left;
 }
 
-.notesTitle {
+.tutorHeroSection__notesTitle {
   margin: 0 0 0.35rem;
   font-size: 1rem;
 }
 
-.notes ul {
+.tutorHeroSection__notes ul {
   margin: 0;
   padding-left: 1.1rem;
 }
 
-.notes li {
+.tutorHeroSection__notes li {
   margin: 0.15rem 0;
   font-size: 0.92rem;
   line-height: 1.35;
 }
 
-.reminders {
+.tutorHeroSection__reminders {
   margin: 1rem 0 0;
   padding: 0.85rem 1rem;
   list-style: none;
@@ -166,12 +166,12 @@
   color: var(--color-text-primary);
 }
 
-.reminders li + li {
+.tutorHeroSection__reminders li + li {
   margin-top: 0.35rem;
 }
 
 @media (max-width: 800px) {
-  .notes {
+  .tutorHeroSection__notes {
     right: 0;
     bottom: calc(100% + 0.4rem);
   }

@@ -1,4 +1,4 @@
-.screen {
+.applicationOverviewScreen__screen {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -6,7 +6,7 @@
   background: var(--color-bg-primary);
 }
 
-.topBar {
+.applicationOverviewScreen__topBar {
   flex-shrink: 0;
   position: relative;
   display: grid;
@@ -18,14 +18,14 @@
   background: var(--color-bg-secondary);
 }
 
-.panelTitle {
+.applicationOverviewScreen__panelTitle {
   grid-column: 1 / -1;
   grid-row: 1;
   justify-self: center;
   margin: 0;
 }
 
-.panelTitleLine {
+.applicationOverviewScreen__panelTitleLine {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -42,23 +42,23 @@
   white-space: nowrap;
 }
 
-.titleComment {
+.applicationOverviewScreen__titleComment {
   font-weight: 500;
   color: color-mix(in srgb, #22c55e 55%, var(--color-text-tertiary));
 }
 
-.titleIdent {
+.applicationOverviewScreen__titleIdent {
   font-weight: 600;
   color: color-mix(in srgb, var(--color-primary) 70%, var(--color-text-primary));
 }
 
-.titlePunct {
+.applicationOverviewScreen__titlePunct {
   font-weight: 500;
   color: var(--color-text-tertiary);
   opacity: 0.85;
 }
 
-.titleCursor {
+.applicationOverviewScreen__titleCursor {
   display: inline-block;
   width: 2px;
   height: 1em;
@@ -80,26 +80,26 @@
 }
 
 
-:global(.dark) .titleComment {
+:global(.dark) .applicationOverviewScreen__titleComment {
   color: color-mix(in srgb, #4ade80 65%, #64748b);
 }
 
-:global(.dark) .titleIdent {
+:global(.dark) .applicationOverviewScreen__titleIdent {
   color: #fdba74;
 }
 
-:global(.dark) .titleCursor {
+:global(.dark) .applicationOverviewScreen__titleCursor {
   background: #fb923c;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .titleCursor {
+  .applicationOverviewScreen__titleCursor {
     animation: none;
     opacity: 0.65;
   }
 }
 
-.topBarActions {
+.applicationOverviewScreen__topBarActions {
   grid-column: 3;
   grid-row: 1;
   justify-self: end;
@@ -107,7 +107,7 @@
   z-index: 1;
 }
 
-.scroll {
+.applicationOverviewScreen__scroll {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -117,20 +117,20 @@
   gap: 1.15rem;
 }
 
-.submissionBlock {
+.applicationOverviewScreen__submissionBlock {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.submissionContent {
+.applicationOverviewScreen__submissionContent {
   padding: 0;
   border: none;
   border-radius: 0;
   background: transparent;
 }
 
-.statusBlock {
+.applicationOverviewScreen__statusBlock {
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -139,20 +139,20 @@
   border-top: 1px solid color-mix(in srgb, var(--color-border) 75%, transparent);
 }
 
-.statusRail {
+.applicationOverviewScreen__statusRail {
   margin-top: 1.35rem;
   padding: 0.35rem 0.1rem 0.65rem;
 }
 
-.statusRail :global(.stepSegment) {
+.applicationOverviewScreen__statusRail :global(.stepSegment) {
   gap: 1.05rem;
 }
 
-.statusRail :global(.stepRailWrap) {
+.applicationOverviewScreen__statusRail :global(.stepRailWrap) {
   padding-top: 0.15rem;
 }
 
-.statusHead {
+.applicationOverviewScreen__statusHead {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -161,28 +161,28 @@
   margin-bottom: 0;
 }
 
-.statusMeta {
+.applicationOverviewScreen__statusMeta {
   margin: 0;
   font-size: 0.68rem;
   line-height: 1.35;
   text-align: right;
 }
 
-.statusStep {
+.applicationOverviewScreen__statusStep {
   font-weight: 600;
   color: color-mix(in srgb, var(--color-primary) 52%, var(--color-text-secondary));
 }
 
-:global(.dark) .statusStep {
+:global(.dark) .applicationOverviewScreen__statusStep {
   color: color-mix(in srgb, #f97316 55%, var(--color-text-tertiary));
 }
 
-.statusCaption {
+.applicationOverviewScreen__statusCaption {
   font-weight: 500;
   color: var(--color-text-tertiary);
 }
 
-.blockHeading {
+.applicationOverviewScreen__blockHeading {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -194,7 +194,7 @@
   color: var(--color-text-secondary);
 }
 
-.blockHeading::before {
+.applicationOverviewScreen__blockHeading::before {
   content: "";
   flex-shrink: 0;
   width: 1.5px;
@@ -203,11 +203,11 @@
   background: var(--color-primary);
 }
 
-:global(.dark) .blockHeading::before {
+:global(.dark) .applicationOverviewScreen__blockHeading::before {
   background: #f97316;
 }
 
-.footer {
+.applicationOverviewScreen__footer {
   flex-shrink: 0;
   display: flex;
   justify-content: flex-end;
@@ -217,7 +217,7 @@
   background: var(--color-bg-secondary);
 }
 
-.openChatBtn {
+.applicationOverviewScreen__openChatBtn {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
@@ -236,32 +236,32 @@
     background 0.15s ease;
 }
 
-.openChatBtn:hover {
+.applicationOverviewScreen__openChatBtn:hover {
   color: var(--color-primary);
   background: color-mix(in srgb, var(--color-primary) 10%, transparent);
 }
 
-:global(.dark) .openChatBtn {
+:global(.dark) .applicationOverviewScreen__openChatBtn {
   color: color-mix(in srgb, #fdba74 75%, var(--color-text-tertiary));
 }
 
-:global(.dark) .openChatBtn:hover {
+:global(.dark) .applicationOverviewScreen__openChatBtn:hover {
   color: #fdba74;
   background: color-mix(in srgb, #f97316 12%, transparent);
 }
 
-.openChatIcon {
+.applicationOverviewScreen__openChatIcon {
   flex-shrink: 0;
   opacity: 0.88;
 }
 
-.openChatChevron {
+.applicationOverviewScreen__openChatChevron {
   flex-shrink: 0;
   opacity: 0.55;
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
-.openChatBtn:hover .openChatChevron {
+.applicationOverviewScreen__openChatBtn:hover .applicationOverviewScreen__openChatChevron {
   opacity: 0.9;
   transform: translateX(2px);
 }

@@ -2,7 +2,7 @@
    LinkedIn-style conversation chrome for the application detail panel.
 */
 
-.chatHeader {
+.conversationPanel__chatHeader {
   flex-shrink: 0;
   display: flex;
   align-items: flex-start;
@@ -13,12 +13,12 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-.chatHeaderMain {
+.conversationPanel__chatHeaderMain {
   min-width: 0;
   flex: 1;
 }
 
-.chatHeaderTitle {
+.conversationPanel__chatHeaderTitle {
   margin: 0;
   font-size: 0.95rem;
   font-weight: 700;
@@ -27,7 +27,7 @@
   color: var(--color-text-primary);
 }
 
-.chatHeaderSubtitle {
+.conversationPanel__chatHeaderSubtitle {
   display: flex;
   align-items: center;
   gap: 0.35rem;
@@ -37,15 +37,15 @@
   color: var(--color-text-tertiary);
 }
 
-.chatHeaderDot {
+.conversationPanel__chatHeaderDot {
   opacity: 0.65;
 }
 
-.chatHeaderActions {
+.conversationPanel__chatHeaderActions {
   flex-shrink: 0;
 }
 
-.conversationShell {
+.conversationPanel__conversationShell {
   flex: 1;
   min-height: 0;
   display: flex;
@@ -53,7 +53,7 @@
   background: var(--color-bg-primary);
 }
 
-.threadScroll {
+.conversationPanel__threadScroll {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -63,34 +63,34 @@
   gap: 0.35rem;
 }
 
-.submissionSection {
+.conversationPanel__submissionSection {
   padding-bottom: 0;
   margin-bottom: 0;
 }
 
-.dateDividerAppliedIntro {
+.conversationPanel__dateDividerAppliedIntro {
   margin-top: 0.2rem;
   margin-bottom: 0.55rem;
 }
 
-.dateDividerSubmissionEnd {
+.conversationPanel__dateDividerSubmissionEnd {
   margin-top: 0.85rem;
   margin-bottom: 0;
 }
 
-.threadLog {
+.conversationPanel__threadLog {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   padding-top: 0.65rem;
 }
 
-.dateDividerInThread {
+.conversationPanel__dateDividerInThread {
   margin-top: 0.15rem;
   margin-bottom: 0.65rem;
 }
 
-.dateDivider {
+.conversationPanel__dateDivider {
   display: flex;
   align-items: center;
   gap: 0.65rem;
@@ -101,15 +101,15 @@
   letter-spacing: 0.06em;
 }
 
-.dateDivider::before,
-.dateDivider::after {
+.conversationPanel__dateDivider::before,
+.conversationPanel__dateDivider::after {
   content: "";
   flex: 1;
   height: 1px;
   background: color-mix(in srgb, var(--color-border) 88%, transparent);
 }
 
-.messageRow {
+.conversationPanel__messageRow {
   display: flex;
   align-items: flex-start;
   gap: 0.65rem;
@@ -124,23 +124,23 @@
     border-color 0.14s ease;
 }
 
-.messageRowInteractive:hover,
-.messageRowInteractive:focus-within {
+.conversationPanel__messageRowInteractive:hover,
+.conversationPanel__messageRowInteractive:focus-within {
   background: color-mix(in srgb, var(--color-bg-secondary) 58%, transparent);
   border-color: color-mix(in srgb, var(--color-border) 88%, transparent);
 }
 
-.messageContentWrap {
+.conversationPanel__messageContentWrap {
   display: block;
   max-width: 100%;
   position: relative;
 }
 
-.messageContentWrap .messageBody {
+.conversationPanel__messageContentWrap .conversationPanel__messageBody {
   margin: 0;
 }
 
-.messageToolbarSlot {
+.conversationPanel__messageToolbarSlot {
   position: absolute;
   right: 0;
   top: 100%;
@@ -153,29 +153,29 @@
   transition: opacity 0.14s ease;
 }
 
-.messageRowInteractive:hover .messageToolbarSlot,
-.messageRowInteractive:focus-within .messageToolbarSlot {
+.conversationPanel__messageRowInteractive:hover .conversationPanel__messageToolbarSlot,
+.conversationPanel__messageRowInteractive:focus-within .conversationPanel__messageToolbarSlot {
   opacity: 1;
   pointer-events: auto;
 }
-:global(.dark) .messageRowInteractive:hover,
-:global(.dark) .messageRowInteractive:focus-within {
+:global(.dark) .conversationPanel__messageRowInteractive:hover,
+:global(.dark) .conversationPanel__messageRowInteractive:focus-within {
   background: color-mix(in srgb, #292524 88%, transparent);
   border-color: color-mix(in srgb, #57534e 55%, transparent);
 }
 
-.messageRowHighlight {
+.conversationPanel__messageRowHighlight {
   margin: 0 -0.45rem;
   padding: 0.55rem 0.45rem;
   border-radius: 0.55rem;
   background: color-mix(in srgb, var(--color-primary) 6%, transparent);
 }
 
-:global(.dark) .messageRowHighlight {
+:global(.dark) .conversationPanel__messageRowHighlight {
   background: color-mix(in srgb, #f97316 8%, transparent);
 }
 
-.avatar {
+.conversationPanel__avatar {
   flex-shrink: 0;
   width: 2.35rem;
   height: 2.35rem;
@@ -192,22 +192,22 @@
   user-select: none;
 }
 
-.avatarImage {
+.conversationPanel__avatarImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 999px;
 }
 
-.avatarYou {
+.conversationPanel__avatarYou {
   background: linear-gradient(145deg, #6366f1, #4f46e5);
 }
 
-.avatarLecturer {
+.conversationPanel__avatarLecturer {
   background: linear-gradient(145deg, #0ea5e9, #0284c7);
 }
 
-.messageMain {
+.conversationPanel__messageMain {
   position: relative;
   min-width: 0;
   flex: 1;
@@ -215,11 +215,11 @@
   overflow: visible;
 }
 
-.messageHead {
+.conversationPanel__messageHead {
   margin-bottom: 0.15rem;
 }
 
-.messageHeadMain {
+.conversationPanel__messageHeadMain {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -227,7 +227,7 @@
   min-width: 0;
 }
 
-.messageRowPinned {
+.conversationPanel__messageRowPinned {
   border-left: 2px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
   padding-left: 0.35rem;
 }
@@ -258,38 +258,38 @@
   }
 }
 
-.pinnedBadge {
+.conversationPanel__pinnedBadge {
   font-size: 0.68rem;
   line-height: 1;
 }
 
-.messageName {
+.conversationPanel__messageName {
   font-size: 0.82rem;
   font-weight: 700;
   line-height: 1.25;
   color: var(--color-text-primary);
 }
 
-.messageMeta {
+.conversationPanel__messageMeta {
   font-size: 0.72rem;
   line-height: 1.25;
   color: var(--color-text-tertiary);
 }
 
-.editedLabel {
+.conversationPanel__editedLabel {
   font-style: italic;
 }
 
-.threadEnd {
+.conversationPanel__threadEnd {
   height: 0.25rem;
 }
 
-.messageBodyDeleted {
+.conversationPanel__messageBodyDeleted {
   color: var(--color-text-tertiary);
   font-style: italic;
 }
 
-.messageBody {
+.conversationPanel__messageBody {
   margin: 0;
   font-size: 0.84rem;
   line-height: 1.55;
@@ -297,8 +297,8 @@
   white-space: pre-wrap;
 }
 
-.messageReactions,
-.reactionTray {
+.conversationPanel__messageReactions,
+.conversationPanel__reactionTray {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
@@ -310,8 +310,8 @@
   border: 1px solid color-mix(in srgb, var(--color-border) 80%, transparent);
 }
 
-.reactionChip,
-.reactionBtn {
+.conversationPanel__reactionChip,
+.conversationPanel__reactionBtn {
   display: inline-flex;
   align-items: center;
   gap: 0.15rem;
@@ -330,29 +330,29 @@
     color 0.15s ease;
 }
 
-.reactionChip:hover:not(:disabled),
-.reactionBtn:hover:not(:disabled) {
+.conversationPanel__reactionChip:hover:not(:disabled),
+.conversationPanel__reactionBtn:hover:not(:disabled) {
   border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
   color: var(--color-text-primary);
 }
 
-.reactionBtn:disabled {
+.conversationPanel__reactionBtn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
 
-.reactionChipActive,
-.reactionBtnActive {
+.conversationPanel__reactionChipActive,
+.conversationPanel__reactionBtnActive {
   border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border));
   background: color-mix(in srgb, var(--color-primary) 12%, var(--color-bg-primary));
   color: var(--color-text-primary);
 }
 
-.reactionAddWrap {
+.conversationPanel__reactionAddWrap {
   position: relative;
 }
 
-.reactionAddBtn {
+.conversationPanel__reactionAddBtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -366,12 +366,12 @@
   cursor: pointer;
 }
 
-.reactionAddBtn:hover:not(:disabled) {
+.conversationPanel__reactionAddBtn:hover:not(:disabled) {
   color: var(--color-text-primary);
   border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
 }
 
-.reactionPicker {
+.conversationPanel__reactionPicker {
   position: absolute;
   bottom: calc(100% + 0.35rem);
   left: 0;
@@ -386,7 +386,7 @@
   box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12);
 }
 
-.reactionPickerEmoji {
+.conversationPanel__reactionPickerEmoji {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -400,50 +400,50 @@
   cursor: pointer;
 }
 
-.reactionPickerEmoji:hover,
-.reactionPickerEmojiActive {
+.conversationPanel__reactionPickerEmoji:hover,
+.conversationPanel__reactionPickerEmojiActive {
   background: color-mix(in srgb, var(--color-primary) 14%, transparent);
 }
 
-.reactionEmoji {
+.conversationPanel__reactionEmoji {
   font-size: 0.85rem;
   line-height: 1;
 }
 
-.reactionCount {
+.conversationPanel__reactionCount {
   font-size: 0.68rem;
   font-weight: 600;
 }
 
-.applicationBlock {
+.conversationPanel__applicationBlock {
   padding-bottom: 0.35rem;
   margin-bottom: 0;
 }
 
-.applicationHeadline {
+.conversationPanel__applicationHeadline {
   margin: 0 0 0.35rem;
   font-size: 0.84rem;
   line-height: 1.5;
   color: var(--color-text-primary);
 }
 
-.applicationDetailLine {
+.conversationPanel__applicationDetailLine {
   margin: 0 0 0.45rem;
   font-size: 0.8rem;
   line-height: 1.5;
   color: var(--color-text-secondary);
 }
 
-.applicationDetailLine:last-child {
+.conversationPanel__applicationDetailLine:last-child {
   margin-bottom: 0;
 }
 
-.applicationLabel {
+.conversationPanel__applicationLabel {
   font-weight: 600;
   color: var(--color-text-primary);
 }
 
-.emptyThread {
+.conversationPanel__emptyThread {
   margin: 0.75rem 0 0.5rem;
   padding: 0.85rem 0.5rem;
   font-size: 0.8rem;
@@ -452,7 +452,7 @@
   color: var(--color-text-tertiary);
 }
 
-.closedNotice {
+.conversationPanel__closedNotice {
   margin: 0.35rem 0 0.5rem;
   padding: 0.55rem 0.65rem;
   border-radius: 0.55rem;
@@ -463,14 +463,14 @@
   border: 1px dashed color-mix(in srgb, var(--color-border) 85%, transparent);
 }
 
-.composer {
+.conversationPanel__composer {
   flex-shrink: 0;
   padding: 0.75rem 1.15rem 0.85rem;
   border-top: 1px solid var(--color-border);
   background: var(--color-bg-secondary);
 }
 
-.composerBanner {
+.conversationPanel__composerBanner {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -482,12 +482,12 @@
   border: 1px solid color-mix(in srgb, var(--color-primary) 18%, var(--color-border));
 }
 
-.composerBannerText {
+.conversationPanel__composerBannerText {
   font-size: 0.72rem;
   color: var(--color-text-secondary);
 }
 
-.composerBannerClose {
+.conversationPanel__composerBannerClose {
   width: 1.5rem;
   height: 1.5rem;
   flex-shrink: 0;
@@ -499,33 +499,33 @@
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.composerBannerClose:hover {
+.conversationPanel__composerBannerClose:hover {
   background: color-mix(in srgb, var(--color-border) 70%, transparent);
   color: var(--color-text-secondary);
 }
 
-.composerEditHint {
+.conversationPanel__composerEditHint {
   margin: 0 0 0.4rem 2.95rem;
   font-size: 0.7rem;
   color: var(--color-text-tertiary);
 }
 
-.composerRow {
+.conversationPanel__composerRow {
   display: flex;
   align-items: flex-start;
   gap: 0.65rem;
 }
 
-.composerAvatar {
+.conversationPanel__composerAvatar {
   margin-top: 0.15rem;
 }
 
-.composerField {
+.conversationPanel__composerField {
   flex: 1;
   min-width: 0;
 }
 
-.composerTextarea {
+.conversationPanel__composerTextarea {
   width: 100%;
   min-height: 2.65rem;
   max-height: 8rem;
@@ -544,17 +544,17 @@
     box-shadow 0.15s ease;
 }
 
-.composerTextarea::placeholder {
+.conversationPanel__composerTextarea::placeholder {
   color: var(--color-text-tertiary);
 }
 
-.composerTextarea:focus {
+.conversationPanel__composerTextarea:focus {
   outline: none;
   border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border));
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 14%, transparent);
 }
 
-.composerActions {
+.conversationPanel__composerActions {
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -562,7 +562,7 @@
   margin-top: 0.55rem;
 }
 
-.composerBtn {
+.conversationPanel__composerBtn {
   min-height: 2rem;
   padding: 0.35rem 0.85rem;
   border-radius: 999px;
@@ -575,40 +575,40 @@
     opacity 0.15s ease;
 }
 
-.composerBtnGhost {
+.conversationPanel__composerBtnGhost {
   border: 1px solid transparent;
   background: transparent;
   color: var(--color-text-secondary);
 }
 
-.composerBtnGhost:hover:not(:disabled) {
+.conversationPanel__composerBtnGhost:hover:not(:disabled) {
   color: var(--color-text-primary);
   background: color-mix(in srgb, var(--color-bg-primary) 65%, transparent);
 }
 
-.composerBtnPrimary {
+.conversationPanel__composerBtnPrimary {
   border: 1px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
   background: var(--color-primary);
   color: #fff;
 }
 
-.composerBtnPrimary:hover:not(:disabled) {
+.conversationPanel__composerBtnPrimary:hover:not(:disabled) {
   filter: brightness(1.05);
 }
 
-.composerBtn:disabled {
+.conversationPanel__composerBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.threadFooter {
+.conversationPanel__threadFooter {
   flex-shrink: 0;
   padding: 0.15rem 1.15rem 0.65rem;
   text-align: center;
   background: var(--color-bg-secondary);
 }
 
-.withdrawLink {
+.conversationPanel__withdrawLink {
   border: none;
   background: none;
   padding: 0.35rem 0.5rem;
@@ -620,16 +620,16 @@
   cursor: pointer;
 }
 
-.withdrawLink:hover:not(:disabled) {
+.conversationPanel__withdrawLink:hover:not(:disabled) {
   color: var(--color-text-secondary);
 }
 
-.withdrawLink:disabled {
+.conversationPanel__withdrawLink:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
 
-.withdrawnNote {
+.conversationPanel__withdrawnNote {
   margin: 0.5rem 0 0;
   padding: 0.55rem 0.65rem;
   border-radius: 0.55rem;

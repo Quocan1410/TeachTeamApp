@@ -209,43 +209,43 @@ export default function CoursesPage() {
   }
 
   return (
-    <div className={styles.page}>
-      <header className={styles.hero}>
-        <h1 className={styles.srOnly}>Courses</h1>
-        <div className={styles.mascotWell}>
+    <div className={styles.courses__page}>
+      <header className={styles.courses__hero}>
+        <h1 className={styles.courses__srOnly}>Courses</h1>
+        <div className={styles.courses__mascotWell}>
           <Image
             src="/mascot/mascot-1.png"
             alt=""
             width={292}
             height={341}
-            className={styles.mascot}
+            className={styles.courses__mascot}
           />
         </div>
-        <div className={styles.searchColumn}>
-          <p className={styles.bubble} aria-live="polite">
+        <div className={styles.courses__searchColumn}>
+          <p className={styles.courses__bubble} aria-live="polite">
             {mascotLine(roleFilter, statusFilter, semesterFilter, soonOnly)}
           </p>
           <form
-            className={styles.searchPanel}
+            className={styles.courses__searchPanel}
             onSubmit={(event) => event.preventDefault()}
           >
-            <MagnifyingGlassIcon className={styles.searchIcon} aria-hidden="true" />
+            <MagnifyingGlassIcon className={styles.courses__searchIcon} aria-hidden="true" />
             <input
-              className={styles.search}
+              className={styles.courses__search}
               type="search"
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
               placeholder="Course or lecturer"
               aria-label="Search by course or lecturer"
             />
-            <button type="submit" className={styles.searchButton}>
+            <button type="submit" className={styles.courses__searchButton}>
               Search
             </button>
           </form>
-          <div className={styles.hints} role="group" aria-label="Suggestions">
+          <div className={styles.courses__hints} role="group" aria-label="Suggestions">
             <button
               type="button"
-              className={statusFilter === "open" && !soonOnly ? styles.hintOn : styles.hint}
+              className={statusFilter === "open" && !soonOnly ? styles.courses__hintOn : styles.courses__hint}
               aria-pressed={statusFilter === "open" && !soonOnly}
               onClick={pickOpenNow}
             >
@@ -254,7 +254,7 @@ export default function CoursesPage() {
             {hasSoon && (
               <button
                 type="button"
-                className={soonOnly ? styles.hintOn : styles.hint}
+                className={soonOnly ? styles.courses__hintOn : styles.courses__hint}
                 aria-pressed={soonOnly}
                 onClick={pickSoon}
               >
@@ -265,7 +265,7 @@ export default function CoursesPage() {
               <button
                 key={semester}
                 type="button"
-                className={semesterFilter === semester ? styles.hintOn : styles.hint}
+                className={semesterFilter === semester ? styles.courses__hintOn : styles.courses__hint}
                 aria-pressed={semesterFilter === semester}
                 onClick={() =>
                   setSemesterFilter(semesterFilter === semester ? null : semester)
@@ -277,7 +277,7 @@ export default function CoursesPage() {
             {roleFilter !== "all" && (
               <button
                 type="button"
-                className={styles.hintOn}
+                className={styles.courses__hintOn}
                 onClick={() => setRoleFilter("all")}
               >
                 {roleFilter === "tutor" ? "Tutor" : "Lab assistant"}
@@ -287,7 +287,7 @@ export default function CoursesPage() {
             {statusFilter === "closed" && (
               <button
                 type="button"
-                className={styles.hintOn}
+                className={styles.courses__hintOn}
                 onClick={() => pickStatus("all")}
               >
                 Closed
@@ -300,10 +300,10 @@ export default function CoursesPage() {
 
       {error && (
         <div>
-          <p className={styles.note}>{error}</p>
+          <p className={styles.courses__note}>{error}</p>
           <button
             type="button"
-            className={`${buttonStyles.btn} ${buttonStyles.btnOutline} ${styles.retry}`}
+            className={`${buttonStyles.button__btn} ${buttonStyles.button__btnOutline} ${styles.courses__retry}`}
             onClick={loadOpenings}
           >
             Try again
@@ -312,11 +312,11 @@ export default function CoursesPage() {
       )}
 
       {!error && (
-        <div className={styles.workspace}>
-          <aside className={styles.filters} aria-label="Filters">
-            <p className={styles.filterHeading}>Filters</p>
-            <fieldset className={styles.filterGroup}>
-              <legend className={styles.filterLegend}>Role</legend>
+        <div className={styles.courses__workspace}>
+          <aside className={styles.courses__filters} aria-label="Filters">
+            <p className={styles.courses__filterHeading}>Filters</p>
+            <fieldset className={styles.courses__filterGroup}>
+              <legend className={styles.courses__filterLegend}>Role</legend>
               {(
                 [
                   ["all", "All", Squares2X2Icon],
@@ -328,23 +328,23 @@ export default function CoursesPage() {
                   key={value}
                   type="button"
                   className={
-                    roleFilter === value ? styles.filterOn : styles.filterOff
+                    roleFilter === value ? styles.courses__filterOn : styles.courses__filterOff
                   }
                   aria-pressed={roleFilter === value}
                   onClick={() => setRoleFilter(value)}
                 >
-                  <span className={styles.filterMark}>
+                  <span className={styles.courses__filterMark}>
                     <Icon aria-hidden="true" />
                   </span>
-                  <span className={styles.filterLabel}>{label}</span>
+                  <span className={styles.courses__filterLabel}>{label}</span>
                   {roleFilter === value && (
-                    <CheckIcon className={styles.filterTick} aria-hidden="true" />
+                    <CheckIcon className={styles.courses__filterTick} aria-hidden="true" />
                   )}
                 </button>
               ))}
             </fieldset>
-            <fieldset className={styles.filterGroup}>
-              <legend className={styles.filterLegend}>Status</legend>
+            <fieldset className={styles.courses__filterGroup}>
+              <legend className={styles.courses__filterLegend}>Status</legend>
               {(
                 [
                   ["all", "All", Squares2X2Icon],
@@ -356,17 +356,17 @@ export default function CoursesPage() {
                   key={value}
                   type="button"
                   className={
-                    statusFilter === value ? styles.filterOn : styles.filterOff
+                    statusFilter === value ? styles.courses__filterOn : styles.courses__filterOff
                   }
                   aria-pressed={statusFilter === value}
                   onClick={() => pickStatus(value)}
                 >
-                  <span className={styles.filterMark}>
+                  <span className={styles.courses__filterMark}>
                     <Icon aria-hidden="true" />
                   </span>
-                  <span className={styles.filterLabel}>{label}</span>
+                  <span className={styles.courses__filterLabel}>{label}</span>
                   {statusFilter === value && (
-                    <CheckIcon className={styles.filterTick} aria-hidden="true" />
+                    <CheckIcon className={styles.courses__filterTick} aria-hidden="true" />
                   )}
                 </button>
               ))}
@@ -374,20 +374,20 @@ export default function CoursesPage() {
           </aside>
           <div className={styles.results}>
       {filtered.length === 0 && (
-        <div className={styles.empty}>
+        <div className={styles.courses__empty}>
           <Image
             src="/mascot/mascot-1.png"
             alt=""
             width={292}
             height={341}
-            className={styles.emptyMascot}
+            className={styles.courses__emptyMascot}
           />
           <div>
-            <p className={styles.emptyTitle}>No courses match that search.</p>
-            <p className={styles.emptyText}>
+            <p className={styles.courses__emptyTitle}>No courses match that search.</p>
+            <p className={styles.courses__emptyText}>
               Try another course or lecturer, or clear the filters.
             </p>
-            <button type="button" className={styles.emptyClear} onClick={clearFilters}>
+            <button type="button" className={styles.courses__emptyClear} onClick={clearFilters}>
               Clear search
             </button>
           </div>
@@ -396,7 +396,7 @@ export default function CoursesPage() {
 
       {filtered.length > 0 && (
         <>
-          <ul className={styles.list}>
+          <ul className={styles.courses__list}>
             {visible.map((opening) => {
               const open = placesLeft(opening) > 0;
               const roles = openRoles(opening);
@@ -409,56 +409,56 @@ export default function CoursesPage() {
               return (
                 <li
                   key={opening.courseId}
-                  className={open ? styles.card : styles.cardClosed}
+                  className={open ? styles.courses__card : styles.courses__cardClosed}
                 >
-                  <div className={styles.face}>
+                  <div className={styles.courses__face}>
                     <div>
-                      <p className={styles.code}>{opening.courseCode}</p>
-                      <h2 className={styles.name}>{opening.courseName}</h2>
-                      <ul className={styles.facts}>
+                      <p className={styles.courses__code}>{opening.courseCode}</p>
+                      <h2 className={styles.courses__name}>{opening.courseName}</h2>
+                      <ul className={styles.courses__facts}>
                         <li>
-                          <span className={`${styles.factMark} ${styles.factUser}`}>
+                          <span className={`${styles.courses__factMark} ${styles.courses__factUser}`}>
                             <UserIcon aria-hidden="true" />
                           </span>
-                          <span className={styles.factText}>{lecturer}</span>
+                          <span className={styles.courses__factText}>{lecturer}</span>
                         </li>
                         {opening.semester && (
                           <li>
-                            <span className={`${styles.factMark} ${styles.factTerm}`}>
+                            <span className={`${styles.courses__factMark} ${styles.courses__factTerm}`}>
                               <CalendarDaysIcon aria-hidden="true" />
                             </span>
-                            <span className={styles.factText}>{opening.semester}</span>
+                            <span className={styles.courses__factText}>{opening.semester}</span>
                           </li>
                         )}
                         <li>
-                          <span className={`${styles.factMark} ${styles.factTime}`}>
+                          <span className={`${styles.courses__factMark} ${styles.courses__factTime}`}>
                             <ClockIcon aria-hidden="true" />
                           </span>
-                          <span className={styles.factText}>
+                          <span className={styles.courses__factText}>
                             {open && closes ? `Closes ${closes}` : "Closed"}
                           </span>
                         </li>
                       </ul>
                     </div>
-                    <div className={styles.footer}>
-                      <div className={styles.chips}>
+                    <div className={styles.courses__footer}>
+                      <div className={styles.courses__chips}>
                         {open ? (
                           roles.map((role) => (
                             <span
                               key={role}
-                              className={role === "Tutor" ? styles.chipTutor : styles.chipLab}
+                              className={role === "Tutor" ? styles.courses__chipTutor : styles.courses__chipLab}
                             >
                               {role}
                             </span>
                           ))
                         ) : (
-                          <span className={styles.chipMuted}>Closed</span>
+                          <span className={styles.courses__chipMuted}>Closed</span>
                         )}
                       </div>
                       {open && !isLecturer && (
                         <button
                           type="button"
-                          className={styles.apply}
+                          className={styles.courses__apply}
                           onClick={() => apply(opening)}
                         >
                           Apply
@@ -471,21 +471,21 @@ export default function CoursesPage() {
             })}
           </ul>
           {totalPages > 1 && (
-            <div className={styles.pager}>
+            <div className={styles.courses__pager}>
               <button
                 type="button"
-                className={styles.pagerButton}
+                className={styles.courses__pagerButton}
                 disabled={page <= 1}
                 onClick={() => setPage(page - 1)}
               >
                 Previous
               </button>
-              <span className={styles.pagerStatus}>
+              <span className={styles.courses__pagerStatus}>
                 {page} of {totalPages}
               </span>
               <button
                 type="button"
-                className={styles.pagerButton}
+                className={styles.courses__pagerButton}
                 disabled={page >= totalPages}
                 onClick={() => setPage(page + 1)}
               >
@@ -507,23 +507,23 @@ export default function CoursesPage() {
         }
         maxWidth="40rem"
       >
-        <div className={styles.dialog}>
+        <div className={styles.courses__dialog}>
           {selected && (
-            <div className={styles.dialogCourse}>
+            <div className={styles.courses__dialogCourse}>
               <Image
                 src="/mascot/mascot-1.png"
                 alt=""
                 width={292}
                 height={341}
-                className={styles.dialogMascot}
+                className={styles.courses__dialogMascot}
               />
-              <div className={styles.dialogCourseBody}>
-                <p className={styles.dialogKicker}>Applying for</p>
-                <p className={styles.dialogCode}>{selected.courseCode}</p>
-                <p className={styles.dialogCourseName}>{selected.courseName}</p>
-                <ul className={styles.dialogFacts}>
+              <div className={styles.courses__dialogCourseBody}>
+                <p className={styles.courses__dialogKicker}>Applying for</p>
+                <p className={styles.courses__dialogCode}>{selected.courseCode}</p>
+                <p className={styles.courses__dialogCourseName}>{selected.courseName}</p>
+                <ul className={styles.courses__dialogFacts}>
                   <li>
-                    <span className={`${styles.factMark} ${styles.factUser}`}>
+                    <span className={`${styles.courses__factMark} ${styles.courses__factUser}`}>
                       <UserIcon aria-hidden="true" />
                     </span>
                     <span>
@@ -534,14 +534,14 @@ export default function CoursesPage() {
                   </li>
                   {selected.semester && (
                     <li>
-                      <span className={`${styles.factMark} ${styles.factTerm}`}>
+                      <span className={`${styles.courses__factMark} ${styles.courses__factTerm}`}>
                         <CalendarDaysIcon aria-hidden="true" />
                       </span>
                       <span>{selected.semester}</span>
                     </li>
                   )}
                   <li>
-                    <span className={`${styles.factMark} ${styles.factTime}`}>
+                    <span className={`${styles.courses__factMark} ${styles.courses__factTime}`}>
                       <ClockIcon aria-hidden="true" />
                     </span>
                     <span>
@@ -551,11 +551,11 @@ export default function CoursesPage() {
                     </span>
                   </li>
                 </ul>
-                <div className={styles.dialogRoles}>
+                <div className={styles.courses__dialogRoles}>
                   {openRoles(selected).map((role) => (
                     <span
                       key={role}
-                      className={role === "Tutor" ? styles.chipTutor : styles.chipLab}
+                      className={role === "Tutor" ? styles.courses__chipTutor : styles.courses__chipLab}
                     >
                       {role}
                     </span>
@@ -564,15 +564,15 @@ export default function CoursesPage() {
               </div>
             </div>
           )}
-          <div className={styles.dialogAsk}>
-            <h2 className={styles.dialogTitle}>Sign in to apply</h2>
-            <p className={styles.dialogText}>
+          <div className={styles.courses__dialogAsk}>
+            <h2 className={styles.courses__dialogTitle}>Sign in to apply</h2>
+            <p className={styles.courses__dialogText}>
               Sign in, then choose tutor or lab assistant for this course.
             </p>
-            <div className={styles.dialogActions}>
+            <div className={styles.courses__dialogActions}>
               <Link
                 href="/signin"
-                className={`${buttonStyles.btn} ${buttonStyles.btnPrimary}`}
+                className={`${buttonStyles.button__btn} ${buttonStyles.button__btnPrimary}`}
               >
                 Sign in
               </Link>

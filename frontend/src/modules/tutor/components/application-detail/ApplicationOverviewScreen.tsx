@@ -30,18 +30,18 @@ const ApplicationOverviewScreen: React.FC<ApplicationOverviewScreenProps> = ({
   );
 
   return (
-    <div className={styles.screen}>
-      <header className={styles.topBar}>
-        <h2 className={styles.panelTitle} id="overview-submission-heading">
+    <div className={styles.applicationOverviewScreen__screen}>
+      <header className={styles.applicationOverviewScreen__topBar}>
+        <h2 className={styles.applicationOverviewScreen__panelTitle} id="overview-submission-heading">
           <span className="sr-only">What you submitted</span>
-          <span className={styles.panelTitleLine} aria-hidden>
-            <span className={styles.titleComment}>{"//"}</span>
-            <span className={styles.titleIdent}>what_you_submitted</span>
-            <span className={styles.titlePunct}>;</span>
-            <span className={styles.titleCursor} />
+          <span className={styles.applicationOverviewScreen__panelTitleLine} aria-hidden>
+            <span className={styles.applicationOverviewScreen__titleComment}>{"//"}</span>
+            <span className={styles.applicationOverviewScreen__titleIdent}>what_you_submitted</span>
+            <span className={styles.applicationOverviewScreen__titlePunct}>;</span>
+            <span className={styles.applicationOverviewScreen__titleCursor} />
           </span>
         </h2>
-        <div className={styles.topBarActions}>
+        <div className={styles.applicationOverviewScreen__topBarActions}>
           <ApplicationDetailHeroActions
             isPinned={isPinned}
             onTogglePin={onTogglePin}
@@ -50,15 +50,15 @@ const ApplicationOverviewScreen: React.FC<ApplicationOverviewScreenProps> = ({
         </div>
       </header>
 
-      <div className={`${styles.scroll} thinOrangeScroll`}>
+      <div className={`${styles.applicationOverviewScreen__scroll} scrollbar__thin`}>
         <ApplicationSummaryCard application={application} />
 
         <section
-          className={styles.submissionBlock}
+          className={styles.applicationOverviewScreen__submissionBlock}
           aria-labelledby="overview-my-application-heading"
         >
           <h3
-            className={styles.blockHeading}
+            className={styles.applicationOverviewScreen__blockHeading}
             id="overview-my-application-heading"
           >
             My application
@@ -67,42 +67,42 @@ const ApplicationOverviewScreen: React.FC<ApplicationOverviewScreenProps> = ({
             application={application}
             contentOnly
             showMinimum
-            className={styles.submissionContent}
+            className={styles.applicationOverviewScreen__submissionContent}
           />
         </section>
 
         <section
-          className={styles.statusBlock}
+          className={styles.applicationOverviewScreen__statusBlock}
           aria-labelledby="overview-status-heading"
         >
-          <div className={styles.statusHead}>
-            <h3 className={styles.blockHeading} id="overview-status-heading">
+          <div className={styles.applicationOverviewScreen__statusHead}>
+            <h3 className={styles.applicationOverviewScreen__blockHeading} id="overview-status-heading">
               Application status
             </h3>
-            <p className={styles.statusMeta}>
-              <span className={styles.statusStep}>
+            <p className={styles.applicationOverviewScreen__statusMeta}>
+              <span className={styles.applicationOverviewScreen__statusStep}>
                 Step {processFlow.currentStepIndex} of {processFlow.stepCount}
               </span>
-              <span className={styles.statusCaption}>
+              <span className={styles.applicationOverviewScreen__statusCaption}>
                 {" "}
                 · {processFlow.progressCaption}
               </span>
             </p>
           </div>
-          <div className={styles.statusRail}>
+          <div className={styles.applicationOverviewScreen__statusRail}>
             <ApplicationProcessRail flow={processFlow} />
           </div>
         </section>
       </div>
 
-      <footer className={styles.footer}>
+      <footer className={styles.applicationOverviewScreen__footer}>
         <button
           type="button"
-          className={styles.openChatBtn}
+          className={styles.applicationOverviewScreen__openChatBtn}
           onClick={onOpenChat}
         >
           <svg
-            className={styles.openChatIcon}
+            className={styles.applicationOverviewScreen__openChatIcon}
             width="16"
             height="16"
             viewBox="0 0 24 24"
@@ -119,7 +119,7 @@ const ApplicationOverviewScreen: React.FC<ApplicationOverviewScreenProps> = ({
           </svg>
           Open chat
           <svg
-            className={styles.openChatChevron}
+            className={styles.applicationOverviewScreen__openChatChevron}
             width="14"
             height="14"
             viewBox="0 0 24 24"

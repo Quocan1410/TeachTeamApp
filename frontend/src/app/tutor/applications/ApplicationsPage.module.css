@@ -1,4 +1,4 @@
-.page {
+.applicationsPage__page {
   --apps-chrome-offset: 96px;
   /* Area visible behind pinned cards (list gap / transparent cards) */
   --apps-surface-bg: var(--color-bg-primary);
@@ -9,17 +9,17 @@
 }
 
 /* Full-width list host (grid/list) — same scroll node as split, avoids remount jump */
-.listHostWide {
+.applicationsPage__listHostWide {
   min-width: 0;
   width: 100%;
 }
 
-.listHostInner {
+.applicationsPage__listHostInner {
   display: contents;
 }
 
 /* Toolbar */
-.toolbar {
+.applicationsPage__toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -30,11 +30,11 @@
   transition: margin-bottom 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.toolbarCompact {
+.applicationsPage__toolbarCompact {
   margin-bottom: 1.25rem;
 }
 
-.filtersRow {
+.applicationsPage__filtersRow {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 0.75rem;
@@ -45,7 +45,7 @@
   width: 100%;
 }
 
-.filterInput {
+.applicationsPage__filterInput {
   min-height: 2.5rem;
   padding: 0.45rem 0.75rem;
   border-radius: 0.65rem;
@@ -57,12 +57,12 @@
   min-width: 0;
 }
 
-.filterAppSelect {
+.applicationsPage__filterAppSelect {
   width: auto;
   min-width: 0;
 }
 
-.filterAppSelect button {
+.applicationsPage__filterAppSelect button {
   width: auto;
   min-height: 2.5rem;
   justify-content: flex-start;
@@ -74,22 +74,22 @@
   white-space: nowrap;
 }
 
-.filterAppSelect button span:first-child {
+.applicationsPage__filterAppSelect button span:first-child {
   flex: 0 1 auto;
   font-size: 0.875rem;
 }
 
-.stackCount {
+.applicationsPage__stackCount {
   font-weight: 600;
   color: var(--color-text-secondary);
 }
 
-.hintSep {
+.applicationsPage__hintSep {
   margin: 0 0.35rem;
   opacity: 0.45;
 }
 
-.viewToggle {
+.applicationsPage__viewToggle {
   display: inline-flex;
   padding: 0.25rem;
   border-radius: 999px;
@@ -97,7 +97,7 @@
   background: var(--color-bg-secondary);
 }
 
-.viewBtn {
+.applicationsPage__viewBtn {
   border: none;
   background: transparent;
   color: var(--color-text-secondary);
@@ -109,27 +109,27 @@
   transition: background 0.2s ease, color 0.2s ease;
 }
 
-.viewBtnActive {
+.applicationsPage__viewBtnActive {
   background: var(--color-bg-primary);
   color: var(--color-primary);
   box-shadow: 0 2px 8px var(--color-shadow);
 }
 
-.hint {
+.applicationsPage__hint {
   font-size: 0.85rem;
   color: var(--color-text-tertiary);
   line-height: 1.5;
 }
 
 /* Master-detail layout */
-.workspace {
+.applicationsPage__workspace {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
   align-items: start;
 }
 
-.workspaceSplit {
+.applicationsPage__workspaceSplit {
   --split-max-h: calc(100vh - var(--apps-chrome-offset));
   --split-left-max: 320px;
   grid-template-columns: minmax(300px, var(--split-left-max)) minmax(0, 1fr);
@@ -137,7 +137,7 @@
   align-items: stretch;
 }
 
-.leftColumn {
+.applicationsPage__leftColumn {
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -148,13 +148,13 @@
   background: none;
 }
 
-.workspaceSplit .leftColumn {
+.applicationsPage__workspaceSplit .applicationsPage__leftColumn {
   height: var(--split-max-h);
   min-height: var(--split-max-h);
   max-height: var(--split-max-h);
 }
 
-.stackSection {
+.applicationsPage__stackSection {
   flex: 1;
   min-height: 0;
   height: 100%;
@@ -166,11 +166,11 @@
 }
 
 /* Split left column: transparent panel + cards (border only) */
-.workspaceSplit .leftColumn,
-.workspaceSplit .stackSection,
-.workspaceSplit .listPane,
-.workspaceSplit .listPane.listPaneStack,
-.workspaceSplit .listPaneStack {
+.applicationsPage__workspaceSplit .applicationsPage__leftColumn,
+.applicationsPage__workspaceSplit .applicationsPage__stackSection,
+.applicationsPage__workspaceSplit .applicationsPage__listPane,
+.applicationsPage__workspaceSplit .applicationsPage__listPane.applicationsPage--listPaneStack,
+.applicationsPage__workspaceSplit .applicationsPage__listPaneStack {
   background: none;
   background-color: transparent;
   border: none;
@@ -178,43 +178,43 @@
 }
 
 /* Compact left stack + summary in split view */
-.workspaceSplit .listCardBody {
+.applicationsPage__workspaceSplit .applicationsPage__listCardBody {
   padding: 0.65rem 0.72rem 0.6rem;
   gap: 0.28rem;
 }
 
-.workspaceSplit .listCardRowBottom {
+.applicationsPage__workspaceSplit .applicationsPage__listCardRowBottom {
   margin-top: 0.5rem;
 }
 
-.workspaceSplit .listTitle {
+.applicationsPage__workspaceSplit .applicationsPage__listTitle {
   font-size: 0.88rem;
 }
 
-.workspaceSplit .listDescription {
+.applicationsPage__workspaceSplit .applicationsPage__listDescription {
   font-size: 0.73rem;
   -webkit-line-clamp: 3;
   line-clamp: 3;
 }
 
-.workspaceSplit .listEyebrow {
+.applicationsPage__workspaceSplit .applicationsPage__listEyebrow {
   font-size: 0.7rem;
 }
 
-.workspaceSplit .listDate {
+.applicationsPage__workspaceSplit .applicationsPage__listDate {
   font-size: 0.68rem;
 }
 
-.workspaceSplit .listRoleIcon {
+.applicationsPage__workspaceSplit .applicationsPage__listRoleIcon {
   width: 1.35rem;
   height: 1.35rem;
 }
 
-.workspaceSplit .listRoleLabel {
+.applicationsPage__workspaceSplit .applicationsPage__listRoleLabel {
   font-size: 0.72rem;
 }
 
-.listPane {
+.applicationsPage__listPane {
   display: grid;
   gap: 1.35rem;
   align-content: start;
@@ -225,15 +225,15 @@
   overflow-anchor: none;
 }
 
-.workspaceSplit .leftColumn .listPane:not(.listPaneStack),
-.workspaceSplit .listPane:not(.listPaneStack) {
+.applicationsPage__workspaceSplit .applicationsPage__leftColumn .applicationsPage__listPane:not(.applicationsPage__listPaneStack),
+.applicationsPage__workspaceSplit .applicationsPage__listPane:not(.applicationsPage__listPaneStack) {
   max-height: none;
   height: auto;
   overflow: visible;
   padding: 0;
 }
 
-.detailColumn {
+.applicationsPage__detailColumn {
   max-height: var(--split-max-h);
   height: var(--split-max-h);
   min-height: var(--split-max-h);
@@ -243,7 +243,7 @@
   width: 100%;
 }
 
-.detailColumn>* {
+.applicationsPage__detailColumn>* {
   flex: 1 1 auto;
   min-height: 0;
   max-height: 100%;
@@ -251,21 +251,21 @@
 }
 
 
-.listPaneGrid {
+.applicationsPage__listPaneGrid {
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1.25rem;
 }
 
-.listPaneList {
+.applicationsPage__listPaneList {
   grid-template-columns: 1fr;
 }
 
-.workspaceSplit .listPaneGrid {
+.applicationsPage__workspaceSplit .applicationsPage__listPaneGrid {
   grid-template-columns: 1fr;
 }
 
 /* Card stack fills left column — scroll when list exceeds viewport */
-.workspaceSplit .listPaneStack {
+.applicationsPage__workspaceSplit .applicationsPage__listPaneStack {
   flex: 1;
   min-height: 0;
   height: 100%;
@@ -280,54 +280,54 @@
 }
 
 /* List pane scrollbar — beat global 8px base.css; no arrow buttons */
-.listPane {
+.applicationsPage__listPane {
   scrollbar-width: thin;
   scrollbar-color: rgba(249, 115, 22, 0.38) transparent;
 }
 
-.listPane::-webkit-scrollbar {
+.applicationsPage__listPane::-webkit-scrollbar {
   width: 3px !important;
   height: 3px !important;
 }
 
-.listPane::-webkit-scrollbar-button,
-.listPane::-webkit-scrollbar-button:single-button,
-.listPane::-webkit-scrollbar-corner {
+.applicationsPage__listPane::-webkit-scrollbar-button,
+.applicationsPage__listPane::-webkit-scrollbar-button:single-button,
+.applicationsPage__listPane::-webkit-scrollbar-corner {
   display: none !important;
   width: 0 !important;
   height: 0 !important;
 }
 
-.listPane::-webkit-scrollbar-track {
+.applicationsPage__listPane::-webkit-scrollbar-track {
   background: transparent !important;
 }
 
-.listPane::-webkit-scrollbar-thumb {
+.applicationsPage__listPane::-webkit-scrollbar-thumb {
   border-radius: 999px !important;
   background-color: rgba(249, 115, 22, 0.4) !important;
   border: none !important;
 }
 
-.listPane::-webkit-scrollbar-thumb:hover {
+.applicationsPage__listPane::-webkit-scrollbar-thumb:hover {
   background-color: rgba(249, 115, 22, 0.58) !important;
 }
 
-:global(.dark) .listPane::-webkit-scrollbar-thumb,
-:global(html[data-theme="dark"]) .listPane::-webkit-scrollbar-thumb {
+:global(.dark) .applicationsPage__listPane::-webkit-scrollbar-thumb,
+:global(html[data-theme="dark"]) .applicationsPage__listPane::-webkit-scrollbar-thumb {
   background-color: rgba(251, 146, 60, 0.48) !important;
 }
 
-:global(.dark) .listPane,
-:global(html[data-theme="dark"]) .listPane {
+:global(.dark) .applicationsPage__listPane,
+:global(html[data-theme="dark"]) .applicationsPage__listPane {
   scrollbar-color: rgba(251, 146, 60, 0.45) transparent;
 }
 
-/* Single scroll container in split — avoid nested .listPane max-height fighting stack */
-.workspaceSplit .listPane.listPaneStack {
+/* Single scroll container in split — avoid nested .applicationsPage__listPane max-height fighting stack */
+.applicationsPage__workspaceSplit .applicationsPage__listPane.applicationsPage--listPaneStack {
   max-height: 100%;
 }
 
-.listPaneStack {
+.applicationsPage__listPaneStack {
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -338,7 +338,7 @@
   background: none;
 }
 
-.listPaneStack .listCard {
+.applicationsPage__listPaneStack .applicationsPage__listCard {
   flex-shrink: 0;
   position: relative;
   width: 100%;
@@ -353,52 +353,52 @@
     transform 0.15s ease;
 }
 
-.workspaceSplit .listPaneStack .listCard,
-.workspaceSplit .listPaneStack .listCard:hover,
-.workspaceSplit .listPaneStack .listCard:active,
-.workspaceSplit .listPaneStack .listCard.listCardActive,
-.workspaceSplit .listPaneStack .listCard.listCardActive:hover,
-.workspaceSplit .listPaneStack .listCard:hover:not(.listCardActive) {
+.applicationsPage__workspaceSplit .applicationsPage__listPaneStack .applicationsPage__listCard,
+.applicationsPage__workspaceSplit .applicationsPage__listPaneStack .applicationsPage__listCard:hover,
+.applicationsPage__workspaceSplit .applicationsPage__listPaneStack .applicationsPage__listCard:active,
+.applicationsPage__workspaceSplit .applicationsPage__listPaneStack .applicationsPage__listCard.applicationsPage--listCardActive,
+.applicationsPage__workspaceSplit .applicationsPage__listPaneStack .applicationsPage__listCard.applicationsPage--listCardActive:hover,
+.applicationsPage__workspaceSplit .applicationsPage__listPaneStack .applicationsPage__listCard:hover:not(.applicationsPage__listCardActive) {
   background: transparent;
 }
 
 
-.listPaneStack .listCard:hover:not(.listCardActive) {
+.applicationsPage__listPaneStack .applicationsPage__listCard:hover:not(.applicationsPage__listCardActive) {
   border-color: color-mix(in srgb, var(--color-primary) 52%, var(--color-border));
 }
 
-.listPaneStack .listCard.listCardActive {
+.applicationsPage__listPaneStack .applicationsPage__listCard.applicationsPage--listCardActive {
   border: 2px solid color-mix(in srgb, var(--color-primary) 55%, var(--color-border));
   z-index: 1;
   box-shadow: none;
 }
 
-.listPaneStack .listCard.listCardActive:hover {
+.applicationsPage__listPaneStack .applicationsPage__listCard.applicationsPage--listCardActive:hover {
   border-color: color-mix(in srgb, var(--color-primary) 68%, var(--color-border));
 }
 
-.listPaneStack .listCard:focus-visible {
+.applicationsPage__listPaneStack .applicationsPage__listCard:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 40%, transparent);
 }
 
-.listPaneStack .listCard.listCardActive:focus-visible {
+.applicationsPage__listPaneStack .applicationsPage__listCard.applicationsPage--listCardActive:focus-visible {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 45%, transparent);
 }
 
-:global(.dark) .listPaneStack .listCard:hover:not(.listCardActive) {
+:global(.dark) .applicationsPage__listPaneStack .applicationsPage__listCard:hover:not(.applicationsPage__listCardActive) {
   border-color: rgba(251, 146, 60, 0.55);
 }
 
-:global(.dark) .listPaneStack .listCard.listCardActive {
+:global(.dark) .applicationsPage__listPaneStack .applicationsPage__listCard.applicationsPage--listCardActive {
   border-color: rgba(251, 146, 60, 0.52);
 }
 
-:global(.dark) .listPaneStack .listCard.listCardActive:hover {
+:global(.dark) .applicationsPage__listPaneStack .applicationsPage__listCard.applicationsPage--listCardActive:hover {
   border-color: rgba(251, 146, 60, 0.68);
 }
 
-.listCard {
+.applicationsPage__listCard {
   position: relative;
   display: block;
   width: 100%;
@@ -417,62 +417,62 @@
     box-shadow 0.2s ease;
 }
 
-.listCard:focus {
+.applicationsPage__listCard:focus {
   outline: none;
 }
 
-.listCard:focus-visible {
+.applicationsPage__listCard:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 45%, transparent);
 }
 
-.listCardActive:focus-visible {
+.applicationsPage__listCardActive:focus-visible {
   box-shadow: none;
 }
 
-.listCard:hover:not(.listCardActive) {
+.applicationsPage__listCard:hover:not(.applicationsPage__listCardActive) {
   border-color: color-mix(in srgb, var(--color-primary) 52%, var(--color-border));
 }
 
-.listCard:active:not(.listCardActive) {
+.applicationsPage__listCard:active:not(.applicationsPage__listCardActive) {
   transform: scale(0.985);
 }
 
-.listCardActive {
+.applicationsPage__listCardActive {
   border: 2px solid color-mix(in srgb, var(--color-primary) 55%, var(--color-border));
   background: var(--color-bg-secondary);
 }
 
-:global(.dark) .listCard {
+:global(.dark) .applicationsPage__listCard {
   box-shadow: none;
 }
 
-:global(.dark) .listCard:hover:not(.listCardActive) {
+:global(.dark) .applicationsPage__listCard:hover:not(.applicationsPage__listCardActive) {
   border-color: rgba(251, 146, 60, 0.55);
 }
 
-:global(.dark) .listCard.listCardActive:hover {
+:global(.dark) .applicationsPage__listCard.applicationsPage--listCardActive:hover {
   border-color: rgba(251, 146, 60, 0.72);
 }
 
-:global(.dark) .listCardActive {
+:global(.dark) .applicationsPage__listCardActive {
   border: 2px solid rgba(251, 146, 60, 0.55);
 }
 
-:global(.dark) .listCard:focus-visible {
+:global(.dark) .applicationsPage__listCard:focus-visible {
   box-shadow: 0 0 0 2px rgba(251, 146, 60, 0.4);
 }
 
-:global(.dark) .listCardActive:focus-visible {
+:global(.dark) .applicationsPage__listCardActive:focus-visible {
   box-shadow: none;
 }
 
-.listCardPinned {
+.applicationsPage__listCardPinned {
   border-color: color-mix(in srgb, #eab308 30%, var(--color-border));
 }
 
 /* Cut top border under pin — narrow notch, same color as page behind the card */
-.listCardPinned::after {
+.applicationsPage__listCardPinned::after {
   content: "";
   position: absolute;
   top: -2px;
@@ -486,11 +486,11 @@
 }
 
 /* Pin to top without re-sorting the list (avoids scroll jump / jank) */
-.listCardPinnedFirst {
+.applicationsPage__listCardPinnedFirst {
   order: -1;
 }
 
-.cardPinTab {
+.applicationsPage__cardPinTab {
   position: absolute;
   top: 0;
   left: 0.58rem;
@@ -506,7 +506,7 @@
   pointer-events: none;
 }
 
-.cardPinTabChip {
+.applicationsPage__cardPinTabChip {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -517,7 +517,7 @@
   line-height: 0;
 }
 
-.cardPinTabChip svg {
+.applicationsPage__cardPinTabChip svg {
   width: 0.82rem;
   height: 0.82rem;
   flex-shrink: 0;
@@ -526,31 +526,31 @@
     drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.35));
 }
 
-:global(.dark) .cardPinTabChip {
+:global(.dark) .applicationsPage__cardPinTabChip {
   color: #facc15;
 }
 
-.listCardBody {
+.applicationsPage__listCardBody {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
   padding: 0.8rem 0.95rem 0.75rem;
 }
 
-.listCardRowTop,
-.listCardRowBottom {
+.applicationsPage__listCardRowTop,
+.applicationsPage__listCardRowBottom {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.5rem;
 }
 
-.listCardRowBottom {
+.applicationsPage__listCardRowBottom {
   align-items: center;
   margin-top: 0.65rem;
 }
 
-.listEyebrow {
+.applicationsPage__listEyebrow {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -565,27 +565,27 @@
   line-height: 1.3;
 }
 
-.listCourse {
+.applicationsPage__listCourse {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-weight: 600;
   color: var(--color-primary);
 }
 
-:global(.dark) .listCourse {
+:global(.dark) .applicationsPage__listCourse {
   color: #fdba74;
 }
 
-.listEyebrowDot {
+.applicationsPage__listEyebrowDot {
   opacity: 0.45;
   user-select: none;
 }
 
-.listCardStatus {
+.applicationsPage__listCardStatus {
   flex-shrink: 0;
   margin-top: -0.05rem;
 }
 
-.listTitle {
+.applicationsPage__listTitle {
   margin: 0;
   font-size: 0.95rem;
   font-weight: 650;
@@ -598,7 +598,7 @@
   overflow: hidden;
 }
 
-.listDescription {
+.applicationsPage__listDescription {
   margin: 0;
   font-size: 0.78rem;
   line-height: 1.45;
@@ -610,7 +610,7 @@
   overflow: hidden;
 }
 
-.listRole {
+.applicationsPage__listRole {
   display: flex;
   align-items: center;
   gap: 0.45rem;
@@ -618,7 +618,7 @@
   flex: 1;
 }
 
-.listRoleIcon {
+.applicationsPage__listRoleIcon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -628,29 +628,29 @@
   flex-shrink: 0;
 }
 
-.listRoleIcon svg {
+.applicationsPage__listRoleIcon svg {
   width: 0.8rem;
   height: 0.8rem;
 }
 
-.listRoleTutor .listRoleIcon {
+.applicationsPage__listRoleTutor .applicationsPage__listRoleIcon {
   background: rgba(16, 185, 129, 0.12);
   color: #059669;
 }
 
-.listRoleAssistant .listRoleIcon {
+.applicationsPage__listRoleAssistant .applicationsPage__listRoleIcon {
   background: rgba(99, 102, 241, 0.12);
   color: #6366f1;
 }
 
-.listRoleLabel {
+.applicationsPage__listRoleLabel {
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--color-text-primary);
   line-height: 1.3;
 }
 
-.listDate {
+.applicationsPage__listDate {
   margin: 0;
   flex-shrink: 0;
   font-size: 0.7rem;
@@ -661,11 +661,11 @@
   white-space: nowrap;
 }
 
-:global(.dark) .listDate {
+:global(.dark) .applicationsPage__listDate {
   color: #a1a1aa;
 }
 
-.empty {
+.applicationsPage__empty {
   padding: 4rem 2rem;
   text-align: center;
   border: 1px dashed var(--color-border);
@@ -673,7 +673,7 @@
   color: var(--color-text-secondary);
 }
 
-.emptyCta {
+.applicationsPage__emptyCta {
   display: inline-block;
   margin-top: 1.25rem;
   padding: 0.55rem 1.15rem;
@@ -686,41 +686,41 @@
 }
 
 @media (max-width: 900px) {
-  .workspaceSplit {
+  .applicationsPage__workspaceSplit {
     grid-template-columns: 1fr;
     gap: 1.5rem;
     align-items: start;
   }
 
-  .leftColumn {
+  .applicationsPage__leftColumn {
     max-height: none;
     overflow: visible;
   }
 
-  .workspaceSplit .leftColumn {
+  .applicationsPage__workspaceSplit .applicationsPage__leftColumn {
     height: auto;
     min-height: 0;
     max-height: none;
   }
 
-  .stackSection {
+  .applicationsPage__stackSection {
     flex: none;
     height: auto;
     min-height: 0;
     max-height: none;
   }
 
-  .listPane {
+  .applicationsPage__listPane {
     max-height: none;
   }
 
-  .workspaceSplit .listPane,
-  .workspaceSplit .detailColumn {
+  .applicationsPage__workspaceSplit .applicationsPage__listPane,
+  .applicationsPage__workspaceSplit .applicationsPage__detailColumn {
     max-height: none;
     height: auto;
   }
 
-  .listPaneStack {
+  .applicationsPage__listPaneStack {
     flex-direction: row;
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -730,31 +730,31 @@
     scroll-behavior: auto;
   }
 
-  .listPaneStack .listCard {
+  .applicationsPage__listPaneStack .applicationsPage__listCard {
     flex: 0 0 min(78vw, 280px);
   }
 }
 
 @media (max-width: 768px) {
-  .filtersRow {
+  .applicationsPage__filtersRow {
     grid-template-columns: 1fr 1fr;
   }
 
-  .filterInput {
+  .applicationsPage__filterInput {
     grid-column: 1 / -1;
   }
 }
 
 @media (max-width: 640px) {
-  .page {
+  .applicationsPage__page {
     padding: 1.5rem 1rem 2.5rem;
   }
 
-  .toolbar {
+  .applicationsPage__toolbar {
     margin-bottom: 1.5rem;
   }
 
-  .filtersRow {
+  .applicationsPage__filtersRow {
     grid-template-columns: 1fr;
   }
 }

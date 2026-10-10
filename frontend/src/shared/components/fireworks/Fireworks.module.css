@@ -1,4 +1,4 @@
-.fireworksContainer {
+.fireworks__fireworksContainer {
   position: fixed;
   top: 0;
   left: 0;
@@ -9,7 +9,7 @@
   overflow: hidden;
 }
 
-.particle {
+.fireworks__particle {
   position: absolute;
   width: 6px;
   height: 6px;
@@ -18,7 +18,7 @@
   will-change: transform, opacity;
 }
 
-.sparkleOverlay {
+.fireworks__sparkleOverlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -33,7 +33,7 @@
   pointer-events: none;
 }
 
-.centralBurst {
+.fireworks__centralBurst {
   position: absolute;
   top: 25%;
   left: 50%;
@@ -53,7 +53,7 @@
 }
 
 /* Performance optimizations */
-.fireworksContainer * {
+.fireworks__fireworksContainer * {
   transform-origin: center;
   backface-visibility: hidden;
   perspective: 1000px;
@@ -61,19 +61,19 @@
 
 /* Reduce motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
-  .fireworksContainer {
+  .fireworks__fireworksContainer {
     display: none;
   }
 }
 
 /* Mobile optimizations */
 @media (max-width: 768px) {
-  .particle {
+  .fireworks__particle {
     width: 4px;
     height: 4px;
   }
   
-  .centralBurst {
+  .fireworks__centralBurst {
     width: 150px;
     height: 150px;
     margin-left: -75px;
@@ -83,12 +83,12 @@
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-  .particle {
+  .fireworks__particle {
     border: 1px solid currentColor;
   }
   
-  .sparkleOverlay,
-  .centralBurst {
+  .fireworks__sparkleOverlay,
+  .fireworks__centralBurst {
     opacity: 0.7;
   }
 } 

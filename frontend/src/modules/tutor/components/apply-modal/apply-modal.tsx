@@ -361,7 +361,7 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
   return (
     <AnimatePresence>
       <motion.div 
-        className={styles.applyModalBackdrop}
+        className={styles.applyModal__applyModalBackdrop}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -375,16 +375,16 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
           onClick={(e) => e.stopPropagation()}
         >
         {/* Header */}
-        <div className={styles.applyModalHeader}>
-          <div className={styles.applyModalHeaderContent}>
-            <div className={styles.headerTitleSection}>
-                <h3 className={styles.applyModalTitle}>
+        <div className={styles.applyModal__applyModalHeader}>
+          <div className={styles.applyModal__applyModalHeaderContent}>
+            <div className={styles.applyModal__headerTitleSection}>
+                <h3 className={styles.applyModal__applyModalTitle}>
                   Apply for{" "}
-                  <span className={styles.titleHighlight}>
+                  <span className={styles.applyModal__titleHighlight}>
                     {enhancedProps ? "position" : "course"}
                   </span>
                 </h3>
-              <p className={styles.headerSubtitle}>
+              <p className={styles.applyModal__headerSubtitle}>
                 {enhancedProps
                   ? draftSavedAt
                     ? "Draft saved to your account"
@@ -395,7 +395,7 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
             <button
               type="button"
               onClick={onClose}
-              className={`${styles.applyModalClose} iconCloseHit iconCloseCircle`}
+              className={`${styles.applyModal__applyModalClose} iconClose__hit iconClose__circle`}
               disabled={isSubmitting}
               aria-label="Close"
             >
@@ -405,20 +405,20 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
         </div>
 
         {/* Form */}
-        <div className={styles.applyModalForm}>
-          <form onSubmit={handleSubmit} className={styles.applyModalFormInner}>
-            <div className={styles.applyModalScroll}>
+        <div className={styles.applyModal__applyModalForm}>
+          <form onSubmit={handleSubmit} className={styles.applyModal__applyModalFormInner}>
+            <div className={styles.applyModal__applyModalScroll}>
               {/* Course Info */}
-            <div className={styles.applyModalFieldGroup}>
-              <label className={styles.applyModalLabel}>
-                <span className={styles.labelAccent}>Course information</span>
+            <div className={styles.applyModal__applyModalFieldGroup}>
+              <label className={styles.applyModal__applyModalLabel}>
+                <span className={styles.applyModal__labelAccent}>Course information</span>
               </label>
-              <div className={styles.courseInfoCard}>
-                <div className={styles.courseMainInfo}>
-                    <h4 className={styles.courseCodeTitle}>
+              <div className={styles.applyModal__courseInfoCard}>
+                <div className={styles.applyModal__courseMainInfo}>
+                    <h4 className={styles.applyModal__courseCodeTitle}>
                       {legacyProps ? (course as CourseDetails).code : (course as Course).courseCode}
                     </h4>
-                    <p className={styles.courseNameTitle}>
+                    <p className={styles.applyModal__courseNameTitle}>
                       {legacyProps ? (course as CourseDetails).name : (course as Course).courseName}
                     </p>
                   </div>
@@ -426,19 +426,19 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
             </div>
 
               {/* Role & Availability */}
-            <div className={styles.applyModalCompactGrid}>
-              <div className={styles.applyModalFieldGroup}>
-                <label className={styles.applyModalLabel}>
-                  <span className={styles.labelAccent}>Role</span>
+            <div className={styles.applyModal__applyModalCompactGrid}>
+              <div className={styles.applyModal__applyModalFieldGroup}>
+                <label className={styles.applyModal__applyModalLabel}>
+                  <span className={styles.applyModal__labelAccent}>Role</span>
                 </label>
-                <div className={styles.roleInfoCard}>
-                  <div className={styles.roleIconContainer}>
-                      <svg className={styles.roleIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className={styles.applyModal__roleInfoCard}>
+                  <div className={styles.applyModal__roleIconContainer}>
+                      <svg className={styles.applyModal__roleIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
                               d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
                     </div>
-                    <span className={styles.roleText}>
+                    <span className={styles.applyModal__roleText}>
                       {enhancedProps && role 
                         ? (role.roleName === "tutor" ? "Tutor" : "Lab Assistant")
                         : (legacyProps ? (course as CourseDetails).role : "Role")
@@ -447,19 +447,19 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
                   </div>
                 </div>
 
-                <div className={styles.applyModalFieldGroup}>
-                  <label className={styles.applyModalLabel}>
-                    <span className={styles.labelAccent}>Availability</span>
+                <div className={styles.applyModal__applyModalFieldGroup}>
+                  <label className={styles.applyModal__applyModalLabel}>
+                    <span className={styles.applyModal__labelAccent}>Availability</span>
                   </label>
                   {enhancedProps ? (
                     <div
-                      className={styles.availabilitySegment}
+                      className={styles.applyModal__availabilitySegment}
                       role="radiogroup"
                       aria-label="Availability"
                     >
                       <label
-                        className={`${styles.availabilitySegmentOption} ${
-                          availability === "Part Time" ? styles.availabilitySegmentActive : ""
+                        className={`${styles.applyModal__availabilitySegmentOption} ${
+                          availability === "Part Time" ? styles.applyModal__availabilitySegmentActive : ""
                         }`}
                       >
                         <input
@@ -472,11 +472,11 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
                           }
                           disabled={isSubmitting}
                         />
-                        <span className={styles.segmentTitle}>Part time</span>
+                        <span className={styles.applyModal__segmentTitle}>Part time</span>
                       </label>
                       <label
-                        className={`${styles.availabilitySegmentOption} ${
-                          availability === "Full Time" ? styles.availabilitySegmentActive : ""
+                        className={`${styles.applyModal__availabilitySegmentOption} ${
+                          availability === "Full Time" ? styles.applyModal__availabilitySegmentActive : ""
                         }`}
                       >
                         <input
@@ -489,18 +489,18 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
                           }
                           disabled={isSubmitting}
                         />
-                        <span className={styles.segmentTitle}>Full time</span>
+                        <span className={styles.applyModal__segmentTitle}>Full time</span>
                       </label>
                     </div>
                   ) : (
-                    <div className={styles.availabilityCard}>
-                      <div className={styles.availabilityIconContainer}>
-                        <svg className={styles.availabilityIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className={styles.applyModal__availabilityCard}>
+                      <div className={styles.applyModal__availabilityIconContainer}>
+                        <svg className={styles.applyModal__availabilityIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
-                      <span className={styles.availabilityText}>
+                      <span className={styles.applyModal__availabilityText}>
                         {legacyProps ? (course as CourseDetails).availability : "Full Time"}
                       </span>
                     </div>
@@ -509,28 +509,28 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
               </div>
 
               {/* Skills Section */}
-              <div className={styles.applyModalFieldGroup}>
-                <label className={styles.applyModalLabel}>
-                  <span className={styles.labelAccent}>
+              <div className={styles.applyModal__applyModalFieldGroup}>
+                <label className={styles.applyModal__applyModalLabel}>
+                  <span className={styles.applyModal__labelAccent}>
                     {enhancedProps ? "Your skills" : "Skills"}
                   </span>
-                  <span className={styles.applyModalRequiredAsterisk}>*</span>
+                  <span className={styles.applyModal__applyModalRequiredAsterisk}>*</span>
                   {enhancedProps && (
-                    <span className={styles.applyModalHint}>Up to 10 skills</span>
+                    <span className={styles.applyModal__applyModalHint}>Up to 10 skills</span>
                   )}
                 </label>
 
                 {enhancedProps ? (
-                  <div className={styles.skillsPanel}>
+                  <div className={styles.applyModal__skillsPanel}>
                     {selectedSkillTags.length > 0 && (
-                      <div className={styles.skillsSelectedBlock}>
-                        <span className={styles.skillsBlockLabel}>
+                      <div className={styles.applyModal__skillsSelectedBlock}>
+                        <span className={styles.applyModal__skillsBlockLabel}>
                           Selected{" "}
-                          <span className={styles.skillsCount}>
+                          <span className={styles.applyModal__skillsCount}>
                             {selectedSkillTags.length}/10
                           </span>
                         </span>
-                        <div className={styles.skillTags}>
+                        <div className={styles.applyModal__skillTags}>
                           {selectedSkillTags.map((skill, index) => (
                             <SkillTag
                               key={index}
@@ -542,15 +542,15 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
                       </div>
                     )}
 
-                    <span className={styles.skillsBlockLabel}>Suggested for this role</span>
-                    <div className={styles.skillsChipGrid}>
+                    <span className={styles.applyModal__skillsBlockLabel}>Suggested for this role</span>
+                    <div className={styles.applyModal__skillsChipGrid}>
                       {getPopularSkills(role?.roleName).map((skill, index) => (
                         <button
                           key={index}
                           type="button"
-                          className={`${styles.skillChip} ${
+                          className={`${styles.applyModal__skillChip} ${
                             selectedSkillTags.includes(skill)
-                              ? styles.skillChipActive
+                              ? styles.applyModal__skillChipActive
                               : ""
                           }`}
                           onClick={() => handleAddSkillTag(skill)}
@@ -565,7 +565,7 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
                       ))}
                     </div>
 
-                    <div className={styles.skillsAddRow}>
+                    <div className={styles.applyModal__skillsAddRow}>
                       <input
                         type="text"
                         value={customSkillInput}
@@ -577,13 +577,13 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
                           }
                         }}
                         placeholder="Add a custom skill…"
-                        className={styles.skillsAddInput}
+                        className={styles.applyModal__skillsAddInput}
                         disabled={selectedSkillTags.length >= 10 || isSubmitting}
                       />
                       <button
                         type="button"
                         onClick={() => handleAddSkillTag(customSkillInput)}
-                        className={styles.skillsAddBtn}
+                        className={styles.applyModal__skillsAddBtn}
                         disabled={
                           !customSkillInput.trim() ||
                           selectedSkillTags.length >= 10 ||
@@ -597,16 +597,16 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
                 ) : (
                   <>
                     {/* Legacy Skills Section */}
-                    <div className={styles.applyModalSkillsContainer}>
-                      <div className={styles.applyModalAvailableSkills}>
-                        <p className={styles.applyModalSecondaryText}>Available skills (click to add):</p>
-                        <div className={styles.applyModalSkillsGrid}>
+                    <div className={styles.applyModal__applyModalSkillsContainer}>
+                      <div className={styles.applyModal__applyModalAvailableSkills}>
+                        <p className={styles.applyModal__applyModalSecondaryText}>Available skills (click to add):</p>
+                        <div className={styles.applyModal__applyModalSkillsGrid}>
                           {availableSkills.map((skill, index) => (
                             <button
                               key={index}
                               type="button"
-                              className={`${styles.skillButton} ${
-                                selectedSkills.includes(skill) ? styles.skillButtonSelected : ""
+                              className={`${styles.applyModal__skillButton} ${
+                                selectedSkills.includes(skill) ? styles.applyModal__skillButtonSelected : ""
                               }`}
                               onClick={() => {
                                 if (selectedSkills.includes(skill)) {
@@ -626,11 +626,11 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
                       </div>
 
                       {selectedSkills.length > 0 && (
-                        <div className={styles.applyModalSelectedSkills}>
-                          <p className={styles.applyModalSecondaryText}>
+                        <div className={styles.applyModal__applyModalSelectedSkills}>
+                          <p className={styles.applyModal__applyModalSecondaryText}>
                             Selected skills ({selectedSkills.length}/5):
                           </p>
-                          <div className={styles.applyModalSkillsGrid}>
+                          <div className={styles.applyModal__applyModalSkillsGrid}>
                             {selectedSkills.map((skill, index) => (
                               <SkillTag key={index} skill={skill} onRemove={handleRemoveSkill} />
                             ))}
@@ -638,11 +638,11 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
                         </div>
                       )}
 
-                      <div className={styles.applyModalCustomSkill}>
+                      <div className={styles.applyModal__applyModalCustomSkill}>
                         <button
                           type="button"
                           onClick={() => setShowSkillInput(!showSkillInput)}
-                          className={styles.applyModalAddSkillButton}
+                          className={styles.applyModal__applyModalAddSkillButton}
                           disabled={selectedSkills.length >= 5}
                         >
                           {showSkillInput ? "Hide Custom Skill" : "Add Custom Skill"}
@@ -655,7 +655,7 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
                             onChange={(e) => setSkillInput(e.target.value)}
                             onKeyDown={handleSkillInputKeyDown}
                             placeholder="Enter custom skill and press Enter"
-                            className={styles.applyModalInput}
+                            className={styles.applyModal__applyModalInput}
                             disabled={selectedSkills.length >= 5}
                           />
                         )}
@@ -665,7 +665,7 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
                 )}
 
                 {errors.skills && (
-                  <p className={styles.applyModalErrorText}>{errors.skills}</p>
+                  <p className={styles.applyModal__applyModalErrorText}>{errors.skills}</p>
                 )}
             </div>
 
@@ -673,8 +673,8 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
               {legacyProps && (
                 <>
             {/* Previous Teaching Roles */}
-            <div className={styles.applyModalFieldGroup}>
-              <label htmlFor="previousRoles" className={styles.applyModalLabel}>
+            <div className={styles.applyModal__applyModalFieldGroup}>
+              <label htmlFor="previousRoles" className={styles.applyModal__applyModalLabel}>
                 Previous Teaching Roles
               </label>
               <textarea
@@ -682,20 +682,20 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
                 value={previousRoles}
                 onChange={(e) => setPreviousRoles(e.target.value)}
                 placeholder="List your previous roles (one per line), e.g., COSC1111 Lab Assistant (2024)"
-                      className={`${styles.applyModalInput} ${errors.previousRoles ? styles.applyModalInputError : ""}`}
+                      className={`${styles.applyModal__applyModalInput} ${errors.previousRoles ? styles.applyModal__applyModalInputError : ""}`}
                 rows={3}
               />
               {errors.previousRoles && (
-                      <p className={styles.applyModalErrorText}>{errors.previousRoles}</p>
+                      <p className={styles.applyModal__applyModalErrorText}>{errors.previousRoles}</p>
               )}
-              <p className={styles.applyModalSecondaryText}>
+              <p className={styles.applyModal__applyModalSecondaryText}>
                       Format: [Course Code] [Role Type] (Year) - One per line, maximum 10 roles
               </p>
             </div>
 
             {/* Academic Credentials */}
-            <div className={styles.applyModalFieldGroup}>
-                    <label htmlFor="academicCredentials" className={styles.applyModalLabel}>
+            <div className={styles.applyModal__applyModalFieldGroup}>
+                    <label htmlFor="academicCredentials" className={styles.applyModal__applyModalLabel}>
                 Academic Credentials
               </label>
               <textarea
@@ -703,14 +703,14 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
                 value={academicCredentials}
                 onChange={(e) => setAcademicCredentials(e.target.value)}
                 placeholder="Describe your academic background, degrees, certifications, etc."
-                      className={`${styles.applyModalInput} ${errors.academicCredentials ? styles.applyModalInputError : ""}`}
+                      className={`${styles.applyModal__applyModalInput} ${errors.academicCredentials ? styles.applyModal__applyModalInputError : ""}`}
                 rows={4}
                 required
               />
               {errors.academicCredentials && (
-                      <p className={styles.applyModalErrorText}>{errors.academicCredentials}</p>
+                      <p className={styles.applyModal__applyModalErrorText}>{errors.academicCredentials}</p>
                     )}
-                    <p className={styles.applyModalSecondaryText}>Minimum 10 characters required.</p>
+                    <p className={styles.applyModal__applyModalSecondaryText}>Minimum 10 characters required.</p>
                   </div>
                 </>
               )}
@@ -719,43 +719,43 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
               {enhancedProps && (
                 <>
                   {/* Experience */}
-            <div className={styles.applyModalFieldGroup}>
-                    <label htmlFor="experience" className={styles.applyModalLabel}>
-                      Previous Experience <span className={styles.applyModalOptional}>(optional)</span>
+            <div className={styles.applyModal__applyModalFieldGroup}>
+                    <label htmlFor="experience" className={styles.applyModal__applyModalLabel}>
+                      Previous Experience <span className={styles.applyModal__applyModalOptional}>(optional)</span>
                     </label>
                     <textarea
                       id="experience"
                       value={experience}
                       onChange={(e) => setExperience(e.target.value)}
                       placeholder="Describe any relevant teaching, tutoring, or related experience..."
-                      className={`${styles.applyModalInput} ${errors.experience ? styles.applyModalInputError : ""}`}
+                      className={`${styles.applyModal__applyModalInput} ${errors.experience ? styles.applyModal__applyModalInputError : ""}`}
                       rows={3}
                       disabled={isSubmitting}
                     />
                     {errors.experience && (
-                      <p className={styles.applyModalErrorText}>{errors.experience}</p>
+                      <p className={styles.applyModal__applyModalErrorText}>{errors.experience}</p>
                     )}
               </div>
 
                   {/* Motivation */}
-                  <div className={styles.applyModalFieldGroup}>
-                    <label htmlFor="motivation" className={styles.applyModalLabel}>
+                  <div className={styles.applyModal__applyModalFieldGroup}>
+                    <label htmlFor="motivation" className={styles.applyModal__applyModalLabel}>
                       Why do you want this role? 
-                      <span className={styles.applyModalRequiredAsterisk}>*</span>
-                      <span className={styles.applyModalHint}>(minimum 20 characters)</span>
+                      <span className={styles.applyModal__applyModalRequiredAsterisk}>*</span>
+                      <span className={styles.applyModal__applyModalHint}>(minimum 20 characters)</span>
                     </label>
                     <textarea
                       id="motivation"
                       value={motivation}
                       onChange={(e) => setMotivation(e.target.value)}
                       placeholder="Explain your motivation for applying to this role and what you hope to contribute..."
-                      className={`${styles.applyModalInput} ${errors.motivation ? styles.applyModalInputError : ""}`}
+                      className={`${styles.applyModal__applyModalInput} ${errors.motivation ? styles.applyModal__applyModalInputError : ""}`}
                       rows={4}
                       disabled={isSubmitting}
                       required
                     />
                     {errors.motivation && (
-                      <p className={styles.applyModalErrorText}>{errors.motivation}</p>
+                      <p className={styles.applyModal__applyModalErrorText}>{errors.motivation}</p>
                     )}
               </div>
                 </>
@@ -763,23 +763,23 @@ const ApplyModal: React.FC<CombinedApplyModalProps> = (props) => {
             </div>
 
               {/* Submit Button */}
-              <div className={styles.applyModalActions}>
+              <div className={styles.applyModal__applyModalActions}>
                 <button
                   type="button"
                   onClick={onClose}
-                  className={styles.applyModalCancelButton}
+                  className={styles.applyModal__applyModalCancelButton}
                   disabled={isSubmitting}
                 >
                   Cancel
                 </button>
                     <button
                   type="submit"
-                  className={styles.applyModalSubmitButton}
+                  className={styles.applyModal__applyModalSubmitButton}
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
                     <>
-                      <svg className={styles.applyModalSpinner} viewBox="0 0 24 24">
+                      <svg className={styles.applyModal__applyModalSpinner} viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" 
                                 strokeDasharray="32" strokeDashoffset="32">
                           <animateTransform attributeName="transform" type="rotate" 

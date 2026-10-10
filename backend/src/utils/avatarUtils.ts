@@ -36,7 +36,7 @@ export const resolveAvatarFilePath = (
     }
 
     const filename = path.basename(avatarUrl);
-    if (!/^user-(?:\d+|[0-9a-f-]{36})-\d+\.(jpg|jpeg|png|webp)$/i.test(filename)) {
+    if (!/^user-(?:\d+|[0-9a-f-]{36})-\d+\.(jpg|jpeg|png|webp|gif|avif|bmp)$/i.test(filename)) {
         return null;
     }
 
@@ -51,6 +51,12 @@ export const getAvatarMimeType = (filePath: string): string => {
             return "image/png";
         case ".webp":
             return "image/webp";
+        case ".gif":
+            return "image/gif";
+        case ".avif":
+            return "image/avif";
+        case ".bmp":
+            return "image/bmp";
         case ".jpg":
         case ".jpeg":
         default:
@@ -70,7 +76,7 @@ export const reconcileOrphanAvatarFiles = async (
     const files = fs.readdirSync(AVATAR_UPLOAD_DIR);
 
     for (const file of files) {
-        const match = /^user-([0-9a-f-]{36})-\d+\.(jpg|jpeg|png|webp)$/i.exec(file);
+        const match = /^user-([0-9a-f-]{36})-\d+\.(jpg|jpeg|png|webp|gif|avif|bmp)$/i.exec(file);
         if (!match) {
             continue;
         }

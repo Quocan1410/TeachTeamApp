@@ -76,13 +76,13 @@ const NotificationBell: React.FC = () => {
         case "candidate_blocked":
         case "account_blocked":
         case "application_rejected":
-          return styles.iconToneDanger;
+          return styles.notificationBell__iconToneDanger;
         case "candidate_unblocked":
         case "account_unblocked":
         case "application_selected":
-          return styles.iconToneSuccess;
+          return styles.notificationBell__iconToneSuccess;
         default:
-          return styles.iconToneInfo;
+          return styles.notificationBell__iconToneInfo;
       }
     })();
 
@@ -147,22 +147,22 @@ const NotificationBell: React.FC = () => {
     })();
 
     return (
-      <div className={`${styles.notificationIcon} ${toneClass}`}>{iconSvg}</div>
+      <div className={`${styles.notificationBell__notificationIcon} ${toneClass}`}>{iconSvg}</div>
     );
   };
 
   return (
-    <div className={styles.notificationContainer} ref={dropdownRef}>
+    <div className={styles.notificationBell__notificationContainer} ref={dropdownRef}>
       <button
         type="button"
-        className={`${styles.bellButton} ${isOpen ? styles.bellButtonActive : ""}`}
+        className={`${styles.notificationBell__bellButton} ${isOpen ? styles.notificationBell__bellButtonActive : ""}`}
         onClick={() => setIsOpen(!isOpen)}
         aria-label={`Notifications (${unreadCount} unread)`}
         aria-expanded={isOpen}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className={styles.bellIcon}
+          className={styles.notificationBell__bellIcon}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -176,11 +176,11 @@ const NotificationBell: React.FC = () => {
         </svg>
         {unreadCount > 0 && (
           <span
-            className={`${styles.badge} ${
+            className={`${styles.notificationBell__badge} ${
               unreadCount > 99
-                ? styles.badgeCompact
+                ? styles.notificationBell__badgeCompact
                 : unreadCount > 9
-                  ? styles.badgeWide
+                  ? styles.notificationBell__badgeWide
                   : ""
             }`}
           >
@@ -190,18 +190,18 @@ const NotificationBell: React.FC = () => {
       </button>
 
       {isOpen && (
-        <div className={styles.notificationDropdown} role="dialog" aria-label="Notifications">
-          <div className={styles.dropdownHeader}>
-            <div className={styles.dropdownTitleRow}>
-              <h3 className={styles.dropdownTitle}>Activity</h3>
+        <div className={styles.notificationBell__notificationDropdown} role="dialog" aria-label="Notifications">
+          <div className={styles.notificationBell__dropdownHeader}>
+            <div className={styles.notificationBell__dropdownTitleRow}>
+              <h3 className={styles.notificationBell__dropdownTitle}>Activity</h3>
               {unreadCount > 0 && (
-                <span className={styles.unreadPill}>{unreadCount} new</span>
+                <span className={styles.notificationBell__unreadPill}>{unreadCount} new</span>
               )}
             </div>
             {unreadCount > 0 && (
               <button
                 type="button"
-                className={styles.markAllButton}
+                className={styles.notificationBell__markAllButton}
                 onClick={markAllAsRead}
               >
                 Clear all
@@ -209,14 +209,14 @@ const NotificationBell: React.FC = () => {
             )}
           </div>
 
-          <div className={styles.notificationList}>
+          <div className={styles.notificationBell__notificationList}>
             {loading && notifications.length === 0 ? (
-              <div className={styles.emptyState}>
-                <p className={styles.emptyText}>Loading…</p>
+              <div className={styles.notificationBell__emptyState}>
+                <p className={styles.notificationBell__emptyText}>Loading…</p>
               </div>
             ) : notifications.length === 0 ? (
-              <div className={styles.emptyState}>
-                <div className={styles.emptyIconWrap}>
+              <div className={styles.notificationBell__emptyState}>
+                <div className={styles.notificationBell__emptyIconWrap}>
                   <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
                     <path
                       strokeLinecap="round"
@@ -225,13 +225,13 @@ const NotificationBell: React.FC = () => {
                     />
                   </svg>
                 </div>
-                <p className={styles.emptyTitle}>All caught up</p>
-                <p className={styles.emptyText}>
+                <p className={styles.notificationBell__emptyTitle}>All caught up</p>
+                <p className={styles.notificationBell__emptyText}>
                   Application updates and messages will show up here.
                 </p>
               </div>
             ) : (
-              <div className={styles.notificationListInner}>
+              <div className={styles.notificationBell__notificationListInner}>
                 {notifications.map((notification) => {
                   const actor = getNotificationActor(notification.type);
                   return (
@@ -239,8 +239,8 @@ const NotificationBell: React.FC = () => {
                       key={notification.id}
                       role="button"
                       tabIndex={0}
-                      className={`${styles.notificationItem} ${
-                        !notification.read ? styles.unread : ""
+                      className={`${styles.notificationBell__notificationItem} ${
+                        !notification.read ? styles["notificationBell--unread"] : ""
                       }`}
                       onClick={() =>
                         handleNotificationClick(notification.id, notification.link)
@@ -255,25 +255,25 @@ const NotificationBell: React.FC = () => {
                         }
                       }}
                     >
-                      <div className={styles.notificationIconWrap}>
+                      <div className={styles.notificationBell__notificationIconWrap}>
                         {getNotificationIcon(notification.type)}
                         {!notification.read && (
-                          <span className={styles.unreadDot} aria-hidden />
+                          <span className={styles.notificationBell__unreadDot} aria-hidden />
                         )}
                       </div>
-                      <div className={styles.notificationContent}>
-                        {actor && <span className={styles.actorBadge}>{actor}</span>}
-                        <span className={styles.notificationTitle}>
+                      <div className={styles.notificationBell__notificationContent}>
+                        {actor && <span className={styles.notificationBell__actorBadge}>{actor}</span>}
+                        <span className={styles.notificationBell__notificationTitle}>
                           {notification.title}
                         </span>
-                        <p className={styles.notificationMessage}>
+                        <p className={styles.notificationBell__notificationMessage}>
                           {notification.message}
                         </p>
                       </div>
-                      <div className={styles.itemAside}>
+                      <div className={styles.notificationBell__itemAside}>
                         <button
                           type="button"
-                          className={`${styles.removeButton} iconCloseHit iconCloseCircle`}
+                          className={`${styles.notificationBell__removeButton} iconClose__hit iconClose__circle`}
                           onClick={(event) => {
                             event.stopPropagation();
                             removeNotification(notification.id);
@@ -282,7 +282,7 @@ const NotificationBell: React.FC = () => {
                         >
                           <CloseIcon size={7} />
                         </button>
-                        <span className={styles.notificationTime}>
+                        <span className={styles.notificationBell__notificationTime}>
                           {formatTimeAgo(notification.timestamp)}
                         </span>
                       </div>

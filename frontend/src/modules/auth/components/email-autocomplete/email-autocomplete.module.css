@@ -1,10 +1,10 @@
-.emailAutocompleteContainer {
+.emailAutocomplete__emailAutocompleteContainer {
   position: relative;
   width: 100%;
 }
 
-/* Input appearance comes from parent `className` (signup-grid .control) */
-.emailAutocompleteContainer input {
+/* Input appearance comes from parent `className` (signup-grid .emailAutocomplete__control) */
+.emailAutocomplete__emailAutocompleteContainer input {
   display: block;
   width: 100%;
   max-width: 100%;
@@ -12,7 +12,7 @@
   box-sizing: border-box;
 }
 
-.suggestionsDropdown {
+.emailAutocomplete__suggestionsDropdown {
   position: absolute;
   top: 100%;
   left: 0;
@@ -27,11 +27,11 @@
   margin-top: 0.25rem;
 }
 
-.dark .suggestionsDropdown {
+.emailAutocomplete__dark .emailAutocomplete__suggestionsDropdown {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
-.suggestionItem {
+.emailAutocomplete__suggestionItem {
   padding: 0.75rem 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -40,38 +40,38 @@
   font-size: 0.95rem;
 }
 
-.suggestionItem:hover,
-.suggestionSelected {
+.emailAutocomplete__suggestionItem:hover,
+.emailAutocomplete__suggestionSelected {
   background-color: rgba(249, 115, 22, 0.1);
   color: var(--color-primary);
 }
 
-.suggestionItem:first-child {
+.emailAutocomplete__suggestionItem:first-child {
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
 }
 
-.suggestionItem:last-child {
+.emailAutocomplete__suggestionItem:last-child {
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
   border-bottom: none;
 }
 
 /* Scroll styling for suggestions */
-.suggestionsDropdown::-webkit-scrollbar {
+.emailAutocomplete__suggestionsDropdown::-webkit-scrollbar {
   width: 4px;
 }
 
-.suggestionsDropdown::-webkit-scrollbar-track {
+.emailAutocomplete__suggestionsDropdown::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.suggestionsDropdown::-webkit-scrollbar-thumb {
+.emailAutocomplete__suggestionsDropdown::-webkit-scrollbar-thumb {
   background-color: var(--color-primary);
   border-radius: 2px;
 }
 
-.suggestionsDropdown::-webkit-scrollbar-thumb:hover {
+.emailAutocomplete__suggestionsDropdown::-webkit-scrollbar-thumb:hover {
   background-color: var(--color-secondary);
 }
 
@@ -87,18 +87,18 @@
   }
 }
 
-.suggestionsDropdown {
+.emailAutocomplete__suggestionsDropdown {
   animation: slideDown 0.2s ease-out;
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .suggestionItem {
+  .emailAutocomplete__suggestionItem {
     padding: 1rem;
     font-size: 1rem;
   }
   
-  .suggestionsDropdown {
+  .emailAutocomplete__suggestionsDropdown {
     max-height: 150px;
   }
 } 

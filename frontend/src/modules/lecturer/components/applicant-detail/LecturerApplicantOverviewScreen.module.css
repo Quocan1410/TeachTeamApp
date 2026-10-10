@@ -1,10 +1,10 @@
-.actionRow {
+.lecturerApplicantOverviewScreen__actionRow {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
 }
 
-.screeningChoiceRow {
+.lecturerApplicantOverviewScreen__screeningChoiceRow {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -12,14 +12,14 @@
   width: 100%;
 }
 
-.screeningChoiceRow .actionBtn {
+.lecturerApplicantOverviewScreen__screeningChoiceRow .lecturerApplicantOverviewScreen__actionBtn {
   flex: 1;
   min-width: 0;
   text-align: center;
   padding: 0.45rem 0.75rem;
 }
 
-.actionBtn {
+.lecturerApplicantOverviewScreen__actionBtn {
   padding: 0.38rem 0.85rem;
   border-radius: 999px;
   border: none;
@@ -29,60 +29,60 @@
   transition: background-color 0.15s ease, opacity 0.15s ease;
 }
 
-.actionBtn:disabled {
+.lecturerApplicantOverviewScreen__actionBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.actionBtnPrimary {
+.lecturerApplicantOverviewScreen__actionBtnPrimary {
   background: var(--color-primary);
   color: #fff;
 }
 
-.actionBtnDanger {
+.lecturerApplicantOverviewScreen__actionBtnDanger {
   background: rgba(239, 68, 68, 0.12);
   color: #dc2626;
   border: 1px solid rgba(239, 68, 68, 0.35);
 }
 
-.actionBtnGhost {
+.lecturerApplicantOverviewScreen__actionBtnGhost {
   background: transparent;
   color: var(--color-text-secondary);
   border: 1px solid var(--color-border);
 }
 
-.actionBtnSuccess {
+.lecturerApplicantOverviewScreen__actionBtnSuccess {
   background: #16a34a;
   color: #fff;
 }
 
-.actionBtnMuted {
+.lecturerApplicantOverviewScreen__actionBtnMuted {
   background: rgba(124, 58, 237, 0.12);
   color: #7c3aed;
   cursor: default;
 }
 
-.reviewHint,
-.screeningHint {
+.lecturerApplicantOverviewScreen__reviewHint,
+.lecturerApplicantOverviewScreen__screeningHint {
   margin: 0;
   font-size: 0.8125rem;
   line-height: 1.45;
   color: var(--color-text-tertiary);
 }
 
-.notesBlock {
+.lecturerApplicantOverviewScreen__notesBlock {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.notesHint {
+.lecturerApplicantOverviewScreen__notesHint {
   margin: 0;
   font-size: 0.75rem;
   color: var(--color-text-tertiary);
 }
 
-.notesInput {
+.lecturerApplicantOverviewScreen__notesInput {
   width: 100%;
   min-height: 72px;
   max-height: 120px;
@@ -97,12 +97,12 @@
   box-sizing: border-box;
 }
 
-.notesInput:focus {
+.lecturerApplicantOverviewScreen__notesInput:focus {
   outline: none;
   border-color: color-mix(in srgb, var(--color-primary) 40%, var(--color-border));
 }
 
-.notesView {
+.lecturerApplicantOverviewScreen__notesView {
   width: 100%;
   min-height: 72px;
   padding: 0.65rem 0.75rem;

@@ -22,14 +22,14 @@
 }
 
 /* Decoration elements */
-.decorationCircle {
+.heroSection__decorationCircle {
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 50%;
   opacity: 0.6;
 }
 
-.decorationCircleOutline {
+.heroSection__decorationCircleOutline {
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
@@ -37,7 +37,7 @@
   opacity: 0.4;
 }
 
-.decorationGradientCircle {
+.heroSection__decorationGradientCircle {
   width: 5rem;
   height: 5rem;
   border-radius: 50%;
@@ -49,7 +49,7 @@
   opacity: 0.2;
 }
 
-.heroTitle {
+.heroSection__heroTitle {
   font-size: 4rem;
   font-weight: bold;
   line-height: 1.2;
@@ -57,14 +57,14 @@
   color: var(--color-primary);
 }
 
-.heroSubtitle {
+.heroSection__heroSubtitle {
   font-size: 1.2rem;
   color: var(--color-text-secondary);
   margin-bottom: 2rem;
   max-width: 90%;
 }
 
-.heroBtn {
+.heroSection__heroBtn {
   display: inline-flex;
   align-items: center;
   border: none;
@@ -80,27 +80,27 @@
   white-space: nowrap;
 }
 
-.heroBtn:hover {
+.heroSection__heroBtn:hover {
   background-color: #ea580c;
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(249, 115, 22, 0.4);
 }
 
-.heroBtn svg {
+.heroSection__heroBtn svg {
   margin-left: 0.5rem;
   width: 1.25rem;
   height: 1.25rem;
   color: currentColor;
 }
 
-.heroBtnIcon {
+.heroSection__heroBtnIcon {
   width: 1.25rem;
   height: 1.25rem;
   margin-left: 0.5rem;
 }
 
 /* Hero image container */
-.heroImageContainer {
+.heroSection__heroImageContainer {
   position: relative;
   z-index: 5;
   width: 100%;
@@ -109,7 +109,7 @@
   transition: transform 0.3s ease;
 }
 
-.heroImageContainer .imageWrapper {
+.heroSection__heroImageContainer .heroSection__imageWrapper {
   width: 100%;
   height: auto;
   aspect-ratio: 3 / 2;
@@ -119,18 +119,18 @@
   transition: 0.3s ease;
 }
 
-.heroImageContainer .imageWrapper:hover {
+.heroSection__heroImageContainer .heroSection__imageWrapper:hover {
   transform: scale(1.02);
 }
 
-.heroImageContainer .imageWrapper img {
+.heroSection__heroImageContainer .heroSection__imageWrapper img {
   object-fit: contain;
   object-position: center top;
   width: 100%;
   height: 100%;
 }
 
-.pulseBackground {
+.heroSection__pulseBackground {
   position: absolute;
   top: -2.5rem;
   left: -2.5rem;
@@ -143,7 +143,7 @@
 }
 
 /* Floating cards */
-.floatingCard {
+.heroSection__floatingCard {
   background-color: white;
   padding: 0.75rem;
   border-radius: 0.5rem;
@@ -155,29 +155,29 @@
   gap: 0.5rem;
 }
 
-.floatingCardText {
+.heroSection__floatingCardText {
   font-size: 0.875rem;
   font-weight: 500;
   color: #4b5563;
   white-space: nowrap;
 }
 
-.floatingCardTop {
+.heroSection__floatingCardTop {
   position: absolute;
   top: 2.5rem; /* equivalent to top-10 */
   right: -1.25rem; /* equivalent to -right-5 */
   z-index: 20;
 }
 
-.floatingCardBottom {
+.heroSection__floatingCardBottom {
   position: absolute;
   bottom: -0.5rem; /* equivalent to -bottom-2 */
   left: -5rem; /* equivalent to -left-20 */
   z-index: 20;
 }
 
-.floatingIconGreen,
-.floatingIconBlue {
+.heroSection__floatingIconGreen,
+.heroSection__floatingIconBlue {
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
@@ -186,22 +186,22 @@
   justify-content: center;
 }
 
-.floatingIconSvg {
+.heroSection__floatingIconSvg {
   width: 1.3rem;
   height: 1.3rem;
   color: white;
 }
 
-.floatingIconGreen {
+.heroSection__floatingIconGreen {
   background-color: #10b981;
 }
 
-.floatingIconBlue {
+.heroSection__floatingIconBlue {
   background-color: #3b82f6;
 }
 
 /* Stats section */
-.statsContainer {
+.heroSection__statsContainer {
   position: relative;
   z-index: 20;
   margin-top: 3.5rem;
@@ -209,7 +209,7 @@
   padding-bottom: 1.25rem;
 }
 
-.statsCard {
+.heroSection__statsCard {
   display: flex;
   background-color: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
@@ -227,16 +227,16 @@
     12px 16px 22px rgba(0, 0, 0, 0.16);
 }
 
-:global(.dark) .statsCard {
+:global(.dark) .heroSection__statsCard {
   background-color: #374151;
   border-color: #4b5563;
 }
 
-:global(.dark) .statsSection {
+:global(.dark) .heroSection__statsSection {
   border-color: #4b5563;
 }
 
-.statsSection {
+.heroSection__statsSection {
   border-right: 1px solid var(--color-border);
   padding-right: 1.5rem;
   flex-shrink: 0;
@@ -248,14 +248,14 @@
   min-width: 7.5rem;
 }
 
-.statsLabel {
+.heroSection__statsLabel {
   margin: 0.35rem 0 0;
   font-weight: 500;
   line-height: 1.2;
   color: var(--color-text-primary);
 }
 
-.statsContent {
+.heroSection__statsContent {
   flex: 0 1 auto;
   min-width: 0;
   display: flex;
@@ -264,14 +264,14 @@
   gap: 1.5rem;
 }
 
-.statsText {
+.heroSection__statsText {
   color: var(--color-text-secondary);
   margin: 0;
   line-height: 1.45;
   max-width: 100%;
 }
 
-.statsNumber {
+.heroSection__statsNumber {
   font-size: 2.75rem;
   font-weight: bold;
   color: var(--color-primary);
@@ -280,14 +280,14 @@
   text-align: center;
 }
 
-.statsNumber sup {
+.heroSection__statsNumber sup {
   font-size: 1.25rem;
   top: -0.75rem;
   position: relative;
 }
 
 /* Avatar group styling */
-.statsActions {
+.heroSection__statsActions {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -296,7 +296,7 @@
   min-width: 0;
 }
 
-.avatarGroup {
+.heroSection__avatarGroup {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
@@ -304,7 +304,7 @@
   min-width: 0;
 }
 
-.avatar {
+.heroSection__avatar {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -316,29 +316,29 @@
   margin-left: -0.75rem;
 }
 
-.avatar:first-child {
+.heroSection__avatar:first-child {
   margin-left: 0;
 }
 
-.avatar:hover {
+.heroSection__avatar:hover {
   transform: translateY(-3px);
   z-index: 10;
 }
 
-.avatarMore {
+.heroSection__avatarMore {
   text-decoration: none;
   transition: transform 0.2s ease;
 }
 
-.avatarMore:hover {
+.heroSection__avatarMore:hover {
   transform: translateY(-3px);
 }
 
-.avatarMore:hover .moreButton {
+.heroSection__avatarMore:hover .heroSection__moreButton {
   background-color: var(--color-primary-dark, #ea580c);
 }
 
-.plusAvatar {
+.heroSection__plusAvatar {
   transition: transform 0.2s ease;
   background-color: var(
     --color-orange-100,
@@ -350,18 +350,18 @@
   justify-content: center;
 }
 
-.plusIcon {
+.heroSection__plusIcon {
   width: 1.25rem;
   height: 1.25rem;
   color: currentColor;
 }
 
-.plusAvatar:hover {
+.heroSection__plusAvatar:hover {
   transform: translateY(-3px);
   z-index: 10;
 }
 
-.moreLink {
+.heroSection__moreLink {
   flex-shrink: 0;
   margin-left: auto;
   text-decoration: none;
@@ -372,7 +372,7 @@
   font: inherit;
 }
 
-.moreButton {
+.heroSection__moreButton {
   transition: all 0.2s ease;
   white-space: nowrap;
   height: 36px;
@@ -388,12 +388,12 @@
   text-decoration: none;
 }
 
-.moreButton:hover {
+.heroSection__moreButton:hover {
   background-color: var(--color-primary-dark, #ea580c);
   transform: translateY(-3px);
 }
 
-.moreButtonInner {
+.heroSection__moreButtonInner {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -401,7 +401,7 @@
   line-height: 1;
 }
 
-.moreButton svg {
+.heroSection__moreButton svg {
   position: relative;
   top: 0;
   margin: 0;
@@ -411,13 +411,13 @@
   flex-shrink: 0;
 }
 
-.moreButtonIcon {
+.heroSection__moreButtonIcon {
   width: 1rem;
   height: 1rem;
   margin-left: 0.25rem;
 }
 
-.moreText {
+.heroSection__moreText {
   display: block;
   line-height: 1;
 }
@@ -464,24 +464,24 @@
 }
 
 /* Animation classes */
-.animateFloat {
+.heroSection__animateFloat {
   animation: float 3s ease-in-out infinite;
 }
 
-.animateFloatDelayed {
+.heroSection__animateFloatDelayed {
   animation: float-delayed 3s ease-in-out infinite 1.5s;
 }
 
-.animateSlowSpin {
+.heroSection__animateSlowSpin {
   animation: slow-spin 20s linear infinite;
 }
 
-.animatePulse {
+.heroSection__animatePulse {
   animation: pulse-slow 4s ease-in-out infinite;
 }
 
 /* Hero grid layout */
-.heroGrid {
+.heroSection__heroGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 3rem;
@@ -490,59 +490,59 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .heroTitle {
+  .heroSection__heroTitle {
     font-size: 2.5rem;
   }
 
-  .heroSubtitle {
+  .heroSection__heroSubtitle {
     font-size: 1rem;
     max-width: 100%;
   }
 
-  .heroImageContainer {
+  .heroSection__heroImageContainer {
     max-width: 400px;
     margin: 0 auto; /* Center on mobile only */
   }
 
   /* Adjust floating card positions for mobile */
-  .floatingCardTop {
+  .heroSection__floatingCardTop {
     top: 1rem;
     right: -0.5rem;
   }
 
-  .floatingCardBottom {
+  .heroSection__floatingCardBottom {
     bottom: -0.25rem;
     left: -2rem;
   }
 
-  .decorationGradientCircle {
+  .heroSection__decorationGradientCircle {
     width: 3rem;
     height: 3rem;
   }
 
-  .decorationCircleOutline {
+  .heroSection__decorationCircleOutline {
     width: 2rem;
     height: 2rem;
   }
 
-  .statsCard {
+  .heroSection__statsCard {
     flex-direction: column;
     gap: 1rem;
     padding: 1rem;
   }
 
-  .statsSection {
+  .heroSection__statsSection {
     border-right: none;
     border-bottom: 1px solid var(--color-border);
     padding-right: 0;
     padding-bottom: 1rem;
   }
 
-  .heroGrid {
+  .heroSection__heroGrid {
     min-width: 0;
   }
 
-  .statsActions {
+  .heroSection__statsActions {
     flex-wrap: wrap;
     grid-template-columns: 1fr;
     gap: 2rem;

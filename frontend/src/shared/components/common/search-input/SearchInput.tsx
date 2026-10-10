@@ -28,22 +28,22 @@ const SearchInput: React.FC<SearchInputProps> = ({
     onChange("");
   };
 
-  const containerClass = `${styles.searchInputContainer} ${styles[variant]} ${
-    fullWidth ? styles.fullWidth : ""
+  const containerClass = `${styles.searchInput__searchInputContainer} ${styles[variant]} ${
+    fullWidth ? styles["searchInput--fullWidth"] : ""
   } ${className}`;
   const inputClass = `${styles.searchInput} ${styles[variant]}`;
 
   return (
-    <div className={`${styles.searchGroup} ${fullWidth ? styles.searchGroupFull : ""}`}>
+    <div className={`${styles.searchInput__searchGroup} ${fullWidth ? styles.searchInput__searchGroupFull : ""}`}>
       {showLabel && (
-        <label htmlFor={id} className={styles.searchLabel}>
+        <label htmlFor={id} className={styles.searchInput__searchLabel}>
           {label}:
         </label>
       )}
       <div className={containerClass}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className={styles.searchIcon}
+          className={styles.searchInput__searchIcon}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -65,7 +65,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
         />
         {value && (
           <button
-            className={styles.searchClear}
+            className={styles.searchInput__searchClear}
             onClick={handleClear}
             type="button"
             aria-label="Clear search"

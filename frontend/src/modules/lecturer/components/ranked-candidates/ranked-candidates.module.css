@@ -1,8 +1,8 @@
-.rankingsListContainer {
+.rankedCandidates__rankingsListContainer {
   padding: 1rem 0;
 }
 
-.slotSummary {
+.rankedCandidates__slotSummary {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -15,19 +15,19 @@
   color: var(--color-text-secondary);
 }
 
-.slotSummary strong {
+.rankedCandidates__slotSummary strong {
   color: var(--color-text-primary);
   font-size: 0.875rem;
 }
 
-.slotHint {
+.rankedCandidates__slotHint {
   font-size: 0.75rem;
   font-style: italic;
   line-height: 1.4;
 }
 
 /* Course Info Section */
-.courseInfo {
+.rankedCandidates__courseInfo {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -38,7 +38,7 @@
   margin-bottom: 1.5rem;
 }
 
-.courseInfoContent {
+.rankedCandidates__courseInfoContent {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -46,13 +46,13 @@
   font-size: 0.875rem;
 }
 
-.courseInfoIcon {
+.rankedCandidates__courseInfoIcon {
   width: 1.25rem;
   height: 1.25rem;
   color: var(--color-primary);
 }
 
-.rankingStats {
+.rankedCandidates__rankingStats {
   font-size: 0.75rem;
   color: var(--color-text-secondary);
   background-color: var(--color-bg-tertiary);
@@ -61,7 +61,7 @@
   border: 1px solid var(--color-border);
 }
 
-.emptyRankings {
+.rankedCandidates__emptyRankings {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -70,25 +70,25 @@
   text-align: center;
 }
 
-.emptyRankingsIcon {
+.rankedCandidates__emptyRankingsIcon {
   color: var(--color-primary);
   opacity: 0.3;
   margin-bottom: 1.5rem;
 }
 
-.emptyRankingsTitle {
+.rankedCandidates__emptyRankingsTitle {
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 0.5rem;
 }
 
-.emptyRankingsText {
+.rankedCandidates__emptyRankingsText {
   color: var(--color-text-secondary);
   margin-bottom: 0.75rem;
 }
 
-.emptyRankingsHelp {
+.rankedCandidates__emptyRankingsHelp {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   font-style: italic;
@@ -96,7 +96,7 @@
   text-align: center;
 }
 
-.rankedItem {
+.rankedCandidates__rankedItem {
   display: flex;
   align-items: flex-start;
   background-color: var(--color-bg-primary);
@@ -110,13 +110,13 @@
   transition: all 0.3s ease;
 }
 
-.rankedItem:hover {
+.rankedCandidates__rankedItem:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.05);
   border-color: rgba(249, 115, 22, 0.3);
 }
 
-.rankBadge {
+.rankedCandidates__rankBadge {
   min-width: 80px;
   height: 70px;
   background: linear-gradient(
@@ -136,14 +136,14 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-.rankNumber {
+.rankedCandidates__rankNumber {
   font-weight: 700;
   font-size: 1.5rem;
   line-height: 1;
   margin-bottom: 2px;
 }
 
-.rankLabel {
+.rankedCandidates__rankLabel {
   font-weight: 500;
   font-size: 0.7rem;
   text-transform: uppercase;
@@ -152,16 +152,16 @@
   line-height: 1;
 }
 
-.rankedInfo {
+.rankedCandidates__rankedInfo {
   flex: 1;
   min-width: 0;
 }
 
-.rankedHeader {
+.rankedCandidates__rankedHeader {
   margin-bottom: 0.5rem;
 }
 
-.rankedName {
+.rankedCandidates__rankedName {
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 0.25rem;
@@ -169,27 +169,27 @@
   line-height: 1.4;
 }
 
-.rankedEmail {
+.rankedCandidates__rankedEmail {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   opacity: 0.8;
 }
 
-.rankedCourses {
+.rankedCandidates__rankedCourses {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   margin-bottom: 0.75rem;
   line-height: 1.4;
 }
 
-.rankedSkills {
+.rankedCandidates__rankedSkills {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
 }
 
-.rankedSkill {
+.rankedCandidates__rankedSkill {
   background-color: rgba(249, 115, 22, 0.1);
   color: var(--color-primary);
   font-size: 0.75rem;
@@ -199,7 +199,7 @@
   font-weight: 500;
 }
 
-.moreSkills {
+.rankedCandidates__moreSkills {
   color: var(--color-text-secondary);
   font-size: 0.75rem;
   font-style: italic;
@@ -207,7 +207,7 @@
 }
 
 /* Comment Display */
-.rankedComment {
+.rankedCandidates__rankedComment {
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
@@ -218,7 +218,7 @@
   margin-top: 0.5rem;
 }
 
-.commentIcon {
+.rankedCandidates__commentIcon {
   width: 1rem;
   height: 1rem;
   color: var(--color-text-secondary);
@@ -226,14 +226,14 @@
   margin-top: 0.125rem;
 }
 
-.commentText {
+.rankedCandidates__commentText {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   line-height: 1.4;
   font-style: italic;
 }
 
-.rankedActions {
+.rankedCandidates__rankedActions {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -241,12 +241,12 @@
   align-self: flex-start;
 }
 
-.moveActions {
+.rankedCandidates__moveActions {
   display: flex;
   gap: 0.25rem;
 }
 
-.rankBtn {
+.rankedCandidates__rankBtn {
   width: 32px;
   height: 32px;
   border-radius: 0.375rem;
@@ -260,40 +260,40 @@
   color: var(--color-text-secondary);
 }
 
-.rankBtn svg {
+.rankedCandidates__rankBtn svg {
   width: 16px;
   height: 16px;
 }
 
-.rankBtn:hover {
+.rankedCandidates__rankBtn:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.moveUpBtn:hover,
-.moveDownBtn:hover {
+.rankedCandidates__moveUpBtn:hover,
+.rankedCandidates__moveDownBtn:hover {
   background-color: rgba(249, 115, 22, 0.1);
   color: var(--color-primary);
   border-color: var(--color-primary);
 }
 
-.removeBtn:hover {
+.rankedCandidates__removeBtn:hover {
   background-color: rgba(239, 68, 68, 0.1);
   color: #ef4444;
   border-color: #ef4444;
 }
 
-.rankBtn:disabled {
+.rankedCandidates__rankBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.rankBtn:disabled:hover {
+.rankedCandidates__rankBtn:disabled:hover {
   transform: none;
   box-shadow: none;
 }
 
-.rankingsNote {
+.rankedCandidates__rankingsNote {
   display: flex;
   align-items: center;
   font-size: 0.875rem;
@@ -304,7 +304,7 @@
   border-radius: 0.5rem;
 }
 
-.noteIcon {
+.rankedCandidates__noteIcon {
   width: 16px;
   height: 16px;
   margin-right: 0.5rem;
@@ -312,43 +312,43 @@
 }
 
 /* Dark mode styles */
-.dark .courseInfo {
+.rankedCandidates__dark .rankedCandidates__courseInfo {
   background-color: #374151;
   border-color: #4b5563;
 }
 
 
 
-.dark .rankedItem {
+.rankedCandidates__dark .rankedCandidates__rankedItem {
   background-color: rgba(255, 255, 255, 0.03);
   border-color: #374151;
 }
 
-.dark .rankedItem:hover {
+.rankedCandidates__dark .rankedCandidates__rankedItem:hover {
   background-color: rgba(255, 255, 255, 0.05);
   border-color: rgba(249, 115, 22, 0.4);
 }
 
-.dark .rankedComment {
+.rankedCandidates__dark .rankedCandidates__rankedComment {
   background-color: #374151;
   border-color: #4b5563;
 }
 
-.dark .rankBtn {
+.rankedCandidates__dark .rankedCandidates__rankBtn {
   background-color: #374151;
   border-color: #4b5563;
 }
 
-.dark .rankBtn:hover {
+.rankedCandidates__dark .rankedCandidates__rankBtn:hover {
   background-color: #4b5563;
 }
 
-.dark .rankingsNote {
+.rankedCandidates__dark .rankedCandidates__rankingsNote {
   background-color: rgba(249, 115, 22, 0.1);
 }
 
 /* Container and layout styles moved from dashboard */
-.rankingsContainer {
+.rankedCandidates__rankingsContainer {
   background-color: var(--color-bg-primary);
   border-radius: 1rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -356,14 +356,14 @@
   padding: 1.5rem;
 }
 
-.rankingsTitle {
+.rankedCandidates__rankingsTitle {
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 1rem;
 }
 
-.courseFilter {
+.rankedCandidates__courseFilter {
   margin-bottom: 1rem;
   display: flex;
   justify-content: flex-end;
@@ -371,11 +371,11 @@
   gap: 0.5rem;
 }
 
-.courseFilter label {
+.rankedCandidates__courseFilter label {
   font-weight: 500;
 }
 
-.filterNote {
+.rankedCandidates__filterNote {
   background-color: var(--color-info-light, rgba(59, 130, 246, 0.1));
   border-left: 4px solid var(--color-info, #3b82f6);
   color: var(--color-info-dark, #1e40af);
@@ -388,38 +388,38 @@
   font-size: 0.875rem;
 }
 
-.noteIcon {
+.rankedCandidates__noteIcon {
   width: 16px;
   height: 16px;
   margin-top: 0.125rem;
   flex-shrink: 0;
 }
 
-.rankingsList {
+.rankedCandidates__rankingsList {
   min-height: 200px;
 }
 
 /* Dark mode for container styles */
-.dark .rankingsContainer {
+.rankedCandidates__dark .rankedCandidates__rankingsContainer {
   background-color: var(--color-bg-primary);
   border-color: var(--color-border);
 }
 
-.dark .rankingsTitle {
+.rankedCandidates__dark .rankedCandidates__rankingsTitle {
   color: var(--color-text-primary);
 }
 
-.dark .filterNote {
+.rankedCandidates__dark .rankedCandidates__filterNote {
   background-color: var(--color-info-dark-bg, rgba(59, 130, 246, 0.15));
   color: var(--color-info-light, #60a5fa);
 }
 
-.dark .noteIcon {
+.rankedCandidates__dark .rankedCandidates__noteIcon {
   color: var(--color-info-light, #60a5fa);
 }
 
 /* Filter select styling moved from dashboard */
-.filterSelect {
+.rankedCandidates__filterSelect {
   padding: 0.5rem;
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
@@ -436,16 +436,16 @@
   padding-right: 2.5rem;
 }
 
-.filterSelect:focus {
+.rankedCandidates__filterSelect:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--color-primary-light, rgba(249, 115, 22, 0.1));
 }
 
-.filterSelect::-ms-expand {
+.rankedCandidates__filterSelect::-ms-expand {
   display: none;
 }
 
-.dark .filterSelect {
+.rankedCandidates__dark .rankedCandidates__filterSelect {
   background-color: var(--color-bg-secondary);
 }

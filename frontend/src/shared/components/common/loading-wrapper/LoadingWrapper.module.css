@@ -1,4 +1,4 @@
-.loadingContainer {
+.loadingWrapper__loadingContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -10,7 +10,7 @@
 }
 
 /* Loading message with better typography */
-.loadingMessage {
+.loadingWrapper__loadingMessage {
   margin-top: 1rem;
   color: var(--color-text-secondary);
   font-size: 0.95rem;
@@ -24,17 +24,17 @@
 
 /* Responsive adjustments */
 @media (max-width: 640px) {
-  .loadingContainer {
+  .loadingWrapper__loadingContainer {
     padding: 1.5rem 1rem;
     min-height: 300px;
   }
   
-  .loadingMessage {
+  .loadingWrapper__loadingMessage {
     font-size: 0.875rem;
   }
 }
 
 /* Dark mode enhancements */
-:global(.dark) .loadingMessage {
+:global(.dark) .loadingWrapper__loadingMessage {
   opacity: 0.9;
 }

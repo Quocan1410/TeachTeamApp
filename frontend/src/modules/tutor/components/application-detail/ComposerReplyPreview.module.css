@@ -1,4 +1,4 @@
-.wrap {
+.composerReplyPreview__wrap {
   margin: 0 0 0.55rem 2.95rem;
   padding: 0.45rem 0.55rem 0.5rem;
   border-radius: 0.55rem;
@@ -6,12 +6,12 @@
   background: color-mix(in srgb, var(--color-bg-primary) 88%, transparent);
 }
 
-.wrapFull {
+.composerReplyPreview__wrapFull {
   margin-left: 0;
   margin-right: 0;
 }
 
-.head {
+.composerReplyPreview__head {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -19,13 +19,13 @@
   margin-bottom: 0.35rem;
 }
 
-.headLabel {
+.composerReplyPreview__headLabel {
   font-size: 0.72rem;
   font-weight: 600;
   color: var(--color-text-secondary);
 }
 
-.dismiss {
+.composerReplyPreview__dismiss {
   width: 1.375rem;
   height: 1.375rem;
   min-width: 1.375rem;
@@ -39,12 +39,12 @@
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.dismiss:hover {
+.composerReplyPreview__dismiss:hover {
   background: color-mix(in srgb, var(--color-border) 70%, transparent);
   color: var(--color-text-secondary);
 }
 
-.quote {
+.composerReplyPreview__quote {
   display: block;
   width: 100%;
   padding: 0.4rem 0.55rem 0.42rem 0.5rem;
@@ -58,33 +58,33 @@
   transition: background 0.14s ease;
 }
 
-.quote:hover:not(:disabled),
-.quote:focus-visible:not(:disabled) {
+.composerReplyPreview__quote:hover:not(:disabled),
+.composerReplyPreview__quote:focus-visible:not(:disabled) {
   background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-secondary));
   outline: none;
 }
 
-.quote:disabled {
+.composerReplyPreview__quote:disabled {
   cursor: default;
 }
 
-:global(.dark) .quote {
+:global(.dark) .composerReplyPreview__quote {
   border-left-color: color-mix(in srgb, #f97316 55%, #ef4444);
   background: color-mix(in srgb, #292524 88%, transparent);
 }
 
-.quoteName {
+.composerReplyPreview__quoteName {
   font-size: 0.76rem;
   font-weight: 700;
   line-height: 1.45;
   color: color-mix(in srgb, var(--color-primary) 80%, #b91c1c);
 }
 
-:global(.dark) .quoteName {
+:global(.dark) .composerReplyPreview__quoteName {
   color: color-mix(in srgb, #fb923c 85%, #fca5a5);
 }
 
-.quoteBody {
+.composerReplyPreview__quoteBody {
   margin: 0;
   font-size: 0.76rem;
   line-height: 1.45;

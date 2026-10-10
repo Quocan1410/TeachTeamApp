@@ -1,5 +1,5 @@
 /* Square / circular hit target with optically centered close icon */
-.iconCloseHit {
+.iconClose__hit {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -10,12 +10,12 @@
   box-sizing: border-box;
 }
 
-.iconCloseCircle {
+.iconClose__circle {
   border-radius: 50%;
   aspect-ratio: 1;
 }
 
-.iconCloseHit svg {
+.iconClose__hit svg {
   display: block;
   flex-shrink: 0;
   pointer-events: none;

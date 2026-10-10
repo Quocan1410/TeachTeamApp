@@ -21,15 +21,15 @@ const ComposerReplyPreview: React.FC<ComposerReplyPreviewProps> = ({
   align = "composer",
 }) => (
   <div
-    className={`${styles.wrap} ${align === "full" ? styles.wrapFull : ""}`}
+    className={`${styles.composerReplyPreview__wrap} ${align === "full" ? styles.composerReplyPreview__wrapFull : ""}`}
     role="status"
     aria-live="polite"
   >
-    <div className={styles.head}>
-      <span className={styles.headLabel}>Replying to {senderName}</span>
+    <div className={styles.composerReplyPreview__head}>
+      <span className={styles.composerReplyPreview__headLabel}>Replying to {senderName}</span>
       <button
         type="button"
-        className={`${styles.dismiss} iconCloseHit iconCloseCircle`}
+        className={`${styles.composerReplyPreview__dismiss} iconClose__hit iconClose__circle`}
         onClick={onDismiss}
         aria-label="Cancel reply"
       >
@@ -38,15 +38,15 @@ const ComposerReplyPreview: React.FC<ComposerReplyPreviewProps> = ({
     </div>
     <button
       type="button"
-      className={styles.quote}
+      className={styles.composerReplyPreview__quote}
       onClick={() => {
         if (targetMessageId) scrollToCorrespondenceMessage(targetMessageId);
       }}
       disabled={!targetMessageId}
       aria-label={`View original message from ${senderName}`}
     >
-      <p className={styles.quoteBody}>
-        <span className={styles.quoteName}>{senderName}:</span> {body}
+      <p className={styles.composerReplyPreview__quoteBody}>
+        <span className={styles.composerReplyPreview__quoteName}>{senderName}:</span> {body}
       </p>
     </button>
   </div>

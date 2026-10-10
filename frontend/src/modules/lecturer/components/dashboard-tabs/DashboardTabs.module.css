@@ -9,7 +9,7 @@
   margin-bottom: 1.5rem;
 }
 
-.tabButton {
+.dashboardTabs__tabButton {
   flex: 1;
   display: flex;
   align-items: center;
@@ -24,17 +24,17 @@
   position: relative;
 }
 
-.tabButton:hover {
+.dashboardTabs__tabButton:hover {
   color: var(--color-primary);
   background-color: var(--color-primary-light, rgba(249, 115, 22, 0.05));
 }
 
-.tabButtonActive {
+.dashboardTabs__tabButtonActive {
   color: var(--color-primary);
   font-weight: 600;
 }
 
-.tabButtonActive::after {
+.dashboardTabs__tabButtonActive::after {
   content: "";
   position: absolute;
   bottom: 0;
@@ -45,7 +45,7 @@
   border-radius: 3px 3px 0 0;
 }
 
-.tabIcon {
+.dashboardTabs__tabIcon {
   width: 20px;
   height: 20px;
   margin-right: 0.5rem;

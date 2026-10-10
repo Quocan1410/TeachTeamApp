@@ -7,7 +7,7 @@
   /* Tailwind py-12 mt-auto are applied on the component itself */
 }
 
-.footerLinksContainer {
+.footer__footerLinksContainer {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -15,47 +15,47 @@
   margin-bottom: 1.5rem; /* mb-6 */
 }
 
-.footerLinkItem {
+.footer__footerLinkItem {
   color: var(--color-text-secondary); /* Default from .footer */
   transition: color 0.2s ease;
   text-decoration: none;
 }
 
-.footerLinkItem:hover {
+.footer__footerLinkItem:hover {
   color: var(
     --color-primary
   ); /* Was text-gray-500, changing to primary for consistency */
 }
 
-.socialIconsContainer {
+.footer__socialIconsContainer {
   display: flex;
   justify-content: center;
   gap: 1rem; /* Corresponds to space-x-4 */
   margin-bottom: 1.5rem; /* mb-6 */
 }
 
-.socialIconLink {
+.footer__socialIconLink {
   color: var(--color-text-secondary); /* Was text-gray-400 */
   transition: color 0.2s ease;
 }
 
-.socialIconLink:hover {
+.footer__socialIconLink:hover {
   color: var(--color-primary); /* Was text-gray-500, changing to primary */
 }
 
-.socialIconSvg {
+.footer__socialIconSvg {
   height: 1.5rem; /* h-6 */
   width: 1.5rem; /* w-6 */
 }
 
-.copyrightText {
+.footer__copyrightText {
   text-align: center;
   font-size: 0.875rem; /* text-sm */
   color: var(--color-text-secondary); /* Default from .footer */
 }
 
 /* Visually hidden class for accessibility, Tailwind's sr-only */
-.srOnly {
+.footer__srOnly {
   position: absolute;
   width: 1px;
   height: 1px;

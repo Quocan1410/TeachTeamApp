@@ -80,6 +80,19 @@ export class PasskeyController {
         });
     }
 
+    async status(req: Request, res: Response): Promise<void> {
+        const user = await this.currentUser(req);
+        if (!user) {
+            res.status(401).json({
+                success: false,
+                message: "Access token is required",
+            });
+            return;
+        }
+        const hasPasskey = await PasskeyService.hasPasskey(user.id);
+        res.status(200).json({ success: true, hasPasskey });
+    }
+
     private async currentUser(req: Request): Promise<User | null> {
         const userId = req.user?.userId;
         if (!userId) return null;

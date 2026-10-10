@@ -1,10 +1,10 @@
-.statsVisualizationContainer {
+.applicantStatsVisualization__statsVisualizationContainer {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.emptyStats {
+.applicantStatsVisualization__emptyStats {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,34 +14,34 @@
   min-height: 300px;
 }
 
-.emptyStatsIcon {
+.applicantStatsVisualization__emptyStatsIcon {
   color: var(--color-text-secondary);
   opacity: 0.3;
   margin-bottom: 1.5rem;
 }
 
-.emptyStatsTitle {
+.applicantStatsVisualization__emptyStatsTitle {
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 0.5rem;
 }
 
-.emptyStatsText {
+.applicantStatsVisualization__emptyStatsText {
   color: var(--color-text-secondary);
 }
 
-.statsHeader {
+.applicantStatsVisualization__statsHeader {
   margin-bottom: 1rem;
 }
 
-.statsSummaryCards {
+.applicantStatsVisualization__statsSummaryCards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
 }
 
-.summaryCard {
+.applicantStatsVisualization__summaryCard {
   display: flex;
   align-items: center;
   padding: 1.25rem;
@@ -52,12 +52,12 @@
   transition: all 0.3s ease;
 }
 
-.summaryCard:hover {
+.applicantStatsVisualization__summaryCard:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
 }
 
-.summaryIcon {
+.applicantStatsVisualization__summaryIcon {
   width: 48px;
   height: 48px;
   min-width: 48px;
@@ -71,64 +71,64 @@
   transition: all 0.3s ease;
 }
 
-.summaryIcon svg {
+.applicantStatsVisualization__summaryIcon svg {
   width: 24px;
   height: 24px;
 }
 
-.summaryIcon.totalIcon {
+.applicantStatsVisualization__summaryIcon.applicantStatsVisualization--totalIcon {
   background-color: var(--stat-icon-total-bg);
   color: var(--stat-icon-total-color);
 }
 
-.totalIcon {
+.applicantStatsVisualization__totalIcon {
   background-color: var(--stat-icon-total-bg);
   color: var(--stat-icon-total-color);
 }
 
-.summaryIcon.selectedIcon {
+.applicantStatsVisualization__summaryIcon.applicantStatsVisualization--selectedIcon {
   background-color: var(--stat-icon-selected-bg);
   color: var(--stat-icon-selected-color);
 }
 
-.selectedIcon {
+.applicantStatsVisualization__selectedIcon {
   background-color: var(--stat-icon-selected-bg);
   color: var(--stat-icon-selected-color);
 }
 
-.summaryIcon.pendingIcon {
+.applicantStatsVisualization__summaryIcon.applicantStatsVisualization--pendingIcon {
   background-color: var(--stat-icon-pending-bg);
   color: var(--stat-icon-pending-color);
 }
 
-.pendingIcon {
+.applicantStatsVisualization__pendingIcon {
   background-color: var(--stat-icon-pending-bg);
   color: var(--stat-icon-pending-color);
 }
 
-.summaryIcon.rateIcon {
+.applicantStatsVisualization__summaryIcon.applicantStatsVisualization--rateIcon {
   background-color: var(--stat-icon-rate-bg);
   color: var(--stat-icon-rate-color);
 }
 
-.rateIcon {
+.applicantStatsVisualization__rateIcon {
   background-color: var(--stat-icon-rate-bg);
   color: var(--stat-icon-rate-color);
 }
 
-.summaryContent {
+.applicantStatsVisualization__summaryContent {
   display: flex;
   flex-direction: column;
 }
 
-.summaryLabel {
+.applicantStatsVisualization__summaryLabel {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   margin-bottom: 0.25rem;
   display: block;
 }
 
-.summaryValue {
+.applicantStatsVisualization__summaryValue {
   font-size: 1.75rem;
   font-weight: 700;
   color: var(--color-text-primary);
@@ -136,20 +136,20 @@
   margin-bottom: 0.25rem;
 }
 
-.summaryDesc {
+.applicantStatsVisualization__summaryDesc {
   font-size: 0.75rem;
   color: var(--color-text-secondary);
   opacity: 0.8;
 }
 
-.statsChartsContainer {
+.applicantStatsVisualization__statsChartsContainer {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
   margin-bottom: 1rem;
 }
 
-.statsChartCard {
+.applicantStatsVisualization__statsChartCard {
   background-color: var(--color-bg-primary);
   border-radius: 0.75rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
@@ -158,26 +158,26 @@
   transition: all 0.3s ease;
 }
 
-.statsChartCard:hover {
+.applicantStatsVisualization__statsChartCard:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
 }
 
-.chartTitle {
+.applicantStatsVisualization__chartTitle {
   font-size: 1rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 1rem;
 }
 
-.pieChartContainer,
-.barChartContainer {
+.applicantStatsVisualization__pieChartContainer,
+.applicantStatsVisualization__barChartContainer {
   height: 200px;
   display: flex;
   justify-content: center;
 }
 
-.customTooltip {
+.applicantStatsVisualization__customTooltip {
   background-color: var(--color-bg-primary);
   border: 1px solid var(--color-border);
   padding: 0.5rem 0.75rem;
@@ -185,90 +185,90 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.tooltipValue {
+.applicantStatsVisualization__tooltipValue {
   color: var(--color-text-primary);
   font-size: 0.875rem;
   margin: 0;
   font-weight: 500;
 }
 
-.chartStats {
+.applicantStatsVisualization__chartStats {
   display: flex;
   justify-content: space-around;
   margin-top: 1rem;
 }
 
-.chartStatItem {
+.applicantStatsVisualization__chartStatItem {
   text-align: center;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
 }
 
-.chartStatItem.selected {
+.applicantStatsVisualization__chartStatItem.applicantStatsVisualization--selected {
   background-color: var(--color-success-light);
 }
-.chartStatItem.pending {
+.applicantStatsVisualization__chartStatItem.applicantStatsVisualization--pending {
   background-color: var(--color-warning-light);
 }
 
-.chartStatItem .statValue {
+.applicantStatsVisualization__chartStatItem .applicantStatsVisualization__statValue {
   color: var(--color-primary);
 } /* Default, can be overridden */
-.chartStatItem.selected .statValue {
+.applicantStatsVisualization__chartStatItem.applicantStatsVisualization--selected .applicantStatsVisualization__statValue {
   color: var(--color-success);
 }
-.chartStatItem.pending .statValue {
+.applicantStatsVisualization__chartStatItem.applicantStatsVisualization--pending .applicantStatsVisualization__statValue {
   color: var(--color-warning);
 }
 
-.statTitle {
+.applicantStatsVisualization__statTitle {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   margin-bottom: 0.25rem;
 }
 
-.statValue {
+.applicantStatsVisualization__statValue {
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 0.25rem;
 }
 
-.statDesc {
+.applicantStatsVisualization__statDesc {
   font-size: 0.75rem;
   color: var(--color-text-secondary);
   opacity: 0.8;
 }
 
-.chartInfo {
+.applicantStatsVisualization__chartInfo {
   margin-top: 1rem;
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   text-align: center;
 }
 
-.topApplicant {
+.applicantStatsVisualization__topApplicant {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.25rem;
 }
 
-.infoLabel {
+.applicantStatsVisualization__infoLabel {
   font-weight: 500;
 }
-.infoValue {
+.applicantStatsVisualization__infoValue {
   color: var(--color-primary);
   font-weight: 600;
 }
-.infoCount {
+.applicantStatsVisualization__infoCount {
   color: var(--color-text-secondary);
 }
-.noData {
+.applicantStatsVisualization__noData {
   font-style: italic;
 }
 
-.statsInsights {
+.applicantStatsVisualization__statsInsights {
   background-color: var(--color-bg-primary);
   border-radius: 0.75rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
@@ -277,42 +277,42 @@
   transition: all 0.3s ease;
 }
 
-.insightsTitle {
+.applicantStatsVisualization__insightsTitle {
   font-size: 1rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 1rem;
 }
 
-.insightsContent {
+.applicantStatsVisualization__insightsContent {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.trendChart,
-.skillsDistribution {
+.applicantStatsVisualization__trendChart,
+.applicantStatsVisualization__skillsDistribution {
   background-color: var(--color-bg-secondary);
   padding: 1rem;
   border-radius: 0.5rem;
   border: 1px solid var(--color-border);
 }
 
-.trendChart h4,
-.skillsDistribution h4 {
+.applicantStatsVisualization__trendChart h4,
+.applicantStatsVisualization__skillsDistribution h4 {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 0.75rem;
 }
 
-.insightsGrid {
+.applicantStatsVisualization__insightsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
 }
 
-.insightItem {
+.applicantStatsVisualization__insightItem {
   display: flex;
   align-items: flex-start;
   background-color: var(--color-bg-secondary);
@@ -321,20 +321,20 @@
   border: 1px solid var(--color-border);
 }
 
-.insightContent h4 {
+.applicantStatsVisualization__insightContent h4 {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 0.5rem;
 }
 
-.insightContent p {
+.applicantStatsVisualization__insightContent p {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   line-height: 1.4;
 }
 
-.insightIcon {
+.applicantStatsVisualization__insightIcon {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -347,35 +347,35 @@
   flex-shrink: 0;
 }
 
-.insightIcon svg {
+.applicantStatsVisualization__insightIcon svg {
   width: 16px;
   height: 16px;
 }
 
-.insightText {
+.applicantStatsVisualization__insightText {
   font-size: 0.875rem;
   color: var(--color-text-primary);
   line-height: 1.4;
 }
 
-.insightText strong {
+.applicantStatsVisualization__insightText strong {
   color: var(--color-primary);
   font-weight: 600;
 }
 
-.dark .summaryCard,
-.dark .statsChartCard,
-.dark .statsInsights,
-.dark .trendChart,
-.dark .skillsDistribution {
+.applicantStatsVisualization__dark .applicantStatsVisualization__summaryCard,
+.applicantStatsVisualization__dark .applicantStatsVisualization__statsChartCard,
+.applicantStatsVisualization__dark .applicantStatsVisualization__statsInsights,
+.applicantStatsVisualization__dark .applicantStatsVisualization__trendChart,
+.applicantStatsVisualization__dark .applicantStatsVisualization__skillsDistribution {
   background-color: var(--color-bg-primary);
   border-color: var(--color-border);
 }
 
-.dark .insightItem {
+.applicantStatsVisualization__dark .applicantStatsVisualization__insightItem {
   background-color: rgba(255, 255, 255, 0.05);
 }
-.dark .customTooltip {
+.applicantStatsVisualization__dark .applicantStatsVisualization__customTooltip {
   background-color: #1f2937;
   border-color: #374151;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
@@ -387,29 +387,29 @@
 /* :global(.recharts-cartesian-grid-horizontal line), :global(.recharts-cartesian-grid-vertical line) { stroke: var(--color-border) !important; } */
 
 @media (max-width: 768px) {
-  .statsChartsContainer,
-  .insightsContent {
+  .applicantStatsVisualization__statsChartsContainer,
+  .applicantStatsVisualization__insightsContent {
     grid-template-columns: 1fr;
   }
-  .chartStats {
+  .applicantStatsVisualization__chartStats {
     flex-direction: column;
     align-items: center;
     gap: 0.75rem;
   }
-  .chartStatItem {
+  .applicantStatsVisualization__chartStatItem {
     width: 100%;
     max-width: 200px;
   }
 }
 
-.lineChartContainer {
+.applicantStatsVisualization__lineChartContainer {
   height: 200px;
   display: flex;
   justify-content: center;
 }
 
 /* Ensure skillsListContainer has the chart styling */
-.skillsListContainer {
+.applicantStatsVisualization__skillsListContainer {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -419,14 +419,14 @@
   border: 1px solid var(--color-border);
 }
 
-.skillsListContainer h4 {
+.applicantStatsVisualization__skillsListContainer h4 {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 0.75rem;
 }
 
-.skillStatItem {
+.applicantStatsVisualization__skillStatItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -437,26 +437,26 @@
   transition: all 0.2s ease;
 }
 
-.skillStatItem:hover {
+.applicantStatsVisualization__skillStatItem:hover {
   background-color: var(--color-bg-hover);
   transform: translateY(-1px);
 }
 
-.skillName {
+.applicantStatsVisualization__skillName {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-text-primary);
   flex: 1;
 }
 
-.skillCount {
+.applicantStatsVisualization__skillCount {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   min-width: 80px;
 }
 
-.skillCount span {
+.applicantStatsVisualization__skillCount span {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-primary);
@@ -464,7 +464,7 @@
   text-align: right;
 }
 
-.skillBar {
+.applicantStatsVisualization__skillBar {
   height: 4px;
   background-color: var(--color-primary);
   border-radius: 2px;
@@ -473,7 +473,7 @@
 }
 
 /* Container styles moved from dashboard */
-.analyticsContainer {
+.applicantStatsVisualization__analyticsContainer {
   background-color: var(--color-bg-primary);
   border-radius: 1rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -481,69 +481,69 @@
   padding: 1.5rem;
 }
 
-.analyticsTitle {
+.applicantStatsVisualization__analyticsTitle {
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 1rem;
 }
 
-.analyticsContent {
+.applicantStatsVisualization__analyticsContent {
   min-height: 300px;
 }
 
 /* Dark mode for container styles */
-.dark .analyticsContainer {
+.applicantStatsVisualization__dark .applicantStatsVisualization__analyticsContainer {
   background-color: var(--color-bg-primary);
   border-color: var(--color-border);
 }
 
-.dark .analyticsTitle {
+.applicantStatsVisualization__dark .applicantStatsVisualization__analyticsTitle {
   color: var(--color-text-primary);
 }
 
 /* Icon size classes for consistency */
-.iconLarge {
+.applicantStatsVisualization__iconLarge {
   width: 48px;
   height: 48px;
 }
 
-.iconMedium {
+.applicantStatsVisualization__iconMedium {
   width: 24px;
   height: 24px;
 }
 
-.iconSmall {
+.applicantStatsVisualization__iconSmall {
   width: 20px;
   height: 20px;
 }
 
 /* Additional styles for detailed chart stats */
-.statDetails {
+.applicantStatsVisualization__statDetails {
   margin-top: 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
 
-.statDetailItem {
+.applicantStatsVisualization__statDetailItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 0.75rem;
 }
 
-.detailLabel {
+.applicantStatsVisualization__detailLabel {
   color: var(--color-text-secondary);
   font-weight: 500;
 }
 
-.detailValue {
+.applicantStatsVisualization__detailValue {
   color: var(--color-text-primary);
   font-weight: 600;
 }
 
-.detailBadge {
+.applicantStatsVisualization__detailBadge {
   padding: 0.125rem 0.5rem;
   border-radius: 0.25rem;
   font-size: 0.675rem;
@@ -551,12 +551,12 @@
   text-transform: uppercase;
 }
 
-.detailBadge.success {
+.applicantStatsVisualization__detailBadge.applicantStatsVisualization--success {
   background-color: var(--color-success-light);
   color: var(--color-success);
 }
 
-.detailBadge.warning {
+.applicantStatsVisualization__detailBadge.applicantStatsVisualization--warning {
   background-color: var(--color-warning-light);
   color: var(--color-warning);
 }

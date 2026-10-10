@@ -205,7 +205,14 @@ export class AuthService {
 
     static async updateProfile(
         userId: string,
-        body: { firstName: string; lastName: string; honorific?: string }
+        body: {
+            firstName: string;
+            lastName: string;
+            honorific?: string;
+            description?: string | null;
+            skills?: string | null;
+            website?: string | null;
+        }
     ): Promise<AuthServiceResult<{ user: User }>> {
         const user = await this.userRepository.findOne({
             where: { id: userId },
@@ -245,6 +252,19 @@ export class AuthService {
             ) {
                 user.honorific = trimmed;
             }
+        }
+
+        if (typeof body.description === "string") {
+            const description = body.description.trim();
+            user.description = description ? description.slice(0, 1000) : null;
+        }
+        if (typeof body.skills === "string") {
+            const skills = body.skills.trim();
+            user.skills = skills ? skills.slice(0, 500) : null;
+        }
+        if (typeof body.website === "string") {
+            const website = body.website.trim();
+            user.website = website ? website.slice(0, 255) : null;
         }
 
         const updatedUser = await this.userRepository.save(user);

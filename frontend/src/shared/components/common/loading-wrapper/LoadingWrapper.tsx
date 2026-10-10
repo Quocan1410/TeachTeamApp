@@ -34,9 +34,9 @@ const LoadingWrapper: React.FC<LoadingWrapperProps> = ({
     };
 
     return (
-      <div className={styles.loadingContainer} style={containerStyle}>
+      <div className={styles.loadingWrapper__loadingContainer} style={containerStyle}>
         <LoadingIcon size={40} />
-        <p className={styles.loadingMessage}>{loadingMessage}</p>
+        <p className={styles.loadingWrapper__loadingMessage}>{loadingMessage}</p>
       </div>
     );
   }

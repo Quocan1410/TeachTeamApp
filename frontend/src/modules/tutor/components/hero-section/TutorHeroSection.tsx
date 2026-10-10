@@ -62,25 +62,25 @@ const TutorHeroSection: React.FC<TutorHeroSectionProps> = ({
 
   return (
     <section className={styles.tutorHeroSection}>
-      <div className={styles.inner}>
-        <h1 className={styles.tutorHeroTitle}>
+      <div className={styles.tutorHeroSection__inner}>
+        <h1 className={styles.tutorHeroSection__tutorHeroTitle}>
           Find your{" "}
-          <span className={styles.doubleWord} data-text="Teaching Roles">
+          <span className={styles.tutorHeroSection__doubleWord} data-text="Teaching Roles">
             Teaching Roles
           </span>
         </h1>
 
-        <div className={styles.heroRow}>
-          <div className={styles.searchCol}>{children}</div>
-          <div className={styles.mascotCol}>
+        <div className={styles.tutorHeroSection__heroRow}>
+          <div className={styles.tutorHeroSection__searchCol}>{children}</div>
+          <div className={styles.tutorHeroSection__mascotCol}>
             <button
               type="button"
-              className={styles.mascotButton}
+              className={styles.tutorHeroSection__mascotButton}
               aria-expanded={notesOpen}
               onClick={() => setNotesOpen((open) => !open)}
             >
               {!notesOpen && bubbleOn && (
-                <span key={line} className={styles.bubble} aria-live="polite">
+                <span key={line} className={styles.tutorHeroSection__bubble} aria-live="polite">
                   {LINES[line]}
                 </span>
               )}
@@ -89,12 +89,12 @@ const TutorHeroSection: React.FC<TutorHeroSectionProps> = ({
                 alt=""
                 width={320}
                 height={320}
-                className={styles.mascot}
+                className={styles.tutorHeroSection__mascot}
               />
             </button>
             {notesOpen && (
-              <div className={styles.notes} role="note">
-                <p className={styles.notesTitle}>A few useful notes</p>
+              <div className={styles.tutorHeroSection__notes} role="note">
+                <p className={styles.tutorHeroSection__notesTitle}>A few useful notes</p>
                 <ul>
                   {NOTES.map((note) => (
                     <li key={note}>{note}</li>
@@ -106,7 +106,7 @@ const TutorHeroSection: React.FC<TutorHeroSectionProps> = ({
         </div>
 
         {reminders.length > 0 && (
-          <ul className={styles.reminders}>
+          <ul className={styles.tutorHeroSection__reminders}>
             {reminders.map((item) => (
               <li key={item.id}>
                 {item.courseCode} has about {item.daysLeft}{" "}

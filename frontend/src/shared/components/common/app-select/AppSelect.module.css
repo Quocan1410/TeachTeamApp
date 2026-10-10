@@ -1,14 +1,14 @@
-.root {
+.appSelect__root {
   position: relative;
   width: 100%;
   overflow: visible;
 }
 
-.rootOpen {
+.appSelect__rootOpen {
   z-index: 200;
 }
 
-.trigger {
+.appSelect__trigger {
   width: 100%;
   display: flex;
   align-items: center;
@@ -31,29 +31,29 @@
   box-shadow: 0 0 0 3px transparent;
 }
 
-.trigger:hover:not(:disabled) {
+.appSelect__trigger:hover:not(:disabled):not(.appSelect__triggerOpen) {
   border-color: var(--color-primary);
-  background-color: var(--color-bg-secondary);
+  background-color: var(--color-bg-primary);
 }
 
-.trigger:focus-visible {
+.appSelect__trigger:focus-visible {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
 }
 
-.triggerOpen {
+.appSelect__triggerOpen {
   border-color: var(--color-primary);
   background-color: var(--color-bg-secondary);
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
 }
 
-.trigger:disabled {
+.appSelect__trigger:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
 
-.triggerLabel {
+.appSelect__triggerLabel {
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -61,7 +61,7 @@
   white-space: nowrap;
 }
 
-.chevron {
+.appSelect__chevron {
   flex-shrink: 0;
   width: 1rem;
   height: 1rem;
@@ -72,16 +72,19 @@
   transition: transform 0.2s ease;
 }
 
-.triggerOpen .chevron {
+.appSelect__triggerOpen .appSelect__chevron {
   transform: rotate(180deg);
 }
 
-.menu {
+.appSelect__menu {
   position: absolute;
   z-index: 201;
   top: calc(100% + 0.35rem);
   left: 0;
   right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
   margin: 0;
   padding: 0.35rem;
   list-style: none;
@@ -92,16 +95,53 @@
   max-height: 16rem;
   overflow-y: auto;
   box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(249, 115, 22, 0.45) transparent;
 }
 
-.option {
+.appSelect__menu li {
+  margin: 0;
+  padding: 0;
+}
+
+.appSelect__menu::-webkit-scrollbar {
+  width: 0.1875rem;
+  height: 0.1875rem;
+}
+
+.appSelect__menu::-webkit-scrollbar-button,
+.appSelect__menu::-webkit-scrollbar-corner {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.appSelect__menu::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 0.2rem 0;
+}
+
+.appSelect__menu::-webkit-scrollbar-thumb {
+  border: 0;
+  border-radius: 999px;
+  background-color: rgba(249, 115, 22, 0.55);
+}
+
+.appSelect__menu::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(249, 115, 22, 0.62);
+}
+
+.appSelect__option {
   width: 100%;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
   padding: 0.625rem 0.75rem;
   border: none;
   border-radius: 0.4rem;
   background: transparent;
-  color: var(--color-text-primary);
+  color: var(--color-text-secondary);
   font-size: 0.875rem;
   font-weight: 500;
   text-align: left;
@@ -109,17 +149,37 @@
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.option:hover {
-  background: rgba(249, 115, 22, 0.08);
+.appSelect__optionLabel {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.appSelect__optionTick {
+  flex-shrink: 0;
+  width: 0.9rem;
+  height: 0.9rem;
   color: var(--color-primary);
 }
 
-.optionSelected {
+.appSelect__option:hover:not(.appSelect__optionSelected) {
+  background: rgba(15, 23, 42, 0.06);
+  color: var(--color-text-primary);
+}
+
+.appSelect__optionSelected,
+.appSelect__optionSelected:hover {
   background: rgba(249, 115, 22, 0.12);
   color: var(--color-primary);
+  font-weight: 650;
 }
 
-.optionDefault {
+.appSelect__optionSelected:hover {
+  background: rgba(249, 115, 22, 0.18);
+}
+
+.appSelect__optionDefault {
   display: block;
   padding: 0.5rem 0.75rem 0.35rem;
   color: var(--color-text-tertiary);
@@ -131,12 +191,12 @@
   pointer-events: none;
 }
 
-.triggerDefault .triggerLabel {
+.appSelect__triggerDefault .appSelect__triggerLabel {
   color: var(--color-text-secondary);
   font-weight: 500;
 }
 
-.triggerPill {
+.appSelect__triggerPill {
   padding: 1rem 1.5rem;
   min-height: 3.25rem;
   border-radius: 25px;
@@ -145,71 +205,80 @@
   box-shadow: none;
 }
 
-.trigger.triggerPill:hover:not(:disabled):not(.triggerPillOpen) {
+.appSelect__trigger.appSelect--triggerPill:hover:not(:disabled):not(.appSelect__triggerPillOpen) {
   border-color: var(--color-primary);
   background-color: var(--color-bg-secondary);
 }
 
-.trigger.triggerPillOpen,
-.trigger.triggerPillOpen:hover {
+.appSelect__trigger.appSelect--triggerPillOpen,
+.appSelect__trigger.appSelect--triggerPillOpen:hover {
   outline: none;
   border-color: var(--color-primary);
   background-color: var(--color-bg-primary);
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
 }
 
-.trigger.triggerPill:focus-visible:not(.triggerPillOpen) {
+.appSelect__trigger.appSelect--triggerPill:focus-visible:not(.appSelect__triggerPillOpen) {
   outline: none;
   border-color: var(--color-primary);
   background-color: var(--color-bg-primary);
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
 }
 
-.trigger.triggerPill:focus:not(:focus-visible):not(.triggerPillOpen) {
+.appSelect__trigger.appSelect--triggerPill:focus:not(:focus-visible):not(.appSelect__triggerPillOpen) {
   outline: none;
   box-shadow: none;
   border-color: var(--color-border);
   background-color: var(--color-bg-secondary);
 }
 
-.triggerError,
-.triggerError.triggerPillOpen,
-.triggerError.triggerPillOpen:hover {
+.appSelect__triggerError,
+.appSelect__triggerError.appSelect--triggerPillOpen,
+.appSelect__triggerError.appSelect--triggerPillOpen:hover {
   border-color: #ef4444 !important;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
 }
 
-.triggerPillOpen .chevron {
+.appSelect__triggerPillOpen .appSelect__chevron {
   transform: rotate(180deg);
 }
 
-.triggerDefault .chevron {
+.appSelect__triggerDefault .appSelect__chevron {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af' stroke-width='2'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='m6 9 6 6 6-6'/%3e%3c/svg%3e");
 }
 
-:global(.dark) .menu,
-:global(html[data-theme="dark"]) .menu {
+:global(.dark) .appSelect__menu,
+:global(html[data-theme="dark"]) .appSelect__menu {
   background: var(--color-bg-secondary);
   border-color: rgba(255, 255, 255, 0.1);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
 }
 
-:global(.dark) .option:hover,
-:global(html[data-theme="dark"]) .option:hover {
-  background: rgba(249, 115, 22, 0.14);
+:global(.dark) .appSelect__option:hover:not(.appSelect__optionSelected),
+:global(html[data-theme="dark"]) .appSelect__option:hover:not(.appSelect__optionSelected) {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-text-primary);
 }
 
-:global(.dark) .optionSelected,
-:global(html[data-theme="dark"]) .optionSelected {
-  background: rgba(249, 115, 22, 0.2);
+:global(.dark) .appSelect__optionSelected,
+:global(.dark) .appSelect__optionSelected:hover,
+:global(html[data-theme="dark"]) .appSelect__optionSelected,
+:global(html[data-theme="dark"]) .appSelect__optionSelected:hover {
+  background: rgba(249, 115, 22, 0.16);
+  color: #fdba74;
 }
 
-:global(.dark) .optionDefault,
-:global(html[data-theme="dark"]) .optionDefault {
+:global(.dark) .appSelect__optionSelected:hover,
+:global(html[data-theme="dark"]) .appSelect__optionSelected:hover {
+  background: rgba(249, 115, 22, 0.24);
+}
+
+:global(.dark) .appSelect__optionDefault,
+:global(html[data-theme="dark"]) .appSelect__optionDefault {
   color: rgba(255, 255, 255, 0.42);
 }
 
-:global(.dark) .triggerDefault .triggerLabel,
-:global(html[data-theme="dark"]) .triggerDefault .triggerLabel {
+:global(.dark) .appSelect__triggerDefault .appSelect__triggerLabel,
+:global(html[data-theme="dark"]) .appSelect__triggerDefault .appSelect__triggerLabel {
   color: rgba(255, 255, 255, 0.55);
 }

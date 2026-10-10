@@ -105,7 +105,7 @@ const MessageHoverToolbar: React.FC<MessageHoverToolbarProps> = ({
   return (
     <div
       ref={rootRef}
-      className={styles.toolbar}
+      className={styles.messageHoverToolbar__toolbar}
       role="toolbar"
       aria-label="Message actions"
     >
@@ -120,25 +120,25 @@ const MessageHoverToolbar: React.FC<MessageHoverToolbarProps> = ({
           <button
             key={emoji}
             type="button"
-            className={`${styles.btn} ${styles.btnEmoji} ${
-              active ? styles.btnActive : ""
+            className={`${styles.messageHoverToolbar__btn} ${styles.messageHoverToolbar__btnEmoji} ${
+              active ? styles.messageHoverToolbar__btnActive : ""
             }`}
             aria-pressed={active}
             aria-label={quickLabels.get(emoji) ?? "React"}
             title={quickLabels.get(emoji) ?? "React"}
             onClick={() => onToggleReaction(emoji)}
           >
-            <span className={styles.btnIcon} aria-hidden>
+            <span className={styles.messageHoverToolbar__btnIcon} aria-hidden>
               {emoji}
             </span>
           </button>
         );
       })}
 
-      <div className={styles.addWrap}>
+      <div className={styles.messageHoverToolbar__addWrap}>
         <button
           type="button"
-          className={styles.btn}
+          className={styles.messageHoverToolbar__btn}
           aria-expanded={pickerOpen}
           aria-label="Add reaction"
           title="Add reaction"
@@ -150,7 +150,7 @@ const MessageHoverToolbar: React.FC<MessageHoverToolbarProps> = ({
           <AddReactionIcon />
         </button>
         {pickerOpen && (
-          <div className={styles.picker} role="menu">
+          <div className={styles.messageHoverToolbar__picker} role="menu">
             {MESSAGE_REACTION_OPTIONS.map(({ emoji, label }) => {
               const active = userReactedWith(
                 reactions,
@@ -163,8 +163,8 @@ const MessageHoverToolbar: React.FC<MessageHoverToolbarProps> = ({
                   key={emoji}
                   type="button"
                   role="menuitem"
-                  className={`${styles.pickerEmoji} ${
-                    active ? styles.pickerEmojiActive : ""
+                  className={`${styles.messageHoverToolbar__pickerEmoji} ${
+                    active ? styles.messageHoverToolbar__pickerEmojiActive : ""
                   }`}
                   aria-label={label}
                   title={label}
@@ -183,10 +183,10 @@ const MessageHoverToolbar: React.FC<MessageHoverToolbarProps> = ({
 
       {canReply && (
         <>
-          <span className={styles.divider} aria-hidden />
+          <span className={styles.messageHoverToolbar__divider} aria-hidden />
           <button
             type="button"
-            className={`${styles.btn} ${styles.btnReply}`}
+            className={`${styles.messageHoverToolbar__btn} ${styles.messageHoverToolbar__btnReply}`}
             aria-label="Reply"
             title="Reply"
             onClick={() => onAction("reply")}
@@ -198,11 +198,11 @@ const MessageHoverToolbar: React.FC<MessageHoverToolbarProps> = ({
 
       {visibleMore.length > 0 && (
         <>
-          <span className={styles.divider} aria-hidden />
-          <div className={styles.moreWrap}>
+          <span className={styles.messageHoverToolbar__divider} aria-hidden />
+          <div className={styles.messageHoverToolbar__moreWrap}>
             <button
               type="button"
-              className={styles.btn}
+              className={styles.messageHoverToolbar__btn}
               aria-expanded={menuOpen}
               aria-haspopup="menu"
               aria-label="More actions"
@@ -212,21 +212,21 @@ const MessageHoverToolbar: React.FC<MessageHoverToolbarProps> = ({
                 setMenuOpen((open) => !open);
               }}
             >
-              <span className={styles.moreDots} aria-hidden>
+              <span className={styles.messageHoverToolbar__moreDots} aria-hidden>
                 <span />
                 <span />
                 <span />
               </span>
             </button>
             {menuOpen && (
-              <div className={styles.menu} role="menu">
+              <div className={styles.messageHoverToolbar__menu} role="menu">
                 {visibleMore.map(({ action, label }) => (
                   <button
                     key={action}
                     type="button"
                     role="menuitem"
                     className={
-                      action === "delete" ? styles.menuDanger : undefined
+                      action === "delete" ? styles.messageHoverToolbar__menuDanger : undefined
                     }
                     onClick={() => runMenuAction(action)}
                   >

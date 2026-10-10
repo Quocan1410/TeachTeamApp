@@ -36,18 +36,18 @@ const ApplicationYourApplication: React.FC<ApplicationYourApplicationProps> = ({
   }
 
   const rows = (
-    <div className={metaStyles.rows}>
-      <div className={styles.topRow}>
-        <p className={metaStyles.row}>
-          <span className={metaStyles.label}>Availability</span>
-          <span className={metaStyles.value}>
+    <div className={metaStyles.applicationMeta__rows}>
+      <div className={styles.applicationYourApplication__topRow}>
+        <p className={metaStyles.applicationMeta__row}>
+          <span className={metaStyles.applicationMeta__label}>Availability</span>
+          <span className={metaStyles.applicationMeta__value}>
             {application.availability?.type ?? "—"}
           </span>
         </p>
         {application.skills?.trim() && (
-          <p className={metaStyles.row}>
-            <span className={metaStyles.label}>Skills</span>
-            <span className={metaStyles.value}>
+          <p className={metaStyles.applicationMeta__row}>
+            <span className={metaStyles.applicationMeta__label}>Skills</span>
+            <span className={metaStyles.applicationMeta__value}>
               {application.skills
                 .split(/[,;]/)
                 .map((s) => s.trim())
@@ -58,15 +58,15 @@ const ApplicationYourApplication: React.FC<ApplicationYourApplicationProps> = ({
         )}
       </div>
       {application.motivation?.trim() && (
-        <p className={metaStyles.row}>
-          <span className={metaStyles.label}>Motivation</span>
-          <span className={metaStyles.value}>{application.motivation}</span>
+        <p className={metaStyles.applicationMeta__row}>
+          <span className={metaStyles.applicationMeta__label}>Motivation</span>
+          <span className={metaStyles.applicationMeta__value}>{application.motivation}</span>
         </p>
       )}
       {application.experience?.trim() && (
-        <p className={metaStyles.row}>
-          <span className={metaStyles.label}>Experience</span>
-          <span className={metaStyles.value}>{application.experience}</span>
+        <p className={metaStyles.applicationMeta__row}>
+          <span className={metaStyles.applicationMeta__label}>Experience</span>
+          <span className={metaStyles.applicationMeta__value}>{application.experience}</span>
         </p>
       )}
     </div>
@@ -80,14 +80,14 @@ const ApplicationYourApplication: React.FC<ApplicationYourApplicationProps> = ({
     );
   }
 
-  const rootClass = inline ? styles.inline : styles.standalone;
+  const rootClass = inline ? styles.applicationYourApplication__inline : styles.applicationYourApplication__standalone;
 
   return (
     <section
       className={`${rootClass} ${className ?? ""}`}
       aria-labelledby="application-details-title"
     >
-      <h3 className={styles.title} id="application-details-title">
+      <h3 className={styles.applicationYourApplication__title} id="application-details-title">
         Your application
       </h3>
       {rows}

@@ -1,5 +1,5 @@
 /* —— Enhanced course card (tutor browse) —— */
-.enhancedCourseCard {
+.courseCard__enhancedCourseCard {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -18,7 +18,7 @@
     box-shadow 0.25s ease;
 }
 
-.favourite {
+.courseCard__favourite {
   position: absolute;
   top: 0.65rem;
   right: 0.65rem;
@@ -34,23 +34,23 @@
   cursor: pointer;
 }
 
-.favourite svg {
+.courseCard__favourite svg {
   width: 1.2rem;
   height: 1.2rem;
 }
 
-.favouriteOn {
+.courseCard__favouriteOn {
   color: #f97316;
 }
 
-.remindText {
+.courseCard__remindText {
   color: #fb923c;
   font-size: 0.78rem;
   font-weight: 600;
   white-space: nowrap;
 }
 
-.enhancedCourseCard:hover {
+.courseCard__enhancedCourseCard:hover {
   border-color: rgba(249, 115, 22, 0.45);
   background:
     radial-gradient(circle at 100% 0%, rgba(249, 115, 22, 0.16), transparent 42%),
@@ -60,16 +60,16 @@
     0 10px 24px rgba(0, 0, 0, 0.28);
 }
 
-.favourite:hover {
+.courseCard__favourite:hover {
   color: #ea580c;
 }
 
-.cardMain {
+.courseCard__cardMain {
   padding: 1.35rem 2.4rem 1rem 1.35rem;
   flex: 1;
 }
 
-.eyebrow {
+.courseCard__eyebrow {
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
@@ -83,18 +83,18 @@
   letter-spacing: 0.02em;
 }
 
-.eyebrowCode {
+.courseCard__eyebrowCode {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-weight: 600;
   color: var(--color-primary);
 }
 
-.eyebrowDot {
+.courseCard__eyebrowDot {
   opacity: 0.45;
   user-select: none;
 }
 
-.titleRow {
+.courseCard__titleRow {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -102,7 +102,7 @@
   margin-bottom: 0.5rem;
 }
 
-.deadlineText {
+.courseCard__deadlineText {
   flex-shrink: 0;
   font-size: 0.72rem;
   font-weight: 500;
@@ -111,15 +111,15 @@
   padding-top: 0.2rem;
 }
 
-.deadlineUrgent {
+.courseCard__deadlineUrgent {
   color: #d97706;
 }
 
-.deadlineClosed {
+.courseCard__deadlineClosed {
   color: #dc2626;
 }
 
-.cardTop {
+.courseCard__cardTop {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -127,14 +127,14 @@
   min-height: 60px; /* Consistent top section height */
 }
 
-.courseCode {
+.courseCard__courseCode {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-weight: 600;
   font-size: 0.8rem;
   color: var(--color-text-secondary);
 }
 
-.courseStatus {
+.courseCard__courseStatus {
   padding: 0.25rem 0.6rem;
   border-radius: 0.375rem;
   font-weight: 500;
@@ -144,39 +144,39 @@
 }
 
 /* Status color utility classes */
-.bgGreen100 {
+.courseCard__bgGreen100 {
   background-color: #dcfce7;
   border-color: #bbf7d0;
 }
 
-.textGreen800 {
+.courseCard__textGreen800 {
   color: #166534;
 }
 
-.bgBlue100 {
+.courseCard__bgBlue100 {
   background-color: #dbeafe;
   border-color: #bfdbfe;
 }
 
-.textBlue800 {
+.courseCard__textBlue800 {
   color: #1e40af;
 }
 
-.bgPurple100 {
+.courseCard__bgPurple100 {
   background-color: #f3e8ff;
   border-color: #e9d5ff;
 }
 
-.textPurple800 {
+.courseCard__textPurple800 {
   color: #6b21a8;
 }
 
-.cardBody {
+.courseCard__cardBody {
   padding: 0 1.25rem 1rem;
   flex: 1;
 }
 
-.courseTitle {
+.courseCard__courseTitle {
   flex: 1;
   min-width: 0;
   height: calc(1.125rem * 1.35);
@@ -192,7 +192,7 @@
   overflow: hidden;
 }
 
-.skillsContainer {
+.courseCard__skillsContainer {
   display: flex;
   flex-wrap: wrap;
   gap: 0.375rem;
@@ -200,11 +200,11 @@
   min-height: 32px; /* Consistent skills section height */
 }
 
-.descriptionContainer {
+.courseCard__descriptionContainer {
   margin-bottom: 1rem;
 }
 
-.descriptionLabel {
+.courseCard__descriptionLabel {
   display: block;
   font-size: 0.75rem;
   font-weight: 600;
@@ -212,7 +212,7 @@
   margin-bottom: 0.35rem;
 }
 
-.courseDescription {
+.courseCard__courseDescription {
   margin: 0;
   height: calc(0.8125rem * 1.6 * 2);
   font-size: 0.8125rem;
@@ -225,7 +225,7 @@
   opacity: 0.88;
 }
 
-.roleTag {
+.courseCard__roleTag {
   display: flex;
   align-items: center;
   margin-top: auto; /* Pushes to bottom */
@@ -233,7 +233,7 @@
   padding: 0.25rem 0;
 }
 
-.roleIcon {
+.courseCard__roleIcon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -243,22 +243,22 @@
   flex-shrink: 0;
 }
 
-.roleIcon svg {
+.courseCard__roleIcon svg {
   width: 1rem !important;
   height: 1rem !important;
 }
 
-.roleIconTutor {
+.courseCard__roleIconTutor {
   background: rgba(16, 185, 129, 0.12);
   color: #059669;
 }
 
-.roleIconAssistant {
+.courseCard__roleIconAssistant {
   background: rgba(99, 102, 241, 0.12);
   color: #6366f1;
 }
 
-.roleName {
+.courseCard__roleName {
   display: block;
   font-size: 0.8125rem;
   font-weight: 600;
@@ -266,7 +266,7 @@
   line-height: 1.3;
 }
 
-.cardFooter {
+.courseCard__cardFooter {
   padding: 0.75rem 1rem;
   border-top: 1px solid var(--color-border);
   background-color: var(--color-bg-primary);
@@ -275,11 +275,11 @@
   align-items: center;
 }
 
-.roleAction {
+.courseCard__roleAction {
   flex-shrink: 0;
 }
 
-.applyOutline {
+.courseCard__applyOutline {
   padding: 0.4rem 1rem;
   min-width: 4.25rem;
   border-radius: 0.5rem;
@@ -295,19 +295,19 @@
     color 0.2s ease;
 }
 
-.applyOutline:hover {
+.courseCard__applyOutline:hover {
   background: rgba(249, 115, 22, 0.12);
   border-color: var(--color-primary);
 }
 
-.applyMuted {
+.courseCard__applyMuted {
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--color-text-tertiary);
 }
 
 /* Legacy footer — solid primary button */
-.applyButton {
+.courseCard__applyButton {
   width: 100%;
   padding: 0.55rem 1rem;
   min-height: 2.5rem;
@@ -321,11 +321,11 @@
   transition: background 0.2s ease;
 }
 
-.applyButton:hover {
+.courseCard__applyButton:hover {
   background: var(--color-primary-dark);
 }
 
-.applyButtonDisabled {
+.courseCard__applyButtonDisabled {
   width: 100%;
   padding: 0.5rem 0.75rem;
   border: none;
@@ -338,12 +338,12 @@
   opacity: 0.8;
 }
 
-.applyButtonDisabled:hover {
+.courseCard__applyButtonDisabled:hover {
   background: #9ca3af;
   transform: none;
 }
 
-.appliedStatus {
+.courseCard__appliedStatus {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -359,13 +359,13 @@
   min-height: 36px; /* Same as button for consistency */
 }
 
-.appliedStatus svg {
+.courseCard__appliedStatus svg {
   margin-right: 0.5rem;
   width: 1.25rem;
   height: 1.25rem;
 }
 
-.cardDecoration {
+.courseCard__cardDecoration {
   position: absolute;
   width: 12px;
   height: 12px;
@@ -374,110 +374,110 @@
   opacity: 0.3;
 }
 
-.topDot {
+.courseCard__topDot {
   top: 1.25rem;
   right: 1.25rem;
 }
 
-.bottomDot {
+.courseCard__bottomDot {
   bottom: 1.25rem;
   left: 1.25rem;
 }
 
 /* Dark mode styles */
-:global(.dark) .enhancedCourseCard {
+:global(.dark) .courseCard__enhancedCourseCard {
   background: rgba(255, 255, 255, 0.03);
   border-color: rgba(255, 255, 255, 0.08);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
 
-:global(.dark) .enhancedCourseCard:hover {
+:global(.dark) .courseCard__enhancedCourseCard:hover {
   border-color: rgba(255, 255, 255, 0.14);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
 }
 
-:global(.dark) .eyebrowCode {
+:global(.dark) .courseCard__eyebrowCode {
   color: #fdba74;
 }
 
-:global(.dark) .deadlineText:not(.deadlineUrgent):not(.deadlineClosed) {
+:global(.dark) .courseCard__deadlineText:not(.courseCard__deadlineUrgent):not(.courseCard__deadlineClosed) {
   color: rgba(251, 146, 60, 0.9);
 }
 
-:global(.dark) .roleItem {
+:global(.dark) .courseCard__roleItem {
   border-bottom-color: rgba(255, 255, 255, 0.06);
 }
 
-:global(.dark) .applyOutline {
+:global(.dark) .courseCard__applyOutline {
   border-color: rgba(251, 146, 60, 0.4);
   color: #fdba74;
 }
 
-:global(.dark) .applyOutline:hover {
+:global(.dark) .courseCard__applyOutline:hover {
   background: rgba(251, 146, 60, 0.1);
   border-color: #fb923c;
 }
 
-:global(.dark) .deadlineUrgent {
+:global(.dark) .courseCard__deadlineUrgent {
   color: #fbbf24;
 }
 
-:global(.dark) .deadlineClosed {
+:global(.dark) .courseCard__deadlineClosed {
   color: #f87171;
 }
 
-:global(.dark) .courseCode {
+:global(.dark) .courseCard__courseCode {
   color: rgba(255, 255, 255, 0.55);
 }
 
-:global(.dark) .bgGreen100 {
+:global(.dark) .courseCard__bgGreen100 {
   background-color: rgba(16, 185, 129, 0.25) !important;
 }
 
-:global(.dark) .textGreen800 {
+:global(.dark) .courseCard__textGreen800 {
   color: #6ee7b7 !important;
 }
 
-:global(.dark) .bgBlue100 {
+:global(.dark) .courseCard__bgBlue100 {
   background-color: rgba(59, 130, 246, 0.25) !important;
 }
 
-:global(.dark) .textBlue800 {
+:global(.dark) .courseCard__textBlue800 {
   color: #93c5fd !important;
 }
 
-:global(.dark) .bgPurple100 {
+:global(.dark) .courseCard__bgPurple100 {
   background-color: rgba(168, 85, 247, 0.25) !important;
 }
 
-:global(.dark) .textPurple800 {
+:global(.dark) .courseCard__textPurple800 {
   color: #c4b5fd !important;
 }
 
-:global(.dark) .roleIconTutor {
+:global(.dark) .courseCard__roleIconTutor {
   background-color: rgba(16, 185, 129, 0.2);
 }
 
-:global(.dark) .roleIconAssistant {
+:global(.dark) .courseCard__roleIconAssistant {
   background-color: rgba(79, 70, 229, 0.2);
 }
 
 /* Dark mode card footer adjustments */
-:global(.dark) .cardFooter {
+:global(.dark) .courseCard__cardFooter {
   background-color: var(--color-bg-primary);
   border-top-color: var(--color-border);
 }
 
-:global(.dark) .applyButton {
+:global(.dark) .courseCard__applyButton {
   box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3);
 }
 
-:global(.dark) .applyButton:hover {
+:global(.dark) .courseCard__applyButton:hover {
   box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
 }
 
 /* Legacy / shared */
-.cardHeader {
+.courseCard__cardHeader {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -485,13 +485,13 @@
   padding: 1rem 1.25rem 0.75rem;
 }
 
-.semester {
+.courseCard__semester {
   font-size: 0.68rem;
   font-weight: 500;
   color: var(--color-text-secondary);
 }
 
-.skillsLabel {
+.courseCard__skillsLabel {
   display: block;
   font-size: 0.7rem;
   font-weight: 600;
@@ -501,7 +501,7 @@
   letter-spacing: 0.05em;
 }
 
-.skillsWrapper {
+.courseCard__skillsWrapper {
   display: flex;
   align-items: center;
   gap: 0.375rem;
@@ -509,7 +509,7 @@
   flex-wrap: nowrap;
 }
 
-.moreSkillsIndicator {
+.courseCard__moreSkillsIndicator {
   color: var(--color-text-secondary);
   font-weight: 600;
   font-size: 0.875rem;
@@ -530,7 +530,7 @@
   letter-spacing: 0.1em;
 }
 
-.moreSkillsIndicator:hover {
+.courseCard__moreSkillsIndicator:hover {
   background-color: var(--color-primary);
   color: white;
   border-color: var(--color-primary);
@@ -538,7 +538,7 @@
   box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
 }
 
-.moreSkillsIndicator:focus {
+.courseCard__moreSkillsIndicator:focus {
   outline: none;
   box-shadow: 0 0 0 2px var(--color-primary);
   background-color: var(--color-primary);
@@ -546,13 +546,13 @@
   border-color: var(--color-primary);
 }
 
-.roleSection {
+.courseCard__roleSection {
   margin-top: auto;
-  padding: 0 1.35rem 1.2rem;
+  padding: 0 1.35rem 0.5rem;
   border-top: 1px solid var(--color-border);
 }
 
-.roleList {
+.courseCard__roleList {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -562,7 +562,7 @@
   overflow: hidden;
 }
 
-.roleItem {
+.courseCard__roleItem {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -571,16 +571,16 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-.roleItem:last-child {
+.courseCard__roleItem:last-child {
   border-bottom: none;
   padding-bottom: 0;
 }
 
-.roleItem:first-child {
+.courseCard__roleItem:first-child {
   padding-top: 0.65rem;
 }
 
-.roleItemEmpty {
+.courseCard__roleItemEmpty {
   padding: 1rem 0;
   text-align: center;
   font-size: 0.8125rem;
@@ -588,7 +588,7 @@
   list-style: none;
 }
 
-.roleInfo {
+.courseCard__roleInfo {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -596,12 +596,12 @@
   flex: 1;
 }
 
-.roleSectionTitle,
-.roleContent {
+.courseCard__roleSectionTitle,
+.courseCard__roleContent {
   display: none;
 }
 
-.noPositionsContainer {
+.courseCard__noPositionsContainer {
   padding: 1rem;
   text-align: center;
   background-color: rgba(156, 163, 175, 0.05);
@@ -615,131 +615,131 @@
   min-height: 80px; /* Ensure no positions container has consistent height */
 }
 
-.noPositionsText {
+.courseCard__noPositionsText {
   margin-bottom: 0.75rem;
 }
 
-.noPositionsText p {
+.courseCard__noPositionsText p {
   margin: 0;
   color: var(--color-text-secondary);
   font-size: 0.875rem;
   font-style: italic;
 }
 
-.roleOption,
-.roleHeader {
+.courseCard__roleOption,
+.courseCard__roleHeader {
   display: contents;
 }
 
-.roleIconWrapper {
+.courseCard__roleIconWrapper {
   margin-right: 0.625rem;
   flex-shrink: 0;
 }
 
-.roleDetails {
+.courseCard__roleDetails {
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
   min-width: 0;
 }
 
-.roleName,
-.rolePositions {
+.courseCard__roleName,
+.courseCard__rolePositions {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.rolePositions {
+.courseCard__rolePositions {
   font-size: 0.75rem;
   font-weight: 450;
   color: var(--color-text-tertiary);
 }
 
-.roleAction {
+.courseCard__roleAction {
   flex-shrink: 0;
 }
 
 /* Dark mode styles for enhanced components */
-:global(.dark) .semester {
+:global(.dark) .courseCard__semester {
   background-color: #374151;
   color: #9ca3af;
 }
 
 
-:global(.dark) .noPositionsContainer {
+:global(.dark) .courseCard__noPositionsContainer {
   background-color: rgba(107, 114, 128, 0.1);
   border-color: rgba(107, 114, 128, 0.2);
 }
 
-:global(.dark) .applyButtonDisabled {
+:global(.dark) .courseCard__applyButtonDisabled {
   background: #4b5563;
   color: #6b7280;
 }
 
-:global(.dark) .applyButtonDisabled:hover {
+:global(.dark) .courseCard__applyButtonDisabled:hover {
   background: #4b5563;
 }
 
-:global(.dark) .moreSkillsIndicator {
+:global(.dark) .courseCard__moreSkillsIndicator {
   background-color: #374151;
   border-color: #4b5563;
   color: #9ca3af;
 }
 
-:global(.dark) .moreSkillsIndicator:hover {
+:global(.dark) .courseCard__moreSkillsIndicator:hover {
   background-color: var(--color-primary);
   color: white;
   border-color: var(--color-primary);
 }
 
-:global(.dark) .moreSkillsIndicator:focus {
+:global(.dark) .courseCard__moreSkillsIndicator:focus {
   background-color: var(--color-primary);
   color: white;
   border-color: var(--color-primary);
 }
 
-:global(.dark) .courseDescription {
+:global(.dark) .courseCard__courseDescription {
   color: var(--color-text-secondary);
 }
 
 @media (max-width: 640px) {
-  .cardHeader {
+  .courseCard__cardHeader {
     padding: 0.75rem 1rem 0.25rem;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
 
-  .roleHeader {
+  .courseCard__roleHeader {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
 
-  .roleAction {
+  .courseCard__roleAction {
     width: 100%;
   }
 
-  .applyButton {
+  .courseCard__applyButton {
     width: 100%;
     justify-content: center;
   }
 }
 
-:global(.dark) .appliedStatus {
+:global(.dark) .courseCard__appliedStatus {
   background-color: rgba(16, 185, 129, 0.1);
   border-color: rgba(16, 185, 129, 0.3);
   color: #34d399;
 }
 
 @media (max-width: 640px) {
-  .cardTop,
-  .cardBody,
-  .cardFooter {
+  .courseCard__cardTop,
+  .courseCard__cardBody,
+  .courseCard__cardFooter {
     padding: 1rem;
   }
-  .courseTitle {
+  .courseCard__courseTitle {
     font-size: 1.1rem;
   }
 }

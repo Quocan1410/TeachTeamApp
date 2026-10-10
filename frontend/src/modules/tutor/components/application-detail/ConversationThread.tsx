@@ -70,7 +70,7 @@ const ConversationThread: React.FC<ConversationThreadProps> = ({
 
   if (humanItems.length === 0) {
     return (
-      <p className={styles.emptyThread} role="status">
+      <p className={styles.conversationPanel__emptyThread} role="status">
         No messages yet. When the lecturer or you send a message, it will appear
         here.
       </p>
@@ -78,13 +78,13 @@ const ConversationThread: React.FC<ConversationThreadProps> = ({
   }
 
   return (
-    <div className={styles.threadLog} role="log" aria-label="Correspondence">
+    <div className={styles.conversationPanel__threadLog} role="log" aria-label="Correspondence">
       {entries.map((entry) => {
         if (entry.type === "date") {
           return (
             <div
               key={entry.id}
-              className={`${styles.dateDivider} ${styles.dateDividerInThread}`}
+              className={`${styles.conversationPanel__dateDivider} ${styles.conversationPanel__dateDividerInThread}`}
               role="separator"
               aria-label={entry.label}
             >
@@ -116,7 +116,7 @@ const ConversationThread: React.FC<ConversationThreadProps> = ({
           />
         );
       })}
-      <div ref={endRef} className={styles.threadEnd} aria-hidden />
+      <div ref={endRef} className={styles.conversationPanel__threadEnd} aria-hidden />
     </div>
   );
 };

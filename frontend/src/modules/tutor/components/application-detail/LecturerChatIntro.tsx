@@ -27,26 +27,26 @@ const LecturerChatIntro: React.FC<LecturerChatIntroProps> = ({ application }) =>
   const lecturerOnline = useUserPresence(lecturerUserId);
 
   return (
-    <div className={styles.intro} aria-label="Conversation with lecturer">
-      <div className={styles.avatarWrap}>
+    <div className={styles.lecturerChatIntro__intro} aria-label="Conversation with lecturer">
+      <div className={styles.lecturerChatIntro__avatarWrap}>
         <ConversationAvatar
           person={person}
           variant="lecturer"
           size={64}
-          className={styles.avatar}
+          className={styles.lecturerChatIntro__avatar}
         />
         {lecturerUserId != null && lecturerOnline ? (
           <span
-            className={styles.onlineDot}
+            className={styles.lecturerChatIntro__onlineDot}
             title={`${lecturerDisplayName} is online`}
             aria-label={`${lecturerDisplayName} is online`}
           />
         ) : null}
       </div>
-      <div className={styles.text}>
-        <h2 className={styles.name}>{lecturerDisplayName}</h2>
-        {headline ? <p className={styles.headline}>{headline}</p> : null}
-        {courseName ? <p className={styles.subline}>{courseName}</p> : null}
+      <div className={styles.lecturerChatIntro__text}>
+        <h2 className={styles.lecturerChatIntro__name}>{lecturerDisplayName}</h2>
+        {headline ? <p className={styles.lecturerChatIntro__headline}>{headline}</p> : null}
+        {courseName ? <p className={styles.lecturerChatIntro__subline}>{courseName}</p> : null}
       </div>
     </div>
   );

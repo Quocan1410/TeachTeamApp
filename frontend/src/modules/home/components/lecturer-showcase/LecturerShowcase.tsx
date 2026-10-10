@@ -39,7 +39,7 @@ const LecturerShowcase: React.FC<LecturerShowcaseProps> = ({
 
   return (
     <section
-      className={isDirectory ? styles.directory : "py-24"}
+      className={isDirectory ? styles.lecturerShowcase__directory : "py-24"}
       id="lecturers"
       style={isDirectory ? undefined : { backgroundColor: "var(--color-bg-primary)" }}
     >
@@ -50,20 +50,20 @@ const LecturerShowcase: React.FC<LecturerShowcaseProps> = ({
           {isLoading && !isDirectory && <PageSkeleton variant="home" fullPage={false} />}
 
           {isLoading && isDirectory && (
-            <div className={styles.directoryGrid} aria-hidden="true">
+            <div className={styles.lecturerShowcase__directoryGrid} aria-hidden="true">
               {Array.from({ length: 9 }).map((_, index) => (
-                <div key={index} className={styles.skeletonCard} />
+                <div key={index} className={styles.lecturerShowcase__skeletonCard} />
               ))}
             </div>
           )}
 
           {!isLoading && error && (
-            <div className={styles.statusBlock}>
-              <p className={styles.statusMessage}>{error}</p>
+            <div className={styles.lecturerShowcase__statusBlock}>
+              <p className={styles.lecturerShowcase__statusMessage}>{error}</p>
               {onRetry && (
                 <button
                   type="button"
-                  className={styles.retryBtn}
+                  className={styles.lecturerShowcase__retryBtn}
                   onClick={onRetry}
                 >
                   Try again
@@ -73,13 +73,13 @@ const LecturerShowcase: React.FC<LecturerShowcaseProps> = ({
           )}
 
           {!isLoading && !error && displayedLecturers.length === 0 && (
-            <p className={styles.statusMessage}>
+            <p className={styles.lecturerShowcase__statusMessage}>
               No lecturers are available yet.
             </p>
           )}
 
           {!isLoading && !error && displayedLecturers.length > 0 && (
-            <div className={isDirectory ? styles.directoryGrid : styles.lecturerGrid}>
+            <div className={isDirectory ? styles.lecturerShowcase__directoryGrid : styles.lecturerShowcase__lecturerGrid}>
               {displayedLecturers.map((lecturer, index) => (
                 <LecturerCard
                   key={lecturer.id}

@@ -25,6 +25,15 @@ function passkeyErrorMessage(error: unknown, fallback: string): string {
   return fallback;
 }
 
+export async function fetchPasskeyStatus(): Promise<boolean> {
+  try {
+    const response = await authAPI.get("/passkey/status");
+    return response.data?.hasPasskey === true;
+  } catch {
+    return false;
+  }
+}
+
 export async function createPasskey(): Promise<AuthResponse> {
   if (!browserSupportsPasskey()) {
     return {

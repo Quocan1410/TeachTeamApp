@@ -210,7 +210,7 @@ const ApplicationChatScreen: React.FC<ApplicationChatScreenProps> = ({
   }, [replyToMessageId, chatItemsById, application, authPerson]);
 
   return (
-    <div className={styles.screen}>
+    <div className={styles.applicationChatScreen__screen}>
       <ChatConversationToolbar
         isPinned={isPinned}
         onBack={onBack}
@@ -218,20 +218,20 @@ const ApplicationChatScreen: React.FC<ApplicationChatScreenProps> = ({
         onClose={onClose}
       />
 
-      <div className={conversationStyles.conversationShell}>
+      <div className={conversationStyles.conversationPanel__conversationShell}>
         <div
-          className={`${conversationStyles.threadScroll} thinOrangeScroll`}
+          className={`${conversationStyles.conversationPanel__threadScroll} scrollbar__thin`}
         >
           <LecturerChatIntro application={application} />
           <div
-            className={`${conversationStyles.dateDivider} ${conversationStyles.dateDividerAppliedIntro}`}
+            className={`${conversationStyles.conversationPanel__dateDivider} ${conversationStyles.conversationPanel__dateDividerAppliedIntro}`}
             role="separator"
             aria-label={formatAppliedDateDivider(application.appliedAt)}
           >
             {formatAppliedDateDivider(application.appliedAt)}
           </div>
           <section
-            className={conversationStyles.submissionSection}
+            className={conversationStyles.conversationPanel__submissionSection}
             aria-label="Application submission"
           >
             <ConversationApplicationBlock
@@ -253,11 +253,11 @@ const ApplicationChatScreen: React.FC<ApplicationChatScreenProps> = ({
           />
 
           {!canCompose && closedNotice && (
-            <p className={conversationStyles.closedNotice}>{closedNotice}</p>
+            <p className={conversationStyles.conversationPanel__closedNotice}>{closedNotice}</p>
           )}
 
           {application.isWithdrawn && (
-            <p className={conversationStyles.closedNotice}>
+            <p className={conversationStyles.conversationPanel__closedNotice}>
               Withdrawn{" "}
               {application.withdrawnAt
                 ? formatFullTimestamp(application.withdrawnAt)
@@ -290,10 +290,10 @@ const ApplicationChatScreen: React.FC<ApplicationChatScreenProps> = ({
                 setReplyToMessageId(null);
               }}
             />
-            <div className={conversationStyles.threadFooter}>
+            <div className={conversationStyles.conversationPanel__threadFooter}>
               <button
                 type="button"
-                className={conversationStyles.withdrawLink}
+                className={conversationStyles.conversationPanel__withdrawLink}
                 onClick={onWithdraw}
                 disabled={busy}
               >

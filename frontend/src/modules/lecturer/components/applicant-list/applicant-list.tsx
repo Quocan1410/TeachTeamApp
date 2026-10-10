@@ -41,7 +41,7 @@ const ApplicantItem = React.memo<{
 
   const itemContent = (
     <div
-      className={`${styles.applicantItem} ${isSelected ? styles.selected : ""} ${application.isBlocked ? styles.blocked : ""}`}
+      className={`${styles.applicantList__applicantItem} ${isSelected ? styles["applicantList--selected"] : ""} ${application.isBlocked ? styles["applicantList--blocked"] : ""}`}
       onClick={() => onSelect(application)}
     >
       <ApplicantAvatar
@@ -51,14 +51,14 @@ const ApplicantItem = React.memo<{
         firstName={application.firstName}
         lastName={application.lastName}
         avatarUrl={application.avatarUrl}
-      />      <div className={styles.applicantInfo}>
-        <div className={styles.applicantName}>{application.fullName}</div>
-        <div className={styles.applicantDetails}>
+      />      <div className={styles.applicantList__applicantInfo}>
+        <div className={styles.applicantList__applicantName}>{application.fullName}</div>
+        <div className={styles.applicantList__applicantDetails}>
           {/* Role Information */}
-          <div className={styles.roleInfo}>
+          <div className={styles.applicantList__roleInfo}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={styles.roleIcon}
+              className={styles.applicantList__roleIcon}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -79,17 +79,17 @@ const ApplicantItem = React.memo<{
 
           {/* Course Information - Only show 1 course code */}
           {extendedApp.course ? (
-            <span className={styles.courseCode}>
+            <span className={styles.applicantList__courseCode}>
               {extendedApp.course.courseCode}
             </span>
           ) : application.courses && application.courses.length > 0 ? (
-            <span className={styles.courseCode}>{application.courses[0]}</span>
+            <span className={styles.applicantList__courseCode}>{application.courses[0]}</span>
           ) : null}
 
-          <span className={styles.detailItem}>
+          <span className={styles.applicantList__detailItem}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={styles.detailIcon}
+              className={styles.applicantList__detailIcon}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -105,14 +105,14 @@ const ApplicantItem = React.memo<{
           </span>
         </div>
 
-        <div className={styles.applicantSkills}>
+        <div className={styles.applicantList__applicantSkills}>
           {application.skills.slice(0, 3).map((skill, skillIndex) => (
-            <span key={skillIndex} className={styles.skillBadge}>
+            <span key={skillIndex} className={styles.applicantList__skillBadge}>
               {skill}
             </span>
           ))}
           {application.skills.length > 3 && (
-            <span className={styles.moreSkills}>
+            <span className={styles.applicantList__moreSkills}>
               +{application.skills.length - 3}
             </span>
           )}
@@ -123,12 +123,12 @@ const ApplicantItem = React.memo<{
         application.rank > 0 &&
         !application.isBlocked && (
           <div
-            className={styles.applicantRankedIconContainer}
+            className={styles.applicantList__applicantRankedIconContainer}
             title={`Ranked #${application.rank}`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={styles.rankedIconItself}
+              className={styles.applicantList__rankedIconItself}
               viewBox="0 0 267.5 267.5"
             >
               <path d="M256.975,100.34c0.041,0.736-0.013,1.485-0.198,2.229l-16.5,66c-0.832,3.325-3.812,5.663-7.238,5.681l-99,0.5 c-0.013,0-0.025,0-0.038,0H35c-3.444,0-6.445-2.346-7.277-5.688l-16.5-66.25c-0.19-0.764-0.245-1.534-0.197-2.289 C4.643,98.512,0,92.539,0,85.5c0-8.685,7.065-15.75,15.75-15.75S31.5,76.815,31.5,85.5c0,4.891-2.241,9.267-5.75,12.158 l20.658,20.814c5.221,5.261,12.466,8.277,19.878,8.277c8.764,0,17.12-4.162,22.382-11.135l33.95-44.984 C119.766,67.78,118,63.842,118,59.5c0-8.685,7.065-15.75,15.75-15.75s15.75,7.065,15.75,15.75c0,4.212-1.672,8.035-4.375,10.864 c0.009,0.012,0.02,0.022,0.029,0.035l33.704,45.108c5.26,7.04,13.646,11.243,22.435,11.243c7.48,0,14.514-2.913,19.803-8.203 l20.788-20.788C238.301,94.869,236,90.451,236,85.5c0-8.685,7.065-15.75,15.75-15.75s15.75,7.065,15.75,15.75 C267.5,92.351,263.095,98.178,256.975,100.34z M238.667,198.25c0-4.142-3.358-7.5-7.5-7.5h-194c-4.142,0-7.5,3.358-7.5,7.5v18 c0,4.142,3.358,7.5,7.5,7.5h194c4.142,0,7.5-3.358,7.5-7.5V198.25z" />
@@ -138,7 +138,7 @@ const ApplicantItem = React.memo<{
       {(application.selected || application.isShortlisted) &&
         !application.isBlocked && (
         <div
-          className={styles.applicantSelectedIconContainer}
+          className={styles.applicantList__applicantSelectedIconContainer}
           title={
             application.selected
               ? "Final selection confirmed"
@@ -147,7 +147,7 @@ const ApplicantItem = React.memo<{
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className={styles.statusIcon}
+            className={styles.applicantList__statusIcon}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -164,7 +164,7 @@ const ApplicantItem = React.memo<{
       {application.isBlocked && onRemoveBlocked && (
         <button
           type="button"
-          className={styles.removeBlockedButton}
+          className={styles.applicantList__removeBlockedButton}
           title="Remove unavailable application"
           aria-label={`Remove ${application.fullName} from list`}
           onClick={(event) => {
@@ -176,7 +176,7 @@ const ApplicantItem = React.memo<{
           Remove
         </button>
       )}
-      <div className={styles.appliedDate}>
+      <div className={styles.applicantList__appliedDate}>
         {new Date(application.dateApplied).toLocaleDateString()}
       </div>
     </div>
@@ -225,12 +225,12 @@ const ApplicantList: React.FC<ApplicantListProps> = ({
   title = "Applicants",
 }) => {
   return (
-    <div className={styles.applicantListPanel}>
-      <h2 className={styles.panelTitle}>{title}</h2>
-      <div className={styles.applicantListContainer}>
+    <div className={styles.applicantList__applicantListPanel}>
+      <h2 className={styles.applicantList__panelTitle}>{title}</h2>
+      <div className={styles.applicantList__applicantListContainer}>
         {applications.length === 0 ? (
-          <div className={styles.emptyState}>
-            <div className={styles.emptyIcon}>
+          <div className={styles.applicantList__emptyState}>
+            <div className={styles.applicantList__emptyIcon}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -245,7 +245,7 @@ const ApplicantList: React.FC<ApplicantListProps> = ({
                 />
               </svg>
             </div>
-            <p className={styles.emptyText}>
+            <p className={styles.applicantList__emptyText}>
               No applications match the current filters.
             </p>
           </div>

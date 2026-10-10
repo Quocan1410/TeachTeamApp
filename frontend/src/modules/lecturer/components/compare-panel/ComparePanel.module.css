@@ -1,4 +1,4 @@
-.overlay {
+.comparePanel__overlay {
   position: fixed;
   inset: 0;
   background: rgba(15, 23, 42, 0.5);
@@ -9,7 +9,7 @@
   padding: 1rem;
 }
 
-.panel {
+.comparePanel__panel {
   width: 100%;
   max-width: 960px;
   max-height: 70vh;
@@ -20,43 +20,43 @@
   box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.15);
 }
 
-.header {
+.comparePanel__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
 }
 
-.grid {
+.comparePanel__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
 }
 
-.col {
+.comparePanel__col {
   padding: 1rem;
   border-radius: 12px;
   border: 1px solid var(--color-border, #e2e8f0);
   background: var(--color-bg-secondary, #f8fafc);
 }
 
-.col h3 {
+.comparePanel__col h3 {
   margin: 0 0 0.5rem;
   font-size: 1rem;
 }
 
-.row {
+.comparePanel__row {
   font-size: 0.8rem;
   margin-bottom: 0.35rem;
   color: var(--color-text-secondary, #64748b);
 }
 
-.row strong {
+.comparePanel__row strong {
   color: var(--color-text-primary, #0f172a);
   display: block;
 }
 
-.closeBtn {
+.comparePanel__closeBtn {
   width: 2rem;
   height: 2rem;
   min-width: 2rem;
@@ -69,7 +69,7 @@
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.closeBtn:hover {
+.comparePanel__closeBtn:hover {
   background: color-mix(in srgb, var(--color-border, #e2e8f0) 60%, transparent);
   color: var(--color-text-primary, #0f172a);
 }

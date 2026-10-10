@@ -95,21 +95,21 @@ const ApplicationSummaryCard: React.FC<ApplicationSummaryCardProps> = ({
 
   return (
     <article
-      className={`${styles.card} ${className ?? ""}`}
+      className={`${styles.applicationSummaryCard__card} ${className ?? ""}`}
       aria-label="Application summary"
     >
-      <div className={styles.body}>
-        <div className={styles.rowTop}>
-          <p className={styles.eyebrow}>
-            <span className={styles.courseCode}>
+      <div className={styles.applicationSummaryCard__body}>
+        <div className={styles.applicationSummaryCard__rowTop}>
+          <p className={styles.applicationSummaryCard__eyebrow}>
+            <span className={styles.applicationSummaryCard__courseCode}>
               {application.course.courseCode}
             </span>
-            <span className={styles.eyebrowDot} aria-hidden>
+            <span className={styles.applicationSummaryCard__eyebrowDot} aria-hidden>
               ·
             </span>
             <span>{application.course.semester}</span>
           </p>
-          <div className={styles.statusWrap}>
+          <div className={styles.applicationSummaryCard__statusWrap}>
             <ApplicationStatusBadge
               status={application.status}
               isWithdrawn={application.isWithdrawn}
@@ -121,34 +121,34 @@ const ApplicationSummaryCard: React.FC<ApplicationSummaryCardProps> = ({
           </div>
         </div>
 
-        <h2 className={styles.title}>{application.course.courseName}</h2>
+        <h2 className={styles.applicationSummaryCard__title}>{application.course.courseName}</h2>
         <p
-          className={`${styles.description} ${
-            isLecturerView ? styles.descriptionLecturer : ""
+          className={`${styles.applicationSummaryCard__description} ${
+            isLecturerView ? styles.applicationSummaryCard__descriptionLecturer : ""
           }`}
         >
           {subtitle}
         </p>
 
-        <div className={styles.people}>
-          <div className={styles.personRow}>
-            <span className={styles.personLabel}>Applicant</span>
-            <div className={styles.personValue}>
-              <span className={styles.personName}>
+        <div className={styles.applicationSummaryCard__people}>
+          <div className={styles.applicationSummaryCard__personRow}>
+            <span className={styles.applicationSummaryCard__personLabel}>Applicant</span>
+            <div className={styles.applicationSummaryCard__personValue}>
+              <span className={styles.applicationSummaryCard__personName}>
                 {applicantName ?? "—"}
               </span>
               {applicantEmail ? (
-                <span className={styles.personMeta}>{applicantEmail}</span>
+                <span className={styles.applicationSummaryCard__personMeta}>{applicantEmail}</span>
               ) : null}
             </div>
           </div>
           {!isLecturerView && (
-            <div className={styles.personRow}>
-              <span className={styles.personLabel}>Lecturer</span>
-              <div className={styles.personValue}>
-                <span className={styles.personName}>
+            <div className={styles.applicationSummaryCard__personRow}>
+              <span className={styles.applicationSummaryCard__personLabel}>Lecturer</span>
+              <div className={styles.applicationSummaryCard__personValue}>
+                <span className={styles.applicationSummaryCard__personName}>
                   {lecturerName ?? (
-                    <span className={styles.personMuted}>Not assigned yet</span>
+                    <span className={styles.applicationSummaryCard__personMuted}>Not assigned yet</span>
                   )}
                 </span>
               </div>
@@ -157,26 +157,26 @@ const ApplicationSummaryCard: React.FC<ApplicationSummaryCardProps> = ({
         </div>
 
         {screeningActions ? (
-          <div className={styles.screeningBlock} aria-label="Screening">
-            <span className={styles.screeningLabel}>Screening</span>
+          <div className={styles.applicationSummaryCard__screeningBlock} aria-label="Screening">
+            <span className={styles.applicationSummaryCard__screeningLabel}>Screening</span>
             {screeningActions}
           </div>
         ) : null}
 
-        <div className={styles.rowBottom}>
+        <div className={styles.applicationSummaryCard__rowBottom}>
           <div
-            className={`${styles.role} ${
-              isTutor ? styles.roleTutor : styles.roleAssistant
+            className={`${styles.applicationSummaryCard__role} ${
+              isTutor ? styles.applicationSummaryCard__roleTutor : styles.applicationSummaryCard__roleAssistant
             }`}
           >
-            <span className={styles.roleIcon} aria-hidden>
+            <span className={styles.applicationSummaryCard__roleIcon} aria-hidden>
               <RoleIcon roleName={application.role.roleName} />
             </span>
-            <span className={styles.roleLabel}>
+            <span className={styles.applicationSummaryCard__roleLabel}>
               {formatRoleLabel(application.role.roleName)}
             </span>
           </div>
-          <p className={styles.date}>
+          <p className={styles.applicationSummaryCard__date}>
             Applied {formatAppliedDate(application.appliedAt)}
           </p>
         </div>

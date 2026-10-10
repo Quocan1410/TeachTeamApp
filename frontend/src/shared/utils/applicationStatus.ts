@@ -49,31 +49,31 @@ export function getApplicationStatusClassName(
   isRanked?: boolean,
   isReviewed?: boolean
 ): string {
-  const base = statusStyles.statusBadge;
+  const base = statusStyles.applicationStatus__statusBadge;
   if (isWithdrawn) {
-    return `${base} ${statusStyles["status-withdrawn"]}`;
+    return `${base} ${statusStyles["applicationStatus__status-withdrawn"]}`;
   }
   if (isCandidateBlocked) {
-    return `${base} ${statusStyles["status-blocked"]}`;
+    return `${base} ${statusStyles["applicationStatus__status-blocked"]}`;
   }
   if (status === "selected") {
-    return `${base} ${statusStyles["status-selected"]}`;
+    return `${base} ${statusStyles["applicationStatus__status-selected"]}`;
   }
   if (status === "rejected") {
-    return `${base} ${statusStyles["status-rejected"]}`;
+    return `${base} ${statusStyles["applicationStatus__status-rejected"]}`;
   }
   if (isRanked) {
-    return `${base} ${statusStyles["status-ranked"]}`;
+    return `${base} ${statusStyles["applicationStatus__status-ranked"]}`;
   }
   if (isShortlisted) {
-    return `${base} ${statusStyles["status-shortlisted"]}`;
+    return `${base} ${statusStyles["applicationStatus__status-shortlisted"]}`;
   }
   if (isReviewed) {
-    return `${base} ${statusStyles["status-reviewed"]}`;
+    return `${base} ${statusStyles["applicationStatus__status-reviewed"]}`;
   }
   const variant =
-    statusStyles[`status-${status}` as keyof typeof statusStyles] ??
-    statusStyles["status-pending"];
+    statusStyles[`applicationStatus__status-${status}` as keyof typeof statusStyles] ??
+    statusStyles["applicationStatus__status-pending"];
   return `${base} ${variant}`;
 }
 

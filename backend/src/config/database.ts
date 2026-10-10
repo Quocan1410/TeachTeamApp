@@ -149,6 +149,21 @@ const ensureSchemaColumns = async (): Promise<void> => {
             "ALTER TABLE `users` ADD `honorific` varchar(10) NULL"
         );
         await ensureColumn(
+            "users",
+            "description",
+            "ALTER TABLE `users` ADD `description` text NULL"
+        );
+        await ensureColumn(
+            "users",
+            "skills",
+            "ALTER TABLE `users` ADD `skills` text NULL"
+        );
+        await ensureColumn(
+            "users",
+            "website",
+            "ALTER TABLE `users` ADD `website` varchar(255) NULL"
+        );
+        await ensureColumn(
             "courses",
             "applicationDeadline",
             "ALTER TABLE `courses` ADD `applicationDeadline` datetime NULL"
@@ -186,6 +201,24 @@ const ensureSchemaColumns = async (): Promise<void> => {
     }
 };
 
+const ensureProfileColumns = async (): Promise<void> => {
+    await ensureColumn(
+        "users",
+        "description",
+        "ALTER TABLE `users` ADD `description` text NULL"
+    );
+    await ensureColumn(
+        "users",
+        "skills",
+        "ALTER TABLE `users` ADD `skills` text NULL"
+    );
+    await ensureColumn(
+        "users",
+        "website",
+        "ALTER TABLE `users` ADD `website` varchar(255) NULL"
+    );
+};
+
 export const initializeDatabase = async () => {
     try {
         console.log(
@@ -194,6 +227,7 @@ export const initializeDatabase = async () => {
         await initializeDataSource();
         console.log("MySQL connected");
         await ensureSchemaColumns();
+        await ensureProfileColumns();
         await ensurePasskeyTables();
         await syncNotificationsIfNeeded();
         await syncOrphanAvatarsIfNeeded();

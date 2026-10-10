@@ -185,13 +185,13 @@ const ConversationMessage: React.FC<ConversationMessageProps> = ({
 
       id={isChat ? `correspondence-message-${item.id}` : undefined}
 
-      className={`${conversationStyles.messageRow} ${
+      className={`${conversationStyles.conversationPanel__messageRow} ${
 
-        isChat ? conversationStyles.messageRowInteractive : ""
+        isChat ? conversationStyles.conversationPanel__messageRowInteractive : ""
 
-      } ${highlight ? conversationStyles.messageRowHighlight : ""} ${
+      } ${highlight ? conversationStyles.conversationPanel__messageRowHighlight : ""} ${
 
-        isPinned ? conversationStyles.messageRowPinned : ""
+        isPinned ? conversationStyles.conversationPanel__messageRowPinned : ""
 
       }`}
 
@@ -205,17 +205,17 @@ const ConversationMessage: React.FC<ConversationMessageProps> = ({
 
       />
 
-      <div className={conversationStyles.messageMain}>
+      <div className={conversationStyles.conversationPanel__messageMain}>
 
-        <div className={conversationStyles.messageHead}>
+        <div className={conversationStyles.conversationPanel__messageHead}>
 
-          <div className={conversationStyles.messageHeadMain}>
+          <div className={conversationStyles.conversationPanel__messageHeadMain}>
 
-            <span className={conversationStyles.messageName}>{name}</span>
+            <span className={conversationStyles.conversationPanel__messageName}>{name}</span>
 
             {isPinned && (
 
-              <span className={conversationStyles.pinnedBadge} title="Pinned">
+              <span className={conversationStyles.conversationPanel__pinnedBadge} title="Pinned">
 
                 📌
 
@@ -223,7 +223,7 @@ const ConversationMessage: React.FC<ConversationMessageProps> = ({
 
             )}
 
-            <span className={conversationStyles.messageMeta}>
+            <span className={conversationStyles.conversationPanel__messageMeta}>
 
               ·{" "}
 
@@ -235,7 +235,7 @@ const ConversationMessage: React.FC<ConversationMessageProps> = ({
 
               {item.editedAt ? (
 
-                <span className={conversationStyles.editedLabel}>
+                <span className={conversationStyles.conversationPanel__editedLabel}>
 
                   {" "}
 
@@ -255,7 +255,7 @@ const ConversationMessage: React.FC<ConversationMessageProps> = ({
 
         {isChat ? (
           <>
-            <div className={conversationStyles.messageContentWrap}>
+            <div className={conversationStyles.conversationPanel__messageContentWrap}>
               {replyQuote ? (
                 <MessageReplyQuote
                   senderName={replyQuote.senderName}
@@ -264,14 +264,14 @@ const ConversationMessage: React.FC<ConversationMessageProps> = ({
                 />
               ) : null}
               <p
-                className={`${conversationStyles.messageBody} ${
-                  isDeleted ? conversationStyles.messageBodyDeleted : ""
+                className={`${conversationStyles.conversationPanel__messageBody} ${
+                  isDeleted ? conversationStyles.conversationPanel__messageBodyDeleted : ""
                 }`.trim()}
               >
                 {body}
               </p>
               {item.body && !isDeleted ? (
-                <div className={conversationStyles.messageToolbarSlot}>
+                <div className={conversationStyles.conversationPanel__messageToolbarSlot}>
                   <MessageHoverToolbar
                     messageId={item.id}
                     reactions={messageReactions}
@@ -299,7 +299,7 @@ const ConversationMessage: React.FC<ConversationMessageProps> = ({
           </>
         ) : (
 
-          <p className={conversationStyles.messageBody}>{body}</p>
+          <p className={conversationStyles.conversationPanel__messageBody}>{body}</p>
 
         )}
 
