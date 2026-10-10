@@ -100,8 +100,10 @@ test.describe("remaining candidate and lecturer workflows", () => {
 
     await page.goto("/tutor");
     await page.getByRole("searchbox", { name: "Search course, code, or role" }).fill("MARK1001");
-    await expect(page.getByRole("heading", { name: /Marketing/ })).toBeVisible();
-    await page
+    await expect(page.getByText(/Showing 1\s*[–-]\s*1/)).toBeVisible();
+    const markCard = page.locator("article").filter({ hasText: "MARK1001" });
+    await expect(markCard).toHaveCount(1);
+    await markCard
       .getByRole("listitem")
       .filter({ hasText: "Tutor" })
       .getByRole("button", { name: "Apply", exact: true })
