@@ -1,12 +1,9 @@
 import {
-  CORRESPONDENCE_INACTIVITY_MS,
   canCandidateSendCorrespondence,
   canExchangeCorrespondence,
   canLecturerSendCorrespondence,
   candidateOfferPending,
   getCorrespondenceClosedNotice,
-  getLastCorrespondenceActivityAt,
-  isCorrespondenceInactive,
 } from "./correspondencePolicy";
 import type { ApplicationResponse } from "@/shared/services/applicationService";
 
@@ -23,53 +20,18 @@ function app(
 }
 
 describe("correspondencePolicy", () => {
-  it("uses appliedAt when there are no messages", () => {
-    const appliedAt = "2026-01-01T00:00:00.000Z";
-    expect(getLastCorrespondenceActivityAt(app({ appliedAt })).toISOString()).toBe(
-      appliedAt
-    );
-  });
-
-  it("uses the last message timestamp", () => {
-    const application = app({
-      appliedAt: "2026-01-01T00:00:00.000Z",
-      correspondenceMessages: [
-        {
-          id: "1",
-          authorRole: "candidate",
-          authorId: "c1",
-          body: "Hi",
-          createdAt: "2026-01-01T00:00:00.000Z",
-        },
-        {
-          id: "2",
-          authorRole: "lecturer",
-          authorId: "l1",
-          body: "Hello",
-          createdAt: "2026-01-03T00:00:00.000Z",
-        },
-      ],
-    });
-    expect(getLastCorrespondenceActivityAt(application).toISOString()).toBe(
-      "2026-01-03T00:00:00.000Z"
-    );
-  });
-
-  it("blocks inactive, withdrawn, and blocked chats", () => {
-    const old = app({
-      appliedAt: new Date(
-        Date.now() - CORRESPONDENCE_INACTIVITY_MS - 1000
-      ).toISOString(),
-    });
-    expect(isCorrespondenceInactive(old)).toBe(true);
-    expect(canExchangeCorrespondence(old)).toBe(false);
+  it("blocks withdrawn and blocked chats, not by age", () => {
+    expect(
+      canExchangeCorrespondence(
+        app({ appliedAt: "2020-01-01T00:00:00.000Z" })
+      )
+    ).toBe(true);
     expect(canExchangeCorrespondence(app({ isWithdrawn: true }))).toBe(false);
     expect(
       canExchangeCorrespondence(
         app({ candidate: { isBlocked: true } as ApplicationResponse["candidate"] })
       )
     ).toBe(false);
-    expect(canExchangeCorrespondence(app())).toBe(true);
   });
 
   it("handles offer pending and send permissions", () => {
@@ -86,14 +48,12 @@ describe("correspondencePolicy", () => {
     ).toBe(false);
   });
 
-  it("returns closed notice only for inactive open chats", () => {
-    const inactive = app({
-      appliedAt: new Date(
-        Date.now() - CORRESPONDENCE_INACTIVITY_MS - 1000
-      ).toISOString(),
-    });
-    expect(getCorrespondenceClosedNotice(inactive)).toMatch(/5 days/);
+  it("never shows a 5-day inactivity closed notice", () => {
+    expect(
+      getCorrespondenceClosedNotice(
+        app({ appliedAt: "2020-01-01T00:00:00.000Z" })
+      )
+    ).toBeNull();
     expect(getCorrespondenceClosedNotice(app({ isWithdrawn: true }))).toBeNull();
-    expect(getCorrespondenceClosedNotice(app())).toBeNull();
   });
 });

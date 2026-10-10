@@ -30,7 +30,6 @@ import {
 import {
     respondIfWithdrawn,
     respondIfCandidateBlocked,
-    respondIfCorrespondenceInactive,
     WITHDRAWN_REAPPLY_MESSAGE,
 } from "../utils/applicationGuards";
 import { appendDecisionAutoMessage } from "../utils/decisionCorrespondence";
@@ -456,10 +455,6 @@ export class ApplicationController {
             }
 
             if (respondIfWithdrawn(application, res)) {
-                return;
-            }
-
-            if (respondIfCorrespondenceInactive(application, res)) {
                 return;
             }
 
@@ -1803,10 +1798,6 @@ export class ApplicationController {
             }
 
             if (respondIfCandidateBlocked(application, res)) {
-                return;
-            }
-
-            if (respondIfCorrespondenceInactive(application, res)) {
                 return;
             }
 

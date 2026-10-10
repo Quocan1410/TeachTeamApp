@@ -4,7 +4,6 @@ import {
   canLecturerSendCorrespondence,
   candidateOfferPending,
   getCorrespondenceClosedNotice,
-  isCorrespondenceInactive,
 } from "./applicationTimeline";
 import type { ApplicationResponse } from "@/shared/services/applicationService";
 
@@ -62,7 +61,6 @@ describe("buildApplicationTimeline", () => {
       status: "pending",
       isWithdrawn: false,
     } as ApplicationResponse;
-    expect(isCorrespondenceInactive(fresh)).toBe(false);
     expect(canCandidateSendCorrespondence(fresh)).toBe(true);
     expect(canLecturerSendCorrespondence(fresh)).toBe(true);
     expect(candidateOfferPending(fresh)).toBe(false);
