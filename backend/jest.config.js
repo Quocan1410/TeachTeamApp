@@ -7,11 +7,8 @@ module.exports = {
   testMatch: ["**/*.test.ts"],
   clearMocks: true,
   collectCoverageFrom: [
-    "src/utils/validation.ts",
-    "src/utils/passwordRules.ts",
-    "src/utils/pagination.ts",
-    "src/utils/courseDeadline.ts",
-    "src/utils/avatarUtils.ts",
+    "src/utils/**/*.ts",
+    "!src/utils/**/*.test.ts",
   ],
   coverageDirectory: "coverage",
   coverageReporters: ["text", "lcov", "json-summary"],
