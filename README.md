@@ -92,6 +92,24 @@ Admin (`admin@admin.com` / `admin`) signs in on the admin app at http://localhos
 
 ## Tests
 
+### Unit tests (Jest)
+
+```bash
+cd backend && npm test
+cd frontend && npm test
+```
+
+Coverage for the logic files under test (validation, password rules, pagination, auth helpers, and related utils):
+
+```bash
+cd backend && npm run test:coverage
+cd frontend && npm run test:coverage
+```
+
+Those coverage reports target the listed utility modules, not every React page or Express route. CI fails if that scoped coverage drops below 80% lines.
+
+### End-to-end (Playwright)
+
 With the app on port 3000 and the API on port 5000:
 
 ```bash
@@ -101,4 +119,4 @@ npx playwright install chromium
 npm test
 ```
 
-`npm test` runs the guest, candidate, and lecturer Playwright projects against the servers that are already running. GitHub Actions also runs frontend lint, typecheck, and build, the API typecheck and build, then a separate end-to-end job on a fresh MySQL database.
+GitHub Actions runs unit coverage, frontend lint/typecheck/build, API typecheck/build, then Playwright on a fresh MySQL database.
