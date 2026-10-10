@@ -1,28 +1,28 @@
-.browse {
+.tutorPage__browse {
   display: grid;
   grid-template-columns: 12.25rem minmax(0, 1fr);
   gap: 1.25rem;
   align-items: start;
 }
 
-.browseMain {
+.tutorPage__browseMain {
   min-width: 0;
 }
 
-.results {
+.tutorPage__results {
   scroll-margin-top: 6rem;
   min-width: 0;
 }
 
 @media (max-width: 900px) {
-  .browse {
+  .tutorPage__browse {
     grid-template-columns: 1fr;
   }
 }
 
 /* Main Tutor Page Layout */
 
-.tutorContainer {
+.tutorPage__tutorContainer {
   max-width: calc(1140px + 3rem);
   margin: 0 auto;
   padding: 0 1.5rem 2rem;
@@ -32,13 +32,13 @@
 
 /* Responsive adjustments */
 @media (max-width: 640px) {
-  .tutorContainer {
+  .tutorPage__tutorContainer {
     padding: 1rem;
   }
 }
 
 /* Course Grid - 2 rows of 3 cards */
-.courseGrid {
+.tutorPage__courseGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.75rem;
@@ -47,18 +47,18 @@
 }
 
 @media (max-width: 700px) {
-  .courseGrid {
+  .tutorPage__courseGrid {
     grid-template-columns: 1fr;
   }
 }
 
-.courseGrid > * {
+.tutorPage__courseGrid > * {
   height: 17.5rem;
   min-height: 17.5rem;
 }
 
 /* Loading state */
-.tutorContainer .loadingState {
+.tutorPage__tutorContainer .tutorPage__loadingState {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,29 +67,29 @@
 }
 
 /* Filter section spacing */
-.tutorContainer .searchFiltersContainer {
+.tutorPage__tutorContainer .tutorPage__searchFiltersContainer {
   margin-bottom: 2rem;
 }
 
 /* Empty state styling */
-.tutorContainer .emptyState {
+.tutorPage__tutorContainer .tutorPage__emptyState {
   text-align: center;
   padding: 3rem 1rem;
   color: var(--color-text-secondary);
 }
 
-.tutorContainer .emptyState h3 {
+.tutorPage__tutorContainer .tutorPage__emptyState h3 {
   font-size: 1.5rem;
   margin-bottom: 1rem;
   color: var(--color-text-primary);
 }
 
-.tutorContainer .emptyState p {
+.tutorPage__tutorContainer .tutorPage__emptyState p {
   font-size: 1rem;
   line-height: 1.6;
 }
 
-.emptyStateCard {
+.tutorPage__emptyStateCard {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -104,7 +104,7 @@
   background: rgba(249, 115, 22, 0.04);
 }
 
-.emptyTitle {
+.tutorPage__emptyTitle {
   margin: 0;
   font-size: 1.05rem;
   font-weight: 650;
@@ -112,7 +112,7 @@
   color: var(--color-text-primary);
 }
 
-.emptySubtitle {
+.tutorPage__emptySubtitle {
   margin: 0.4rem 0 0;
   max-width: 28rem;
   font-size: 0.9rem;
@@ -120,7 +120,7 @@
   color: var(--color-text-secondary);
 }
 
-.emptyClear {
+.tutorPage__emptyClear {
   margin-top: 0.95rem;
   padding: 0.45rem 0.9rem;
   border: 1px solid rgba(249, 115, 22, 0.45);
@@ -132,17 +132,17 @@
   cursor: pointer;
 }
 
-.emptyClear:hover {
+.tutorPage__emptyClear:hover {
   background: rgba(249, 115, 22, 0.12);
 }
 
 /* Responsive adjustments */
 @media (max-width: 480px) {
-  .tutorContainer {
+  .tutorPage__tutorContainer {
     padding: 0 0.5rem;
   }
   
-  .courseGrid {
+  .tutorPage__courseGrid {
     padding: 0;
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { CheckIcon } from "@heroicons/react/24/outline";
 import styles from "./AppSelect.module.css";
 
 export interface AppSelectOption {
@@ -77,19 +78,19 @@ const AppSelect: React.FC<AppSelectProps> = ({
 
   return (
     <div
-      className={`${styles.root} ${open ? styles.rootOpen : ""} ${className}`.trim()}
+      className={`${styles.appSelect__root} ${open ? styles.appSelect__rootOpen : ""} ${className}`.trim()}
       ref={rootRef}
     >
       <button
         type="button"
         id={id}
         ref={triggerRef}
-        className={`${styles.trigger} ${
-          variant === "pill" ? styles.triggerPill : ""
-        } ${open && variant !== "pill" ? styles.triggerOpen : ""} ${
-          open && variant === "pill" ? styles.triggerPillOpen : ""
-        } ${isDefaultValue ? styles.triggerDefault : ""} ${
-          hasError ? styles.triggerError : ""
+        className={`${styles.appSelect__trigger} ${
+          variant === "pill" ? styles.appSelect__triggerPill : ""
+        } ${open && variant !== "pill" ? styles.appSelect__triggerOpen : ""} ${
+          open && variant === "pill" ? styles.appSelect__triggerPillOpen : ""
+        } ${isDefaultValue ? styles.appSelect__triggerDefault : ""} ${
+          hasError ? styles.appSelect__triggerError : ""
         }`.trim()}
         onClick={() => {
           if (disabled) return;
@@ -105,19 +106,19 @@ const AppSelect: React.FC<AppSelectProps> = ({
         aria-expanded={open}
         aria-label={ariaLabel}
       >
-        <span className={styles.triggerLabel}>
+        <span className={styles.appSelect__triggerLabel}>
           {selectedOption?.label ?? "Select…"}
         </span>
-        <span className={styles.chevron} aria-hidden />
+        <span className={styles.appSelect__chevron} aria-hidden />
       </button>
 
       {open && (
-        <ul className={styles.menu} role="listbox" aria-label={ariaLabel}>
+        <ul className={styles.appSelect__menu} role="listbox" aria-label={ariaLabel}>
           {options.map((option) => {
             if (option.isDefault) {
               return (
                 <li key={option.value || "__default__"} role="presentation">
-                  <span className={styles.optionDefault}>{option.label}</span>
+                  <span className={styles.appSelect__optionDefault}>{option.label}</span>
                 </li>
               );
             }
@@ -130,8 +131,8 @@ const AppSelect: React.FC<AppSelectProps> = ({
                   type="button"
                   role="option"
                   aria-selected={optionSelected}
-                  className={`${styles.option} ${
-                    optionSelected ? styles.optionSelected : ""
+                  className={`${styles.appSelect__option} ${
+                    optionSelected ? styles.appSelect__optionSelected : ""
                   }`.trim()}
                   onClick={() => {
                     onChange(option.value);

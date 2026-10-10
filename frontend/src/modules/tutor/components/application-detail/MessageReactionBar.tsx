@@ -38,7 +38,7 @@ const MessageReactionBar: React.FC<MessageReactionBarProps> = ({
   if (activeChips.length === 0) return null;
 
   return (
-    <div className={styles.tray} role="group" aria-label="Message reactions">
+    <div className={styles.messageReactionBar__tray} role="group" aria-label="Message reactions">
       {activeChips.map(({ emoji, label }) => {
         const count = messageReactions[emoji]?.length ?? 0;
         const active = userReactedWith(
@@ -52,17 +52,17 @@ const MessageReactionBar: React.FC<MessageReactionBarProps> = ({
           <button
             key={emoji}
             type="button"
-            className={`${styles.chip} ${active ? styles.chipActive : ""}`}
+            className={`${styles.messageReactionBar__chip} ${active ? styles.messageReactionBar__chipActive : ""}`}
             aria-pressed={active}
             aria-label={`${label}${count > 0 ? `, ${count}` : ""}`}
             title={label}
             onClick={() => onToggle(emoji)}
           >
-            <span className={styles.emoji} aria-hidden>
+            <span className={styles.messageReactionBar__emoji} aria-hidden>
               {emoji}
             </span>
             {count > 0 ? (
-              <span className={styles.count}>{count}</span>
+              <span className={styles.messageReactionBar__count}>{count}</span>
             ) : null}
           </button>
         );

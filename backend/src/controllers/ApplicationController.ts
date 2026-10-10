@@ -140,7 +140,9 @@ export class ApplicationController {
             if (!validation.isValid) {
                 res.status(400).json({
                     success: false,
-                    message: "",
+                    message:
+                        Object.values(validation.errors)[0] ||
+                        "Please check the application form",
                     errors: validation.errors,
                 });
                 return;

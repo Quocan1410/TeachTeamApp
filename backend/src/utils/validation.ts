@@ -216,13 +216,21 @@ export const validateApplicationData = (data: any): ValidationResult => {
         errors.availability = "Invalid availability type";
     }
 
-    // Skills validation
-    if (!data.skills) {
-        errors.skills = "Skills are required";
-    } else if (data.skills.length < 10) {
-        errors.skills = "Skills description must be at least 10 characters long";
-    } else if (data.skills.length > 1000) {
-        errors.skills = "Skills description must be less than 1000 characters";
+    // Skills are comma-separated tags from the apply form, not a paragraph.
+    if (!data.skills || typeof data.skills !== "string") {
+        errors.skills = "Please select at least one skill";
+    } else {
+        const skillTags = data.skills
+            .split(",")
+            .map((skill: string) => skill.trim())
+            .filter(Boolean);
+        if (skillTags.length === 0) {
+            errors.skills = "Please select at least one skill";
+        } else if (skillTags.some((skill: string) => skill.length < 2)) {
+            errors.skills = "Each skill must be at least 2 characters";
+        } else if (data.skills.length > 1000) {
+            errors.skills = "Skills must be less than 1000 characters";
+        }
     }
 
     // Experience validation (optional)

@@ -19,10 +19,10 @@ const ChatConversationToolbar: React.FC<ChatConversationToolbarProps> = ({
   onClose,
   showActions = true,
 }) => (
-  <header className={styles.toolbar}>
+  <header className={styles.chatConversationToolbar__toolbar}>
     <button
       type="button"
-      className={styles.backBtn}
+      className={styles.chatConversationToolbar__backBtn}
       onClick={onBack}
       aria-label="Back to application overview"
     >
@@ -42,7 +42,7 @@ const ChatConversationToolbar: React.FC<ChatConversationToolbarProps> = ({
         isPinned={isPinned}
         onTogglePin={onTogglePin}
         onClose={onClose}
-        className={styles.actions}
+        className={styles.chatConversationToolbar__actions}
       />
     ) : null}
   </header>

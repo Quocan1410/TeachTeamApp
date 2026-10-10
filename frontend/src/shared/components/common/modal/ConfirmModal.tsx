@@ -88,14 +88,14 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
 
   return createPortal(
     <div
-      className={styles.backdrop}
+      className={styles.confirmModal__backdrop}
       role="presentation"
       onClick={() => {
         if (!busy) onClose();
       }}
     >
       <div
-        className={styles.panel}
+        className={styles.confirmModal__panel}
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="confirm-modal-title"
@@ -103,27 +103,27 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         onClick={(event) => event.stopPropagation()}
       >
         <div
-          className={`${styles.iconWrap} ${
-            variant === "danger" ? styles.iconWrapDanger : styles.iconWrapDefault
+          className={`${styles.confirmModal__iconWrap} ${
+            variant === "danger" ? styles.confirmModal__iconWrapDanger : styles.confirmModal__iconWrapDefault
           }`}
         >
           <ModalIcon variant={variant} />
         </div>
 
-        <h2 id="confirm-modal-title" className={styles.title}>
+        <h2 id="confirm-modal-title" className={styles.confirmModal__title}>
           {title}
         </h2>
 
         {message ? (
-          <p id="confirm-modal-message" className={styles.message}>
+          <p id="confirm-modal-message" className={styles.confirmModal__message}>
             {message}
           </p>
         ) : null}
 
-        <div className={isSplit ? styles.actionsSplit : styles.actions}>
+        <div className={isSplit ? styles.confirmModal__actionsSplit : styles.confirmModal__actions}>
           <button
             type="button"
-            className={`${styles.cancelBtn} ${isSplit ? styles.cancelBtnSplit : ""}`}
+            className={`${styles.confirmModal__cancelBtn} ${isSplit ? styles.confirmModal__cancelBtnSplit : ""}`}
             onClick={onClose}
             disabled={busy}
           >
@@ -131,9 +131,9 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
           </button>
           <button
             type="button"
-            className={`${styles.confirmBtn} ${
-              variant === "danger" ? styles.confirmBtnDanger : ""
-            } ${isSplit ? styles.confirmBtnSplit : ""}`}
+            className={`${styles.confirmModal__confirmBtn} ${
+              variant === "danger" ? styles.confirmModal__confirmBtnDanger : ""
+            } ${isSplit ? styles.confirmModal__confirmBtnSplit : ""}`}
             onClick={onConfirm}
             disabled={busy}
             autoFocus

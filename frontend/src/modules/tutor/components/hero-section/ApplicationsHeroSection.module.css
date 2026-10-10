@@ -1,6 +1,6 @@
 /* Centered hero — same family as Tutor, slightly compact for sub-page */
 
-.heroSection {
+.applicationsHeroSection__heroSection {
   position: relative;
   width: 100%;
   padding: 7.5rem 0 3.5rem;
@@ -12,12 +12,12 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-.heroSection .container {
+.applicationsHeroSection__heroSection .applicationsHeroSection__container {
   position: relative;
   z-index: 10;
 }
 
-.heroContent {
+.applicationsHeroSection__heroContent {
   max-width: 720px;
   margin: 0 auto;
   text-align: center;
@@ -26,7 +26,7 @@
   padding: 0 1.5rem;
 }
 
-.heroTitle {
+.applicationsHeroSection__heroTitle {
   font-size: clamp(2rem, 4vw, 2.35rem);
   font-weight: 800;
   margin-bottom: 0.85rem;
@@ -34,13 +34,13 @@
   line-height: 1.2;
 }
 
-.heroHighlight {
+.applicationsHeroSection__heroHighlight {
   color: var(--color-primary);
   position: relative;
   display: inline-block;
 }
 
-.heroHighlight::after {
+.applicationsHeroSection__heroHighlight::after {
   content: "";
   position: absolute;
   left: 0;
@@ -52,7 +52,7 @@
   transform: skew(-10deg);
 }
 
-.heroSubtitle {
+.applicationsHeroSection__heroSubtitle {
   font-size: 1rem;
   color: var(--color-text-secondary);
   margin: 0 auto 1.15rem;
@@ -60,7 +60,7 @@
   line-height: 1.6;
 }
 
-.quickTips {
+.applicationsHeroSection__quickTips {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -71,7 +71,7 @@
   max-width: 480px;
 }
 
-.quickTips li {
+.applicationsHeroSection__quickTips li {
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--color-text-secondary);
@@ -81,7 +81,7 @@
   border: 1px solid var(--color-border);
 }
 
-.stats {
+.applicationsHeroSection__stats {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -96,47 +96,47 @@
   border: 1px solid var(--color-border);
 }
 
-.statItem {
+.applicationsHeroSection__statItem {
   text-align: center;
   padding: 0 1.1rem;
   flex: 1 1 auto;
   min-width: 4rem;
 }
 
-.statValue {
+.applicationsHeroSection__statValue {
   font-size: 1.85rem;
   font-weight: 700;
   color: var(--color-primary);
   line-height: 1.2;
 }
 
-.statLabel {
+.applicationsHeroSection__statLabel {
   font-size: 0.78rem;
   color: var(--color-text-secondary);
   margin-top: 0.25rem;
 }
 
-.statDivider {
+.applicationsHeroSection__statDivider {
   width: 1px;
   height: 32px;
   background-color: var(--color-border);
   flex-shrink: 0;
 }
 
-.heroDecoration {
+.applicationsHeroSection__heroDecoration {
   position: absolute;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
 }
 
-.circle {
+.applicationsHeroSection__circle {
   position: absolute;
   border-radius: 50%;
   opacity: 0.18;
 }
 
-.circle1 {
+.applicationsHeroSection__circle1 {
   width: 240px;
   height: 240px;
   background: radial-gradient(circle,
@@ -147,7 +147,7 @@
   animation: float 9s infinite ease-in-out;
 }
 
-.circle2 {
+.applicationsHeroSection__circle2 {
   width: 180px;
   height: 180px;
   background: radial-gradient(circle,
@@ -170,36 +170,36 @@
   }
 }
 
-:global(.dark) .heroSection {
+:global(.dark) .applicationsHeroSection__heroSection {
   background: linear-gradient(160deg,
       var(--color-bg-secondary) 0%,
       var(--color-bg-primary) 50%,
       var(--color-bg-secondary) 100%);
 }
 
-:global(.dark) .heroHighlight::after {
+:global(.dark) .applicationsHeroSection__heroHighlight::after {
   background-color: rgba(249, 115, 22, 0.28);
 }
 
 @media (max-width: 640px) {
-  .heroSection {
+  .applicationsHeroSection__heroSection {
     padding: 5rem 0 2.75rem;
   }
 
-  .quickTips {
+  .applicationsHeroSection__quickTips {
     margin-bottom: 1.15rem;
   }
 
-  .stats {
+  .applicationsHeroSection__stats {
     flex-direction: column;
     padding: 1rem;
   }
 
-  .statDivider {
+  .applicationsHeroSection__statDivider {
     display: none;
   }
 
-  .statItem {
+  .applicationsHeroSection__statItem {
     padding: 0.25rem 0;
   }
 }

@@ -58,10 +58,10 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
 
   if (!application) {
     return (
-      <div className={styles.applicantDetailsPanel}>
-        <h2 className={styles.panelTitle}>{title}</h2>
-        <div className={styles.emptyDetails}>
-          <div className={styles.emptyDetailsIcon}>
+      <div className={styles.applicantDetails__applicantDetailsPanel}>
+        <h2 className={styles.applicantDetails__panelTitle}>{title}</h2>
+        <div className={styles.applicantDetails__emptyDetails}>
+          <div className={styles.applicantDetails__emptyDetailsIcon}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -76,8 +76,8 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
               />
             </svg>
           </div>
-          <h3 className={styles.emptyDetailsTitle}>No Applicant Selected</h3>
-          <p className={styles.emptyDetailsText}>
+          <h3 className={styles.applicantDetails__emptyDetailsTitle}>No Applicant Selected</h3>
+          <p className={styles.applicantDetails__emptyDetailsText}>
             Select an applicant from the list to view their details
           </p>
         </div>
@@ -125,22 +125,22 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
   };
 
   return (
-    <div className={styles.applicantDetailsPanel}>
-      <h2 className={styles.panelTitle}>{title}</h2>
+    <div className={styles.applicantDetails__applicantDetailsPanel}>
+      <h2 className={styles.applicantDetails__panelTitle}>{title}</h2>
       <AnimatePresence mode="wait">
         <motion.div
           key={application.id}
-          className={styles.detailsContainer}
+          className={styles.applicantDetails__detailsContainer}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
         >
           {application.isBlocked && (
-            <div className={styles.blockedWarning}>
+            <div className={styles.applicantDetails__blockedWarning}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className={styles.warningIcon}
+                className={styles.applicantDetails__warningIcon}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -162,20 +162,20 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
             </div>
           )}
 
-          <div className={styles.actionButtonsContainer}>
+          <div className={styles.applicantDetails__actionButtonsContainer}>
             <div>
-              <h2 className={styles.applicantNameLarge}>
+              <h2 className={styles.applicantDetails__applicantNameLarge}>
                 {application.fullName}
               </h2>
-              <p className={styles.applicantEmail}>{application.email}</p>
-              <div className={styles.applicantBadges}>
+              <p className={styles.applicantDetails__applicantEmail}>{application.email}</p>
+              <div className={styles.applicantDetails__applicantBadges}>
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {((application as any)?.role?.roleName === "tutor" ||
                   application.previousRoles?.includes("tutor")) && (
-                  <span className={styles.roleBadge}>
+                  <span className={styles.applicantDetails__roleBadge}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className={styles.roleBadgeIcon}
+                      className={styles.applicantDetails__roleBadgeIcon}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -203,11 +203,11 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
                   </span>
                 )}
 
-                <span className={styles.availabilityBadge}>
+                <span className={styles.applicantDetails__availabilityBadge}>
                   {application.availability}
                 </span>
 
-                <span className={styles.statusBadge}>
+                <span className={styles.applicantDetails__statusBadge}>
                   {application.isWithdrawn
                     ? "Withdrawn"
                     : (application.status as string) === "pending"
@@ -219,13 +219,13 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
               </div>
             </div>
 
-            <div className={styles.buttonGroup}>
+            <div className={styles.applicantDetails__buttonGroup}>
               {application.isBlocked ? (
                 <button
                   type="button"
                   onClick={handleRemoveBlockedClick}
                   disabled={isRemoving || !onRemoveBlockedApplication}
-                  className={`${styles.actionButton} ${styles.removeBlockedButton}`}
+                  className={`${styles.applicantDetails__actionButton} ${styles.applicantDetails__removeBlockedButton}`}
                   title="Remove this application from your list"
                 >
                   {isRemoving ? "Removing..." : "Remove Application"}
@@ -234,7 +234,7 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
                 <>
                   <button
                     onClick={onUnselectApplicant}
-                    className={`${styles.actionButton} ${styles.unselectButton}`}
+                    className={`${styles.applicantDetails__actionButton} ${styles.applicantDetails__unselectButton}`}
                   >
                     Unselect
                   </button>
@@ -243,12 +243,12 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
                   application.rank > 0 ? (
                     <button
                       disabled
-                      className={`${styles.actionButton} ${styles.alreadyRankedButton}`}
+                      className={`${styles.applicantDetails__actionButton} ${styles.applicantDetails__alreadyRankedButton}`}
                       title="Already added to ranking"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className={styles.buttonIcon}
+                        className={styles.applicantDetails__buttonIcon}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -265,7 +265,7 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
                   ) : (
                     <button
                       onClick={handleAddToRankingClick}
-                      className={`${styles.actionButton} ${styles.addToRankingButton}`}
+                      className={`${styles.applicantDetails__actionButton} ${styles.applicantDetails__addToRankingButton}`}
                       title="Add to ranking"
                     >
                       Add to Ranking
@@ -275,7 +275,7 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
               ) : (
                 <button
                   onClick={handleSelectButtonClick}
-                  className={`${styles.actionButton} ${styles.selectButton}`}
+                  className={`${styles.applicantDetails__actionButton} ${styles.applicantDetails__selectButton}`}
                   title="Select applicant for all applied courses"
                   disabled={
                     application.isBlocked || Boolean(application.isWithdrawn)
@@ -289,9 +289,9 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
             </div>
           </div>
 
-          <div className={styles.section}>
-            <h4 className={styles.sectionTitle}>Course Applications</h4>
-            <div className={styles.compactCourseList}>
+          <div className={styles.applicantDetails__section}>
+            <h4 className={styles.applicantDetails__sectionTitle}>Course Applications</h4>
+            <div className={styles.applicantDetails__compactCourseList}>
               {application.courses.map((courseCode) => {
                 const extendedApp = application as TutorApplication & {
                   course?: {
@@ -309,20 +309,20 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
                   application.selectedForCourses?.includes(courseCode);
 
                 return (
-                  <div key={courseCode} className={styles.compactCourseRow}>
-                    <span className={styles.courseCode}>{courseCode}</span>
-                    <span className={styles.compactCourseName}>
+                  <div key={courseCode} className={styles.applicantDetails__compactCourseRow}>
+                    <span className={styles.applicantDetails__courseCode}>{courseCode}</span>
+                    <span className={styles.applicantDetails__compactCourseName}>
                       {extendedApp.course?.courseName || "Course not found"}
                     </span>
                     {courseData && roleName && (
-                      <span className={styles.positionBadge}>
+                      <span className={styles.applicantDetails__positionBadge}>
                         {roleName === "tutor"
                           ? `Tutors ${(courseData.maxTutors ?? 0) - (courseData.availableTutors ?? 0)}/${courseData.maxTutors ?? 0}`
                           : `Lab ${(courseData.maxLabAssistants ?? 0) - (courseData.availableLabAssistants ?? 0)}/${courseData.maxLabAssistants ?? 0}`}
                       </span>
                     )}
                     {isSelected && (
-                      <span className={styles.compactSelectedMark} title="Selected">
+                      <span className={styles.applicantDetails__compactSelectedMark} title="Selected">
                         ✓
                       </span>
                     )}
@@ -332,29 +332,29 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
             </div>
           </div>
 
-          <div className={styles.section}>
-            <h4 className={styles.sectionTitle}>Experience & Skills</h4>
-            <div className={styles.compactMetaGrid}>
-              <div className={styles.compactMetaBlock}>
-                <span className={styles.compactLabel}>Previous roles</span>
+          <div className={styles.applicantDetails__section}>
+            <h4 className={styles.applicantDetails__sectionTitle}>Experience & Skills</h4>
+            <div className={styles.applicantDetails__compactMetaGrid}>
+              <div className={styles.applicantDetails__compactMetaBlock}>
+                <span className={styles.applicantDetails__compactLabel}>Previous roles</span>
                 {application.previousRoles &&
                 application.previousRoles.length > 0 ? (
-                  <div className={styles.inlineTags}>
+                  <div className={styles.applicantDetails__inlineTags}>
                     {application.previousRoles.map((role, index) => (
-                      <span key={index} className={styles.inlineTag}>
+                      <span key={index} className={styles.applicantDetails__inlineTag}>
                         {role}
                       </span>
                     ))}
                   </div>
                 ) : (
-                  <span className={styles.emptyInline}>None listed</span>
+                  <span className={styles.applicantDetails__emptyInline}>None listed</span>
                 )}
               </div>
-              <div className={styles.compactMetaBlock}>
-                <span className={styles.compactLabel}>Skills</span>
-                <div className={styles.inlineTags}>
+              <div className={styles.applicantDetails__compactMetaBlock}>
+                <span className={styles.applicantDetails__compactLabel}>Skills</span>
+                <div className={styles.applicantDetails__inlineTags}>
                   {application.skills.map((skill, index) => (
-                    <span key={index} className={styles.inlineTag}>
+                    <span key={index} className={styles.applicantDetails__inlineTag}>
                       {skill}
                     </span>
                   ))}
@@ -363,26 +363,26 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
             </div>
           </div>
 
-          <div className={styles.section}>
-            <h4 className={styles.sectionTitle}>Academic Background</h4>
-            <p className={styles.academicText}>
+          <div className={styles.applicantDetails__section}>
+            <h4 className={styles.applicantDetails__sectionTitle}>Academic Background</h4>
+            <p className={styles.applicantDetails__academicText}>
               {application.academicCredentials ||
                 "No academic credentials provided"}
             </p>
           </div>
 
-          <div className={styles.section}>
-            <h4 className={styles.sectionTitle}>Private notes</h4>
-            <p className={styles.notesHint}>Only visible to you.</p>
+          <div className={styles.applicantDetails__section}>
+            <h4 className={styles.applicantDetails__sectionTitle}>Private notes</h4>
+            <p className={styles.applicantDetails__notesHint}>Only visible to you.</p>
             <textarea
               value={lecturerNotes}
               onChange={(e) => setLecturerNotes(e.target.value)}
               placeholder="Internal notes, interview reminders…"
-              className={styles.commentTextarea}
+              className={styles.applicantDetails__commentTextarea}
               maxLength={2000}
               disabled={notesSaving}
             />
-            <div className={styles.commentActions}>
+            <div className={styles.applicantDetails__commentActions}>
               <button
                 type="button"
                 onClick={async () => {
@@ -403,7 +403,7 @@ const ApplicantDetails: React.FC<ApplicantDetailsProps> = ({
                   }
                 }}
                 disabled={notesSaving}
-                className={`${styles.actionButton} ${styles.addToRankingButton} ${styles.notesSaveBtn}`}
+                className={`${styles.applicantDetails__actionButton} ${styles.applicantDetails__addToRankingButton} ${styles.applicantDetails__notesSaveBtn}`}
               >
                 {notesSaving ? "Saving…" : "Save private notes"}
               </button>

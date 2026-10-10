@@ -31,12 +31,12 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
 
     if (variant === "auth") {
       return (
-        <div className={styles.authWrap}>
-          <div className={`${styles.pulse} ${styles.authCard}`}>
-            <div className={`${styles.pulse} ${styles.authTitle}`} />
-            <div className={`${styles.pulse} ${styles.authInput}`} />
-            <div className={`${styles.pulse} ${styles.authInput}`} />
-            <div className={`${styles.pulse} ${styles.authButton}`} />
+        <div className={styles.pageSkeleton__authWrap}>
+          <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__authCard}`}>
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__authTitle}`} />
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__authInput}`} />
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__authInput}`} />
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__authButton}`} />
           </div>
         </div>
       );
@@ -44,32 +44,32 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
 
     if (variant === "profile") {
       return (
-        <div className={styles.profileColumn}>
-          <div className={`${styles.profileCard} ${styles.profileCardCenter}`}>
-            <div className={`${styles.pulse} ${styles.avatar}`} />
-            <div className={`${styles.pulse} ${styles.profileName}`} />
-            <div className={`${styles.pulse} ${styles.profileBadge}`} />
-            <div className={`${styles.pulse} ${styles.profileLineShort}`} />
-            <div className={`${styles.pulse} ${styles.profileStat}`} />
-            <div className={`${styles.pulse} ${styles.profileStat}`} />
-            <div className={`${styles.pulse} ${styles.profileSecurity}`} />
+        <div className={styles.pageSkeleton__profileColumn}>
+          <div className={`${styles.pageSkeleton__profileCard} ${styles.pageSkeleton__profileCardCenter}`}>
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__avatar}`} />
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileName}`} />
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileBadge}`} />
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileLineShort}`} />
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileStat}`} />
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileStat}`} />
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileSecurity}`} />
           </div>
-          <div className={styles.profileCard}>
-            <div className={`${styles.pulse} ${styles.profileSectionTitle}`} />
-            <div className={styles.fieldList}>
+          <div className={styles.pageSkeleton__profileCard}>
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileSectionTitle}`} />
+            <div className={styles.pageSkeleton__fieldList}>
               {Array.from({ length: 4 }).map((_, index) => (
-                <div key={`field-${index}`} className={styles.fieldRow}>
-                  <div className={`${styles.pulse} ${styles.fieldLabel}`} />
-                  <div className={`${styles.pulse} ${styles.fieldValue}`} />
+                <div key={`field-${index}`} className={styles.pageSkeleton__fieldRow}>
+                  <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__fieldLabel}`} />
+                  <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__fieldValue}`} />
                 </div>
               ))}
             </div>
           </div>
-          <div className={styles.profileCard}>
-            <div className={`${styles.pulse} ${styles.profileSectionTitle}`} />
-            <div className={`${styles.pulse} ${styles.profileStat}`} />
-            <div className={`${styles.pulse} ${styles.profileStat}`} />
-            <div className={`${styles.pulse} ${styles.profileButton}`} />
+          <div className={styles.pageSkeleton__profileCard}>
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileSectionTitle}`} />
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileStat}`} />
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileStat}`} />
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileButton}`} />
           </div>
         </div>
       );
@@ -78,18 +78,18 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
     if (variant === "lecturer") {
       return (
         <>
-          <div className={`${styles.pulse} ${styles.hero}`} />
-          <div className={`${styles.pulse} ${styles.filterBar}`} />
-          <div className={styles.splitLayout}>
-            <div className={styles.leftColumn}>
+          <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__hero}`} />
+          <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__filterBar}`} />
+          <div className={styles.pageSkeleton__splitLayout}>
+            <div className={styles.pageSkeleton__leftColumn}>
               {Array.from({ length: 5 }).map((_, index) => (
                 <div
                   key={`left-${index}`}
-                  className={`${styles.pulse} ${styles.listItem}`}
+                  className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__listItem}`}
                 />
               ))}
             </div>
-            <div className={`${styles.pulse} ${styles.detailPanel}`} />
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__detailPanel}`} />
           </div>
         </>
       );
@@ -97,12 +97,12 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
 
     if (variant === "home") {
       const lecturers = (
-        <div className={styles.homeLecturers}>
+        <div className={styles.pageSkeleton__homeLecturers}>
           {Array.from({ length: 4 }).map((_, index) => (
-            <div key={`home-${index}`} className={styles.homeLecturer}>
-              <div className={`${styles.pulse} ${styles.homeLecturerPhoto}`} />
-              <div className={`${styles.pulse} ${styles.homeLecturerName}`} />
-              <div className={`${styles.pulse} ${styles.homeLecturerMeta}`} />
+            <div key={`home-${index}`} className={styles.pageSkeleton__homeLecturer}>
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__homeLecturerPhoto}`} />
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__homeLecturerName}`} />
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__homeLecturerMeta}`} />
             </div>
           ))}
         </div>
@@ -113,45 +113,45 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
       }
 
       return (
-        <div className={styles.homeLayout}>
-          <div className={styles.homeHero}>
-            <div className={styles.homeCopy}>
-              <div className={`${styles.pulse} ${styles.homeTitle}`} />
-              <div className={`${styles.pulse} ${styles.homeTitle}`} />
-              <div className={`${styles.pulse} ${styles.homeTitleShort}`} />
-              <div className={`${styles.pulse} ${styles.homeSubtitle}`} />
-              <div className={`${styles.pulse} ${styles.homeButton}`} />
+        <div className={styles.pageSkeleton__homeLayout}>
+          <div className={styles.pageSkeleton__homeHero}>
+            <div className={styles.pageSkeleton__homeCopy}>
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__homeTitle}`} />
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__homeTitle}`} />
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__homeTitleShort}`} />
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__homeSubtitle}`} />
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__homeButton}`} />
             </div>
-            <div className={`${styles.pulse} ${styles.homeArt}`} />
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__homeArt}`} />
           </div>
 
-          <div className={styles.homeStats}>
-            <div className={`${styles.pulse} ${styles.homeStatNumber}`} />
-            <div className={styles.homeStatCopy}>
-              <div className={`${styles.pulse} ${styles.homeStatLine}`} />
-              <div className={`${styles.pulse} ${styles.homeStatLineShort}`} />
-              <div className={styles.homeAvatars}>
+          <div className={styles.pageSkeleton__homeStats}>
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__homeStatNumber}`} />
+            <div className={styles.pageSkeleton__homeStatCopy}>
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__homeStatLine}`} />
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__homeStatLineShort}`} />
+              <div className={styles.pageSkeleton__homeAvatars}>
                 {Array.from({ length: 9 }).map((_, index) => (
                   <div
                     key={`avatar-${index}`}
-                    className={`${styles.pulse} ${styles.homeAvatar}`}
+                    className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__homeAvatar}`}
                   />
                 ))}
               </div>
             </div>
           </div>
 
-          <div className={styles.homeTimeline}>
-            <div className={`${styles.pulse} ${styles.homeSectionTitle}`} />
+          <div className={styles.pageSkeleton__homeTimeline}>
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__homeSectionTitle}`} />
             {Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={`step-${index}`}
-                className={`${styles.pulse} ${styles.homeStep}`}
+                className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__homeStep}`}
               />
             ))}
           </div>
 
-          <div className={`${styles.pulse} ${styles.homeSectionTitle}`} />
+          <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__homeSectionTitle}`} />
           {lecturers}
         </div>
       );
@@ -160,12 +160,12 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
     if (variant === "applications") {
       return (
         <>
-          <div className={`${styles.pulse} ${styles.filterBar}`} />
-          <div className={styles.applicationList}>
+          <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__filterBar}`} />
+          <div className={styles.pageSkeleton__applicationList}>
             {Array.from({ length: Math.max(cards, 4) }).map((_, index) => (
               <div
                 key={`application-${index}`}
-                className={`${styles.pulse} ${styles.listItem}`}
+                className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__listItem}`}
               />
             ))}
           </div>
@@ -175,29 +175,29 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
 
     if (variant === "tutor") {
       return (
-        <div className={styles.tutorPage}>
-          <div className={`${styles.pulse} ${styles.tutorTitle}`} />
-          <div className={styles.tutorSearchHead}>
-            <div className={`${styles.pulse} ${styles.tutorSearchLabel}`} />
-            <div className={`${styles.pulse} ${styles.tutorClear}`} />
+        <div className={styles.pageSkeleton__tutorPage}>
+          <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__tutorTitle}`} />
+          <div className={styles.pageSkeleton__tutorSearchHead}>
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__tutorSearchLabel}`} />
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__tutorClear}`} />
           </div>
-          <div className={`${styles.pulse} ${styles.tutorSearchField}`} />
-          <div className={`${styles.pulse} ${styles.tutorFilterLabel}`} />
-          <div className={styles.tutorFilters}>
+          <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__tutorSearchField}`} />
+          <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__tutorFilterLabel}`} />
+          <div className={styles.pageSkeleton__tutorFilters}>
             {Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={`tutor-filter-${index}`}
-                className={`${styles.pulse} ${styles.tutorFilter}`}
+                className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__tutorFilter}`}
               />
             ))}
           </div>
-          <div className={`${styles.pulse} ${styles.tutorApply}`} />
-          <div className={`${styles.pulse} ${styles.tutorNotice}`} />
-          <div className={styles.tutorGrid}>
+          <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__tutorApply}`} />
+          <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__tutorNotice}`} />
+          <div className={styles.pageSkeleton__tutorGrid}>
             {Array.from({ length: Math.max(cards, 6) }).map((_, index) => (
               <div
                 key={`tutor-${index}`}
-                className={`${styles.pulse} ${styles.cardTall}`}
+                className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__cardTall}`}
               />
             ))}
           </div>
@@ -207,11 +207,11 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
 
     return (
       <>
-        <div className={`${styles.pulse} ${styles.title}`} />
-        <div className={`${styles.pulse} ${styles.subtitle}`} />
-        <div className={styles.grid}>
+        <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__title}`} />
+        <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__subtitle}`} />
+        <div className={styles.pageSkeleton__grid}>
           {Array.from({ length: cards }).map((_, index) => (
-            <div key={index} className={`${styles.pulse} ${styles.card}`} />
+            <div key={index} className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__card}`} />
           ))}
         </div>
       </>
@@ -225,7 +225,7 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
   const body = renderBody();
 
   const status = (
-    <p className={styles.srOnly} role="status">
+    <p className={styles.pageSkeleton__srOnly} role="status">
       Loading…
     </p>
   );
@@ -241,13 +241,13 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
 
   return (
     <div
-      className={`${styles.wrapper} ${
-        variant === "tutor" ? styles.wrapperTutor : ""
+      className={`${styles.pageSkeleton__wrapper} ${
+        variant === "tutor" ? styles.pageSkeleton__wrapperTutor : ""
       }`}
       aria-busy="true"
       aria-live="polite"
     >
-      <div className={styles.container}>
+      <div className={styles.pageSkeleton__container}>
         {status}
         {body}
       </div>

@@ -41,7 +41,7 @@ const AccountStatusModal: React.FC<AccountStatusModalProps> = ({
         strokeWidth={2.5}
         width="32"
         height="32"
-        className={styles.blockedIcon}
+        className={styles.accountStatusModal__blockedIcon}
       >
         <path
           strokeLinecap="round"
@@ -71,7 +71,7 @@ const AccountStatusModal: React.FC<AccountStatusModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className={styles.accountStatusBackdrop}
+          className={styles.accountStatusModal__accountStatusBackdrop}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -87,18 +87,18 @@ const AccountStatusModal: React.FC<AccountStatusModalProps> = ({
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className={styles.accountStatusHeader}>
-              <div className={styles.accountStatusHeaderContent}>
-                <div className={styles.headerTitleSection}>
-                  <h3 className={styles.accountStatusTitle}>{title}</h3>
-                  <p className={styles.headerSubtitle}>
+            <div className={styles.accountStatusModal__accountStatusHeader}>
+              <div className={styles.accountStatusModal__accountStatusHeaderContent}>
+                <div className={styles.accountStatusModal__headerTitleSection}>
+                  <h3 className={styles.accountStatusModal__accountStatusTitle}>{title}</h3>
+                  <p className={styles.accountStatusModal__headerSubtitle}>
                     Account status has changed
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={handleClose}
-                  className={styles.accountStatusClose}
+                  className={styles.accountStatusModal__accountStatusClose}
                 >
                   <span className="sr-only">Close</span>
                   <svg
@@ -119,22 +119,22 @@ const AccountStatusModal: React.FC<AccountStatusModalProps> = ({
             </div>
 
             {/* Content */}
-            <div className={styles.accountStatusContent}>
-              <div className={styles.statusInfoCard}>
-                <div className={styles.iconContainer}>
-                  <div className={styles.icon}>{icon}</div>
+            <div className={styles.accountStatusModal__accountStatusContent}>
+              <div className={styles.accountStatusModal__statusInfoCard}>
+                <div className={styles.accountStatusModal__iconContainer}>
+                  <div className={styles.accountStatusModal__icon}>{icon}</div>
                 </div>
 
-                <div className={styles.messageSection}>
-                  <p className={styles.userName}>Hello, {userName}</p>
-                  <p className={styles.message}>{message}</p>
+                <div className={styles.accountStatusModal__messageSection}>
+                  <p className={styles.accountStatusModal__userName}>Hello, {userName}</p>
+                  <p className={styles.accountStatusModal__message}>{message}</p>
                 </div>
               </div>
 
               {/* Actions */}
-              <div className={styles.accountStatusActions}>
+              <div className={styles.accountStatusModal__accountStatusActions}>
                 <button
-                  className={styles.continueButton}
+                  className={styles.accountStatusModal__continueButton}
                   onClick={handleClose}
                   autoFocus
                 >

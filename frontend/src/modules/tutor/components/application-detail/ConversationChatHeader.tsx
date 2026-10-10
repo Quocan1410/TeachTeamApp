@@ -26,12 +26,12 @@ const ConversationChatHeader: React.FC<ConversationChatHeaderProps> = ({
     application.role?.roleName === "lab_assistant" ? "Lab Assistant" : "Tutor";
 
   return (
-    <header className={styles.chatHeader}>
-      <div className={styles.chatHeaderMain}>
-        <h2 className={styles.chatHeaderTitle}>{lecturerName}</h2>
-        <p className={styles.chatHeaderSubtitle}>
+    <header className={styles.conversationPanel__chatHeader}>
+      <div className={styles.conversationPanel__chatHeaderMain}>
+        <h2 className={styles.conversationPanel__chatHeaderTitle}>{lecturerName}</h2>
+        <p className={styles.conversationPanel__chatHeaderSubtitle}>
           <span>{courseLabel}</span>
-          <span className={styles.chatHeaderDot} aria-hidden>
+          <span className={styles.conversationPanel__chatHeaderDot} aria-hidden>
             ·
           </span>
           <span>{roleLabel}</span>
@@ -41,7 +41,7 @@ const ConversationChatHeader: React.FC<ConversationChatHeaderProps> = ({
         isPinned={isPinned}
         onTogglePin={onTogglePin}
         onClose={onClose}
-        className={styles.chatHeaderActions}
+        className={styles.conversationPanel__chatHeaderActions}
       />
     </header>
   );

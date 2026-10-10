@@ -44,16 +44,20 @@ const validateApplicationFields = (req: any, res: any, next: any) => {
             "Availability must be either 'Part Time' or 'Full Time'";
     }
 
-    // Skills validation
-    if (!skills) {
-        errors.skills = "Skills are required";
-    } else if (typeof skills === "string") {
-        if (skills.trim().length < 10) {
-            errors.skills =
-                "Skills description must be at least 10 characters long";
+    // Skills are comma-separated tags from the apply form, not a paragraph.
+    if (!skills || typeof skills !== "string") {
+        errors.skills = "Please select at least one skill";
+    } else {
+        const skillTags = skills
+            .split(",")
+            .map((skill: string) => skill.trim())
+            .filter(Boolean);
+        if (skillTags.length === 0) {
+            errors.skills = "Please select at least one skill";
+        } else if (skillTags.some((skill: string) => skill.length < 2)) {
+            errors.skills = "Each skill must be at least 2 characters";
         } else if (skills.trim().length > 1000) {
-            errors.skills =
-                "Skills description must be less than 1000 characters";
+            errors.skills = "Skills must be less than 1000 characters";
         }
     }
 
@@ -82,7 +86,7 @@ const validateApplicationFields = (req: any, res: any, next: any) => {
     if (Object.keys(errors).length > 0) {
         return res.status(400).json({
             success: false,
-            message: "",
+            message: Object.values(errors)[0] || "Please check the application form",
             errors,
         });
     }

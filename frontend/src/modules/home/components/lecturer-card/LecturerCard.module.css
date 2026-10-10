@@ -16,7 +16,7 @@
   box-sizing: border-box;
 }
 
-.lecturerImageContainer {
+.lecturerCard__lecturerImageContainer {
   position: relative;
   width: 200px;
   height: 200px;
@@ -29,11 +29,11 @@
   flex-shrink: 0;
 }
 
-.lecturerCard:hover .lecturerImageContainer {
+.lecturerCard:hover .lecturerCard__lecturerImageContainer {
   box-shadow: 0 15px 35px var(--color-shadow);
 }
 
-.lecturerImage {
+.lecturerCard__lecturerImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -41,25 +41,25 @@
   transition: transform 0.45s ease;
 }
 
-.lecturerCard:hover .lecturerImage {
+.lecturerCard:hover .lecturerCard__lecturerImage {
   transform: scale(1.06);
 }
 
-.lecturerName {
+.lecturerCard__lecturerName {
   font-size: 1.3rem;
   font-weight: 700;
   margin-bottom: 0.3rem;
   color: var(--color-text-primary);
 }
 
-.lecturerTitle {
+.lecturerCard__lecturerTitle {
   font-size: 1rem;
   color: var(--color-primary);
   margin-bottom: 0.35rem;
   font-weight: 500;
 }
 
-.lecturerSpecialization {
+.lecturerCard__lecturerSpecialization {
   margin-bottom: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -82,7 +82,7 @@
 }
 
 /* Sits under the course line without growing the card, so the footer stays put. */
-.moreInfoBtn {
+.lecturerCard__moreInfoBtn {
   position: absolute;
   left: 50%;
   top: calc(100% + 2rem);
@@ -105,22 +105,22 @@
   white-space: nowrap;
 }
 
-.lecturerCard:hover .moreInfoBtn {
+.lecturerCard:hover .lecturerCard__moreInfoBtn {
   opacity: 1;
   pointer-events: auto;
 }
 
-.moreInfoBtn:hover {
+.lecturerCard__moreInfoBtn:hover {
   background-color: var(--color-primary);
   color: white;
 }
 
-.directoryStage {
+.lecturerCard__directoryStage {
   height: 100%;
   perspective: 900px;
 }
 
-.directoryShell {
+.lecturerCard__directoryShell {
   --rx: 0deg;
   --ry: 0deg;
   --lift: 0px;
@@ -132,12 +132,12 @@
   transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.directoryShell:hover {
+.lecturerCard__directoryShell:hover {
   --lift: -0.45rem;
   transition: transform 0.08s linear;
 }
 
-.directoryShell::after {
+.lecturerCard__directoryShell::after {
   content: "";
   position: absolute;
   z-index: 0;
@@ -152,34 +152,34 @@
   transition: opacity 0.2s ease;
 }
 
-.directoryShell:hover::after {
+.lecturerCard__directoryShell:hover::after {
   opacity: 1;
 }
 
-.directoryShell:hover .directory {
+.lecturerCard__directoryShell:hover .lecturerCard__directory {
   border-color: rgba(249, 115, 22, 0.55);
   transform: translateZ(1.1rem);
 }
 
-.directoryPhoto img {
+.lecturerCard__directoryPhoto img {
   transition: transform 0.35s ease;
 }
 
-.directoryShell:hover .directoryPhoto img {
+.lecturerCard__directoryShell:hover .lecturerCard__directoryPhoto img {
   transform: scale(1.08);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .directoryShell,
-  .directoryShell:hover,
-  .directory,
-  .directoryPhoto img {
+  .lecturerCard__directoryShell,
+  .lecturerCard__directoryShell:hover,
+  .lecturerCard__directory,
+  .lecturerCard__directoryPhoto img {
     transform: none;
     transition: none;
   }
 }
 
-.directory {
+.lecturerCard__directory {
   position: relative;
   z-index: 1;
   display: flex;
@@ -205,7 +205,7 @@
   transition: transform 0.35s ease, border-color 0.2s ease;
 }
 
-.ornament {
+.lecturerCard__ornament {
   position: absolute;
   top: 0.85rem;
   right: 0.9rem;
@@ -214,7 +214,7 @@
   gap: 0.28rem;
 }
 
-.gem {
+.lecturerCard__gem {
   width: 0.42rem;
   height: 0.42rem;
   border-radius: 0.06rem;
@@ -222,23 +222,23 @@
   transform: rotate(45deg);
 }
 
-.dotBlue,
-.dotGreen {
+.lecturerCard__dotBlue,
+.lecturerCard__dotGreen {
   width: 0.28rem;
   height: 0.28rem;
   border-radius: 999px;
   opacity: 0.75;
 }
 
-.dotBlue {
+.lecturerCard__dotBlue {
   background: #60a5fa;
 }
 
-.dotGreen {
+.lecturerCard__dotGreen {
   background: #34d399;
 }
 
-.directoryTop {
+.lecturerCard__directoryTop {
   display: flex;
   align-items: center;
   gap: 0.9rem;
@@ -246,7 +246,7 @@
   padding-right: 2.2rem;
 }
 
-.directoryPhoto {
+.lecturerCard__directoryPhoto {
   display: block;
   width: 5.05rem;
   height: 5.05rem;
@@ -256,20 +256,20 @@
   box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.45);
 }
 
-.directoryPhoto img {
+.lecturerCard__directoryPhoto img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center 36%;
 }
 
-.directoryCopy {
+.lecturerCard__directoryCopy {
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
 
-.directoryName {
+.lecturerCard__directoryName {
   color: var(--color-text-primary);
   font-size: 1.22rem;
   font-weight: 750;
@@ -277,19 +277,19 @@
   letter-spacing: -0.02em;
 }
 
-.directoryRole {
+.lecturerCard__directoryRole {
   margin-top: 0.2rem;
   color: var(--color-primary);
   font-size: 0.84rem;
 }
 
-.directoryCourses {
+.lecturerCard__directoryCourses {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
 }
 
-.code {
+.lecturerCard__code {
   display: inline-flex;
   padding: 0.2rem 0.55rem;
   border: 1px solid rgba(249, 115, 22, 0.28);
@@ -301,7 +301,7 @@
   letter-spacing: 0.02em;
 }
 
-.hit {
+.lecturerCard__hit {
   padding: 0 0.08rem;
   border-radius: 0.2rem;
   background: rgba(249, 115, 22, 0.28);
@@ -309,22 +309,22 @@
 }
 
 /* Custom hover effects for each card - using global selectors for numbered classes */
-:global(.lecturer1):hover .lecturerDecoration {
+:global(.lecturer1):hover .lecturerCard__lecturerDecoration {
   transform: scale(1.2) rotate(15deg) !important;
   background-color: var(--color-primary);
 }
 
-:global(.lecturer2):hover .lecturerDecoration {
+:global(.lecturer2):hover .lecturerCard__lecturerDecoration {
   transform: scale(1.2) rotate(-15deg) !important;
   background-color: var(--color-primary);
 }
 
-:global(.lecturer3):hover .lecturerDecoration {
+:global(.lecturer3):hover .lecturerCard__lecturerDecoration {
   transform: scale(1.2) rotate(15deg) !important;
   background-color: var(--color-primary);
 }
 
-:global(.lecturer4):hover .lecturerDecoration {
+:global(.lecturer4):hover .lecturerCard__lecturerDecoration {
   transform: scale(1.2) rotate(-15deg) !important;
   background-color: var(--color-primary);
 }

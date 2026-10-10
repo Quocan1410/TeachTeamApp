@@ -1,10 +1,10 @@
-.layout {
+.lecturerDetailModal__layout {
   display: flex;
   width: 100%;
   min-height: 0;
 }
 
-.photo {
+.lecturerDetailModal__photo {
   position: relative;
   width: 34%;
   flex-shrink: 0;
@@ -12,12 +12,12 @@
   background: var(--color-bg-secondary);
 }
 
-.portrait {
+.lecturerDetailModal__portrait {
   object-fit: cover;
   object-position: center 38%;
 }
 
-.body {
+.lecturerDetailModal__body {
   width: 66%;
   padding: 1.75rem 2.75rem 1.5rem 1.75rem;
   display: flex;
@@ -25,7 +25,7 @@
   gap: 0.85rem;
 }
 
-.rank {
+.lecturerDetailModal__rank {
   margin: 0;
   color: var(--color-primary);
   font-size: 0.78rem;
@@ -34,7 +34,7 @@
   text-transform: uppercase;
 }
 
-.name {
+.lecturerDetailModal__name {
   margin: 0;
   color: var(--color-text-primary);
   font-size: 1.85rem;
@@ -42,7 +42,7 @@
   line-height: 1.15;
 }
 
-.meta {
+.lecturerDetailModal__meta {
   margin: 0;
   display: flex;
   flex-wrap: wrap;
@@ -52,7 +52,7 @@
   font-size: 0.92rem;
 }
 
-.dot {
+.lecturerDetailModal__dot {
   width: 0.25rem;
   height: 0.25rem;
   border-radius: 50%;
@@ -60,19 +60,19 @@
   opacity: 0.55;
 }
 
-.bio {
+.lecturerDetailModal__bio {
   margin: 0;
   color: var(--color-text-secondary);
   line-height: 1.6;
 }
 
-.courses {
+.lecturerDetailModal__courses {
   margin: 0;
   padding-top: 0.85rem;
   border-top: 1px solid var(--color-border);
 }
 
-.sectionLabel {
+.lecturerDetailModal__sectionLabel {
   margin: 0 0 0.7rem;
   color: var(--color-text-secondary);
   font-size: 0.72rem;
@@ -81,7 +81,7 @@
   text-transform: uppercase;
 }
 
-.courseGrid {
+.lecturerDetailModal__courseGrid {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -91,7 +91,7 @@
   row-gap: 0.55rem;
 }
 
-.courseGrid li {
+.lecturerDetailModal__courseGrid li {
   display: grid;
   grid-template-columns: 5rem minmax(0, 1fr);
   column-gap: 0.5rem;
@@ -99,18 +99,18 @@
   min-width: 0;
 }
 
-.courseCode {
+.lecturerDetailModal__courseCode {
   color: var(--color-primary);
   font-size: 0.78rem;
   font-weight: 700;
 }
 
-.courseName {
+.lecturerDetailModal__courseName {
   color: var(--color-text-primary);
   line-height: 1.35;
 }
 
-.email {
+.lecturerDetailModal__email {
   margin: 0;
   padding-top: 0.85rem;
   border-top: 1px solid var(--color-border);
@@ -120,13 +120,13 @@
   align-items: baseline;
 }
 
-.emailLabel {
+.lecturerDetailModal__emailLabel {
   color: var(--color-primary);
   font-size: 0.78rem;
   font-weight: 700;
 }
 
-.emailValue {
+.lecturerDetailModal__emailValue {
   color: var(--color-text-primary);
   line-height: 1.35;
   user-select: text;
@@ -134,17 +134,17 @@
 }
 
 @media (max-width: 768px) {
-  .layout {
+  .lecturerDetailModal__layout {
     flex-direction: column;
     min-height: 0;
   }
 
-  .photo {
+  .lecturerDetailModal__photo {
     width: 100%;
     height: 16rem;
   }
 
-  .body {
+  .lecturerDetailModal__body {
     width: 100%;
     padding: 1.4rem 1.1rem 1.2rem;
   }

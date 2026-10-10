@@ -20,10 +20,10 @@ function getHeroStatusValueClass(
   status: ApplicationResponse["status"],
   isWithdrawn?: boolean
 ): string {
-  if (isWithdrawn) return styles.heroStatusWithdrawn;
-  if (status === "selected") return styles.heroStatusSelected;
-  if (status === "rejected") return styles.heroStatusRejected;
-  return styles.heroStatusPending;
+  if (isWithdrawn) return styles.applicationDetailPanel__heroStatusWithdrawn;
+  if (status === "selected") return styles.applicationDetailPanel__heroStatusSelected;
+  if (status === "rejected") return styles.applicationDetailPanel__heroStatusRejected;
+  return styles.applicationDetailPanel__heroStatusPending;
 }
 
 interface ApplicationDetailHeroProps {
@@ -69,73 +69,73 @@ const ApplicationDetailHero: React.FC<ApplicationDetailHeroProps> = ({
 
   return (
     <header
-      className={`${styles.hero} ${compact ? styles.heroCompact : ""} ${metaOnly ? styles.heroMetaOnly : ""} ${className ?? ""}`}
+      className={`${styles.applicationDetailPanel__hero} ${compact ? styles.applicationDetailPanel__heroCompact : ""} ${metaOnly ? styles.applicationDetailPanel__heroMetaOnly : ""} ${className ?? ""}`}
     >
-      <div className={styles.heroMain}>
+      <div className={styles.applicationDetailPanel__heroMain}>
         {!metaOnly && (
           <>
-            <p className={styles.heroEyebrow}>
-              <span className={styles.heroCode}>
+            <p className={styles.applicationDetailPanel__heroEyebrow}>
+              <span className={styles.applicationDetailPanel__heroCode}>
                 {application.course.courseCode}
               </span>
-              <span className={styles.heroEyebrowDot} aria-hidden>
+              <span className={styles.applicationDetailPanel__heroEyebrowDot} aria-hidden>
                 ·
               </span>
-              <span className={styles.heroSemester}>
+              <span className={styles.applicationDetailPanel__heroSemester}>
                 {application.course.semester}
               </span>
             </p>
 
-            <h2 className={styles.heroTitle}>
+            <h2 className={styles.applicationDetailPanel__heroTitle}>
               {application.course.courseName}
             </h2>
 
-            <p className={styles.heroDescription}>
+            <p className={styles.applicationDetailPanel__heroDescription}>
               {application.course.description || "No description available."}
             </p>
           </>
         )}
 
-        <p className={styles.heroMetaLine}>
+        <p className={styles.applicationDetailPanel__heroMetaLine}>
           {applicantName && (
             <>
-              <span className={styles.heroMetaLabel}>Applicant</span>
-              <span className={styles.heroMetaValue}>{applicantName}</span>
-              <span className={styles.heroEyebrowDot} aria-hidden>
+              <span className={styles.applicationDetailPanel__heroMetaLabel}>Applicant</span>
+              <span className={styles.applicationDetailPanel__heroMetaValue}>{applicantName}</span>
+              <span className={styles.applicationDetailPanel__heroEyebrowDot} aria-hidden>
                 ·
               </span>
             </>
           )}
-          <span className={styles.heroMetaLabel}>Lecturer</span>
+          <span className={styles.applicationDetailPanel__heroMetaLabel}>Lecturer</span>
           <span
             className={
-              lecturerName ? styles.heroMetaValue : styles.heroMetaMuted
+              lecturerName ? styles.applicationDetailPanel__heroMetaValue : styles.applicationDetailPanel__heroMetaMuted
             }
           >
             {lecturerName ?? "Not assigned yet"}
           </span>
         </p>
 
-        <p className={styles.heroMetaLine}>
-          <span className={styles.heroMetaLabel}>Role</span>
-          <span className={styles.heroMetaValue}>
+        <p className={styles.applicationDetailPanel__heroMetaLine}>
+          <span className={styles.applicationDetailPanel__heroMetaLabel}>Role</span>
+          <span className={styles.applicationDetailPanel__heroMetaValue}>
             {formatRoleLabel(application.role.roleName)}
           </span>
-          <span className={styles.heroEyebrowDot} aria-hidden>
+          <span className={styles.applicationDetailPanel__heroEyebrowDot} aria-hidden>
             ·
           </span>
-          <span className={styles.heroMetaLabel}>Applied</span>
-          <span className={styles.heroMetaValue}>
+          <span className={styles.applicationDetailPanel__heroMetaLabel}>Applied</span>
+          <span className={styles.applicationDetailPanel__heroMetaValue}>
             <time dateTime={application.appliedAt}>
               {formatAppliedDate(application.appliedAt)}
             </time>
           </span>
-          <span className={styles.heroEyebrowDot} aria-hidden>
+          <span className={styles.applicationDetailPanel__heroEyebrowDot} aria-hidden>
             ·
           </span>
-          <span className={styles.heroMetaLabel}>Status</span>
+          <span className={styles.applicationDetailPanel__heroMetaLabel}>Status</span>
           <span
-            className={`${styles.heroMetaValue} ${getHeroStatusValueClass(
+            className={`${styles.applicationDetailPanel__heroMetaValue} ${getHeroStatusValueClass(
               application.status,
               application.isWithdrawn
             )}`}

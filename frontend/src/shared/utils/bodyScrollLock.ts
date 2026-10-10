@@ -1,13 +1,9 @@
 let lockCount = 0;
 let lockedScrollY = 0;
 let previousHtmlOverflow = "";
+let previousHtmlScrollBehavior = "";
 let previousBodyOverflow = "";
 let previousBodyPaddingRight = "";
-let previousBodyPosition = "";
-let previousBodyTop = "";
-let previousBodyLeft = "";
-let previousBodyRight = "";
-let previousBodyWidth = "";
 
 const SCROLL_KEYS = new Set([
   " ",
@@ -63,24 +59,17 @@ export function lockBodyScroll(): void {
     const body = document.body;
     lockedScrollY = window.scrollY || html.scrollTop || 0;
     const scrollbarWidth = window.innerWidth - html.clientWidth;
+    const scrollbarGutter = window.getComputedStyle(html).scrollbarGutter;
 
     previousHtmlOverflow = html.style.overflow;
+    previousHtmlScrollBehavior = html.style.scrollBehavior;
     previousBodyOverflow = body.style.overflow;
     previousBodyPaddingRight = body.style.paddingRight;
-    previousBodyPosition = body.style.position;
-    previousBodyTop = body.style.top;
-    previousBodyLeft = body.style.left;
-    previousBodyRight = body.style.right;
-    previousBodyWidth = body.style.width;
 
+    html.style.scrollBehavior = "auto";
     html.style.overflow = "hidden";
     body.style.overflow = "hidden";
-    body.style.position = "fixed";
-    body.style.top = `-${lockedScrollY}px`;
-    body.style.left = "0";
-    body.style.right = "0";
-    body.style.width = "100%";
-    if (scrollbarWidth > 0) {
+    if (scrollbarWidth > 0 && !scrollbarGutter.includes("stable")) {
       body.style.paddingRight = `${scrollbarWidth}px`;
     }
 
@@ -90,30 +79,6 @@ export function lockBodyScroll(): void {
   }
 
   lockCount += 1;
-}
-
-export function forceUnlockBodyScroll(): void {
-  if (typeof document === "undefined") return;
-
-  const body = document.body;
-  const stuck = body.style.position === "fixed";
-  if (lockCount === 0 && !stuck) return;
-
-  if (lockCount === 0) {
-    body.style.position = "";
-    body.style.top = "";
-    body.style.left = "";
-    body.style.right = "";
-    body.style.width = "";
-    body.style.overflow = "";
-    body.style.paddingRight = "";
-    document.documentElement.style.overflow = "";
-    window.scrollTo(0, 0);
-    return;
-  }
-
-  lockCount = 1;
-  unlockBodyScroll();
 }
 
 export function unlockBodyScroll(): void {
@@ -127,14 +92,34 @@ export function unlockBodyScroll(): void {
   html.style.overflow = previousHtmlOverflow;
   body.style.overflow = previousBodyOverflow;
   body.style.paddingRight = previousBodyPaddingRight;
-  body.style.position = previousBodyPosition;
-  body.style.top = previousBodyTop;
-  body.style.left = previousBodyLeft;
-  body.style.right = previousBodyRight;
-  body.style.width = previousBodyWidth;
 
   window.removeEventListener("wheel", preventBackgroundScroll);
   window.removeEventListener("touchmove", preventBackgroundScroll);
   window.removeEventListener("keydown", preventScrollKeys);
-  window.scrollTo(0, lockedScrollY);
+
+  if (Math.abs(window.scrollY - lockedScrollY) > 1) {
+    window.scrollTo(0, lockedScrollY);
+  }
+  html.style.scrollBehavior = previousHtmlScrollBehavior;
+}
+
+export function forceUnlockBodyScroll(): void {
+  if (typeof document === "undefined") return;
+  if (lockCount !== 0 || document.body.style.position !== "fixed") return;
+
+  const html = document.documentElement;
+  const body = document.body;
+  const top = Number.parseFloat(body.style.top || "0");
+  const y = Number.isFinite(top) ? Math.abs(top) : 0;
+  html.style.scrollBehavior = "auto";
+  body.style.position = "";
+  body.style.top = "";
+  body.style.left = "";
+  body.style.right = "";
+  body.style.width = "";
+  body.style.overflow = "";
+  body.style.paddingRight = "";
+  html.style.overflow = "";
+  window.scrollTo(0, y);
+  html.style.scrollBehavior = "";
 }

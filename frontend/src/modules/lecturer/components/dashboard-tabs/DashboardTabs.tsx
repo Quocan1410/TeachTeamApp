@@ -15,12 +15,12 @@ const DashboardTabs: React.FC<DashboardTabsProps> = ({
   return (
     <div className={styles.dashboardTabs}>
       <button
-        className={`${styles.tabButton} ${activeTab === "applications" ? styles.tabButtonActive : ""}`}
+        className={`${styles.dashboardTabs__tabButton} ${activeTab === "applications" ? styles.dashboardTabs__tabButtonActive : ""}`}
         onClick={() => onTabChange("applications")}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className={styles.tabIcon}
+          className={styles.dashboardTabs__tabIcon}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -35,12 +35,12 @@ const DashboardTabs: React.FC<DashboardTabsProps> = ({
         Applications
       </button>
       <button
-        className={`${styles.tabButton} ${activeTab === "rankings" ? styles.tabButtonActive : ""}`}
+        className={`${styles.dashboardTabs__tabButton} ${activeTab === "rankings" ? styles.dashboardTabs__tabButtonActive : ""}`}
         onClick={() => onTabChange("rankings")}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className={styles.tabIcon}
+          className={styles.dashboardTabs__tabIcon}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -55,12 +55,12 @@ const DashboardTabs: React.FC<DashboardTabsProps> = ({
         Rankings
       </button>
       <button
-        className={`${styles.tabButton} ${activeTab === "stats" ? styles.tabButtonActive : ""}`}
+        className={`${styles.dashboardTabs__tabButton} ${activeTab === "stats" ? styles.dashboardTabs__tabButtonActive : ""}`}
         onClick={() => onTabChange("stats")}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className={styles.tabIcon}
+          className={styles.dashboardTabs__tabIcon}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

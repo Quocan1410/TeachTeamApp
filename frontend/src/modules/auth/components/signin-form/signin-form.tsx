@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -40,6 +40,8 @@ export default function SignInForm() {
   const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
   const [redirectPath, setRedirectPath] = useState<string>("");
   const [isDashboardReady, setIsDashboardReady] = useState(false);
+  const routerRef = useRef(router);
+  routerRef.current = router;
 
   const getRedirectPath = useCallback((targetUser: User) => {
     if (targetUser.userType === "admin") {
@@ -58,8 +60,15 @@ export default function SignInForm() {
       window.location.assign(destination);
       return;
     }
-    router.replace(destination);
-  }, [router]);
+    routerRef.current.replace(destination);
+  }, []);
+
+  const handleLoginSuccessModalHide = useCallback(() => {
+    const destination =
+      redirectPath || (loggedInUser ? getRedirectPath(loggedInUser) : "/");
+    setShowLoginSuccess(false);
+    navigateAfterLogin(destination);
+  }, [redirectPath, loggedInUser, getRedirectPath, navigateAfterLogin]);
 
   const isExternalRedirect = (path: string) => /^https?:\/\//i.test(path);
 
@@ -102,33 +111,26 @@ export default function SignInForm() {
     let cancelled = false;
     setIsDashboardReady(false);
 
-    const prepareDashboard = async () => {
-      const timeout = new Promise<void>((resolve) => {
-        setTimeout(resolve, PRELOAD_TIMEOUT_MS);
-      });
-
-      try {
-        await Promise.race([
-          Promise.all([
-            router.prefetch(redirectPath),
-            preloadDashboardRoute(redirectPath),
-          ]),
-          timeout,
-        ]);
-      } catch {
-        // Preload is best-effort only.
-      } finally {
-        if (!cancelled) {
-          setIsDashboardReady(true);
-        }
-      }
+    let timeoutId = 0;
+    const finish = () => {
+      if (cancelled) return;
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+      setIsDashboardReady(true);
     };
 
-    void prepareDashboard();
+    timeoutId = window.setTimeout(finish, PRELOAD_TIMEOUT_MS);
+    void Promise.all([
+      routerRef.current.prefetch(redirectPath),
+      preloadDashboardRoute(redirectPath),
+    ]).then(finish, finish);
+
     return () => {
       cancelled = true;
+      window.clearTimeout(timeoutId);
     };
-  }, [showLoginSuccess, redirectPath, router]);
+    // Router identity changes must not restart this timer and disable Continue again.
+  }, [showLoginSuccess, redirectPath]);
 
   if (!isAuthLoading && isAuthenticated && !showLoginSuccess) {
     return null;
@@ -260,55 +262,48 @@ export default function SignInForm() {
     }
   };
 
-  const handleLoginSuccessModalHide = () => {
-    const destination =
-      redirectPath || (loggedInUser ? getRedirectPath(loggedInUser) : "/");
-    setShowLoginSuccess(false);
-    navigateAfterLogin(destination);
-  };
-
   return (
     <>
-      <div className={styles.formContainer}>
-        <div className={styles.mascotSeat} aria-hidden="true">
+      <div className={styles.signinForm}>
+        <div className={styles.signinForm__mascot} aria-hidden="true">
           <Image
             src="/mascot/mascot-3.png"
             alt=""
             width={377}
             height={661}
             priority
-            className={styles.mascot}
+            className={styles.signinForm__image}
           />
         </div>
         <form
           onSubmit={handleSubmit}
-          className={styles.form}
+          className={styles.signinForm__form}
           aria-hidden={showLoginSuccess}
         >
-          <h2 className={styles.title}>Welcome Back</h2>
+          <h2 className={styles.signinForm__title}>Welcome Back</h2>
 
           <div
-            className={`${styles.inputContainer} ${shakeEmail ? styles.shake : ""}`}
+            className={`${styles.signinForm__field} ${shakeEmail ? styles["signinForm__field--shake"] : ""}`}
           >
             <input
               id="email"
               type="email"
               value={formData.email}
               onChange={(e) => handleInputChange("email", e.target.value)}
-              className={`${styles.inputField} ${errors.email ? styles.inputError : ""}`}
+              className={`${styles.signinForm__input} ${errors.email ? styles["signinForm__input--error"] : ""}`}
               placeholder="Email Address"
               required
               disabled={showLoginSuccess}
             />
             {errors.email && (
-              <div className={styles.errorMessage}>
+              <div className={styles.signinForm__error}>
                 {errors.email}
               </div>
             )}
           </div>
 
           <div
-            className={`${styles.passwordContainer} ${shakePassword ? styles.shake : ""}`}
+            className={`${styles.signinForm__password} ${shakePassword ? styles["signinForm__field--shake"] : ""}`}
           >
             <input
               id="password"
@@ -325,7 +320,7 @@ export default function SignInForm() {
                 handleInputChange("password", "");
               }}
               onChange={(e) => handleInputChange("password", e.target.value)}
-              className={`${styles.inputField} ${errors.password ? styles.inputError : ""}`}
+              className={`${styles.signinForm__input} ${errors.password ? styles["signinForm__input--error"] : ""}`}
               placeholder="Password"
               required
               disabled={showLoginSuccess}
@@ -333,13 +328,13 @@ export default function SignInForm() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className={styles.passwordToggle}
+              className={styles.signinForm__toggle}
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={styles.icon}
+                  className={styles.signinForm__icon}
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -353,7 +348,7 @@ export default function SignInForm() {
               ) : (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={styles.icon}
+                  className={styles.signinForm__icon}
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -367,7 +362,7 @@ export default function SignInForm() {
               )}
             </button>
             {errors.password && (
-              <div className={styles.errorMessage}>
+              <div className={styles.signinForm__error}>
                 {errors.password}
               </div>
             )}
@@ -375,34 +370,34 @@ export default function SignInForm() {
 
           <button
             type="submit"
-            className={`${styles.submitButton} ${isLoading ? styles.loading : ""}`}
+            className={`${styles.signinForm__submit} ${isLoading ? styles["signinForm__submit--loading"] : ""}`}
             disabled={isLoading || showLoginSuccess}
           >
             {isLoading ? "Signing In..." : "Sign In"}
           </button>
 
-          <div className={styles.orDivider} role="separator">
+          <div className={styles.signinForm__divider} role="separator">
             <span>or</span>
           </div>
 
           <button
             type="button"
-            className={styles.passkeyButton}
+            className={styles.signinForm__passkey}
             disabled={isLoading || showLoginSuccess}
             onClick={handlePasskey}
           >
             Use a passkey
           </button>
 
-          <div className={styles.linkSection}>
-            <p className={styles.linkText}>
-              <Link href="/forgot-password" className={styles.link}>
+          <div className={styles.signinForm__links}>
+            <p className={styles.signinForm__linkText}>
+              <Link href="/forgot-password" className={styles.signinForm__link}>
                 Forgot password?
               </Link>
             </p>
-            <p className={styles.linkText}>
+            <p className={styles.signinForm__linkText}>
               Don&apos;t have an account?{" "}
-              <Link href="/signup" className={styles.link}>
+              <Link href="/signup" className={styles.signinForm__link}>
                 Create one here
               </Link>
             </p>

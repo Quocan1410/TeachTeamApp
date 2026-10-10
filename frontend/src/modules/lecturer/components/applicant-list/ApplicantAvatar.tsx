@@ -42,8 +42,8 @@ const ApplicantAvatar: React.FC<ApplicantAvatarProps> = ({
 
   return (
     <div
-      className={`${styles.applicantAvatar} ${
-        showImage ? styles.applicantAvatarHasImage : ""
+      className={`${styles.applicantList__applicantAvatar} ${
+        showImage ? styles.applicantList__applicantAvatarHasImage : ""
       }`}
     >
       {showImage ? (
@@ -52,7 +52,7 @@ const ApplicantAvatar: React.FC<ApplicantAvatarProps> = ({
           alt=""
           width={56}
           height={56}
-          className={styles.applicantAvatarPhoto}
+          className={styles.applicantList__applicantAvatarPhoto}
           unoptimized
           onError={() => setLoadFailed(true)}
         />

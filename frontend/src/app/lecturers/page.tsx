@@ -157,22 +157,22 @@ export default function LecturersPage() {
     : 0;
 
   return (
-    <div className={styles.page}>
-      <header className={styles.stage}>
-        <div className={styles.intro}>
-          <div className={styles.titleRow}>
-            <h1 className={styles.title}>Lecturers</h1>
-            <span className={styles.ornament} aria-hidden="true">
-              <span className={styles.gem} />
-              <span className={styles.dotBlue} />
-              <span className={styles.dotGreen} />
+    <div className={styles.lecturers__page}>
+      <header className={styles.lecturers__stage}>
+        <div className={styles.lecturers__intro}>
+          <div className={styles.lecturers__titleRow}>
+            <h1 className={styles.lecturers__title}>Lecturers</h1>
+            <span className={styles.lecturers__ornament} aria-hidden="true">
+              <span className={styles.lecturers__gem} />
+              <span className={styles.lecturers__dotBlue} />
+              <span className={styles.lecturers__dotGreen} />
             </span>
           </div>
-          <p className={styles.line}>{line}</p>
-          <label className={styles.search}>
-            <MagnifyingGlassIcon className={styles.searchIcon} aria-hidden="true" />
+          <p className={styles.lecturers__line}>{line}</p>
+          <label className={styles.lecturers__search}>
+            <MagnifyingGlassIcon className={styles.lecturers__searchIcon} aria-hidden="true" />
             <input
-              className={styles.searchInput}
+              className={styles.lecturers__searchInput}
               type="search"
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
@@ -181,30 +181,30 @@ export default function LecturersPage() {
             />
           </label>
         </div>
-        <div className={styles.portrait}>
-          <span className={styles.halo} aria-hidden="true" />
+        <div className={styles.lecturers__portrait}>
+          <span className={styles.lecturers__halo} aria-hidden="true" />
           <Image
             src="/mascot/mascot-4.png"
             alt=""
             width={377}
             height={661}
-            className={styles.sit}
+            className={styles.lecturers__sit}
           />
         </div>
       </header>
       {!loading && !error && lecturers.length > 0 && visibleLecturers.length === 0 ? (
-        <div className={styles.miss}>
+        <div className={styles.lecturers__miss}>
           <Image
             src="/mascot/mascot-4.png"
             alt=""
             width={377}
             height={661}
-            className={styles.missMascot}
+            className={styles.lecturers__missMascot}
           />
           <div>
-            <p className={styles.missTitle}>No lecturers match that search.</p>
-            <p className={styles.missText}>Try another name or course, or clear the search.</p>
-            <button type="button" className={styles.missClear} onClick={() => setSearchQuery("")}>
+            <p className={styles.lecturers__missTitle}>No lecturers match that search.</p>
+            <p className={styles.lecturers__missText}>Try another name or course, or clear the search.</p>
+            <button type="button" className={styles.lecturers__missClear} onClick={() => setSearchQuery("")}>
               Clear search
             </button>
           </div>
@@ -228,21 +228,21 @@ export default function LecturersPage() {
             imageOffset={(safePage - 1) * PAGE_SIZE}
           />
           {totalPages > 1 && (
-            <div className={styles.pager}>
+            <div className={styles.lecturers__pager}>
               <button
                 type="button"
-                className={styles.pagerButton}
+                className={styles.lecturers__pagerButton}
                 disabled={safePage <= 1}
                 onClick={() => setPage(safePage - 1)}
               >
                 Previous
               </button>
-              <span className={styles.pagerStatus}>
+              <span className={styles.lecturers__pagerStatus}>
                 {safePage} of {totalPages}
               </span>
               <button
                 type="button"
-                className={styles.pagerButton}
+                className={styles.lecturers__pagerButton}
                 disabled={safePage >= totalPages}
                 onClick={() => setPage(safePage + 1)}
               >

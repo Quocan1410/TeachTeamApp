@@ -494,33 +494,33 @@ export default function TutorApplicationsPage() {
       <button
         key={application.id}
         type="button"
-        className={`${styles.listCard} ${isActive ? styles.listCardActive : ""} ${
-          pinned ? styles.listCardPinned : ""
+        className={`${styles.applicationsPage__listCard} ${isActive ? styles.applicationsPage__listCardActive : ""} ${
+          pinned ? styles.applicationsPage__listCardPinned : ""
         } ${
-          pinned && !hasSelection ? styles.listCardPinnedFirst : ""
+          pinned && !hasSelection ? styles.applicationsPage__listCardPinnedFirst : ""
         }`}
         onMouseDown={onListCardMouseDown}
         onClick={() => selectApplication(application.id)}
       >
         {pinned && (
-          <span className={styles.cardPinTab} title="Pinned">
-            <span className={styles.cardPinTabChip} aria-hidden>
+          <span className={styles.applicationsPage__cardPinTab} title="Pinned">
+            <span className={styles.applicationsPage__cardPinTabChip} aria-hidden>
               <PinIcon />
             </span>
           </span>
         )}
-        <div className={styles.listCardBody}>
-          <div className={styles.listCardRowTop}>
-            <p className={styles.listEyebrow}>
-              <span className={styles.listCourse}>
+        <div className={styles.applicationsPage__listCardBody}>
+          <div className={styles.applicationsPage__listCardRowTop}>
+            <p className={styles.applicationsPage__listEyebrow}>
+              <span className={styles.applicationsPage__listCourse}>
                 {application.course.courseCode}
               </span>
-              <span className={styles.listEyebrowDot} aria-hidden>
+              <span className={styles.applicationsPage__listEyebrowDot} aria-hidden>
                 ·
               </span>
               <span>{application.course.semester}</span>
             </p>
-            <div className={styles.listCardStatus}>
+            <div className={styles.applicationsPage__listCardStatus}>
               <ApplicationStatusBadge
                 status={application.status}
                 isWithdrawn={application.isWithdrawn}
@@ -529,20 +529,20 @@ export default function TutorApplicationsPage() {
             </div>
           </div>
 
-          <h3 className={styles.listTitle}>{application.course.courseName}</h3>
-          <p className={styles.listDescription}>
+          <h3 className={styles.applicationsPage__listTitle}>{application.course.courseName}</h3>
+          <p className={styles.applicationsPage__listDescription}>
             {application.course.description || "No description available."}
           </p>
 
-          <div className={styles.listCardRowBottom}>
+          <div className={styles.applicationsPage__listCardRowBottom}>
             <div
-              className={`${styles.listRole} ${
+              className={`${styles.applicationsPage__listRole} ${
                 application.role.roleName === "tutor"
-                  ? styles.listRoleTutor
-                  : styles.listRoleAssistant
+                  ? styles.applicationsPage__listRoleTutor
+                  : styles.applicationsPage__listRoleAssistant
               }`}
             >
-              <span className={styles.listRoleIcon} aria-hidden>
+              <span className={styles.applicationsPage__listRoleIcon} aria-hidden>
                 {application.role.roleName === "tutor" ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -565,11 +565,11 @@ export default function TutorApplicationsPage() {
                   </svg>
                 )}
               </span>
-              <span className={styles.listRoleLabel}>
+              <span className={styles.applicationsPage__listRoleLabel}>
                 {formatRoleLabel(application.role.roleName)}
               </span>
             </div>
-            <p className={styles.listDate}>
+            <p className={styles.applicationsPage__listDate}>
               Applied {formatAppliedDate(application.appliedAt)}
             </p>
           </div>
@@ -587,7 +587,7 @@ export default function TutorApplicationsPage() {
         closed={heroStats.closed}
       />
 
-      <main className={styles.page} data-applications-page>
+      <main className={styles.applicationsPage__page} data-applications-page>
         <Toast
           message={toast.message}
           type={toast.type}
@@ -610,31 +610,31 @@ export default function TutorApplicationsPage() {
         />
 
         {sortedApplications.length === 0 ? (
-          <div className={styles.empty}>
+          <div className={styles.applicationsPage__empty}>
             <p>You have not submitted any applications yet.</p>
-            <Link href="/tutor" className={styles.emptyCta}>
+            <Link href="/tutor" className={styles.applicationsPage__emptyCta}>
               Browse courses
             </Link>
           </div>
         ) : (
           <>
             <div
-              className={`${styles.toolbar} ${
-                hasSelection ? styles.toolbarCompact : ""
+              className={`${styles.applicationsPage__toolbar} ${
+                hasSelection ? styles.applicationsPage__toolbarCompact : ""
               }`}
             >
               {!hasSelection && (
-                <div className={styles.filtersRow}>
+                <div className={styles.applicationsPage__filtersRow}>
                   <input
                     type="search"
-                    className={styles.filterInput}
+                    className={styles.applicationsPage__filterInput}
                     placeholder="Search course or role..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                   <AppSelect
                     id="applications-status-filter"
-                    className={styles.filterAppSelect}
+                    className={styles.applicationsPage__filterAppSelect}
                     value={statusFilter}
                     onChange={setStatusFilter}
                     options={[...STATUS_FILTER_OPTIONS]}
@@ -642,7 +642,7 @@ export default function TutorApplicationsPage() {
                   />
                   <AppSelect
                     id="applications-sort"
-                    className={styles.filterAppSelect}
+                    className={styles.applicationsPage__filterAppSelect}
                     value={sortBy}
                     onChange={setSortBy}
                     options={[...SORT_OPTIONS]}
@@ -652,14 +652,14 @@ export default function TutorApplicationsPage() {
               )}
               {!hasSelection && (
                 <div
-                  className={styles.viewToggle}
+                  className={styles.applicationsPage__viewToggle}
                   role="group"
                   aria-label="View mode"
                 >
                   <button
                     type="button"
-                    className={`${styles.viewBtn} ${
-                      viewMode === "grid" ? styles.viewBtnActive : ""
+                    className={`${styles.applicationsPage__viewBtn} ${
+                      viewMode === "grid" ? styles.applicationsPage__viewBtnActive : ""
                     }`}
                     onClick={() => setViewMode("grid")}
                   >
@@ -667,8 +667,8 @@ export default function TutorApplicationsPage() {
                   </button>
                   <button
                     type="button"
-                    className={`${styles.viewBtn} ${
-                      viewMode === "list" ? styles.viewBtnActive : ""
+                    className={`${styles.applicationsPage__viewBtn} ${
+                      viewMode === "list" ? styles.applicationsPage__viewBtnActive : ""
                     }`}
                     onClick={() => setViewMode("list")}
                   >
@@ -677,43 +677,43 @@ export default function TutorApplicationsPage() {
                 </div>
               )}
               {hasSelection ? (
-                <p className={styles.hint}>
-                  <span className={styles.stackCount}>
+                <p className={styles.applicationsPage__hint}>
+                  <span className={styles.applicationsPage__stackCount}>
                     {sortedApplications.length} applications
                   </span>
-                  <span className={styles.hintSep} aria-hidden>
+                  <span className={styles.applicationsPage__hintSep} aria-hidden>
                     ·
                   </span>
                   Select another card in the list to switch
                 </p>
               ) : (
-                <p className={styles.hint}>Click a card to open details</p>
+                <p className={styles.applicationsPage__hint}>Click a card to open details</p>
               )}
             </div>
 
             <div
-              className={`${styles.workspace} ${
-                hasSelection ? styles.workspaceSplit : ""
+              className={`${styles.applicationsPage__workspace} ${
+                hasSelection ? styles.applicationsPage__workspaceSplit : ""
               }`}
             >
               <div
                 className={
-                  hasSelection ? styles.leftColumn : styles.listHostWide
+                  hasSelection ? styles.applicationsPage__leftColumn : styles.applicationsPage__listHostWide
                 }
               >
                 <div
                   className={
-                    hasSelection ? styles.stackSection : styles.listHostInner
+                    hasSelection ? styles.applicationsPage__stackSection : styles.applicationsPage__listHostInner
                   }
                 >
                   <div
                     ref={listPaneRef}
-                    className={`${styles.listPane} ${
+                    className={`${styles.applicationsPage__listPane} ${
                       hasSelection
-                        ? styles.listPaneStack
+                        ? styles.applicationsPage__listPaneStack
                         : viewMode === "grid"
-                          ? styles.listPaneGrid
-                          : styles.listPaneList
+                          ? styles.applicationsPage__listPaneGrid
+                          : styles.applicationsPage__listPaneList
                     }`}
                   >
                     {paginatedApplications.map((application) =>
@@ -733,7 +733,7 @@ export default function TutorApplicationsPage() {
               </div>
 
               {selectedApplication && (
-                <aside className={styles.detailColumn}>
+                <aside className={styles.applicationsPage__detailColumn}>
                   <ApplicationDetailPanel
                     application={selectedApplication}
                     draft={drafts[selectedApplication.id] ?? ""}

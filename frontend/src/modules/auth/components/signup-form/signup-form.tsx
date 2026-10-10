@@ -1,7 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
+import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
 import {
   validateEmail,
   validateRoleSpecificEmail,
@@ -16,6 +18,7 @@ import {
 import { AuthService } from "@/shared/services/authService";
 import Toast from "@/shared/components/common/toast/toast";
 import { useToast } from "@/shared/hooks/useNotification";
+import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { UserType } from "@/shared/types/user";
 import EmailAutocomplete from "@/modules/auth/components/email-autocomplete/email-autocomplete";
 import AppSelect from "@/shared/components/common/app-select/AppSelect";
@@ -39,10 +42,19 @@ type SignupHonorific = Honorific | "";
 
 export default function SignUpForm() {
   const router = useRouter();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const debouncedPassword = useDebouncedValue(password, 320);
+  const debouncedConfirmPassword = useDebouncedValue(confirmPassword, 320);
+  const confirmCheckReady =
+    confirmPassword.length > 0 &&
+    debouncedConfirmPassword === confirmPassword &&
+    debouncedPassword === password;
+  const passwordsMatch = confirmCheckReady && password === confirmPassword;
+  const passwordsDiffer = confirmCheckReady && password !== confirmPassword;
   const [role, setRole] = useState<"tutor" | "lecturer">("tutor");
   const [honorific, setHonorific] = useState<SignupHonorific>(TITLE_PLACEHOLDER);
   const [showPassword, setShowPassword] = useState(false);
@@ -157,13 +169,10 @@ export default function SignUpForm() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setIsLoading(true);
 
-    // Validate form
-    if (!validateForm()) {
-      setIsLoading(false);
-      return;
-    }
+    if (!validateForm()) return;
+
+    setIsLoading(true);
 
     try {
       const { firstName, lastName } = splitSignupFullName(fullName);
@@ -205,15 +214,38 @@ export default function SignUpForm() {
     }
   };
 
+  useEffect(() => {
+    if (authLoading || askPasskey || !isAuthenticated || !user) return;
+    if (user.userType === "admin") {
+      window.location.assign(
+        process.env.NEXT_PUBLIC_ADMIN_APP_URL || "http://localhost:3001"
+      );
+      return;
+    }
+    if (user.userType === "lecturer") {
+      router.replace("/lecturer");
+      return;
+    }
+    if (user.userType === "candidate") {
+      router.replace("/tutor");
+      return;
+    }
+    router.replace("/");
+  }, [authLoading, askPasskey, isAuthenticated, user, router]);
+
   const finishSignup = (notice: string) => {
     router.push(
       `/signin?message=${encodeURIComponent(notice)}&email=${encodeURIComponent(createdEmail)}`
     );
   };
 
+  if (!askPasskey && (authLoading || isAuthenticated)) {
+    return <PageSkeleton variant="auth" />;
+  }
+
   if (askPasskey) {
     return (
-      <div className={styles.formContainer}>
+      <div className={styles.signupForm}>
         <PasskeyOffer onDone={finishSignup} onError={showError} />
         <Toast
           message={toast.message}
@@ -227,17 +259,17 @@ export default function SignUpForm() {
   }
 
   return (
-    <div className={styles.formContainer}>
-      <form className={styles.form} onSubmit={handleSubmit} noValidate>
-        <h2 className={styles.title}>Create Account</h2>
+    <div className={styles.signupForm}>
+      <form className={styles.signupForm__form} onSubmit={handleSubmit} noValidate>
+        <h2 className={styles.signupForm__title}>Create Account</h2>
 
-        <div className={styles.formStack}>
-          <div className={styles.accountSection}>
-            <p className={styles.sectionTitle}>Account</p>
+        <div className={styles.signupForm__stack}>
+          <div className={styles.signupForm__account}>
+            <p className={styles.signupForm__heading}>Account</p>
 
-            <div className={grid.stack}>
-              <div className={grid.row}>
-                <div className={grid.cell}>
+            <div className={grid.signupGrid__stack}>
+              <div className={grid.signupGrid__row}>
+                <div className={grid.signupGrid__cell}>
                   <input
                     type="text"
                     placeholder="Full Name"
@@ -246,13 +278,13 @@ export default function SignUpForm() {
                       handleInputChange("fullName", e.target.value)
                     }
                     required
-                    className={`${grid.control} ${errors.fullName ? grid.controlError : ""}`}
+                    className={`${grid.signupGrid__input} ${errors.fullName ? grid["signupGrid__input--error"] : ""}`}
                   />
                   {errors.fullName && (
-                    <span className={grid.fieldError}>{errors.fullName}</span>
+                    <span className={grid.signupGrid__error}>{errors.fullName}</span>
                   )}
                 </div>
-                <div className={grid.cell}>
+                <div className={grid.signupGrid__cell}>
                   <AppSelect
                     id="honorific"
                     value={honorific}
@@ -265,21 +297,21 @@ export default function SignUpForm() {
                     options={HONORIFIC_OPTIONS}
                     variant="pill"
                     hasError={!!errors.honorific}
-                    className={grid.selectWrap}
+                    className={grid.signupGrid__select}
                     aria-label="Title"
                     aria-required="true"
                   />
                   {errors.honorific && (
-                    <span className={grid.fieldError}>
+                    <span className={grid.signupGrid__error}>
                       {errors.honorific}
                     </span>
                   )}
                 </div>
               </div>
 
-              <div className={grid.row}>
-                <div className={grid.cell}>
-                  <div className={grid.controlWrap}>
+              <div className={grid.signupGrid__row}>
+                <div className={grid.signupGrid__cell}>
+                  <div className={grid.signupGrid__wrap}>
                     <input
                       type={showPassword ? "text" : "password"}
                       placeholder="Password"
@@ -296,18 +328,18 @@ export default function SignUpForm() {
                         handleInputChange("password", e.target.value)
                       }
                       required
-                      className={`${grid.control} ${errors.password ? grid.controlError : ""}`}
+                      className={`${grid.signupGrid__input} ${errors.password ? grid["signupGrid__input--error"] : ""}`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className={styles.passwordToggle}
+                      className={styles.signupForm__toggle}
                       aria-label={showPassword ? "Hide password" : "Show password"}
                     >
                       {showPassword ? (
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className={styles.icon}
+                          className={styles.signupForm__icon}
                           viewBox="0 0 20 20"
                           fill="currentColor"
                         >
@@ -321,7 +353,7 @@ export default function SignUpForm() {
                       ) : (
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className={styles.icon}
+                          className={styles.signupForm__icon}
                           viewBox="0 0 20 20"
                           fill="currentColor"
                         >
@@ -338,26 +370,34 @@ export default function SignUpForm() {
                   {password && (
                     <>
                       <div
-                        className={`${styles.passwordStrengthMeter} ${styles[passwordFeedback.level]}`}
+                        className={`${styles.signupForm__meter} ${
+                          passwordFeedback.level
+                            ? styles[`signupForm__meter--${passwordFeedback.level}`]
+                            : ""
+                        }`}
                       >
-                        <div className={styles.segment} />
-                        <div className={styles.segment} />
-                        <div className={styles.segment} />
-                        <div className={styles.segment} />
+                        <div className={styles.signupForm__segment} />
+                        <div className={styles.signupForm__segment} />
+                        <div className={styles.signupForm__segment} />
+                        <div className={styles.signupForm__segment} />
                       </div>
                       <div
-                        className={`${styles.passwordStrengthText} ${styles[passwordFeedback.level + "Text"]}`}
+                        className={`${styles.signupForm__strength} ${
+                          passwordFeedback.level
+                            ? styles[`signupForm__strength--${passwordFeedback.level}`]
+                            : ""
+                        }`}
                       >
                         {passwordFeedback.text}
                       </div>
                     </>
                   )}
                   {errors.password && (
-                    <span className={grid.fieldError}>{errors.password}</span>
+                    <span className={grid.signupGrid__error}>{errors.password}</span>
                   )}
                 </div>
-                <div className={grid.cell}>
-                  <div className={grid.controlWrap}>
+                <div className={grid.signupGrid__cell}>
+                  <div className={grid.signupGrid__wrap}>
                     <input
                       type={showConfirmPassword ? "text" : "password"}
                       placeholder="Confirm Password"
@@ -374,14 +414,18 @@ export default function SignUpForm() {
                         handleInputChange("confirmPassword", e.target.value)
                       }
                       required
-                      className={`${grid.control} ${errors.confirmPassword ? grid.controlError : ""}`}
+                      className={`${grid.signupGrid__input} ${
+                        errors.confirmPassword || passwordsDiffer
+                          ? grid["signupGrid__input--error"]
+                          : ""
+                      }`}
                     />
                     <button
                       type="button"
                       onClick={() =>
                         setShowConfirmPassword(!showConfirmPassword)
                       }
-                      className={styles.passwordToggle}
+                      className={styles.signupForm__toggle}
                       aria-label={
                         showConfirmPassword ? "Hide password" : "Show password"
                       }
@@ -389,7 +433,7 @@ export default function SignUpForm() {
                       {showConfirmPassword ? (
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className={styles.icon}
+                          className={styles.signupForm__icon}
                           viewBox="0 0 20 20"
                           fill="currentColor"
                         >
@@ -403,7 +447,7 @@ export default function SignUpForm() {
                       ) : (
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className={styles.icon}
+                          className={styles.signupForm__icon}
                           viewBox="0 0 20 20"
                           fill="currentColor"
                         >
@@ -417,49 +461,53 @@ export default function SignUpForm() {
                       )}
                     </button>
                   </div>
-                  {errors.confirmPassword && (
-                    <span className={grid.fieldError}>
+                  {errors.confirmPassword ? (
+                    <span className={grid.signupGrid__error}>
                       {errors.confirmPassword}
                     </span>
-                  )}
+                  ) : passwordsDiffer ? (
+                    <span className={grid.signupGrid__error}>Passwords do not match</span>
+                  ) : passwordsMatch ? (
+                    <span className={styles.signupForm__match}>Passwords match</span>
+                  ) : null}
                 </div>
               </div>
 
-              <div className={grid.row}>
-                <div className={grid.cell}>
+              <div className={grid.signupGrid__row}>
+                <div className={grid.signupGrid__cell}>
                   <EmailAutocomplete
                     value={email}
                     onChange={(value) => handleInputChange("email", value)}
                     placeholder="Email Address"
-                    className={`${grid.control} ${errors.email ? grid.controlError : ""}`}
+                    className={`${grid.signupGrid__input} ${errors.email ? grid["signupGrid__input--error"] : ""}`}
                     role={role}
                     hasError={!!errors.email}
                     required
                   />
                   {errors.email && (
-                    <span className={grid.fieldError}>{errors.email}</span>
+                    <span className={grid.signupGrid__error}>{errors.email}</span>
                   )}
                 </div>
-                <div className={grid.cell}>
+                <div className={grid.signupGrid__cell}>
                   <div
-                    className={styles.roleSection}
+                    className={styles.signupForm__roleBox}
                     role="group"
                     aria-labelledby="signup-role-label"
                   >
-                    <p id="signup-role-label" className={styles.roleLabel}>
+                    <p id="signup-role-label" className={styles.signupForm__roleLabel}>
                       I am a:
                     </p>
-                    <div className={styles.roleToggleContainer}>
+                    <div className={styles.signupForm__roles}>
                       <button
                         type="button"
-                        className={`${styles.roleBtn} ${role === "tutor" ? styles.active : ""}`}
+                        className={`${styles.signupForm__role} ${role === "tutor" ? styles["signupForm__role--active"] : ""}`}
                         onClick={() => handleRoleChange("tutor")}
                       >
                         Candidate
                       </button>
                       <button
                         type="button"
-                        className={`${styles.roleBtn} ${role === "lecturer" ? styles.active : ""}`}
+                        className={`${styles.signupForm__role} ${role === "lecturer" ? styles["signupForm__role--active"] : ""}`}
                         onClick={() => handleRoleChange("lecturer")}
                       >
                         Lecturer
@@ -472,20 +520,20 @@ export default function SignUpForm() {
           </div>
         </div>
 
-        <div className={styles.submitContainer}>
+        <div className={styles.signupForm__actions}>
           <button
             type="submit"
-            className={styles.submitButton}
+            className={styles.signupForm__submit}
             disabled={isLoading}
           >
             {isLoading ? "Creating Account..." : "Sign Up"}
           </button>
         </div>
 
-        <div className={styles.linkSection}>
-          <p className={styles.linkText}>
+        <div className={styles.signupForm__links}>
+          <p className={styles.signupForm__linkText}>
             Already have an account?{" "}
-            <Link href="/signin" className={styles.link}>
+            <Link href="/signin" className={styles.signupForm__link}>
               Sign In
             </Link>
           </p>

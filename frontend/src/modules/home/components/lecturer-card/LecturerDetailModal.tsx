@@ -46,39 +46,39 @@ export default function LecturerDetailModal({
       maxWidth="820px"
       title={lecturer.name}
     >
-      <div className={styles.layout}>
-        <div className={styles.photo}>
+      <div className={styles.lecturerDetailModal__layout}>
+        <div className={styles.lecturerDetailModal__photo}>
           <Image
             src={portrait}
             alt={lecturer.name}
             fill
             sizes="(max-width: 768px) 100vw, 320px"
-            className={styles.portrait}
+            className={styles.lecturerDetailModal__portrait}
           />
         </div>
-        <div className={styles.body}>
-          <p className={styles.rank}>{lecturer.title}</p>
-          <h3 className={styles.name}>{lecturer.name}</h3>
-          <p className={styles.meta}>
+        <div className={styles.lecturerDetailModal__body}>
+          <p className={styles.lecturerDetailModal__rank}>{lecturer.title}</p>
+          <h3 className={styles.lecturerDetailModal__name}>{lecturer.name}</h3>
+          <p className={styles.lecturerDetailModal__meta}>
             <span>{lecturer.yearsExperience ?? "—"} years teaching</span>
-            <span className={styles.dot} aria-hidden="true" />
+            <span className={styles.lecturerDetailModal__dot} aria-hidden="true" />
             <span>{courses.length} courses</span>
           </p>
-          <p className={styles.bio}>{lecturer.bio}</p>
-          <section className={styles.courses}>
-            <h4 className={styles.sectionLabel}>Courses this semester</h4>
-            <ul className={styles.courseGrid}>
+          <p className={styles.lecturerDetailModal__bio}>{lecturer.bio}</p>
+          <section className={styles.lecturerDetailModal__courses}>
+            <h4 className={styles.lecturerDetailModal__sectionLabel}>Courses this semester</h4>
+            <ul className={styles.lecturerDetailModal__courseGrid}>
               {courses.map((course) => (
                 <li key={`${course.courseCode}-${course.courseName}`}>
-                  <span className={styles.courseCode}>{course.courseCode}</span>
-                  <span className={styles.courseName}>{course.courseName}</span>
+                  <span className={styles.lecturerDetailModal__courseCode}>{course.courseCode}</span>
+                  <span className={styles.lecturerDetailModal__courseName}>{course.courseName}</span>
                 </li>
               ))}
             </ul>
           </section>
-          <p className={styles.email}>
-            <span className={styles.emailLabel}>Email</span>
-            <span className={styles.emailValue}>{lecturer.contact}</span>
+          <p className={styles.lecturerDetailModal__email}>
+            <span className={styles.lecturerDetailModal__emailLabel}>Email</span>
+            <span className={styles.lecturerDetailModal__emailValue}>{lecturer.contact}</span>
           </p>
         </div>
       </div>

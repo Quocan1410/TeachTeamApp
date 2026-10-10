@@ -1,5 +1,5 @@
 /* ApplicantDetails Styles */
-.detailsContainer {
+.applicantDetails__detailsContainer {
   padding: 0;
   overflow-y: auto;
   max-height: none;
@@ -9,7 +9,7 @@
 }
 
 /* Applicant email with proper dark/light mode colors */
-.applicantNameLarge {
+.applicantDetails__applicantNameLarge {
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--color-text-primary);
@@ -19,14 +19,14 @@
   white-space: nowrap;
 }
 
-.applicantEmail {
+.applicantDetails__applicantEmail {
   color: var(--color-text-secondary);
   font-size: 0.8125rem;
   margin-bottom: 0.35rem;
 }
 
 /* Action buttons section */
-.actionButtonsContainer {
+.applicantDetails__actionButtonsContainer {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -38,7 +38,7 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-.buttonGroup {
+.applicantDetails__buttonGroup {
   display: flex;
   gap: 0.4rem;
   flex-wrap: wrap;
@@ -49,7 +49,7 @@
   position: static;
 }
 
-.actionButton {
+.applicantDetails__actionButton {
   padding: 0.35rem 0.75rem;
   border-radius: 0.375rem;
   border: none;
@@ -64,70 +64,70 @@
   font-size: 0.8125rem;
 }
 
-.selectButton {
+.applicantDetails__selectButton {
   background-color: #2563eb;
   color: white;
 }
 
-.selectButton:hover:not(:disabled) {
+.applicantDetails__selectButton:hover:not(:disabled) {
   background-color: #1d4ed8;
 }
 
-.selectButton:disabled {
+.applicantDetails__selectButton:disabled {
   background-color: #9ca3af;
   cursor: not-allowed;
   opacity: 0.6;
 }
 
-.unselectButton {
+.applicantDetails__unselectButton {
   background-color: #dc2626;
   color: white;
 }
 
-.unselectButton:hover {
+.applicantDetails__unselectButton:hover {
   background-color: #b91c1c;
 }
 
-.addToRankingButton {
+.applicantDetails__addToRankingButton {
   background-color: #16a34a;
   color: white;
 }
 
-.addToRankingButton:hover {
+.applicantDetails__addToRankingButton:hover {
   background-color: #15803d;
 }
 
-.addToRankingButton:disabled {
+.applicantDetails__addToRankingButton:disabled {
   background-color: #9ca3af;
   cursor: not-allowed;
 }
 
-.alreadyRankedButton {
+.applicantDetails__alreadyRankedButton {
   background-color: #7c3aed;
   color: white;
   cursor: default;
 }
 
-.buttonIcon {
+.applicantDetails__buttonIcon {
   width: 1.25rem;
   height: 1.25rem;
 }
 
 /* Course Selection Styles */
-.sectionDescription {
+.applicantDetails__sectionDescription {
   color: var(--color-text-secondary);
   font-size: 0.875rem;
   margin-bottom: 1rem;
   line-height: 1.5;
 }
 
-.courseSelectionControls {
+.applicantDetails__courseSelectionControls {
   display: flex;
   gap: 0.75rem;
   margin-bottom: 1rem;
 }
 
-.courseControlButton {
+.applicantDetails__courseControlButton {
   padding: 0.5rem 1rem;
   border-radius: 0.375rem;
   border: 1px solid var(--color-border);
@@ -139,36 +139,36 @@
   transition: all 0.2s ease;
 }
 
-.courseControlButton:hover:not(:disabled) {
+.applicantDetails__courseControlButton:hover:not(:disabled) {
   background-color: var(--color-bg-hover);
   border-color: var(--color-primary);
 }
 
-.courseControlButton:disabled {
+.applicantDetails__courseControlButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.selectAllButton:hover:not(:disabled) {
+.applicantDetails__selectAllButton:hover:not(:disabled) {
   background-color: #dbeafe;
   border-color: #2563eb;
   color: #2563eb;
 }
 
-.deselectAllButton:hover:not(:disabled) {
+.applicantDetails__deselectAllButton:hover:not(:disabled) {
   background-color: #fee2e2;
   border-color: #dc2626;
   color: #dc2626;
 }
 
-.courseSelectionContainer {
+.applicantDetails__courseSelectionContainer {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 0.75rem;
   margin-bottom: 1rem;
 }
 
-.courseSelectionCard {
+.applicantDetails__courseSelectionCard {
   display: flex;
   align-items: center;
   padding: 1rem;
@@ -180,25 +180,25 @@
   position: relative;
 }
 
-.courseSelectionCard:hover {
+.applicantDetails__courseSelectionCard:hover {
   border-color: var(--color-primary);
   background-color: var(--color-bg-hover);
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.courseSelectionCard.courseSelected {
+.applicantDetails__courseSelectionCard.applicantDetails--courseSelected {
   border-color: #2563eb;
   background-color: #eff6ff;
   box-shadow: 0 0 0 1px #2563eb;
 }
 
-.courseCheckbox {
+.applicantDetails__courseCheckbox {
   margin-right: 0.75rem;
   position: relative;
 }
 
-.courseCheckboxInput {
+.applicantDetails__courseCheckboxInput {
   appearance: none;
   width: 1.25rem;
   height: 1.25rem;
@@ -210,17 +210,17 @@
   position: relative;
 }
 
-.courseCheckboxInput:checked {
+.applicantDetails__courseCheckboxInput:checked {
   background-color: #2563eb;
   border-color: #2563eb;
 }
 
-.courseCheckboxInput:focus {
+.applicantDetails__courseCheckboxInput:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-.courseCheckboxLabel {
+.applicantDetails__courseCheckboxLabel {
   position: absolute;
   top: 0;
   left: 0;
@@ -232,7 +232,7 @@
   justify-content: center;
 }
 
-.courseCheckboxIcon {
+.applicantDetails__courseCheckboxIcon {
   width: 0.875rem;
   height: 0.875rem;
   color: white;
@@ -240,28 +240,28 @@
   transition: opacity 0.2s ease;
 }
 
-.courseCheckboxInput:checked + .courseCheckboxLabel .courseCheckboxIcon {
+.applicantDetails__courseCheckboxInput:checked + .applicantDetails__courseCheckboxLabel .applicantDetails__courseCheckboxIcon {
   opacity: 1;
 }
 
-.courseInfo {
+.applicantDetails__courseInfo {
   flex: 1;
 }
 
-.courseSelectionCard .courseCode {
+.applicantDetails__courseSelectionCard .applicantDetails__courseCode {
   font-weight: 600;
   color: var(--color-text-primary);
   font-size: 0.875rem;
   margin-bottom: 0.25rem;
 }
 
-.courseSelectionCard .courseName {
+.applicantDetails__courseSelectionCard .applicantDetails__courseName {
   color: var(--color-text-secondary);
   font-size: 0.75rem;
   line-height: 1.4;
 }
 
-.selectionSummary {
+.applicantDetails__selectionSummary {
   display: flex;
   justify-content: center;
   padding: 0.75rem;
@@ -270,67 +270,67 @@
   border: 1px solid var(--color-border);
 }
 
-.selectionCount {
+.applicantDetails__selectionCount {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-text-secondary);
 }
 
 /* Dark mode styles for course selection */
-.dark .courseSelectionCard {
+.applicantDetails__dark .applicantDetails__courseSelectionCard {
   background-color: #374151;
   border-color: #4b5563;
 }
 
-.dark .courseSelectionCard:hover {
+.applicantDetails__dark .applicantDetails__courseSelectionCard:hover {
   background-color: #4b5563;
   border-color: #6366f1;
 }
 
-.dark .courseSelectionCard.courseSelected {
+.applicantDetails__dark .applicantDetails__courseSelectionCard.applicantDetails--courseSelected {
   background-color: #1e3a8a;
   border-color: #3b82f6;
 }
 
-.dark .courseControlButton {
+.applicantDetails__dark .applicantDetails__courseControlButton {
   background-color: #374151;
   border-color: #4b5563;
   color: #f9fafb;
 }
 
-.dark .courseControlButton:hover:not(:disabled) {
+.applicantDetails__dark .applicantDetails__courseControlButton:hover:not(:disabled) {
   background-color: #4b5563;
 }
 
-.dark .selectAllButton:hover:not(:disabled) {
+.applicantDetails__dark .applicantDetails__selectAllButton:hover:not(:disabled) {
   background-color: #1e3a8a;
   border-color: #3b82f6;
   color: #93c5fd;
 }
 
-.dark .deselectAllButton:hover:not(:disabled) {
+.applicantDetails__dark .applicantDetails__deselectAllButton:hover:not(:disabled) {
   background-color: #7f1d1d;
   border-color: #dc2626;
   color: #fca5a5;
 }
 
-.dark .courseCheckboxInput {
+.applicantDetails__dark .applicantDetails__courseCheckboxInput {
   border-color: #6b7280;
   background-color: #374151;
 }
 
-.dark .courseCheckboxInput:checked {
+.applicantDetails__dark .applicantDetails__courseCheckboxInput:checked {
   background-color: #3b82f6;
   border-color: #3b82f6;
 }
 
-.dark .selectionSummary {
+.applicantDetails__dark .applicantDetails__selectionSummary {
   background-color: #374151;
   border-color: #4b5563;
 }
 
 /* Empty state */
-.emptyDetails {
+.applicantDetails__emptyDetails {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -345,12 +345,12 @@
   transition: all 0.3s ease;
 }
 
-.emptyDetails:hover {
+.applicantDetails__emptyDetails:hover {
   border-color: var(--color-primary);
   background-color: var(--color-bg-hover);
 }
 
-.emptyDetailsIcon {
+.applicantDetails__emptyDetailsIcon {
   color: var(--color-text-secondary);
   opacity: 0.5;
   margin-bottom: 1.5rem;
@@ -359,26 +359,26 @@
   height: 4rem;
 }
 
-.emptyDetails:hover .emptyDetailsIcon {
+.applicantDetails__emptyDetails:hover .applicantDetails__emptyDetailsIcon {
   opacity: 0.7;
   transform: scale(1.1);
 }
 
-.emptyDetailsTitle {
+.applicantDetails__emptyDetailsTitle {
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 0.75rem;
 }
 
-.emptyDetailsText {
+.applicantDetails__emptyDetailsText {
   color: var(--color-text-secondary);
   max-width: 300px;
   line-height: 1.5;
 }
 
 /* Applicant header */
-.applicantHeader {
+.applicantDetails__applicantHeader {
   display: flex;
   align-items: center;
   margin-bottom: 2rem;
@@ -386,7 +386,7 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-.applicantAvatarLarge {
+.applicantDetails__applicantAvatarLarge {
   width: 64px;
   height: 64px;
   border-radius: 50%;
@@ -403,19 +403,19 @@
   transition: all 0.3s ease;
 }
 
-.applicantAvatarLarge:hover {
+.applicantDetails__applicantAvatarLarge:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.applicantTitle {
+.applicantDetails__applicantTitle {
   flex: 1;
   min-width: 0;
   margin-right: 1rem;
 }
 
-/* Updated to use the consolidated .applicant-name.large class */
-.applicantNameLarge {
+/* Updated to use the consolidated .applicantDetails__applicant-name.applicantDetails--large class */
+.applicantDetails__applicantNameLarge {
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--color-text-primary);
@@ -425,7 +425,7 @@
   white-space: nowrap;
 }
 
-.applicantBadges {
+.applicantDetails__applicantBadges {
   display: flex;
   gap: 0.35rem;
   flex-wrap: wrap;
@@ -433,7 +433,7 @@
   align-items: center;
 }
 
-.availabilityBadge {
+.applicantDetails__availabilityBadge {
   background-color: rgba(34, 197, 94, 0.1);
   color: #16a34a;
   padding: 0.15rem 0.5rem;
@@ -443,7 +443,7 @@
   border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
-.roleBadge {
+.applicantDetails__roleBadge {
   font-size: 0.6875rem;
   padding: 0.15rem 0.5rem;
   border-radius: 999px;
@@ -459,17 +459,17 @@
   white-space: nowrap;
 }
 
-.roleIconSmall {
+.applicantDetails__roleIconSmall {
   width: 0.875rem;
   height: 0.875rem;
 }
 
-.roleBadge:hover {
+.applicantDetails__roleBadge:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(147, 51, 234, 0.1);
 }
 
-.statusBadge {
+.applicantDetails__statusBadge {
   background-color: rgba(59, 130, 246, 0.1);
   color: #2563eb;
   padding: 0.15rem 0.5rem;
@@ -479,32 +479,32 @@
   border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
-.dark .availabilityBadge {
+.applicantDetails__dark .applicantDetails__availabilityBadge {
   background-color: rgba(34, 197, 94, 0.2);
   color: #4ade80;
   border-color: rgba(34, 197, 94, 0.3);
 }
 
-.dark .statusBadge {
+.applicantDetails__dark .applicantDetails__statusBadge {
   background-color: rgba(59, 130, 246, 0.2);
   color: #60a5fa;
   border-color: rgba(59, 130, 246, 0.3);
 }
 
-.dark .roleBadge {
+.applicantDetails__dark .applicantDetails__roleBadge {
   background-color: rgba(147, 51, 234, 0.2);
   border-color: rgba(147, 51, 234, 0.3);
   color: #c084fc;
 }
 
-.roleBadgeIcon {
+.applicantDetails__roleBadgeIcon {
   width: 1rem;
   height: 1rem;
   margin-right: 0.5rem;
 }
 
 /* Section styles — compact */
-.section {
+.applicantDetails__section {
   margin-bottom: 0.75rem;
   padding: 0.65rem 0.75rem;
   background-color: var(--color-bg-secondary);
@@ -512,7 +512,7 @@
   border: 1px solid var(--color-border);
 }
 
-.sectionTitle {
+.applicantDetails__sectionTitle {
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.03em;
@@ -522,13 +522,13 @@
 }
 
 /* Compact course list */
-.compactCourseList {
+.applicantDetails__compactCourseList {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
 }
 
-.compactCourseRow {
+.applicantDetails__compactCourseRow {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -539,7 +539,7 @@
   border: 1px solid var(--color-border);
 }
 
-.compactCourseName {
+.applicantDetails__compactCourseName {
   flex: 1;
   min-width: 0;
   font-size: 0.8125rem;
@@ -547,7 +547,7 @@
   line-height: 1.35;
 }
 
-.compactSelectedMark {
+.applicantDetails__compactSelectedMark {
   font-size: 0.75rem;
   font-weight: 700;
   color: #16a34a;
@@ -555,19 +555,19 @@
 }
 
 /* Compact meta (roles + skills) */
-.compactMetaGrid {
+.applicantDetails__compactMetaGrid {
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
 }
 
-.compactMetaBlock {
+.applicantDetails__compactMetaBlock {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
 }
 
-.compactLabel {
+.applicantDetails__compactLabel {
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.03em;
@@ -575,13 +575,13 @@
   color: var(--color-text-tertiary);
 }
 
-.inlineTags {
+.applicantDetails__inlineTags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem;
 }
 
-.inlineTag {
+.applicantDetails__inlineTag {
   padding: 0.15rem 0.45rem;
   border-radius: 999px;
   font-size: 0.75rem;
@@ -591,36 +591,36 @@
   border: 1px solid rgba(249, 115, 22, 0.2);
 }
 
-.emptyInline {
+.applicantDetails__emptyInline {
   font-size: 0.8125rem;
   color: var(--color-text-tertiary);
   font-style: italic;
 }
 
-.notesHint {
+.applicantDetails__notesHint {
   margin: 0 0 0.4rem;
   font-size: 0.75rem;
   color: var(--color-text-tertiary);
 }
 
-.notesSaveBtn {
+.applicantDetails__notesSaveBtn {
   font-size: 0.8125rem;
   padding: 0.35rem 0.75rem;
 }
 
 /* Course selection */
-.coursesSelection {
+.applicantDetails__coursesSelection {
   margin-bottom: 1.5rem;
 }
 
-.coursesContainer {
+.applicantDetails__coursesContainer {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1rem;
   margin-top: 1rem;
 }
 
-.courseCard {
+.applicantDetails__courseCard {
   position: relative;
   padding: 1.5rem;
   border-radius: 0.75rem;
@@ -631,19 +631,19 @@
   min-width: 280px;
 }
 
-.courseCard:hover {
+.applicantDetails__courseCard:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(249, 115, 22, 0.15);
   border-color: var(--color-primary);
 }
 
-.courseCard.selected {
+.applicantDetails__courseCard.applicantDetails--selected {
   background-color: rgba(249, 115, 22, 0.1);
   border-color: var(--color-primary);
   box-shadow: 0 2px 4px rgba(249, 115, 22, 0.1);
 }
 
-.courseCode {
+.applicantDetails__courseCode {
   display: inline-block;
   padding: 0.15rem 0.45rem;
   background-color: rgba(249, 115, 22, 0.1);
@@ -655,7 +655,7 @@
   flex-shrink: 0;
 }
 
-.courseName {
+.applicantDetails__courseName {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   line-height: 1.4;
@@ -667,7 +667,7 @@
   min-height: 2.4rem;
 }
 
-.courseSelectedIcon {
+.applicantDetails__courseSelectedIcon {
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
@@ -677,12 +677,12 @@
   height: 1.25rem;
 }
 
-.courseCard:hover .courseSelectedIcon {
+.applicantDetails__courseCard:hover .applicantDetails__courseSelectedIcon {
   transform: scale(1.1);
 }
 
 /* Previous roles */
-.rolesList {
+.applicantDetails__rolesList {
   flex: 1;
   overflow-y: auto;
   margin: 0;
@@ -694,7 +694,7 @@
   padding-right: 6px; /* Extra padding for hover space */
 }
 
-.roleItem {
+.applicantDetails__roleItem {
   width: calc(100% - 4px);
   padding: 1rem;
   background-color: rgba(249, 115, 22, 0.1);
@@ -712,7 +712,7 @@
   overflow: hidden;
 }
 
-.roleItem:hover {
+.applicantDetails__roleItem:hover {
   transform: translateX(2px);
   border-color: rgb(249, 115, 22); /* Solid orange border on hover */
   background-color: rgba(
@@ -725,12 +725,12 @@
 }
 
 /* Override any existing hover effects that might cause the orange rectangle */
-.roleItem:hover::after,
-.roleItem:hover::before {
+.applicantDetails__roleItem:hover::after,
+.applicantDetails__roleItem:hover::before {
   display: none !important;
 }
 
-.previousRolesSection {
+.applicantDetails__previousRolesSection {
   background-color: var(--color-bg-primary);
   border-radius: 0.75rem;
   padding: 1rem;
@@ -741,7 +741,7 @@
   overflow: hidden; /* Prevent content from spilling out */
 }
 
-.emptyList {
+.applicantDetails__emptyList {
   color: var(--color-text-secondary);
   font-style: italic;
   font-size: 0.875rem;
@@ -750,7 +750,7 @@
 }
 
 /* Skills */
-.skillsContainer {
+.applicantDetails__skillsContainer {
   flex: 1;
   overflow-y: auto;
   display: flex;
@@ -760,7 +760,7 @@
   padding: 1px;
 }
 
-.skillTag {
+.applicantDetails__skillTag {
   all: unset; /* Reset all properties */
   padding: 0.5rem 1rem;
   background-color: rgba(249, 115, 22, 0.1) !important;
@@ -775,7 +775,7 @@
   cursor: default;
 }
 
-.skillTag:hover {
+.applicantDetails__skillTag:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(249, 115, 22, 0.2) !important;
   background-color: rgba(249, 115, 22, 0.15) !important;
@@ -783,14 +783,14 @@
   margin: 1px;
 }
 
-.positionBadge {
+.applicantDetails__positionBadge {
   font-size: 0.6875rem;
   color: var(--color-text-tertiary);
   flex-shrink: 0;
 }
 
 /* Academic credentials */
-.academicText {
+.applicantDetails__academicText {
   margin: 0;
   font-size: 0.8125rem;
   color: var(--color-text-secondary);
@@ -800,11 +800,11 @@
 
 /* Comments */
 /* Comment Input Container */
-.commentInputContainer {
+.applicantDetails__commentInputContainer {
   margin-bottom: 1rem;
 }
 
-.commentTextarea {
+.applicantDetails__commentTextarea {
   width: 100%;
   padding: 0.55rem 0.65rem;
   border-radius: 0.375rem;
@@ -820,25 +820,25 @@
   box-sizing: border-box;
 }
 
-.commentTextarea:focus {
+.applicantDetails__commentTextarea:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
 }
 
-.commentTextarea:disabled {
+.applicantDetails__commentTextarea:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   background-color: var(--color-bg-secondary);
 }
 
-.commentTextareaError {
+.applicantDetails__commentTextareaError {
   border-color: #ef4444 !important;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
 }
 
 /* Comment Meta Information */
-.commentMeta {
+.applicantDetails__commentMeta {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -847,11 +847,11 @@
   color: var(--color-text-secondary);
 }
 
-.characterCount {
+.applicantDetails__characterCount {
   font-weight: 500;
 }
 
-.unsavedIndicator {
+.applicantDetails__unsavedIndicator {
   color: #f59e0b;
   font-weight: 600;
   display: flex;
@@ -860,7 +860,7 @@
 }
 
 /* Error Message */
-.errorMessage {
+.applicantDetails__errorMessage {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -874,173 +874,173 @@
   font-weight: 500;
 }
 
-.errorIcon {
+.applicantDetails__errorIcon {
   width: 1rem;
   height: 1rem;
   flex-shrink: 0;
 }
 
 /* Comment Actions */
-.commentActions {
+.applicantDetails__commentActions {
   display: flex;
   gap: 0.5rem;
   margin-top: 1rem;
 }
 
 /* Spinner Animation */
-.spinner {
+.applicantDetails__spinner {
   width: 1rem;
   height: 1rem;
   margin-right: 0.5rem;
 }
 
 /* Dark mode adjustments */
-:global(.dark) .errorMessage {
+:global(.dark) .applicantDetails__errorMessage {
   background-color: rgba(239, 68, 68, 0.1);
   border-color: rgba(239, 68, 68, 0.2);
   color: #f87171;
 }
 
-:global(.dark) .commentTextarea:disabled {
+:global(.dark) .applicantDetails__commentTextarea:disabled {
   background-color: var(--color-bg-secondary-dark);
 }
 
 /* Dark mode adjustments */
-.dark .detailsContainer {
+.applicantDetails__dark .applicantDetails__detailsContainer {
   background-color: var(--color-bg-primary-dark);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-:global(.dark) .emptyDetails {
+:global(.dark) .applicantDetails__emptyDetails {
   background-color: var(--color-bg-secondary-dark);
   border-color: var(--color-border-dark);
 }
 
-:global(.dark) .emptyDetails:hover {
+:global(.dark) .applicantDetails__emptyDetails:hover {
   border-color: var(--color-primary);
   background-color: #1f2937 !important;
 }
 
-.dark .courseCard {
+.applicantDetails__dark .applicantDetails__courseCard {
   background-color: var(--color-bg-primary-dark);
   border-color: var(--color-border);
 }
 
-.dark .courseCard:hover {
+.applicantDetails__dark .applicantDetails__courseCard:hover {
   background-color: rgba(249, 115, 22, 0.2);
   border-color: rgb(249, 115, 22);
 }
 
-.dark .courseCard.selected {
+.applicantDetails__dark .applicantDetails__courseCard.applicantDetails--selected {
   background-color: rgba(79, 70, 229, 0.2);
   border-color: #4f46e5;
 }
 
-.dark .courseCode {
+.applicantDetails__dark .applicantDetails__courseCode {
   background-color: rgba(249, 115, 22, 0.15);
   border-color: rgba(249, 115, 22, 0.3);
   color: rgb(251, 146, 60);
 }
 
-.dark .courseCode:hover {
+.applicantDetails__dark .applicantDetails__courseCode:hover {
   background-color: rgba(249, 115, 22, 0.2);
   border-color: rgba(249, 115, 22, 0.4);
   box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3);
 }
 
-.dark .roleItem {
+.applicantDetails__dark .applicantDetails__roleItem {
   background-color: rgba(249, 115, 22, 0.15);
   border-color: rgba(249, 115, 22, 0.3);
   color: rgb(251, 146, 60) !important;
 }
 
-.dark .roleItem:hover {
+.applicantDetails__dark .applicantDetails__roleItem:hover {
   background-color: rgba(249, 115, 22, 0.2);
   border-color: rgb(249, 115, 22);
 }
 
-.dark .dateBadge {
+.applicantDetails__dark .applicantDetails__dateBadge {
   background-color: rgba(249, 115, 22, 0.1);
   border-color: rgba(249, 115, 22, 0.2);
   color: rgb(251, 146, 60);
 }
 
-.dark .dateBadge:hover {
+.applicantDetails__dark .applicantDetails__dateBadge:hover {
   background-color: rgba(249, 115, 22, 0.25);
   border-color: rgba(249, 115, 22, 0.4);
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(249, 115, 22, 0.2);
 }
 
-.dark .skillTag {
+.applicantDetails__dark .applicantDetails__skillTag {
   background-color: rgba(249, 115, 22, 0.15) !important;
   border-color: rgba(249, 115, 22, 0.3) !important;
   color: rgb(251, 146, 60) !important;
 }
 
-.dark .skillTag:hover {
+.applicantDetails__dark .applicantDetails__skillTag:hover {
   background-color: rgba(249, 115, 22, 0.2) !important;
   border-color: rgba(249, 115, 22, 0.4) !important;
   box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3) !important;
 }
 
-.dark .academicText {
+.applicantDetails__dark .applicantDetails__academicText {
   background-color: var(--color-bg-primary-dark);
   border-color: var(--color-border-dark);
 }
 
-.dark .academicText:hover {
+.applicantDetails__dark .applicantDetails__academicText:hover {
   background-color: var(--color-bg-hover-dark);
 }
 
-.dark .commentTextarea {
+.applicantDetails__dark .applicantDetails__commentTextarea {
   background-color: var(--color-bg-primary-dark);
   border-color: var(--color-border-dark);
 }
 
-.dark .commentTextarea:focus {
+.applicantDetails__dark .applicantDetails__commentTextarea:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--color-primary-light, rgba(249, 115, 22, 0.1));
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .detailsContainer {
+  .applicantDetails__detailsContainer {
     padding: 1rem;
   }
 
-  .coursesContainer {
+  .applicantDetails__coursesContainer {
     grid-template-columns: 1fr;
   }
 
-  .applicantHeader {
+  .applicantDetails__applicantHeader {
     flex-direction: column;
     text-align: center;
   }
 
-  .applicantAvatarLarge {
+  .applicantDetails__applicantAvatarLarge {
     margin: 0 0 1rem 0;
   }
 
-  .applicantBadges {
+  .applicantDetails__applicantBadges {
     justify-content: center;
     flex-wrap: wrap;
     gap: 0.5rem;
   }
 
-  .actionButtonsContainer {
+  .applicantDetails__actionButtonsContainer {
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
   }
 
-  .buttonGroup {
+  .applicantDetails__buttonGroup {
     order: -1;
     position: static; /* static positioning on mobile */
     justify-content: center;
   }
 
-  .actionButton {
+  .applicantDetails__actionButton {
     justify-content: center;
     font-size: 0.875rem;
     padding: 0.5rem 0.75rem;
@@ -1049,7 +1049,7 @@
 
 /* Desktop and large tablet - ensure buttons stay horizontal */
 @media (min-width: 768px) {
-  .buttonGroup {
+  .applicantDetails__buttonGroup {
     flex-direction: row;
     flex-wrap: nowrap;
     position: absolute; /* absolute positioning on desktop */
@@ -1060,32 +1060,32 @@
 
 /* Very small mobile only - buttons stack vertically */
 @media (max-width: 480px) {
-  .buttonGroup {
+  .applicantDetails__buttonGroup {
     flex-direction: column;
     width: 100%;
     position: static; /* static positioning on small mobile */
   }
 
-  .actionButton {
+  .applicantDetails__actionButton {
     width: 100%;
   }
 }
 
 /* Experience & Skills Grid */
-.experienceSkillsGrid {
+.applicantDetails__experienceSkillsGrid {
   display: grid;
   grid-template-rows: 1fr 1fr;
   gap: 1.5rem;
 }
 
-.subsectionTitle {
+.applicantDetails__subsectionTitle {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-text-secondary);
   margin-bottom: 0.75rem;
 }
 
-.skillsSection {
+.applicantDetails__skillsSection {
   background-color: var(--color-bg-primary);
   border-radius: 0.75rem;
   padding: 1rem;
@@ -1095,7 +1095,7 @@
   flex-direction: column;
 }
 
-.skillsContainer {
+.applicantDetails__skillsContainer {
   flex: 1;
   overflow-y: auto;
   display: flex;
@@ -1106,38 +1106,38 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .experienceSkillsGrid {
+  .applicantDetails__experienceSkillsGrid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
 
-  .skillsSection {
+  .applicantDetails__skillsSection {
     min-height: 200px;
   }
 }
 
 /* Dark mode adjustments */
-.dark .skillsSection,
-.dark .academicText,
-.dark .commentTextarea {
+.applicantDetails__dark .applicantDetails__skillsSection,
+.applicantDetails__dark .applicantDetails__academicText,
+.applicantDetails__dark .applicantDetails__commentTextarea {
   background-color: var(--color-bg-primary) !important;
   border-color: var(--color-border) !important;
 }
 
-.dark .skillsSection:hover,
-.dark .academicText:hover {
+.applicantDetails__dark .applicantDetails__skillsSection:hover,
+.applicantDetails__dark .applicantDetails__academicText:hover {
   background-color: var(--color-bg-primary) !important;
   border-color: var(--color-border) !important;
 }
 
-.dark .commentTextarea:focus {
+.applicantDetails__dark .applicantDetails__commentTextarea:focus {
   background-color: var(--color-bg-primary) !important;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
 }
 
 /* Panel wrapper styles moved from dashboard */
-.applicantDetailsPanel {
+.applicantDetails__applicantDetailsPanel {
   background-color: var(--color-bg-primary);
   border-radius: 1rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -1146,7 +1146,7 @@
   height: 100%;
 }
 
-.panelTitle {
+.applicantDetails__panelTitle {
   font-size: 1rem;
   font-weight: 600;
   color: var(--color-text-primary);
@@ -1156,30 +1156,30 @@
 }
 
 /* Dark mode for panel styles */
-.dark .applicantDetailsPanel {
+.applicantDetails__dark .applicantDetails__applicantDetailsPanel {
   background-color: var(--color-bg-primary);
   border-color: var(--color-border);
 }
 
-.dark .panelTitle {
+.applicantDetails__dark .applicantDetails__panelTitle {
   color: var(--color-text-primary);
 }
 
 /* Dark mode for role badge */
-.dark .roleBadge {
+.applicantDetails__dark .applicantDetails__roleBadge {
   background-color: rgba(147, 51, 234, 0.2);
   border-color: rgba(147, 51, 234, 0.3);
   color: #c084fc;
 }
 
-.roleBadgeIcon {
+.applicantDetails__roleBadgeIcon {
   width: 1rem;
   height: 1rem;
   margin-right: 0.5rem;
 }
 
 /* Blocked candidate warning */
-.blockedWarning {
+.applicantDetails__blockedWarning {
   display: flex;
   align-items: flex-start;
   gap: 0.55rem;
@@ -1192,7 +1192,7 @@
   font-size: 0.8125rem;
 }
 
-.warningIcon {
+.applicantDetails__warningIcon {
   width: 1rem;
   height: 1rem;
   color: var(--color-text-tertiary);
@@ -1200,49 +1200,49 @@
   margin-top: 0.1rem;
 }
 
-.blockedWarning strong {
+.applicantDetails__blockedWarning strong {
   display: block;
   font-weight: 600;
   margin-bottom: 0.15rem;
   font-size: 0.8125rem;
 }
 
-.blockedWarning p {
+.applicantDetails__blockedWarning p {
   margin: 0;
   font-size: 0.75rem;
   line-height: 1.4;
 }
 
 /* Dark mode for blocked warning */
-.dark .blockedWarning {
+.applicantDetails__dark .applicantDetails__blockedWarning {
   background-color: rgba(255, 255, 255, 0.04);
   border-color: rgba(255, 255, 255, 0.1);
   color: var(--color-text-secondary);
 }
 
-.dark .warningIcon {
+.applicantDetails__dark .applicantDetails__warningIcon {
   color: var(--color-text-tertiary);
 }
 
-.removeBlockedButton {
+.applicantDetails__removeBlockedButton {
   background-color: rgba(239, 68, 68, 0.08);
   color: #dc2626;
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-.removeBlockedButton:hover:not(:disabled) {
+.applicantDetails__removeBlockedButton:hover:not(:disabled) {
   background-color: rgba(239, 68, 68, 0.14);
   border-color: rgba(239, 68, 68, 0.45);
 }
 
-.dark .removeBlockedButton {
+.applicantDetails__dark .applicantDetails__removeBlockedButton {
   background-color: rgba(239, 68, 68, 0.12);
   color: #f87171;
   border-color: rgba(239, 68, 68, 0.35);
 }
 
 /* Disabled button styles */
-.actionButton:disabled {
+.applicantDetails__actionButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   background-color: #e5e7eb;
@@ -1250,43 +1250,43 @@
   border-color: #d1d5db;
 }
 
-.actionButton:disabled:hover {
+.applicantDetails__actionButton:disabled:hover {
   background-color: #e5e7eb;
   border-color: #d1d5db;
   transform: none;
 }
 
-.dark .actionButton:disabled {
+.applicantDetails__dark .applicantDetails__actionButton:disabled {
   background-color: #374151;
   color: #6b7280;
   border-color: #4b5563;
 }
 
-.dark .actionButton:disabled:hover {
+.applicantDetails__dark .applicantDetails__actionButton:disabled:hover {
   background-color: #374151;
   border-color: #4b5563;
 }
 
 /* Position Information Styles */
-.positionInfo {
+.applicantDetails__positionInfo {
   margin-top: 0.75rem;
   padding-top: 0.75rem;
   border-top: 1px solid var(--color-border);
 }
 
-.positionBadge {
+.applicantDetails__positionBadge {
   display: inline-block;
   font-size: 0.6875rem;
   color: var(--color-text-tertiary);
   flex-shrink: 0;
 }
 
-.dark .positionBadge {
+.applicantDetails__dark .applicantDetails__positionBadge {
   background-color: rgba(34, 197, 94, 0.15);
   color: #4ade80;
   border-color: rgba(34, 197, 94, 0.3);
 }
 
-.dark .positionInfo {
+.applicantDetails__dark .applicantDetails__positionInfo {
   border-top-color: rgba(255, 255, 255, 0.1);
 }

@@ -1,6 +1,6 @@
 /* Apply modal — light, in sync with tutor page & course cards */
 
-.applyModalBackdrop {
+.applyModal__applyModalBackdrop {
   background-color: rgba(15, 23, 42, 0.72) !important;
   backdrop-filter: blur(8px) !important;
   z-index: 50 !important;
@@ -13,7 +13,7 @@
   animation: fadeIn 0.22s ease-out !important;
 }
 
-:global(.dark) .applyModalBackdrop {
+:global(.dark) .applyModal__applyModalBackdrop {
   background-color: rgba(2, 6, 23, 0.88) !important;
 }
 
@@ -60,29 +60,29 @@
   }
 }
 
-.applyModalHeader {
+.applyModal__applyModalHeader {
   padding: 1.25rem 1.75rem 1rem !important;
   border-bottom: 1px solid var(--color-border) !important;
   background: transparent !important;
 }
 
-:global(.dark) .applyModalHeader {
+:global(.dark) .applyModal__applyModalHeader {
   border-bottom-color: rgba(255, 255, 255, 0.06) !important;
 }
 
-.applyModalHeaderContent {
+.applyModal__applyModalHeaderContent {
   display: flex !important;
   justify-content: space-between !important;
   align-items: flex-start !important;
   gap: 1rem !important;
 }
 
-.headerTitleSection {
+.applyModal__headerTitleSection {
   flex: 1 !important;
   min-width: 0 !important;
 }
 
-.applyModalTitle {
+.applyModal__applyModalTitle {
   margin: 0 0 0.25rem !important;
   font-size: 1.125rem !important;
   font-weight: 600 !important;
@@ -91,20 +91,20 @@
   color: var(--color-text-primary) !important;
 }
 
-.labelAccent {
+.applyModal__labelAccent {
   color: var(--color-text-primary) !important;
   font-weight: 600 !important;
 }
 
-.titleHighlight {
+.applyModal__titleHighlight {
   color: var(--color-primary) !important;
 }
 
-:global(.dark) .titleHighlight {
+:global(.dark) .applyModal__titleHighlight {
   color: #fdba74 !important;
 }
 
-.labelAccent::before {
+.applyModal__labelAccent::before {
   content: "" !important;
   display: inline-block !important;
   width: 3px !important;
@@ -115,14 +115,14 @@
   background: var(--color-primary) !important;
 }
 
-.headerSubtitle {
+.applyModal__headerSubtitle {
   margin: 0 !important;
   font-size: 0.8125rem !important;
   font-weight: 400 !important;
   color: var(--color-text-tertiary) !important;
 }
 
-.applyModalClose {
+.applyModal__applyModalClose {
   width: 2rem !important;
   height: 2rem !important;
   min-width: 2rem !important;
@@ -138,22 +138,22 @@
   box-shadow: none !important;
 }
 
-.applyModalClose:hover {
+.applyModal__applyModalClose:hover {
   color: var(--color-text-primary) !important;
   background: var(--color-bg-secondary) !important;
 }
 
-:global(.dark) .applyModalClose:hover {
+:global(.dark) .applyModal__applyModalClose:hover {
   background: rgba(255, 255, 255, 0.06) !important;
   color: var(--color-text-primary) !important;
 }
 
-.applyModalClose svg {
+.applyModal__applyModalClose svg {
   width: 1.125rem !important;
   height: 1.125rem !important;
 }
 
-.applyModalForm {
+.applyModal__applyModalForm {
   display: flex !important;
   flex: 1 !important;
   flex-direction: column !important;
@@ -161,14 +161,14 @@
   padding: 0 !important;
 }
 
-.applyModalFormInner {
+.applyModal__applyModalFormInner {
   display: flex !important;
   flex: 1 !important;
   flex-direction: column !important;
   min-height: 0 !important;
 }
 
-.applyModalScroll {
+.applyModal__applyModalScroll {
   flex: 1 !important;
   min-height: 0 !important;
   overflow-x: hidden !important;
@@ -179,36 +179,36 @@
   scrollbar-color: rgba(148, 163, 184, 0.45) transparent !important;
 }
 
-.applyModalScroll::-webkit-scrollbar {
+.applyModal__applyModalScroll::-webkit-scrollbar {
   width: 6px !important;
 }
 
-.applyModalScroll::-webkit-scrollbar-track {
+.applyModal__applyModalScroll::-webkit-scrollbar-track {
   background: transparent !important;
 }
 
-.applyModalScroll::-webkit-scrollbar-thumb {
+.applyModal__applyModalScroll::-webkit-scrollbar-thumb {
   background-color: rgba(148, 163, 184, 0.4) !important;
   border-radius: 999px !important;
 }
 
-.applyModalScroll::-webkit-scrollbar-thumb:hover {
+.applyModal__applyModalScroll::-webkit-scrollbar-thumb:hover {
   background-color: rgba(148, 163, 184, 0.55) !important;
 }
 
-:global(.dark) .applyModalScroll {
+:global(.dark) .applyModal__applyModalScroll {
   scrollbar-color: rgba(255, 255, 255, 0.18) transparent !important;
 }
 
-:global(.dark) .applyModalScroll::-webkit-scrollbar-thumb {
+:global(.dark) .applyModal__applyModalScroll::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.16) !important;
 }
 
-:global(.dark) .applyModalScroll::-webkit-scrollbar-thumb:hover {
+:global(.dark) .applyModal__applyModalScroll::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.28) !important;
 }
 
-.applyModalCompactGrid {
+.applyModal__applyModalCompactGrid {
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
   gap: 0.875rem !important;
@@ -216,12 +216,12 @@
 }
 
 @media (max-width: 768px) {
-  .applyModalCompactGrid {
+  .applyModal__applyModalCompactGrid {
     grid-template-columns: 1fr !important;
   }
 }
 
-.courseInfoCard {
+.applyModal__courseInfoCard {
   padding: 0.875rem 1rem !important;
   border-radius: 0.625rem !important;
   border: 1px solid rgba(249, 115, 22, 0.15) !important;
@@ -233,7 +233,7 @@
   text-align: left !important;
 }
 
-:global(.dark) .courseInfoCard {
+:global(.dark) .applyModal__courseInfoCard {
   background: linear-gradient(
     135deg,
     rgba(251, 146, 60, 0.08) 0%,
@@ -242,7 +242,7 @@
   border-color: rgba(251, 146, 60, 0.2) !important;
 }
 
-.courseCodeTitle {
+.applyModal__courseCodeTitle {
   margin: 0 0 0.2rem !important;
   font-family: ui-monospace, "SF Mono", Menlo, monospace !important;
   font-size: 0.8125rem !important;
@@ -251,19 +251,19 @@
   color: rgba(234, 88, 12, 0.9) !important;
 }
 
-:global(.dark) .courseCodeTitle {
+:global(.dark) .applyModal__courseCodeTitle {
   color: rgba(251, 146, 60, 0.85) !important;
 }
 
-.courseNameTitle {
+.applyModal__courseNameTitle {
   margin: 0 !important;
   font-size: 0.875rem !important;
   line-height: 1.45 !important;
   color: var(--color-text-secondary) !important;
 }
 
-.roleInfoCard,
-.availabilityCard {
+.applyModal__roleInfoCard,
+.applyModal__availabilityCard {
   display: flex !important;
   align-items: center !important;
   gap: 0.625rem !important;
@@ -273,14 +273,14 @@
   background: var(--color-bg-secondary) !important;
 }
 
-:global(.dark) .roleInfoCard,
-:global(.dark) .availabilityCard {
+:global(.dark) .applyModal__roleInfoCard,
+:global(.dark) .applyModal__availabilityCard {
   background: rgba(255, 255, 255, 0.02) !important;
   border-color: rgba(255, 255, 255, 0.06) !important;
 }
 
-.roleIconContainer,
-.availabilityIconContainer {
+.applyModal__roleIconContainer,
+.applyModal__availabilityIconContainer {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -291,25 +291,25 @@
   flex-shrink: 0 !important;
 }
 
-.roleIcon,
-.availabilityIcon {
+.applyModal__roleIcon,
+.applyModal__availabilityIcon {
   width: 0.9rem !important;
   height: 0.9rem !important;
   color: var(--color-text-tertiary) !important;
 }
 
-.roleText,
-.availabilityText {
+.applyModal__roleText,
+.applyModal__availabilityText {
   font-size: 0.8125rem !important;
   font-weight: 500 !important;
   color: var(--color-text-primary) !important;
 }
 
-.applyModalFieldGroup {
+.applyModal__applyModalFieldGroup {
   margin-bottom: 0.875rem !important;
 }
 
-.applyModalGrid {
+.applyModal__applyModalGrid {
   display: grid !important;
   grid-template-columns: 1fr !important;
   gap: 0.875rem !important;
@@ -317,12 +317,12 @@
 }
 
 @media (min-width: 768px) {
-  .applyModalGrid {
+  .applyModal__applyModalGrid {
     grid-template-columns: 1fr 1fr !important;
   }
 }
 
-.applyModalLabel {
+.applyModal__applyModalLabel {
   display: block !important;
   margin-bottom: 0.375rem !important;
   font-size: 0.8125rem !important;
@@ -330,7 +330,7 @@
   color: var(--color-text-secondary) !important;
 }
 
-.applyModalInput {
+.applyModal__applyModalInput {
   width: 100% !important;
   padding: 0.625rem 0.75rem !important;
   border-radius: 0.5rem !important;
@@ -343,37 +343,37 @@
   transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
 }
 
-:global(.dark) .applyModalInput {
+:global(.dark) .applyModal__applyModalInput {
   background: rgba(0, 0, 0, 0.15) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-.applyModalInput:focus {
+.applyModal__applyModalInput:focus {
   outline: none !important;
   border-color: rgba(249, 115, 22, 0.35) !important;
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.08) !important;
 }
 
-.applyModalInput::placeholder {
+.applyModal__applyModalInput::placeholder {
   color: var(--color-text-tertiary) !important;
 }
 
-.applyModalInputError {
+.applyModal__applyModalInputError {
   border-color: #f87171 !important;
 }
 
-.applyModalSecondaryText {
+.applyModal__applyModalSecondaryText {
   margin-top: 0.25rem !important;
   font-size: 0.75rem !important;
   color: var(--color-text-tertiary) !important;
 }
 
-.applyModalTextPrimary {
+.applyModal__applyModalTextPrimary {
   font-weight: 500 !important;
   color: var(--color-text-primary) !important;
 }
 
-.applyModalReadonlyField {
+.applyModal__applyModalReadonlyField {
   padding: 0.625rem 0.75rem !important;
   border-radius: 0.5rem !important;
   border: 1px solid var(--color-border) !important;
@@ -382,19 +382,19 @@
   font-size: 0.8125rem !important;
 }
 
-.applyModalSkillsContainer {
+.applyModal__applyModalSkillsContainer {
   display: flex !important;
   flex-wrap: wrap !important;
   gap: 0.625rem !important;
   margin-bottom: 0.5rem !important;
 }
 
-.applyModalSkillInput {
+.applyModal__applyModalSkillInput {
   display: flex !important;
   margin-bottom: 0.5rem !important;
 }
 
-.applyModalSkillInputField {
+.applyModal__applyModalSkillInputField {
   flex: 1 !important;
   padding: 0.5rem 0.75rem !important;
   border: 1px solid var(--color-border) !important;
@@ -404,13 +404,13 @@
   font-size: 0.8125rem !important;
 }
 
-.applyModalSkillInputField:focus {
+.applyModal__applyModalSkillInputField:focus {
   outline: none !important;
   border-color: rgba(249, 115, 22, 0.35) !important;
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.08) !important;
 }
 
-.applyModalAddButton {
+.applyModal__applyModalAddButton {
   padding: 0.5rem 0.875rem !important;
   border: none !important;
   border-radius: 0 0.5rem 0.5rem 0 !important;
@@ -422,11 +422,11 @@
   transition: background 0.15s ease !important;
 }
 
-.applyModalAddButton:hover {
+.applyModal__applyModalAddButton:hover {
   background: var(--color-primary-dark) !important;
 }
 
-.applyModalAddSkillsButton {
+.applyModal__applyModalAddSkillsButton {
   display: flex !important;
   align-items: center !important;
   padding: 0.375rem 0 !important;
@@ -438,33 +438,33 @@
   cursor: pointer !important;
 }
 
-.applyModalAddSkillsButton:hover {
+.applyModal__applyModalAddSkillsButton:hover {
   color: var(--color-primary) !important;
 }
 
-.applyModalAddSkillsButton svg {
+.applyModal__applyModalAddSkillsButton svg {
   width: 1.25rem !important;
   height: 1.25rem !important;
   margin-right: 0.25rem !important;
 }
 
-.applyModalPopularSkills {
+.applyModal__applyModalPopularSkills {
   margin-top: 0.75rem !important;
 }
 
-.applyModalPopularSkillsLabel {
+.applyModal__applyModalPopularSkillsLabel {
   display: block !important;
   margin-bottom: 0.375rem !important;
   font-size: 0.75rem !important;
   color: var(--color-text-tertiary) !important;
 }
 
-.applyModalPopularSkillsContainer {
+.applyModal__applyModalPopularSkillsContainer {
   display: flex !important;
   flex-wrap: wrap !important;
 }
 
-.popularSkillButton {
+.applyModal__popularSkillButton {
   margin: 0 0.375rem 0.375rem 0 !important;
   padding: 0.25rem 0.625rem !important;
   border: 1px solid var(--color-border) !important;
@@ -476,17 +476,17 @@
   transition: border-color 0.15s ease, color 0.15s ease !important;
 }
 
-.popularSkillButton:hover {
+.applyModal__popularSkillButton:hover {
   border-color: rgba(249, 115, 22, 0.35) !important;
   color: var(--color-text-primary) !important;
 }
 
-.popularSkillButton:disabled {
+.applyModal__popularSkillButton:disabled {
   opacity: 0.45 !important;
   cursor: not-allowed !important;
 }
 
-.applyModalActions {
+.applyModal__applyModalActions {
   display: flex !important;
   flex-shrink: 0 !important;
   justify-content: flex-end !important;
@@ -496,11 +496,11 @@
   background: var(--color-bg-primary) !important;
 }
 
-:global(.dark) .applyModalActions {
+:global(.dark) .applyModal__applyModalActions {
   border-top-color: rgba(255, 255, 255, 0.06) !important;
 }
 
-.applyModalButtonCancel {
+.applyModal__applyModalButtonCancel {
   padding: 0.5rem 1rem !important;
   border-radius: 0.5rem !important;
   border: 1px solid var(--color-border) !important;
@@ -512,12 +512,12 @@
   transition: background 0.15s ease, color 0.15s ease !important;
 }
 
-.applyModalButtonCancel:hover {
+.applyModal__applyModalButtonCancel:hover {
   background: var(--color-bg-secondary) !important;
   color: var(--color-text-primary) !important;
 }
 
-.applyModalButtonSubmit {
+.applyModal__applyModalButtonSubmit {
   padding: 0.5rem 1.125rem !important;
   border-radius: 0.5rem !important;
   border: 1px solid rgba(249, 115, 22, 0.4) !important;
@@ -530,30 +530,30 @@
   transition: background 0.15s ease, border-color 0.15s ease !important;
 }
 
-.applyModalButtonSubmit:hover {
+.applyModal__applyModalButtonSubmit:hover {
   background: var(--color-primary-dark) !important;
   border-color: var(--color-primary-dark) !important;
 }
 
-.applyModalButtonSubmit:focus {
+.applyModal__applyModalButtonSubmit:focus {
   outline: none !important;
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12) !important;
 }
 
-.applyModalErrorText {
+.applyModal__applyModalErrorText {
   margin-top: 0.25rem !important;
   font-size: 0.75rem !important;
   font-weight: 500 !important;
   color: #ef4444 !important;
 }
 
-.applyModalRequiredAsterisk {
+.applyModal__applyModalRequiredAsterisk {
   margin-left: 0.15rem !important;
   color: rgba(239, 68, 68, 0.75) !important;
 }
 
-.applyModalHint,
-.applyModalOptional {
+.applyModal__applyModalHint,
+.applyModal__applyModalOptional {
   margin-left: 0.35rem !important;
   font-size: 0.75rem !important;
   font-weight: 400 !important;
@@ -561,7 +561,7 @@
 }
 
 /* Availability — segmented control */
-.availabilitySegment {
+.applyModal__availabilitySegment {
   display: flex !important;
   gap: 0.5rem !important;
   padding: 0.25rem !important;
@@ -570,12 +570,12 @@
   background: var(--color-bg-secondary) !important;
 }
 
-:global(.dark) .availabilitySegment {
+:global(.dark) .applyModal__availabilitySegment {
   background: rgba(0, 0, 0, 0.2) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-.availabilitySegmentOption {
+.applyModal__availabilitySegmentOption {
   flex: 1 !important;
   display: flex !important;
   align-items: center !important;
@@ -590,69 +590,69 @@
     border-color 0.15s ease !important;
 }
 
-.availabilitySegmentOption input {
+.applyModal__availabilitySegmentOption input {
   position: absolute !important;
   opacity: 0 !important;
   pointer-events: none !important;
 }
 
-.availabilitySegmentOption:hover {
+.applyModal__availabilitySegmentOption:hover {
   background: rgba(255, 255, 255, 0.04) !important;
 }
 
-.availabilitySegmentActive {
+.applyModal__availabilitySegmentActive {
   border-color: rgba(249, 115, 22, 0.35) !important;
   background: rgba(249, 115, 22, 0.1) !important;
 }
 
-:global(.dark) .availabilitySegmentActive {
+:global(.dark) .applyModal__availabilitySegmentActive {
   background: rgba(251, 146, 60, 0.12) !important;
   border-color: rgba(251, 146, 60, 0.35) !important;
 }
 
-.segmentTitle {
+.applyModal__segmentTitle {
   font-size: 0.8125rem !important;
   font-weight: 600 !important;
   color: var(--color-text-primary) !important;
 }
 
-.availabilitySegmentActive .segmentTitle {
+.applyModal__availabilitySegmentActive .applyModal__segmentTitle {
   color: var(--color-primary) !important;
 }
 
-:global(.dark) .availabilitySegmentActive .segmentTitle {
+:global(.dark) .applyModal__availabilitySegmentActive .applyModal__segmentTitle {
   color: #fdba74 !important;
 }
 
-.segmentHint {
+.applyModal__segmentHint {
   font-size: 0.6875rem !important;
   color: var(--color-text-tertiary) !important;
 }
 
 /* Skills panel */
-.skillsPanel {
+.applyModal__skillsPanel {
   padding: 0.875rem !important;
   border-radius: 0.625rem !important;
   border: 1px solid var(--color-border) !important;
   background: var(--color-bg-secondary) !important;
 }
 
-:global(.dark) .skillsPanel {
+:global(.dark) .applyModal__skillsPanel {
   background: rgba(0, 0, 0, 0.18) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-.skillsSelectedBlock {
+.applyModal__skillsSelectedBlock {
   margin-bottom: 0.75rem !important;
   padding-bottom: 0.75rem !important;
   border-bottom: 1px solid var(--color-border) !important;
 }
 
-:global(.dark) .skillsSelectedBlock {
+:global(.dark) .applyModal__skillsSelectedBlock {
   border-bottom-color: rgba(255, 255, 255, 0.06) !important;
 }
 
-.skillsBlockLabel {
+.applyModal__skillsBlockLabel {
   display: block !important;
   margin-bottom: 0.5rem !important;
   font-size: 0.6875rem !important;
@@ -662,18 +662,18 @@
   color: var(--color-text-tertiary) !important;
 }
 
-.skillsCount {
+.applyModal__skillsCount {
   color: var(--color-primary) !important;
 }
 
-.skillsChipGrid {
+.applyModal__skillsChipGrid {
   display: flex !important;
   flex-wrap: wrap !important;
   gap: 0.375rem !important;
   margin-bottom: 0.75rem !important;
 }
 
-.skillChip {
+.applyModal__skillChip {
   padding: 0.35rem 0.7rem !important;
   border-radius: 999px !important;
   border: 1px solid var(--color-border) !important;
@@ -688,29 +688,29 @@
     color 0.15s ease !important;
 }
 
-.skillChip:hover:not(:disabled) {
+.applyModal__skillChip:hover:not(:disabled) {
   border-color: rgba(249, 115, 22, 0.35) !important;
   color: var(--color-text-primary) !important;
 }
 
-.skillChipActive {
+.applyModal__skillChipActive {
   border-color: rgba(249, 115, 22, 0.5) !important;
   background: rgba(249, 115, 22, 0.12) !important;
   color: var(--color-primary) !important;
 }
 
-.skillChip:disabled {
+.applyModal__skillChip:disabled {
   opacity: 0.45 !important;
   cursor: not-allowed !important;
 }
 
-.skillsAddRow {
+.applyModal__skillsAddRow {
   display: flex !important;
   gap: 0.5rem !important;
   align-items: stretch !important;
 }
 
-.skillsAddInput {
+.applyModal__skillsAddInput {
   flex: 1 !important;
   min-width: 0 !important;
   padding: 0.5rem 0.75rem !important;
@@ -721,13 +721,13 @@
   font-size: 0.8125rem !important;
 }
 
-.skillsAddInput:focus {
+.applyModal__skillsAddInput:focus {
   outline: none !important;
   border-color: rgba(249, 115, 22, 0.4) !important;
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.08) !important;
 }
 
-.skillsAddBtn {
+.applyModal__skillsAddBtn {
   flex-shrink: 0 !important;
   padding: 0.5rem 1rem !important;
   border: 1px solid rgba(249, 115, 22, 0.45) !important;
@@ -740,49 +740,49 @@
   transition: background 0.15s ease !important;
 }
 
-.skillsAddBtn:hover:not(:disabled) {
+.applyModal__skillsAddBtn:hover:not(:disabled) {
   background: rgba(249, 115, 22, 0.1) !important;
 }
 
-.skillsAddBtn:disabled {
+.applyModal__skillsAddBtn:disabled {
   opacity: 0.45 !important;
   cursor: not-allowed !important;
 }
 
-.courseMainInfo {
+.applyModal__courseMainInfo {
   text-align: left !important;
 }
 
-.popularSkillsLabel {
+.applyModal__popularSkillsLabel {
   display: block !important;
   margin-bottom: 0.375rem !important;
   font-size: 0.75rem !important;
   color: var(--color-text-tertiary) !important;
 }
 
-.popularSkillButtons,
-.applyModalSkillsGrid {
+.applyModal__popularSkillButtons,
+.applyModal__applyModalSkillsGrid {
   display: flex !important;
   flex-wrap: wrap !important;
   gap: 0.375rem !important;
 }
 
-.availabilityOption input[type="radio"] {
+.applyModal__availabilityOption input[type="radio"] {
   display: none !important;
 }
 
-.optionTitle {
+.applyModal__optionTitle {
   font-size: 0.8125rem !important;
   font-weight: 500 !important;
   color: var(--color-text-primary) !important;
 }
 
-.optionDescription {
+.applyModal__optionDescription {
   font-size: 0.75rem !important;
   color: var(--color-text-tertiary) !important;
 }
 
-.selectedSkills {
+.applyModal__selectedSkills {
   margin-bottom: 0.875rem !important;
   padding: 0.75rem !important;
   border-radius: 0.5rem !important;
@@ -790,20 +790,20 @@
   background: var(--color-bg-secondary) !important;
 }
 
-.selectedSkillsTitle {
+.applyModal__selectedSkillsTitle {
   margin-bottom: 0.5rem !important;
   font-size: 0.8125rem !important;
   font-weight: 500 !important;
   color: var(--color-text-secondary) !important;
 }
 
-.skillTags {
+.applyModal__skillTags {
   display: flex !important;
   flex-wrap: wrap !important;
   gap: 0.375rem !important;
 }
 
-.skillButton {
+.applyModal__skillButton {
   padding: 0.375rem 0.625rem !important;
   border: 1px solid var(--color-border) !important;
   border-radius: 0.375rem !important;
@@ -814,24 +814,24 @@
   transition: border-color 0.15s ease, color 0.15s ease !important;
 }
 
-.skillButton:hover:not(:disabled) {
+.applyModal__skillButton:hover:not(:disabled) {
   border-color: rgba(249, 115, 22, 0.3) !important;
   color: var(--color-text-primary) !important;
 }
 
-.skillButtonSelected {
+.applyModal__skillButtonSelected {
   border-color: rgba(249, 115, 22, 0.45) !important;
   background: rgba(249, 115, 22, 0.06) !important;
   color: var(--color-primary) !important;
 }
 
-.customSkillInput {
+.applyModal__customSkillInput {
   display: flex !important;
   gap: 0.5rem !important;
   align-items: center !important;
 }
 
-.skillInput {
+.applyModal__skillInput {
   flex: 1 !important;
   padding: 0.625rem 0.75rem !important;
   border: 1px solid var(--color-border) !important;
@@ -841,13 +841,13 @@
   font-size: 0.8125rem !important;
 }
 
-.skillInput:focus {
+.applyModal__skillInput:focus {
   outline: none !important;
   border-color: rgba(249, 115, 22, 0.35) !important;
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.08) !important;
 }
 
-.addSkillButton {
+.applyModal__addSkillButton {
   padding: 0.625rem 0.875rem !important;
   border: none !important;
   border-radius: 0.5rem !important;
@@ -858,11 +858,11 @@
   cursor: pointer !important;
 }
 
-.addSkillButton:hover:not(:disabled) {
+.applyModal__addSkillButton:hover:not(:disabled) {
   background: var(--color-primary-dark) !important;
 }
 
-.applyModalCancelButton {
+.applyModal__applyModalCancelButton {
   flex: none !important;
   width: auto !important;
   min-width: 5.5rem !important;
@@ -877,12 +877,12 @@
   transition: background 0.15s ease, color 0.15s ease !important;
 }
 
-.applyModalCancelButton:hover:not(:disabled) {
+.applyModal__applyModalCancelButton:hover:not(:disabled) {
   background: var(--color-bg-secondary) !important;
   color: var(--color-text-primary) !important;
 }
 
-.applyModalSubmitButton {
+.applyModal__applyModalSubmitButton {
   flex: none !important;
   width: auto !important;
   min-width: 8.5rem !important;
@@ -902,17 +902,17 @@
   transition: background 0.15s ease !important;
 }
 
-.applyModalSubmitButton:hover:not(:disabled) {
+.applyModal__applyModalSubmitButton:hover:not(:disabled) {
   background: var(--color-primary-dark) !important;
 }
 
-.applyModalSubmitButton:disabled,
-.applyModalCancelButton:disabled {
+.applyModal__applyModalSubmitButton:disabled,
+.applyModal__applyModalCancelButton:disabled {
   opacity: 0.5 !important;
   cursor: not-allowed !important;
 }
 
-.applyModalSpinner {
+.applyModal__applyModalSpinner {
   width: 1rem !important;
   height: 1rem !important;
   animation: spin 1s linear infinite !important;
@@ -925,20 +925,20 @@
 }
 
 /* Legacy class aliases used in markup */
-.applyModalAvailableSkills,
-.applyModalSelectedSkills,
-.applyModalSkillsGrid,
-.applyModalCustomSkill,
-.applyModalAddSkillButton {
+.applyModal__applyModalAvailableSkills,
+.applyModal__applyModalSelectedSkills,
+.applyModal__applyModalSkillsGrid,
+.applyModal__applyModalCustomSkill,
+.applyModal__applyModalAddSkillButton {
   /* styled via parent / skill components */
 }
 
-.roleOption,
-.roleHeader {
+.applyModal__roleOption,
+.applyModal__roleHeader {
   display: contents;
 }
 
-.noPositionsContainer {
+.applyModal__noPositionsContainer {
   padding: 0.75rem !important;
   text-align: center !important;
   color: var(--color-text-tertiary) !important;
@@ -950,22 +950,22 @@
     width: calc(100vw - 1.5rem) !important;
   }
 
-  .applyModalScroll,
-  .applyModalHeader,
-  .applyModalActions {
+  .applyModal__applyModalScroll,
+  .applyModal__applyModalHeader,
+  .applyModal__applyModalActions {
     padding-left: 1.25rem !important;
     padding-right: 1.25rem !important;
   }
 
-  .availabilitySegment {
+  .applyModal__availabilitySegment {
     flex-direction: column !important;
   }
 
-  .skillsAddRow {
+  .applyModal__skillsAddRow {
     flex-direction: column !important;
   }
 
-  .skillsAddBtn {
+  .applyModal__skillsAddBtn {
     width: 100% !important;
   }
 }

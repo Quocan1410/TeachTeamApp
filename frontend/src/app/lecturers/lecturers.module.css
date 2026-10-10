@@ -1,10 +1,10 @@
-.page {
+.lecturers__page {
   width: min(80rem, 100%);
   margin: 0 auto;
   padding: 6.75rem 1.5rem 4.5rem;
 }
 
-.stage {
+.lecturers__stage {
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 11rem;
@@ -20,19 +20,19 @@
     var(--color-bg-secondary);
 }
 
-.intro {
+.lecturers__intro {
   position: relative;
   z-index: 1;
   min-width: 0;
 }
 
-.titleRow {
+.lecturers__titleRow {
   display: flex;
   align-items: center;
   gap: 0.7rem;
 }
 
-.title {
+.lecturers__title {
   margin: 0;
   color: var(--color-text-primary);
   font-size: 2.15rem;
@@ -40,14 +40,14 @@
   letter-spacing: -0.04em;
 }
 
-.ornament {
+.lecturers__ornament {
   display: inline-flex;
   align-items: center;
   gap: 0.28rem;
   padding-top: 0.15rem;
 }
 
-.gem {
+.lecturers__gem {
   width: 0.46rem;
   height: 0.46rem;
   border-radius: 0.07rem;
@@ -55,23 +55,23 @@
   transform: rotate(45deg);
 }
 
-.dotBlue,
-.dotGreen {
+.lecturers__dotBlue,
+.lecturers__dotGreen {
   width: 0.3rem;
   height: 0.3rem;
   border-radius: 999px;
   opacity: 0.8;
 }
 
-.dotBlue {
+.lecturers__dotBlue {
   background: #60a5fa;
 }
 
-.dotGreen {
+.lecturers__dotGreen {
   background: #34d399;
 }
 
-.line {
+.lecturers__line {
   margin: 0.45rem 0 0;
   max-width: 36rem;
   color: var(--color-text-secondary);
@@ -79,7 +79,7 @@
   line-height: 1.45;
 }
 
-.portrait {
+.lecturers__portrait {
   position: relative;
   z-index: 1;
   display: flex;
@@ -88,7 +88,7 @@
   height: 9.4rem;
 }
 
-.halo {
+.lecturers__halo {
   position: absolute;
   bottom: 0.15rem;
   width: 7.4rem;
@@ -97,7 +97,7 @@
   background: radial-gradient(circle, rgba(249, 115, 22, 0.34), rgba(249, 115, 22, 0.08) 62%, transparent 70%);
 }
 
-.sit {
+.lecturers__sit {
   position: relative;
   z-index: 1;
   display: block;
@@ -105,7 +105,7 @@
   height: 8.8rem;
 }
 
-.search {
+.lecturers__search {
   display: flex;
   align-items: center;
   gap: 0.65rem;
@@ -119,19 +119,19 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.search:focus-within {
+.lecturers__search:focus-within {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.16);
 }
 
-.searchIcon {
+.lecturers__searchIcon {
   width: 1.05rem;
   height: 1.05rem;
   flex-shrink: 0;
   color: var(--color-text-secondary);
 }
 
-.searchInput {
+.lecturers__searchInput {
   flex: 1;
   min-width: 0;
   border: none;
@@ -141,7 +141,7 @@
   outline: none;
 }
 
-.miss {
+.lecturers__miss {
   display: flex;
   align-items: center;
   gap: 1.15rem;
@@ -153,26 +153,26 @@
   text-align: left;
 }
 
-.missMascot {
+.lecturers__missMascot {
   width: 5.2rem;
   height: auto;
   flex-shrink: 0;
 }
 
-.missTitle {
+.lecturers__missTitle {
   margin: 0;
   color: var(--color-text-primary);
   font-size: 1.05rem;
   font-weight: 700;
 }
 
-.missText {
+.lecturers__missText {
   margin: 0.35rem 0 0;
   color: var(--color-text-secondary);
   font-size: 0.9rem;
 }
 
-.missClear {
+.lecturers__missClear {
   margin-top: 0.85rem;
   padding: 0.4rem 0.9rem;
   border: 1px solid rgba(249, 115, 22, 0.4);
@@ -184,11 +184,11 @@
   cursor: pointer;
 }
 
-.missClear:hover {
+.lecturers__missClear:hover {
   background: rgba(249, 115, 22, 0.1);
 }
 
-.pager {
+.lecturers__pager {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -196,7 +196,7 @@
   margin-top: 1.25rem;
 }
 
-.pagerButton {
+.lecturers__pagerButton {
   padding: 0.4rem 0.85rem;
   border: 1px solid var(--color-border);
   border-radius: 999px;
@@ -206,62 +206,62 @@
   cursor: pointer;
 }
 
-.pagerButton:hover:not(:disabled) {
+.lecturers__pagerButton:hover:not(:disabled) {
   border-color: rgba(249, 115, 22, 0.55);
   color: var(--color-primary);
 }
 
-.pagerButton:disabled {
+.lecturers__pagerButton:disabled {
   opacity: 0.4;
   cursor: default;
 }
 
-.pagerStatus {
+.lecturers__pagerStatus {
   color: var(--color-text-secondary);
   font-size: 0.875rem;
 }
 
-.skelSit {
+.lecturers__skelSit {
   width: 7.4rem;
   height: 8.8rem;
   justify-self: center;
   border-radius: 999px;
 }
 
-.skelTitle {
+.lecturers__skelTitle {
   width: 12rem;
   height: 2.15rem;
 }
 
-.skelLine {
+.lecturers__skelLine {
   width: min(22rem, 80%);
   height: 0.95rem;
   margin-top: 0.55rem;
 }
 
-.skelSearch {
+.lecturers__skelSearch {
   width: min(32rem, 100%);
   height: 3.15rem;
   margin-top: 1rem;
   border-radius: 0.95rem;
 }
 
-.skel {
+.lecturers__skel {
   border-radius: 0.5rem;
   background: rgba(255, 255, 255, 0.06);
   animation: pulse 1.4s ease-in-out infinite;
 }
 
-.skelCard {
+.lecturers__skelCard {
   height: 10.6rem;
   border-radius: 1.15rem;
 }
 
-.skel.skelSit {
+.lecturers__skel.lecturers--skelSit {
   border-radius: 999px;
 }
 
-.skel.skelSearch {
+.lecturers__skel.lecturers--skelSearch {
   border-radius: 0.95rem;
 }
 
@@ -276,42 +276,42 @@
 }
 
 @media (max-width: 760px) {
-  .stage {
+  .lecturers__stage {
     grid-template-columns: 1fr;
     justify-items: center;
     text-align: center;
   }
 
-  .line {
+  .lecturers__line {
     margin-left: auto;
     margin-right: auto;
   }
 
-  .search {
+  .lecturers__search {
     width: 100%;
     margin-left: auto;
     margin-right: auto;
   }
 
-  .portrait {
+  .lecturers__portrait {
     order: -1;
     height: 7.4rem;
   }
 
-  .sit {
+  .lecturers__sit {
     height: 6.6rem;
   }
 
-  .halo {
+  .lecturers__halo {
     width: 5.6rem;
     height: 5.6rem;
   }
 
-  .titleRow {
+  .lecturers__titleRow {
     justify-content: center;
   }
 
-  .miss {
+  .lecturers__miss {
     flex-direction: column;
     text-align: center;
   }

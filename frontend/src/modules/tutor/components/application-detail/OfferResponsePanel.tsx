@@ -32,14 +32,14 @@ const OfferResponsePanel: React.FC<OfferResponsePanelProps> = ({
   };
 
   return (
-    <section className={styles.panel} aria-label="Respond to offer">
-      <h3 className={styles.title}>You have been selected</h3>
-      <p className={styles.hint}>
+    <section className={styles.offerResponsePanel__panel} aria-label="Respond to offer">
+      <h3 className={styles.offerResponsePanel__title}>You have been selected</h3>
+      <p className={styles.offerResponsePanel__hint}>
         Confirm whether you accept this offer and include a message for the
         lecturer.
       </p>
       <textarea
-        className={styles.input}
+        className={styles.offerResponsePanel__input}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Share your availability, questions, or confirmation…"
@@ -47,10 +47,10 @@ const OfferResponsePanel: React.FC<OfferResponsePanelProps> = ({
         disabled={busy}
         rows={3}
       />
-      <div className={styles.actions}>
+      <div className={styles.offerResponsePanel__actions}>
         <button
           type="button"
-          className={`${styles.btn} ${styles.btnAccept}`}
+          className={`${styles.offerResponsePanel__btn} ${styles.offerResponsePanel__btnAccept}`}
           onClick={() => void handleSubmit("accept")}
           disabled={!canSubmit || pendingDecision === "decline"}
         >
@@ -58,7 +58,7 @@ const OfferResponsePanel: React.FC<OfferResponsePanelProps> = ({
         </button>
         <button
           type="button"
-          className={`${styles.btn} ${styles.btnDecline}`}
+          className={`${styles.offerResponsePanel__btn} ${styles.offerResponsePanel__btnDecline}`}
           onClick={() => void handleSubmit("decline")}
           disabled={!canSubmit || pendingDecision === "accept"}
         >

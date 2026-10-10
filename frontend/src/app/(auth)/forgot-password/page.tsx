@@ -56,10 +56,10 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className={styles.page}>
-      <span className={styles.orbA} aria-hidden="true" />
-      <span className={styles.orbB} aria-hidden="true" />
-      <div className={styles.stage}>
+    <div className={styles.forgotPassword__page}>
+      <span className={styles.forgotPassword__orbA} aria-hidden="true" />
+      <span className={styles.forgotPassword__orbB} aria-hidden="true" />
+      <div className={styles.forgotPassword__stage}>
         {mode === "later" ? (
           <ResetLaterCard
             onBack={() => {
@@ -68,71 +68,71 @@ export default function ForgotPasswordPage() {
             }}
           />
         ) : (
-          <div className={styles.laterShell}>
-            <div className={styles.laterMascotSeat} aria-hidden="true">
+          <div className={styles.forgotPassword__laterShell}>
+            <div className={styles.forgotPassword__laterMascotSeat} aria-hidden="true">
               <Image
                 src="/mascot/mascot-3.png"
                 alt=""
                 width={377}
                 height={661}
                 priority
-                className={styles.laterMascot}
+                className={styles.forgotPassword__laterMascot}
               />
             </div>
-            <div className={styles.laterCard}>
-              <h1 className={styles.laterTitle}>Reset Password</h1>
-              <p className={styles.laterText}>Choose how you want to get back in.</p>
-              <div className={styles.options}>
+            <div className={styles.forgotPassword__laterCard}>
+              <h1 className={styles.forgotPassword__laterTitle}>Reset Password</h1>
+              <p className={styles.forgotPassword__laterText}>Choose how you want to get back in.</p>
+              <div className={styles.forgotPassword__options}>
                 <button
                   type="button"
-                  className={styles.option}
+                  className={styles.forgotPassword__option}
                   disabled={busy}
                   onClick={recoverWithPasskey}
                 >
-                  <span className={styles.optionIcon} aria-hidden="true">
+                  <span className={styles.forgotPassword__optionIcon} aria-hidden="true">
                     <FingerPrintIcon />
                   </span>
-                  <span className={styles.optionCopy}>
-                    <span className={styles.optionTitle}>Passkey</span>
-                    <span className={styles.optionHint}>
+                  <span className={styles.forgotPassword__optionCopy}>
+                    <span className={styles.forgotPassword__optionTitle}>Passkey</span>
+                    <span className={styles.forgotPassword__optionHint}>
                       {busy ? "Waiting…" : "Approve on this device"}
                     </span>
                   </span>
-                  <ChevronRightIcon className={styles.optionChevron} />
+                  <ChevronRightIcon className={styles.forgotPassword__optionChevron} />
                 </button>
                 <button
                   type="button"
-                  className={styles.option}
+                  className={styles.forgotPassword__option}
                   disabled={busy}
                   onClick={() => setMode("later")}
                 >
-                  <span className={styles.optionIcon} aria-hidden="true">
+                  <span className={styles.forgotPassword__optionIcon} aria-hidden="true">
                     <DevicePhoneMobileIcon />
                   </span>
-                  <span className={styles.optionCopy}>
-                    <span className={styles.optionTitle}>Authenticator</span>
-                    <span className={styles.optionHint}>OTP 2FA · Coming later</span>
+                  <span className={styles.forgotPassword__optionCopy}>
+                    <span className={styles.forgotPassword__optionTitle}>Authenticator</span>
+                    <span className={styles.forgotPassword__optionHint}>OTP 2FA · Coming later</span>
                   </span>
-                  <ChevronRightIcon className={styles.optionChevron} />
+                  <ChevronRightIcon className={styles.forgotPassword__optionChevron} />
                 </button>
                 <button
                   type="button"
-                  className={styles.option}
+                  className={styles.forgotPassword__option}
                   disabled={busy}
                   onClick={() => setMode("later")}
                 >
-                  <span className={styles.optionIcon} aria-hidden="true">
+                  <span className={styles.forgotPassword__optionIcon} aria-hidden="true">
                     <EnvelopeIcon />
                   </span>
-                  <span className={styles.optionCopy}>
-                    <span className={styles.optionTitle}>Email</span>
-                    <span className={styles.optionHint}>Coming later</span>
+                  <span className={styles.forgotPassword__optionCopy}>
+                    <span className={styles.forgotPassword__optionTitle}>Email</span>
+                    <span className={styles.forgotPassword__optionHint}>Coming later</span>
                   </span>
-                  <ChevronRightIcon className={styles.optionChevron} />
+                  <ChevronRightIcon className={styles.forgotPassword__optionChevron} />
                 </button>
               </div>
-              <Link href="/signin" className={styles.returnLink}>
-                <ArrowLeftIcon className={styles.backArrow} aria-hidden="true" />
+              <Link href="/signin" className={styles.forgotPassword__returnLink}>
+                <ArrowLeftIcon className={styles.forgotPassword__backArrow} aria-hidden="true" />
                 Back to sign in
               </Link>
             </div>

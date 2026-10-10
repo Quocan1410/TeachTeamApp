@@ -9,20 +9,20 @@ type ResetLaterCardProps = {
 
 export default function ResetLaterCard({ onBack }: ResetLaterCardProps) {
   return (
-    <div className={styles.laterPlain}>
-      <div className={styles.laterCard}>
-        <div className={styles.laterMark} aria-hidden="true">
+    <div className={styles.forgotPassword__laterPlain}>
+      <div className={styles.forgotPassword__laterCard}>
+        <div className={styles.forgotPassword__laterMark} aria-hidden="true">
           <span />
           <span />
           <span />
         </div>
-        <h1 className={styles.laterSorry}>Sorry</h1>
-        <p className={styles.laterText}>
+        <h1 className={styles.forgotPassword__laterSorry}>Sorry</h1>
+        <p className={styles.forgotPassword__laterText}>
           This feature will be implemented later.
-          <span className={styles.laterNote}>We know that&apos;s a little disappointing.</span>
+          <span className={styles.forgotPassword__laterNote}>We know that&apos;s a little disappointing.</span>
         </p>
-        <button type="button" className={styles.laterQuiet} onClick={onBack}>
-          <ArrowLeftIcon className={styles.backArrow} aria-hidden="true" />
+        <button type="button" className={styles.forgotPassword__laterQuiet} onClick={onBack}>
+          <ArrowLeftIcon className={styles.forgotPassword__backArrow} aria-hidden="true" />
           Back
         </button>
       </div>

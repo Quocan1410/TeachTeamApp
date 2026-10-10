@@ -64,94 +64,94 @@ html[data-theme="dark"] body::-webkit-scrollbar-thumb {
 }
 
 /* Nested scroll areas (list panes, panels, etc.) */
-.thinOrangeScroll {
+.scrollbar__thin {
   scrollbar-width: thin;
   scrollbar-color: rgba(249, 115, 22, 0.45) transparent;
 }
 
-.thinOrangeScroll::-webkit-scrollbar {
+.scrollbar__thin::-webkit-scrollbar {
   width: 0.3125rem;
   height: 0.3125rem;
 }
 
-.thinOrangeScroll::-webkit-scrollbar-track {
+.scrollbar__thin::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.thinOrangeScroll::-webkit-scrollbar-thumb {
+.scrollbar__thin::-webkit-scrollbar-thumb {
   border-radius: 62.4375rem;
   background-color: rgba(249, 115, 22, 0.45);
 }
 
-.thinOrangeScroll::-webkit-scrollbar-thumb:hover {
+.scrollbar__thin::-webkit-scrollbar-thumb:hover {
   background-color: rgba(249, 115, 22, 0.65);
 }
 
-html.dark .thinOrangeScroll,
-html[data-theme="dark"] .thinOrangeScroll {
+html.dark .scrollbar__thin,
+html[data-theme="dark"] .scrollbar__thin {
   scrollbar-color: rgba(251, 146, 60, 0.55) transparent;
 }
 
-html.dark .thinOrangeScroll::-webkit-scrollbar-thumb,
-html[data-theme="dark"] .thinOrangeScroll::-webkit-scrollbar-thumb {
+html.dark .scrollbar__thin::-webkit-scrollbar-thumb,
+html[data-theme="dark"] .scrollbar__thin::-webkit-scrollbar-thumb {
   background-color: rgba(251, 146, 60, 0.55);
 }
 
-html.dark .thinOrangeScroll::-webkit-scrollbar-thumb:hover,
-html[data-theme="dark"] .thinOrangeScroll::-webkit-scrollbar-thumb:hover {
+html.dark .scrollbar__thin::-webkit-scrollbar-thumb:hover,
+html[data-theme="dark"] .scrollbar__thin::-webkit-scrollbar-thumb:hover {
   background-color: rgba(251, 146, 60, 0.75);
 }
 
-/* Extra-thin variant (application list) — use alone, not with .thinOrangeScroll */
-.thinOrangeScrollNarrow {
+/* Extra-thin variant (application list) — use alone, not with .scrollbar__thin */
+.scrollbar__narrow {
   scrollbar-width: thin;
   scrollbar-color: rgba(249, 115, 22, 0.32) transparent;
 }
 
-.thinOrangeScrollNarrow::-webkit-scrollbar {
+.scrollbar__narrow::-webkit-scrollbar {
   width: 0.0625rem;
   height: 0.0625rem;
 }
 
-.thinOrangeScrollNarrow::-webkit-scrollbar-button,
-.thinOrangeScrollNarrow::-webkit-scrollbar-corner {
+.scrollbar__narrow::-webkit-scrollbar-button,
+.scrollbar__narrow::-webkit-scrollbar-corner {
   display: none;
   width: 0;
   height: 0;
 }
 
-.thinOrangeScrollNarrow::-webkit-scrollbar-track {
+.scrollbar__narrow::-webkit-scrollbar-track {
   background: transparent;
   margin: 0.125rem 0;
 }
 
-.thinOrangeScrollNarrow::-webkit-scrollbar-thumb {
+.scrollbar__narrow::-webkit-scrollbar-thumb {
   border-radius: 62.4375rem;
   background-color: rgba(249, 115, 22, 0.35);
   border: none;
 }
 
-.thinOrangeScrollNarrow::-webkit-scrollbar-thumb:hover {
+.scrollbar__narrow::-webkit-scrollbar-thumb:hover {
   background-color: rgba(249, 115, 22, 0.5);
 }
 
 /* If both classes are present, narrow wins over default 0.3125rem */
-.thinOrangeScroll.thinOrangeScrollNarrow::-webkit-scrollbar {
+.scrollbar__thin.scrollbar__narrow::-webkit-scrollbar {
   width: 0.0625rem;
   height: 0.0625rem;
 }
 
-html.dark .thinOrangeScrollNarrow,
-html[data-theme="dark"] .thinOrangeScrollNarrow {
+html.dark .scrollbar__narrow,
+html[data-theme="dark"] .scrollbar__narrow {
   scrollbar-color: rgba(251, 146, 60, 0.45) transparent;
 }
 
-html.dark .thinOrangeScrollNarrow::-webkit-scrollbar-thumb,
-html[data-theme="dark"] .thinOrangeScrollNarrow::-webkit-scrollbar-thumb {
+html.dark .scrollbar__narrow::-webkit-scrollbar-thumb,
+html[data-theme="dark"] .scrollbar__narrow::-webkit-scrollbar-thumb {
   background-color: rgba(251, 146, 60, 0.45);
 }
 
-html.dark .thinOrangeScrollNarrow::-webkit-scrollbar-thumb:hover,
-html[data-theme="dark"] .thinOrangeScrollNarrow::-webkit-scrollbar-thumb:hover {
+html.dark .scrollbar__narrow::-webkit-scrollbar-thumb:hover,
+html[data-theme="dark"] .scrollbar__narrow::-webkit-scrollbar-thumb:hover {
   background-color: rgba(251, 146, 60, 0.65);
 }

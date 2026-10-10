@@ -16,13 +16,13 @@
   text-overflow: ellipsis;
 }
 
-.dark .skillTag {
+.skillTag__dark .skillTag {
   background-color: rgba(249, 115, 22, 0.15) !important;
   color: rgb(249, 115, 22) !important;
   border: 1px solid rgba(249, 115, 22, 0.25) !important;
 }
 
-.skillTagRemove {
+.skillTag__skillTagRemove {
   margin-left: 0.35rem;
   width: 1rem;
   height: 1rem;
@@ -36,10 +36,10 @@
   color: rgb(249, 115, 22);
 }
 
-.dark .skillTagRemove {
+.skillTag__dark .skillTag__skillTagRemove {
   color: rgb(249, 115, 22);
 }
 
-.skillTagRemove:hover {
+.skillTag__skillTagRemove:hover {
   color: #ef4444; /* Red-500 for remove action */
 }

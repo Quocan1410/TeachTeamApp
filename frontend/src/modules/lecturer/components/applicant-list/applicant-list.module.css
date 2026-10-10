@@ -1,11 +1,11 @@
-.applicantListContainer {
+.applicantList__applicantListContainer {
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden; /* hide horizontal scrollbar */
   max-height: 600px; /* Or as needed */
 }
 
-.emptyState {
+.applicantList__emptyState {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,13 +14,13 @@
   text-align: center;
 }
 
-.emptyIcon {
+.applicantList__emptyIcon {
   color: var(--color-text-secondary);
   opacity: 0.5;
   margin-bottom: 1rem;
 }
 
-.emptyText {
+.applicantList__emptyText {
   color: var(--color-text-secondary);
   font-style: italic;
 }
@@ -31,7 +31,7 @@
   gap: 1.25rem;
 }
 
-.applicantItem {
+.applicantList__applicantItem {
   display: flex;
   align-items: flex-start;
   margin: 0.2rem;
@@ -48,17 +48,17 @@
   box-sizing: border-box;
 }
 
-.applicantItem:hover {
+.applicantList__applicantItem:hover {
   background-color: rgba(249, 115, 22, 0.05);
   border-color: rgba(249, 115, 22, 0.2);
 }
 
-.applicantItem.selected {
+.applicantList__applicantItem.applicantList--selected {
   background-color: rgba(249, 115, 22, 0.1);
   border-color: var(--color-primary);
 }
 
-.applicantAvatar {
+.applicantList__applicantAvatar {
   width: 56px;
   height: 56px;
   min-width: 56px;
@@ -81,23 +81,23 @@
   overflow: hidden;
 }
 
-.applicantAvatarHasImage {
+.applicantList__applicantAvatarHasImage {
   background-color: var(--color-bg-secondary);
 }
 
-.applicantAvatarPhoto {
+.applicantList__applicantAvatarPhoto {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
 
-.applicantInfo {
+.applicantList__applicantInfo {
   flex: 1;
   min-width: 0; /* Prevents overflow issues with flex items */
 }
 
-.applicantName {
+.applicantList__applicantName {
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 0.25rem;
@@ -111,7 +111,7 @@
 }
 
 /* Variant for large applicant names in detail views */
-.applicantName.large {
+.applicantList__applicantName.applicantList--large {
   font-size: 1.5rem;
   font-weight: 700;
   white-space: normal;
@@ -120,11 +120,11 @@
 }
 
 /* Dark mode support for applicant names */
-.dark .applicantName {
+.applicantList__dark .applicantList__applicantName {
   color: #ffffff;
 }
 
-.applicantDetails {
+.applicantList__applicantDetails {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
@@ -132,26 +132,26 @@
   overflow: hidden; /* prevent content overflow */
 }
 
-.detailItem {
+.applicantList__detailItem {
   display: flex;
   align-items: center;
   color: var(--color-text-secondary);
   font-size: 0.875rem;
 }
 
-.detailIcon {
+.applicantList__detailIcon {
   width: 14px;
   height: 14px;
   margin-right: 0.25rem;
 }
 
-.applicantSkills {
+.applicantList__applicantSkills {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-.skillBadge {
+.applicantList__skillBadge {
   background-color: rgba(249, 115, 22, 0.1);
   color: var(--color-primary);
   font-size: 0.75rem;
@@ -160,13 +160,13 @@
   white-space: nowrap;
 }
 
-.moreSkills {
+.applicantList__moreSkills {
   color: var(--color-text-secondary);
   font-size: 0.75rem;
 }
 
-.applicantSelectedIconContainer {
-  /* Renamed from .applicant-selected for clarity */
+.applicantList__applicantSelectedIconContainer {
+  /* Renamed from .applicantList__applicant-selected for clarity */
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
@@ -174,14 +174,14 @@
   color: #10b981; /* Tailwind green-500 */
 }
 
-.statusIcon {
+.applicantList__statusIcon {
   /* Generic class for selected/ranked icons */
   width: 18px;
   height: 18px;
 }
 
-.applicantRankedIconContainer {
-  /* Renamed from .applicant-ranked */
+.applicantList__applicantRankedIconContainer {
+  /* Renamed from .applicantList__applicant-ranked */
   position: absolute;
   top: 0.75rem;
   right: 2.5rem; /* Position it to the left of the selected icon */
@@ -189,15 +189,15 @@
   color: #8b5cf6; /* Purple color for the crown */
 }
 
-.rankedIconItself {
-  /* Renamed from .ranked-icon */
+.applicantList__rankedIconItself {
+  /* Renamed from .applicantList__ranked-icon */
   width: 18px;
   height: 18px;
   fill: currentColor;
   stroke: none;
 }
 
-.appliedDate {
+.applicantList__appliedDate {
   position: absolute;
   bottom: 1rem;
   right: 1rem;
@@ -206,7 +206,7 @@
 }
 
 /* New styles for role and course information */
-.roleInfo {
+.applicantList__roleInfo {
   display: flex;
   align-items: center;
   color: var(--color-text-secondary);
@@ -217,20 +217,20 @@
   font-weight: 500;
 }
 
-.roleIcon {
+.applicantList__roleIcon {
   width: 14px;
   height: 14px;
   margin-right: 0.5rem;
   color: var(--color-primary);
 }
 
-.coursesList {
+.applicantList__coursesList {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-.courseCode {
+.applicantList__courseCode {
   background-color: rgba(249, 115, 22, 0.1);
   color: var(--color-primary);
   font-size: 0.75rem;
@@ -240,31 +240,31 @@
   border: 1px solid rgba(249, 115, 22, 0.2);
 }
 
-.moreCoursesIndicator {
+.applicantList__moreCoursesIndicator {
   color: var(--color-text-secondary);
   font-size: 0.75rem;
   font-style: italic;
 }
 
 /* Dark mode adjustments */
-.dark .applicantItem {
+.applicantList__dark .applicantList__applicantItem {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-.dark .applicantItem:hover {
+.applicantList__dark .applicantList__applicantItem:hover {
   background-color: rgba(249, 115, 22, 0.1);
 }
 
-.dark .applicantItem.selected {
+.applicantList__dark .applicantList__applicantItem.applicantList--selected {
   background-color: rgba(249, 115, 22, 0.15);
 }
 
-.dark .skillBadge {
+.applicantList__dark .applicantList__skillBadge {
   background-color: rgba(249, 115, 22, 0.2);
 }
 
 /* Panel wrapper styles moved from dashboard */
-.applicantListPanel {
+.applicantList__applicantListPanel {
   background-color: var(--color-bg-primary);
   border-radius: 1rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -273,7 +273,7 @@
   height: 100%;
 }
 
-.panelTitle {
+.applicantList__panelTitle {
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-text-primary);
@@ -283,29 +283,29 @@
 }
 
 /* Dark mode for panel styles */
-.dark .applicantListPanel {
+.applicantList__dark .applicantList__applicantListPanel {
   background-color: var(--color-bg-primary);
   border-color: var(--color-border);
 }
 
-.dark .panelTitle {
+.applicantList__dark .applicantList__panelTitle {
   color: var(--color-text-primary);
 }
 
 /* Blocked candidate — muted styling; Remove button always visible */
-.applicantItem.blocked {
+.applicantList__applicantItem.applicantList--blocked {
   opacity: 0.78;
   background-color: var(--color-bg-secondary);
   border-color: rgba(148, 163, 184, 0.22);
   position: relative;
 }
 
-.applicantItem.blocked:hover {
+.applicantList__applicantItem.applicantList--blocked:hover {
   background-color: rgba(148, 163, 184, 0.08);
   border-color: rgba(148, 163, 184, 0.32);
 }
 
-.removeBlockedButton {
+.applicantList__removeBlockedButton {
   position: absolute;
   top: 0.625rem;
   right: 0.625rem;
@@ -327,54 +327,54 @@
   transform: translateZ(0);
 }
 
-.removeBlockedButton:hover {
+.applicantList__removeBlockedButton:hover {
   background: rgba(239, 68, 68, 0.12);
   color: #dc2626;
   border-color: rgba(239, 68, 68, 0.35);
 }
 
-.removeBlockedButton:active {
+.applicantList__removeBlockedButton:active {
   transform: translateZ(0) scale(0.98);
 }
 
-:global(.dark) .removeBlockedButton:hover {
+:global(.dark) .applicantList__removeBlockedButton:hover {
   color: #f87171;
 }
 
-.applicantItem.blocked .applicantInfo {
+.applicantList__applicantItem.applicantList--blocked .applicantList__applicantInfo {
   padding-right: 4.75rem;
 }
 
-.applicantItem.blocked .applicantName {
+.applicantList__applicantItem.applicantList--blocked .applicantList__applicantName {
   color: var(--color-text-secondary);
 }
 
-.applicantItem.blocked .applicantAvatar {
+.applicantList__applicantItem.applicantList--blocked .applicantList__applicantAvatar {
   opacity: 0.85;
 }
 
-.applicantItem.blocked .skillBadge,
-.applicantItem.blocked .roleInfo,
-.applicantItem.blocked .courseCode {
+.applicantList__applicantItem.applicantList--blocked .applicantList__skillBadge,
+.applicantList__applicantItem.applicantList--blocked .applicantList__roleInfo,
+.applicantList__applicantItem.applicantList--blocked .applicantList__courseCode {
   opacity: 0.85;
 }
 
-:global(.dark) .applicantItem.blocked {
+:global(.dark) .applicantList__applicantItem.applicantList--blocked {
   background-color: rgba(255, 255, 255, 0.03);
   border-color: rgba(255, 255, 255, 0.08);
 }
 
-:global(.dark) .applicantItem.blocked:hover {
+:global(.dark) .applicantList__applicantItem.applicantList--blocked:hover {
   background-color: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.12);
 }
 
 /* Dark mode for new elements */
-.dark .roleInfo {
+.applicantList__dark .applicantList__roleInfo {
   background-color: rgba(249, 115, 22, 0.2);
 }
 
-.dark .courseCode {
+.applicantList__dark .applicantList__courseCode {
   background-color: rgba(249, 115, 22, 0.2);
   border-color: rgba(249, 115, 22, 0.3);
 }

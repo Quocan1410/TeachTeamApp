@@ -1,6 +1,6 @@
 /* Account Status Modal CSS - Matching Apply Modal Design */
 
-.accountStatusBackdrop {
+.accountStatusModal__accountStatusBackdrop {
   background-color: rgba(255, 255, 255, 0.8) !important;
   backdrop-filter: blur(8px) !important;
   z-index: 50 !important;
@@ -16,7 +16,7 @@
   animation: fadeIn 0.3s ease-out !important;
 }
 
-:global(.dark) .accountStatusBackdrop {
+:global(.dark) .accountStatusModal__accountStatusBackdrop {
   background-color: rgba(0, 0, 0, 0.8) !important;
 }
 
@@ -60,30 +60,30 @@
 }
 
 /* Header */
-.accountStatusHeader {
+.accountStatusModal__accountStatusHeader {
   border-bottom: 1px solid #e5e7eb !important;
   padding: 1.5rem 1.5rem 1rem !important;
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
   position: relative !important;
 }
 
-:global(.dark) .accountStatusHeader {
+:global(.dark) .accountStatusModal__accountStatusHeader {
   border-bottom: 1px solid #374151 !important;
   background: linear-gradient(135deg, #1f2937 0%, #111827 100%) !important;
 }
 
-.accountStatusHeaderContent {
+.accountStatusModal__accountStatusHeaderContent {
   display: flex !important;
   justify-content: space-between !important;
   align-items: flex-start !important;
   gap: 1rem !important;
 }
 
-.headerTitleSection {
+.accountStatusModal__headerTitleSection {
   flex: 1 !important;
 }
 
-.accountStatusTitle {
+.accountStatusModal__accountStatusTitle {
   color: #111827 !important;
   font-size: 1.375rem !important;
   font-weight: 700 !important;
@@ -91,23 +91,23 @@
   line-height: 1.3 !important;
 }
 
-:global(.dark) .accountStatusTitle {
+:global(.dark) .accountStatusModal__accountStatusTitle {
   color: #f3f4f6 !important;
 }
 
-.headerSubtitle {
+.accountStatusModal__headerSubtitle {
   color: #6b7280 !important;
   font-size: 0.8rem !important;
   margin: 0 !important;
   font-weight: 500 !important;
 }
 
-:global(.dark) .headerSubtitle {
+:global(.dark) .accountStatusModal__headerSubtitle {
   color: #9ca3af !important;
 }
 
 /* Enhanced Close Button with X icon and hover effects - Round shape */
-.accountStatusClose {
+.accountStatusModal__accountStatusClose {
   color: #6b7280 !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   background: white !important;
@@ -126,13 +126,13 @@
   flex-shrink: 0 !important;
 }
 
-:global(.dark) .accountStatusClose {
+:global(.dark) .accountStatusModal__accountStatusClose {
   color: #9ca3af !important;
   background: #374151 !important;
   border-color: #4b5563 !important;
 }
 
-.accountStatusClose::before {
+.accountStatusModal__accountStatusClose::before {
   content: "" !important;
   position: absolute !important;
   top: 0 !important;
@@ -145,11 +145,11 @@
   transition: transform 0.2s ease !important;
 }
 
-.accountStatusClose:hover::before {
+.accountStatusModal__accountStatusClose:hover::before {
   transform: scale(1) !important;
 }
 
-.accountStatusClose:hover {
+.accountStatusModal__accountStatusClose:hover {
   color: #ef4444 !important;
   background-color: #fef2f2 !important;
   border-color: #f87171 !important;
@@ -157,13 +157,13 @@
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2) !important;
 }
 
-:global(.dark) .accountStatusClose:hover {
+:global(.dark) .accountStatusModal__accountStatusClose:hover {
   color: #f87171 !important;
   background-color: #450a0a !important;
   border-color: #7f1d1d !important;
 }
 
-.accountStatusClose svg {
+.accountStatusModal__accountStatusClose svg {
   width: 18px !important;
   height: 18px !important;
   position: relative !important;
@@ -172,11 +172,11 @@
 }
 
 /* Content */
-.accountStatusContent {
+.accountStatusModal__accountStatusContent {
   padding: 1.5rem !important;
 }
 
-.statusInfoCard {
+.accountStatusModal__statusInfoCard {
   background: transparent !important;
   color: inherit !important;
   border: none !important;
@@ -188,16 +188,16 @@
   margin-bottom: 1.5rem !important;
 }
 
-.statusInfoCard:hover {
+.accountStatusModal__statusInfoCard:hover {
   transform: none !important;
   box-shadow: none !important;
 }
 
-.iconContainer {
+.accountStatusModal__iconContainer {
   margin-bottom: 1rem !important;
 }
 
-.icon {
+.accountStatusModal__icon {
   font-size: 2rem !important;
   display: block !important;
   margin: 0 auto !important;
@@ -206,29 +206,29 @@
   height: 32px !important;
 }
 
-.icon svg {
+.accountStatusModal__icon svg {
   display: block !important;
   margin: 0 auto !important;
 }
 
 /* Blocked icon styling */
-.blockedIcon {
+.accountStatusModal__blockedIcon {
   stroke: #ef4444 !important;
   color: #ef4444 !important;
 }
 
-.messageSection {
+.accountStatusModal__messageSection {
   text-align: center !important;
 }
 
-.userName {
+.accountStatusModal__userName {
   font-size: 1.1rem !important;
   font-weight: 600 !important;
   margin: 0 0 1rem 0 !important;
   opacity: 0.95 !important;
 }
 
-.message {
+.accountStatusModal__message {
   font-size: 0.9rem !important;
   line-height: 1.5 !important;
   margin: 0 !important;
@@ -236,18 +236,18 @@
 }
 
 /* Actions */
-.accountStatusActions {
+.accountStatusModal__accountStatusActions {
   padding-top: 1rem !important;
   border-top: 1px solid #e5e7eb !important;
   display: flex !important;
   justify-content: center !important;
 }
 
-:global(.dark) .accountStatusActions {
+:global(.dark) .accountStatusModal__accountStatusActions {
   border-top-color: #374151 !important;
 }
 
-.continueButton {
+.accountStatusModal__continueButton {
   background: var(--accent-color, #f97316) !important;
   color: white !important;
   border: none !important;
@@ -263,7 +263,7 @@
   overflow: hidden !important;
 }
 
-.continueButton::before {
+.accountStatusModal__continueButton::before {
   content: "" !important;
   position: absolute !important;
   top: 0 !important;
@@ -279,34 +279,34 @@
   transition: transform 0.3s ease !important;
 }
 
-.continueButton:hover::before {
+.accountStatusModal__continueButton:hover::before {
   transform: translateX(0) !important;
 }
 
-.continueButton:hover {
+.accountStatusModal__continueButton:hover {
   background: var(--accent-hover, #ea580c) !important;
   transform: translateY(-1px) !important;
   box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3) !important;
 }
 
-.continueButton:active {
+.accountStatusModal__continueButton:active {
   transform: translateY(0) !important;
 }
 
-.continueButton:focus {
+.accountStatusModal__continueButton:focus {
   outline: 2px solid var(--accent-color, #f97316) !important;
   outline-offset: 2px !important;
 }
 
 /* Dark mode adjustments */
-:global(.dark) .statusInfoCard {
+:global(.dark) .accountStatusModal__statusInfoCard {
   background: transparent !important;
   color: inherit !important;
   border: none !important;
   box-shadow: none !important;
 }
 
-:global(.dark) .statusInfoCard:hover {
+:global(.dark) .accountStatusModal__statusInfoCard:hover {
   box-shadow: none !important;
 }
 
@@ -316,33 +316,33 @@
     max-width: 90% !important;
   }
 
-  .accountStatusHeader {
+  .accountStatusModal__accountStatusHeader {
     padding: 1.25rem 1.25rem 0.875rem !important;
   }
 
-  .accountStatusContent {
+  .accountStatusModal__accountStatusContent {
     padding: 1.25rem !important;
   }
 
-  .accountStatusTitle {
+  .accountStatusModal__accountStatusTitle {
     font-size: 1.25rem !important;
   }
 
-  .icon {
+  .accountStatusModal__icon {
     font-size: 1.75rem !important;
     width: 28px !important;
     height: 28px !important;
   }
 
-  .userName {
+  .accountStatusModal__userName {
     font-size: 1rem !important;
   }
 
-  .message {
+  .accountStatusModal__message {
     font-size: 0.85rem !important;
   }
 
-  .continueButton {
+  .accountStatusModal__continueButton {
     padding: 0.875rem 1.5rem !important;
     font-size: 0.9rem !important;
     min-width: 160px !important;

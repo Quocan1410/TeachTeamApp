@@ -14,9 +14,9 @@ const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const buttonClasses = [
-    styles.btn, // Base button style
-    variant === "primary" && styles.btnPrimary,
-    variant === "outline" && styles.btnOutline,
+    styles.button__btn, // Base button style
+    variant === "primary" && styles.button__btnPrimary,
+    variant === "outline" && styles.button__btnOutline,
     className, // User-provided classes
   ]
     .filter(Boolean)

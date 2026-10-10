@@ -1,6 +1,6 @@
 /* Styles adapted from original authentication.css */
-.formContainer {
-  /* Corresponds to .circle-form styling for the form container itself */
+.signinForm {
+  /* Corresponds to .signinForm__circle-form styling for the form container itself */
   width: 100%;
   max-width: 450px;
   margin: 0 auto;
@@ -9,7 +9,7 @@
   padding-top: 4.6rem;
 }
 
-.mascotSeat {
+.signinForm__mascot {
   position: absolute;
   left: 50%;
   top: 0;
@@ -21,15 +21,15 @@
   pointer-events: none;
 }
 
-.mascot {
+.signinForm__image {
   display: block;
   width: 9.5rem;
   height: auto;
   margin-top: -4.15rem;
 }
 
-.form {
-  /* Corresponds to .circle-form form */
+.signinForm__form {
+  /* Corresponds to .signinForm__circle-form form */
   display: flex;
   flex-direction: column;
   gap: 1.35rem;
@@ -43,12 +43,12 @@
   z-index: 2;
 }
 
-.dark .form {
+:global(.dark) .signinForm__form {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
 }
 
 /* Title styling */
-.title {
+.signinForm__title {
   text-align: center;
   font-size: 2.15rem;
   font-weight: 800;
@@ -59,15 +59,15 @@
 }
 
 /* Input container styling */
-.inputContainer,
-.passwordContainer {
+.signinForm__field,
+.signinForm__password {
   margin: 0;
   position: relative;
   min-height: 0;
 }
 
-.inputField {
-  /* Corresponds to .circle-form input */
+.signinForm__input {
+  /* Corresponds to .signinForm__circle-form input */
   width: 100%;
   height: 3.25rem;
   line-height: 3.25rem;
@@ -82,16 +82,16 @@
   color: var(--color-text-primary);
 }
 
-.passwordContainer .inputField {
+.signinForm__password .signinForm__input {
   padding-right: 3rem; /* Make space for the password toggle button */
 }
 
-.inputError {
+.signinForm__input--error {
   border-color: #ef4444;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
 }
 
-.shake {
+.signinForm__field--shake {
   animation: fieldShake 0.42s ease;
 }
 
@@ -115,19 +115,19 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .shake {
+  .signinForm__field--shake {
     animation: none;
   }
 }
 
-.inputField:focus {
+.signinForm__input:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
   background-color: var(--color-bg-primary);
 }
 
 /* Password toggle button */
-.passwordToggle {
+.signinForm__toggle {
   position: absolute;
   right: 0.35rem;
   top: 0;
@@ -145,17 +145,17 @@
   padding: 0;
 }
 
-.passwordToggle:hover {
+.signinForm__toggle:hover {
   color: var(--color-text-primary);
 }
 
-.icon {
+.signinForm__icon {
   height: 1.25rem;
   width: 1.25rem;
 }
 
-.submitButton {
-  /* Corresponds to .sign-in-button */
+.signinForm__submit {
+  /* Corresponds to .signinForm__sign-in-button */
   width: 100%;
   height: 3.25rem;
   box-sizing: border-box;
@@ -177,19 +177,19 @@
   box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
 }
 
-.submitButton:hover {
+.signinForm__submit:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(249, 115, 22, 0.4);
 }
 
-.submitButton:disabled {
+.signinForm__submit:disabled {
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
   box-shadow: 0 4px 6px rgba(249, 115, 22, 0.2);
 }
 
-.orDivider {
+.signinForm__divider {
   display: flex;
   align-items: center;
   gap: 0.85rem;
@@ -199,15 +199,15 @@
   line-height: 1;
 }
 
-.orDivider::before,
-.orDivider::after {
+.signinForm__divider::before,
+.signinForm__divider::after {
   content: "";
   height: 1px;
   flex: 1;
   background: var(--color-border);
 }
 
-.passkeyButton {
+.signinForm__passkey {
   width: 100%;
   height: 3.25rem;
   box-sizing: border-box;
@@ -221,18 +221,18 @@
   cursor: pointer;
 }
 
-.passkeyButton:hover:not(:disabled) {
+.signinForm__passkey:hover:not(:disabled) {
   border-color: rgba(249, 115, 22, 0.55);
   color: #fdba74;
 }
 
-.passkeyButton:disabled {
+.signinForm__passkey:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
 /* Password strength indicators */
-.passwordStrengthMeter {
+.signinForm__meter {
   height: 4px;
   margin: 0.5rem 0 0.25rem;
   display: flex;
@@ -240,7 +240,7 @@
   gap: 4px;
 }
 
-.passwordStrengthMeter .segment {
+.signinForm__meter .signinForm__segment {
   height: 100%;
   flex: 1;
   border-radius: 2px;
@@ -248,7 +248,7 @@
   transition: background-color 0.3s ease;
 }
 
-.passwordStrengthText {
+.signinForm__strength {
   color: #ef4444;
   font-size: 0.85rem;
   transition: color 0.3s ease;
@@ -256,46 +256,46 @@
 }
 
 /* Very weak password */
-.veryWeak .segment:nth-child(1) {
+.signinForm__meter--veryWeak .signinForm__segment:nth-child(1) {
   background-color: #ef4444; /* red */
 }
-.veryWeakText {
+.signinForm__strength--veryWeak {
   color: #ef4444;
 }
 
 /* Weak password */
-.weak .segment:nth-child(1),
-.weak .segment:nth-child(2) {
+.signinForm__meter--weak .signinForm__segment:nth-child(1),
+.signinForm__meter--weak .signinForm__segment:nth-child(2) {
   background-color: #f97316; /* orange */
 }
-.weakText {
+.signinForm__strength--weak {
   color: #f97316;
 }
 
 /* Medium password */
-.medium .segment:nth-child(1),
-.medium .segment:nth-child(2),
-.medium .segment:nth-child(3) {
+.signinForm__meter--medium .signinForm__segment:nth-child(1),
+.signinForm__meter--medium .signinForm__segment:nth-child(2),
+.signinForm__meter--medium .signinForm__segment:nth-child(3) {
   background-color: #10b981; /* green */
 }
-.mediumText {
+.signinForm__strength--medium {
   color: #10b981;
 }
 
 /* Strong password */
-.strong .segment {
+.signinForm__meter--strong .signinForm__segment {
   background-color: #10b981; /* green */
 }
-.strongText {
+.signinForm__strength--strong {
   color: #10b981;
 }
 
 /* Role section styling */
-.roleSection {
+.signinForm__roleBox {
   margin-bottom: 1.5rem;
 }
 
-.roleLabel {
+.signinForm__roleLabel {
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
   font-weight: 500;
@@ -303,14 +303,14 @@
 }
 
 /* Role toggle styling */
-.roleToggleContainer {
+.signinForm__roles {
   display: flex;
   background-color: var(--color-bg-secondary);
   border-radius: 25px;
   padding: 0.25rem;
 }
 
-.roleBtn {
+.signinForm__role {
   flex: 1;
   padding: 0.65rem 0.9rem;
   border: none;
@@ -323,14 +323,14 @@
   text-align: center;
 }
 
-.roleBtn.active {
+.signinForm__role--active {
   background-color: var(--color-primary);
   color: white;
   box-shadow: 0 2px 4px rgba(249, 115, 22, 0.2);
 }
 
 /* Link section styling */
-.linkSection {
+.signinForm__links {
   margin: 0.45rem 0 0;
   display: flex;
   flex-direction: column;
@@ -339,25 +339,25 @@
   text-align: center;
 }
 
-.linkText {
+.signinForm__linkText {
   margin: 0;
   font-size: 0.875rem;
   line-height: 1.4;
   color: var(--color-text-secondary);
 }
 
-.link {
+.signinForm__link {
   color: var(--color-primary);
   font-weight: 500;
   text-decoration: none;
   transition: all 0.3s ease;
 }
 
-.link:hover {
+.signinForm__link:hover {
   text-decoration: underline;
 }
 
-.textButton {
+.signinForm__textButton {
   background: none;
   border: 0;
   padding: 0;
@@ -366,7 +366,7 @@
 }
 
 /* Alert styles */
-.alert {
+.signinForm__alert {
   padding: 1rem 1.5rem;
   border-radius: 15px;
   margin-bottom: 1.5rem;
@@ -374,20 +374,20 @@
   text-align: center;
 }
 
-.alertError {
+.signinForm__alert--error {
   background-color: #fee2e2;
   border: 1px solid #ef4444;
   color: #b91c1c;
 }
 
-.alertSuccess {
+.signinForm__alert--success {
   background-color: #dcfce7;
   border: 1px solid #22c55e;
   color: #166534;
 }
 
 /* Error message styling for individual fields */
-.errorMessage {
+.signinForm__error {
   color: #ef4444;
   font-size: 0.875rem;
   margin-top: 0.5rem;
@@ -395,7 +395,7 @@
   animation: fadeIn 0.3s ease-in-out;
 }
 
-.dark .errorMessage {
+:global(.dark) .signinForm__error {
   color: #f87171;
 }
 

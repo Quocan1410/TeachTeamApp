@@ -133,7 +133,7 @@ const ApplicationStatusBadge: React.FC<ApplicationStatusBadgeProps> = ({
   return (
     <span className={className}>
       {!isWithdrawn && (
-        <span className={styles.statusIcon}>
+        <span className={styles.applicationStatus__statusIcon}>
           <StatusIcon
             status={status}
             isCandidateBlocked={isCandidateBlocked}
@@ -143,7 +143,7 @@ const ApplicationStatusBadge: React.FC<ApplicationStatusBadgeProps> = ({
           />
         </span>
       )}
-      <span className={styles.statusText}>{label}</span>
+      <span className={styles.applicationStatus__statusText}>{label}</span>
     </span>
   );
 };

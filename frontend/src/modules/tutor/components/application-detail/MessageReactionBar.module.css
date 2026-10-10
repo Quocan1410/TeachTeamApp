@@ -1,4 +1,4 @@
-.tray {
+.messageReactionBar__tray {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
@@ -6,7 +6,7 @@
   margin-top: 0.35rem;
 }
 
-.chip {
+.messageReactionBar__chip {
   display: inline-flex;
   align-items: center;
   gap: 0.2rem;
@@ -23,38 +23,38 @@
     box-shadow 0.16s ease;
 }
 
-.chip:hover:not(:disabled) {
+.messageReactionBar__chip:hover:not(:disabled) {
   background: var(--reaction-surface-hover);
   transform: translateY(-1px);
 }
 
-.chip:disabled {
+.messageReactionBar__chip:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
 
-.chipActive {
+.messageReactionBar__chipActive {
   background: var(--reaction-surface-active);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 35%, transparent);
 }
 
-.emoji {
+.messageReactionBar__emoji {
   font-size: 0.9rem;
   line-height: 1;
 }
 
-.count {
+.messageReactionBar__count {
   font-size: 0.68rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--reaction-count);
 }
 
-.addWrap {
+.messageReactionBar__addWrap {
   position: relative;
 }
 
-.addBtn {
+.messageReactionBar__addBtn {
   --reaction-surface: #e7e2dd;
   --reaction-surface-hover: #dbd4cc;
   --reaction-surface-active: #d4cdc4;
@@ -78,8 +78,8 @@
     box-shadow 0.16s ease;
 }
 
-:global(.dark) .addBtn,
-:global(.dark) .chip {
+:global(.dark) .messageReactionBar__addBtn,
+:global(.dark) .messageReactionBar__chip {
   --reaction-surface: #4a433f;
   --reaction-surface-hover: #5c554f;
   --reaction-surface-active: #6b635d;
@@ -87,7 +87,7 @@
   --reaction-count: #e7e5e4;
 }
 
-.chip {
+.messageReactionBar__chip {
   --reaction-surface: #e7e2dd;
   --reaction-surface-hover: #dbd4cc;
   --reaction-surface-active: color-mix(
@@ -99,7 +99,7 @@
   --reaction-count: #78716c;
 }
 
-:global(.dark) .chipActive {
+:global(.dark) .messageReactionBar__chipActive {
   --reaction-surface-active: color-mix(
     in srgb,
     var(--color-primary) 18%,
@@ -107,22 +107,22 @@
   );
 }
 
-.addBtn:hover:not(:disabled) {
+.messageReactionBar__addBtn:hover:not(:disabled) {
   background: var(--reaction-surface-hover);
   transform: translateY(-1px);
 }
 
-.addBtn:disabled {
+.messageReactionBar__addBtn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
 
-.addBtnOpen {
+.messageReactionBar__addBtnOpen {
   background: var(--reaction-surface-active);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 28%, transparent);
 }
 
-.picker {
+.messageReactionBar__picker {
   position: absolute;
   bottom: calc(100% + 0.45rem);
   left: 0;
@@ -139,14 +139,14 @@
     0 2px 6px rgba(15, 10, 8, 0.12);
 }
 
-:global(.dark) .picker {
+:global(.dark) .messageReactionBar__picker {
   border-color: color-mix(in srgb, #78716c 45%, transparent);
   box-shadow:
     0 10px 28px rgba(0, 0, 0, 0.45),
     0 2px 8px rgba(0, 0, 0, 0.28);
 }
 
-.pickerEmoji {
+.messageReactionBar__pickerEmoji {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -163,8 +163,8 @@
     transform 0.14s ease;
 }
 
-.pickerEmoji:hover,
-.pickerEmojiActive {
+.messageReactionBar__pickerEmoji:hover,
+.messageReactionBar__pickerEmojiActive {
   background: color-mix(in srgb, var(--color-primary) 14%, transparent);
   transform: scale(1.08);
 }

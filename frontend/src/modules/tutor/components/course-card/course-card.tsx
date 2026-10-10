@@ -106,13 +106,13 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
     const hasMoreSkills = skills.length > 2;
 
     return (
-      <div className={styles.skillsWrapper}>
+      <div className={styles.courseCard__skillsWrapper}>
         {displaySkills.map((skill, index) => (
           <SkillTag key={index} skill={skill} />
         ))}
         {hasMoreSkills && (
           <span
-            className={styles.moreSkillsIndicator}
+            className={styles.courseCard__moreSkillsIndicator}
             tabIndex={0}
             role="button"
             aria-label={`${skills.length - 2} more skills available`}
@@ -134,8 +134,8 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
     if (legacyProps && hasApplied) {
       return {
         label: "Applied",
-        bgClass: styles.bgGreen100,
-        textClass: styles.textGreen800,
+        bgClass: styles.courseCard__bgGreen100,
+        textClass: styles.courseCard__textGreen800,
       };
     }
 
@@ -146,11 +146,11 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
     return {
       label: availability,
       bgClass:
-        availability === "Full Time" ? styles.bgBlue100 : styles.bgPurple100,
+        availability === "Full Time" ? styles.courseCard__bgBlue100 : styles.courseCard__bgPurple100,
       textClass:
         availability === "Full Time"
-          ? styles.textBlue800
-          : styles.textPurple800,
+          ? styles.courseCard__textBlue800
+          : styles.courseCard__textPurple800,
     };
   };
 
@@ -169,12 +169,12 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
   if (enhancedProps) {
     const courseData = course as Course;
     return (
-      <motion.article className={styles.enhancedCourseCard}>
+      <motion.article className={styles.courseCard__enhancedCourseCard}>
         {enhancedProps.onToggleFavourite && (
           <button
             type="button"
-            className={`${styles.favourite} ${
-              enhancedProps.isFavourite ? styles.favouriteOn : ""
+            className={`${styles.courseCard__favourite} ${
+              enhancedProps.isFavourite ? styles.courseCard__favouriteOn : ""
             }`}
             aria-pressed={Boolean(enhancedProps.isFavourite)}
             aria-label={
@@ -187,27 +187,27 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
             {enhancedProps.isFavourite ? <HeartSolid /> : <HeartOutline />}
           </button>
         )}
-        <div className={styles.cardMain}>
-          <p className={styles.eyebrow}>
-            <span className={styles.eyebrowCode}>{courseData.courseCode}</span>
-            <span className={styles.eyebrowDot} aria-hidden>
+        <div className={styles.courseCard__cardMain}>
+          <p className={styles.courseCard__eyebrow}>
+            <span className={styles.courseCard__eyebrowCode}>{courseData.courseCode}</span>
+            <span className={styles.courseCard__eyebrowDot} aria-hidden>
               ·
             </span>
             <span>{courseData.semester}</span>
           </p>
 
-          <div className={styles.titleRow}>
-            <h3 className={styles.courseTitle}>{courseData.courseName}</h3>
+          <div className={styles.courseCard__titleRow}>
+            <h3 className={styles.courseCard__courseTitle}>{courseData.courseName}</h3>
             {enhancedProps.remindApply && (
-              <span className={styles.remindText}>About a month left</span>
+              <span className={styles.courseCard__remindText}>About a month left</span>
             )}
             {enhancedCourse?.applicationDeadline && (
               <span
-                className={`${styles.deadlineText} ${
+                className={`${styles.courseCard__deadlineText} ${
                   !applicationOpen
-                    ? styles.deadlineClosed
+                    ? styles.courseCard__deadlineClosed
                     : isUrgent
-                      ? styles.deadlineUrgent
+                      ? styles.courseCard__deadlineUrgent
                       : ""
                 }`}
               >
@@ -216,13 +216,13 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
             )}
           </div>
 
-          <p className={styles.courseDescription}>
+          <p className={styles.courseCard__courseDescription}>
             {courseData.description || "No description available."}
           </p>
         </div>
 
-        <div className={styles.roleSection}>
-          <ul className={styles.roleList}>
+        <div className={styles.courseCard__roleSection}>
+          <ul className={styles.courseCard__roleList}>
             {(() => {
               // Filter roles to show individually based on their specific availability
               const availableRoles: Role[] = [];
@@ -262,7 +262,7 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
               // If no roles are available for application and user hasn't applied to any, show disabled state
               if (rolesToShow.length === 0 && unavailableRoles.length > 0) {
                 return (
-                  <li className={styles.roleItemEmpty}>
+                  <li className={styles.courseCard__roleItemEmpty}>
                     <span>No positions available</span>
                   </li>
                 );
@@ -300,13 +300,13 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
                   availablePositions != null ? availablePositions : maxPositions;
 
                 return (
-                  <li key={role.id} className={styles.roleItem}>
-                    <div className={styles.roleInfo}>
+                  <li key={role.id} className={styles.courseCard__roleItem}>
+                    <div className={styles.courseCard__roleInfo}>
                       <div
-                        className={`${styles.roleIcon} ${
+                        className={`${styles.courseCard__roleIcon} ${
                           role.roleName === "tutor"
-                            ? styles.roleIconTutor
-                            : styles.roleIconAssistant
+                            ? styles.courseCard__roleIconTutor
+                            : styles.courseCard__roleIconAssistant
                         }`}
                       >
                             {role.roleName === "tutor" ? (
@@ -331,9 +331,9 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
                               </svg>
                             )}
                         </div>
-                        <div className={styles.roleDetails}>
-                          <span className={styles.roleName}>{roleLabel}</span>
-                          <span className={styles.rolePositions}>
+                        <div className={styles.courseCard__roleDetails}>
+                          <span className={styles.courseCard__roleName}>{roleLabel}</span>
+                          <span className={styles.courseCard__rolePositions}>
                             {spotsLeft > 0
                               ? `${spotsLeft} of ${maxPositions} spots left`
                               : `${maxPositions} spots · filled`}
@@ -341,7 +341,7 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
                         </div>
                     </div>
 
-                    <div className={styles.roleAction}>
+                    <div className={styles.courseCard__roleAction}>
                       {applicationStatus ? (
                         <ApplicationStatusBadge
                           status={applicationStatus}
@@ -351,7 +351,7 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
                       ) : availablePositions! > 0 && applicationOpen ? (
                         <motion.button
                           type="button"
-                          className={styles.applyOutline}
+                          className={styles.courseCard__applyOutline}
                           onClick={() =>
                             enhancedProps.onApplyForRole(courseData, role)
                           }
@@ -360,7 +360,7 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
                           Apply
                         </motion.button>
                       ) : (
-                        <span className={styles.applyMuted}>
+                        <span className={styles.courseCard__applyMuted}>
                           {!applicationOpen ? "Closed" : "Filled"}
                         </span>
                       )}
@@ -377,33 +377,33 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
 
   // Legacy rendering
   return (
-    <div className={styles.enhancedCourseCard}>
+    <div className={styles.courseCard__enhancedCourseCard}>
       {/* Card top section with code and status */}
-      <div className={styles.cardTop}>
-        <span className={styles.courseCode}>
+      <div className={styles.courseCard__cardTop}>
+        <span className={styles.courseCard__courseCode}>
           {(course as CourseDetails).code}
         </span>
         <span
-          className={`${styles.courseStatus} ${statusInfo.bgClass} ${statusInfo.textClass}`}
+          className={`${styles.courseCard__courseStatus} ${statusInfo.bgClass} ${statusInfo.textClass}`}
         >
           {statusInfo.label}
         </span>
       </div>
 
       {/* Card body */}
-      <div className={styles.cardBody}>
-        <h3 className={styles.courseTitle}>{(course as CourseDetails).name}</h3>
+      <div className={styles.courseCard__cardBody}>
+        <h3 className={styles.courseCard__courseTitle}>{(course as CourseDetails).name}</h3>
 
         {/* Skills tags */}
-        <div className={styles.skillsContainer}>{renderSkills()}</div>
+        <div className={styles.courseCard__skillsContainer}>{renderSkills()}</div>
 
         {/* Role tag */}
-        <div className={styles.roleTag}>
+        <div className={styles.courseCard__roleTag}>
           <div
-            className={`${styles.roleIcon} ${
+            className={`${styles.courseCard__roleIcon} ${
               (course as CourseDetails).role === "Tutor"
-                ? styles.roleIconTutor
-                : styles.roleIconAssistant
+                ? styles.courseCard__roleIconTutor
+                : styles.courseCard__roleIconAssistant
             }`}
           >
             {(course as CourseDetails).role === "Tutor" ? (
@@ -428,17 +428,17 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
               </svg>
             )}
           </div>
-          <span className={styles.roleName}>
+          <span className={styles.courseCard__roleName}>
             {(course as CourseDetails).role}
           </span>
         </div>
       </div>
 
       {/* Card footer */}
-      <div className={styles.cardFooter}>
+      <div className={styles.courseCard__cardFooter}>
         {!hasApplied ? (
           <motion.button
-            className={styles.applyButton}
+            className={styles.courseCard__applyButton}
             onClick={() => legacyProps!.openApplyModal(course as CourseDetails)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -446,7 +446,7 @@ const CourseCard: React.FC<CombinedCourseCardProps> = (props) => {
             Apply Now
           </motion.button>
         ) : (
-          <div className={styles.appliedStatus}>
+          <div className={styles.courseCard__appliedStatus}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"

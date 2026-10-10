@@ -84,6 +84,25 @@ export class User {
     })
     theme: "light" | "dark";
 
+    @Column({
+        type: "text",
+        nullable: true,
+    })
+    description: string | null;
+
+    @Column({
+        type: "text",
+        nullable: true,
+    })
+    skills: string | null;
+
+    @Column({
+        type: "varchar",
+        length: 255,
+        nullable: true,
+    })
+    website: string | null;
+
     @CreateDateColumn()
     createdAt: Date;
 

@@ -36,9 +36,9 @@ export default function ApplicationProcessRail({
   }, [count, flow.steps]);
 
   return (
-    <div className={styles.stepRailWrap}>
+    <div className={styles.applicationDetailPanel__stepRailWrap}>
       <svg
-        className={styles.stepRailSvg}
+        className={styles.applicationDetailPanel__stepRailSvg}
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         preserveAspectRatio="none"
         aria-hidden
@@ -51,26 +51,26 @@ export default function ApplicationProcessRail({
             x2={x2}
             y2={VB_H / 2}
             className={
-              active ? styles.stepLineActive : styles.stepLinePending
+              active ? styles.applicationDetailPanel__stepLineActive : styles.applicationDetailPanel__stepLinePending
             }
           />
         ))}
       </svg>
       <ol
-        className={styles.stepRail}
+        className={styles.applicationDetailPanel__stepRail}
         style={{ "--step-count": count } as React.CSSProperties}
         aria-label={`Application progress: ${flow.currentLabel}`}
       >
         {flow.steps.map((node) => (
           <li
             key={node.id}
-            className={`${styles.stepSegment} ${styles[`stepNode_${node.state}`]}`}
+            className={`${styles.applicationDetailPanel__stepSegment} ${styles[`applicationDetailPanel--stepNode_${node.state}`]}`}
             aria-current={node.state === "current" ? "step" : undefined}
           >
-            <span className={styles.stepDotCell}>
-              <span className={styles.stepDot} aria-hidden />
+            <span className={styles.applicationDetailPanel__stepDotCell}>
+              <span className={styles.applicationDetailPanel__stepDot} aria-hidden />
             </span>
-            <span className={styles.stepLabel}>{node.label}</span>
+            <span className={styles.applicationDetailPanel__stepLabel}>{node.label}</span>
           </li>
         ))}
       </ol>

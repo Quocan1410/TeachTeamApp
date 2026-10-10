@@ -1,6 +1,6 @@
 /* Shared application status badges — matches tutor course-card */
 
-.statusBadge {
+.applicationStatus__statusBadge {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
@@ -13,7 +13,7 @@
   line-height: 1.2;
 }
 
-.statusIcon {
+.applicationStatus__statusIcon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -21,122 +21,122 @@
   height: 0.875rem;
 }
 
-.statusIcon svg {
+.applicationStatus__statusIcon svg {
   width: 100%;
   height: 100%;
 }
 
-.statusText {
+.applicationStatus__statusText {
   margin-left: 0.05rem;
 }
 
-.status-pending {
+.applicationStatus__status-pending {
   background-color: rgba(245, 158, 11, 0.14);
   color: #d97706;
   border: 0.0625rem solid rgba(245, 158, 11, 0.28);
 }
 
-.status-shortlisted {
+.applicationStatus__status-shortlisted {
   background-color: rgba(139, 92, 246, 0.14);
   color: #7c3aed;
   border: 0.0625rem solid rgba(139, 92, 246, 0.3);
 }
 
-.status-selected {
+.applicationStatus__status-selected {
   background-color: rgba(16, 185, 129, 0.14);
   color: #059669;
   border: 0.0625rem solid rgba(16, 185, 129, 0.28);
 }
 
-.status-rejected {
+.applicationStatus__status-rejected {
   background-color: rgba(239, 68, 68, 0.14);
   color: #dc2626;
   border: 0.0625rem solid rgba(239, 68, 68, 0.28);
 }
 
-.status-withdrawn {
+.applicationStatus__status-withdrawn {
   background-color: rgba(107, 114, 128, 0.16);
   color: #4b5563;
   border: 0.0625rem solid rgba(107, 114, 128, 0.3);
 }
 
-.status-unavailable {
+.applicationStatus__status-unavailable {
   background-color: rgba(148, 163, 184, 0.16);
   color: #64748b;
   border: 0.0625rem solid rgba(148, 163, 184, 0.32);
 }
 
-.status-blocked {
+.applicationStatus__status-blocked {
   background-color: rgba(148, 163, 184, 0.16);
   color: #64748b;
   border: 0.0625rem solid rgba(148, 163, 184, 0.32);
 }
 
-.status-ranked {
+.applicationStatus__status-ranked {
   background-color: rgba(59, 130, 246, 0.14);
   color: #2563eb;
   border: 0.0625rem solid rgba(59, 130, 246, 0.28);
 }
 
-.status-reviewed {
+.applicationStatus__status-reviewed {
   background-color: rgba(14, 165, 233, 0.14);
   color: #0284c7;
   border: 0.0625rem solid rgba(14, 165, 233, 0.28);
 }
 
-:global(html.dark) .status-pending,
-:global(html[data-theme="dark"]) .status-pending {
+:global(html.dark) .applicationStatus__status-pending,
+:global(html[data-theme="dark"]) .applicationStatus__status-pending {
   background-color: rgba(245, 158, 11, 0.22);
   color: #fbbf24;
   border-color: rgba(245, 158, 11, 0.38);
 }
 
-:global(html.dark) .status-shortlisted,
-:global(html[data-theme="dark"]) .status-shortlisted {
+:global(html.dark) .applicationStatus__status-shortlisted,
+:global(html[data-theme="dark"]) .applicationStatus__status-shortlisted {
   background-color: rgba(167, 139, 250, 0.18);
   color: #c4b5fd;
   border-color: rgba(167, 139, 250, 0.32);
 }
 
-:global(html.dark) .status-selected,
-:global(html[data-theme="dark"]) .status-selected {
+:global(html.dark) .applicationStatus__status-selected,
+:global(html[data-theme="dark"]) .applicationStatus__status-selected {
   background-color: rgba(16, 185, 129, 0.22);
   color: #34d399;
   border-color: rgba(16, 185, 129, 0.38);
 }
 
-:global(html.dark) .status-rejected,
-:global(html[data-theme="dark"]) .status-rejected {
+:global(html.dark) .applicationStatus__status-rejected,
+:global(html[data-theme="dark"]) .applicationStatus__status-rejected {
   background-color: rgba(239, 68, 68, 0.22);
   color: #f87171;
   border-color: rgba(239, 68, 68, 0.38);
 }
 
-:global(html.dark) .status-withdrawn,
-:global(html[data-theme="dark"]) .status-withdrawn {
+:global(html.dark) .applicationStatus__status-withdrawn,
+:global(html[data-theme="dark"]) .applicationStatus__status-withdrawn {
   background-color: rgba(107, 114, 128, 0.24);
   color: #9ca3af;
   border-color: rgba(107, 114, 128, 0.4);
 }
 
-:global(html.dark) .status-unavailable,
-:global(html[data-theme="dark"]) .status-unavailable,
-:global(html.dark) .status-blocked,
-:global(html[data-theme="dark"]) .status-blocked {
+:global(html.dark) .applicationStatus__status-unavailable,
+:global(html[data-theme="dark"]) .applicationStatus__status-unavailable,
+:global(html.dark) .applicationStatus__status-blocked,
+:global(html[data-theme="dark"]) .applicationStatus__status-blocked {
   background-color: rgba(148, 163, 184, 0.14);
   color: #94a3b8;
   border-color: rgba(148, 163, 184, 0.28);
 }
 
-:global(html.dark) .status-ranked,
-:global(html[data-theme="dark"]) .status-ranked {
+:global(html.dark) .applicationStatus__status-ranked,
+:global(html[data-theme="dark"]) .applicationStatus__status-ranked {
   background-color: rgba(96, 165, 250, 0.18);
   color: #93c5fd;
   border-color: rgba(96, 165, 250, 0.32);
 }
 
-:global(html.dark) .status-reviewed,
-:global(html[data-theme="dark"]) .status-reviewed {
+:global(html.dark) .applicationStatus__status-reviewed,
+:global(html[data-theme="dark"]) .applicationStatus__status-reviewed {
   background-color: rgba(56, 189, 248, 0.18);
   color: #7dd3fc;
   border-color: rgba(56, 189, 248, 0.32);

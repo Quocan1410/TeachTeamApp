@@ -362,9 +362,9 @@ const LecturerApplicantOverviewScreen: React.FC<
 
     <>
 
-      <p className={styles.screeningHint}>{screeningHint}</p>
+      <p className={styles.lecturerApplicantOverviewScreen__screeningHint}>{screeningHint}</p>
 
-      <div className={styles.actionRow}>
+      <div className={styles.lecturerApplicantOverviewScreen__actionRow}>
 
         {isBlocked ? (
 
@@ -372,7 +372,7 @@ const LecturerApplicantOverviewScreen: React.FC<
 
             type="button"
 
-            className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
+            className={`${styles.lecturerApplicantOverviewScreen__actionBtn} ${styles.lecturerApplicantOverviewScreen__actionBtnDanger}`}
 
             onClick={handleRemoveBlocked}
 
@@ -390,7 +390,7 @@ const LecturerApplicantOverviewScreen: React.FC<
 
             type="button"
 
-            className={`${styles.actionBtn} ${styles.actionBtnGhost}`}
+            className={`${styles.lecturerApplicantOverviewScreen__actionBtn} ${styles.lecturerApplicantOverviewScreen__actionBtnGhost}`}
 
             onClick={() => void runAction(onRevokeSelection)}
 
@@ -410,7 +410,7 @@ const LecturerApplicantOverviewScreen: React.FC<
 
               type="button"
 
-              className={`${styles.actionBtn} ${styles.actionBtnPrimary}`}
+              className={`${styles.lecturerApplicantOverviewScreen__actionBtn} ${styles.lecturerApplicantOverviewScreen__actionBtnPrimary}`}
 
               onClick={() => void runAction(onConfirmSelection)}
 
@@ -426,7 +426,7 @@ const LecturerApplicantOverviewScreen: React.FC<
 
               type="button"
 
-              className={`${styles.actionBtn} ${styles.actionBtnGhost}`}
+              className={`${styles.lecturerApplicantOverviewScreen__actionBtn} ${styles.lecturerApplicantOverviewScreen__actionBtnGhost}`}
 
               onClick={() => void runAction(onRemoveFromRanking)}
 
@@ -448,7 +448,7 @@ const LecturerApplicantOverviewScreen: React.FC<
 
               type="button"
 
-              className={`${styles.actionBtn} ${styles.actionBtnSuccess}`}
+              className={`${styles.lecturerApplicantOverviewScreen__actionBtn} ${styles.lecturerApplicantOverviewScreen__actionBtnSuccess}`}
 
               onClick={handleAddToRanking}
 
@@ -464,7 +464,7 @@ const LecturerApplicantOverviewScreen: React.FC<
 
               type="button"
 
-              className={`${styles.actionBtn} ${styles.actionBtnGhost}`}
+              className={`${styles.lecturerApplicantOverviewScreen__actionBtn} ${styles.lecturerApplicantOverviewScreen__actionBtnGhost}`}
 
               onClick={() => void runAction(onRemoveShortlist)}
 
@@ -479,10 +479,10 @@ const LecturerApplicantOverviewScreen: React.FC<
           </>
 
         ) : isPending ? (
-          <div className={styles.screeningChoiceRow}>
+          <div className={styles.lecturerApplicantOverviewScreen__screeningChoiceRow}>
             <button
               type="button"
-              className={`${styles.actionBtn} ${styles.actionBtnSuccess}`}
+              className={`${styles.lecturerApplicantOverviewScreen__actionBtn} ${styles.lecturerApplicantOverviewScreen__actionBtnSuccess}`}
               onClick={() => void runAction(onShortlistApplicant)}
               disabled={actionPending || application.isWithdrawn}
               aria-label="Yes, shortlist this profile"
@@ -491,7 +491,7 @@ const LecturerApplicantOverviewScreen: React.FC<
             </button>
             <button
               type="button"
-              className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
+              className={`${styles.lecturerApplicantOverviewScreen__actionBtn} ${styles.lecturerApplicantOverviewScreen__actionBtnDanger}`}
               onClick={() => void runAction(onDeclineApplicant)}
               disabled={actionPending || application.isWithdrawn}
               aria-label="No, decline this profile"
@@ -512,23 +512,23 @@ const LecturerApplicantOverviewScreen: React.FC<
 
   return (
 
-    <div className={overviewStyles.screen}>
+    <div className={overviewStyles.applicationOverviewScreen__screen}>
 
-      <header className={overviewStyles.topBar}>
+      <header className={overviewStyles.applicationOverviewScreen__topBar}>
 
-        <h2 className={overviewStyles.panelTitle}>
+        <h2 className={overviewStyles.applicationOverviewScreen__panelTitle}>
 
           <span className="sr-only">Candidate application</span>
 
-          <span className={overviewStyles.panelTitleLine} aria-hidden>
+          <span className={overviewStyles.applicationOverviewScreen__panelTitleLine} aria-hidden>
 
-            <span className={overviewStyles.titleComment}>{"//"}</span>
+            <span className={overviewStyles.applicationOverviewScreen__titleComment}>{"//"}</span>
 
-            <span className={overviewStyles.titleIdent}>candidate_application</span>
+            <span className={overviewStyles.applicationOverviewScreen__titleIdent}>candidate_application</span>
 
-            <span className={overviewStyles.titlePunct}>;</span>
+            <span className={overviewStyles.applicationOverviewScreen__titlePunct}>;</span>
 
-            <span className={overviewStyles.titleCursor} />
+            <span className={overviewStyles.applicationOverviewScreen__titleCursor} />
 
           </span>
 
@@ -538,7 +538,7 @@ const LecturerApplicantOverviewScreen: React.FC<
 
 
 
-      <div className={`${overviewStyles.scroll} thinOrangeScroll`}>
+      <div className={`${overviewStyles.applicationOverviewScreen__scroll} scrollbar__thin`}>
 
         <ApplicationSummaryCard
 
@@ -554,7 +554,7 @@ const LecturerApplicantOverviewScreen: React.FC<
 
         <section
 
-          className={overviewStyles.submissionBlock}
+          className={overviewStyles.applicationOverviewScreen__submissionBlock}
 
           aria-labelledby="lecturer-candidate-submission-heading"
 
@@ -562,7 +562,7 @@ const LecturerApplicantOverviewScreen: React.FC<
 
           <h3
 
-            className={overviewStyles.blockHeading}
+            className={overviewStyles.applicationOverviewScreen__blockHeading}
 
             id="lecturer-candidate-submission-heading"
 
@@ -580,7 +580,7 @@ const LecturerApplicantOverviewScreen: React.FC<
 
             showMinimum
 
-            className={overviewStyles.submissionContent}
+            className={overviewStyles.applicationOverviewScreen__submissionContent}
 
           />
 
@@ -590,29 +590,29 @@ const LecturerApplicantOverviewScreen: React.FC<
 
         <section
 
-          className={overviewStyles.statusBlock}
+          className={overviewStyles.applicationOverviewScreen__statusBlock}
 
           aria-labelledby="lecturer-status-heading"
 
         >
 
-          <div className={overviewStyles.statusHead}>
+          <div className={overviewStyles.applicationOverviewScreen__statusHead}>
 
-            <h3 className={overviewStyles.blockHeading} id="lecturer-status-heading">
+            <h3 className={overviewStyles.applicationOverviewScreen__blockHeading} id="lecturer-status-heading">
 
               Application status
 
             </h3>
 
-            <p className={overviewStyles.statusMeta}>
+            <p className={overviewStyles.applicationOverviewScreen__statusMeta}>
 
-              <span className={overviewStyles.statusStep}>
+              <span className={overviewStyles.applicationOverviewScreen__statusStep}>
 
                 Step {processFlow.currentStepIndex} of {processFlow.stepCount}
 
               </span>
 
-              <span className={overviewStyles.statusCaption}>
+              <span className={overviewStyles.applicationOverviewScreen__statusCaption}>
 
                 {" "}
 
@@ -624,7 +624,7 @@ const LecturerApplicantOverviewScreen: React.FC<
 
           </div>
 
-          <div className={overviewStyles.statusRail}>
+          <div className={overviewStyles.applicationOverviewScreen__statusRail}>
 
             <ApplicationProcessRail flow={processFlow} />
 
@@ -636,35 +636,35 @@ const LecturerApplicantOverviewScreen: React.FC<
 
         <section
 
-          className={overviewStyles.submissionBlock}
+          className={overviewStyles.applicationOverviewScreen__submissionBlock}
 
           aria-labelledby="lecturer-notes-heading"
 
         >
 
-          <h3 className={overviewStyles.blockHeading} id="lecturer-notes-heading">
+          <h3 className={overviewStyles.applicationOverviewScreen__blockHeading} id="lecturer-notes-heading">
 
             Private notes
 
           </h3>
 
-          <div className={styles.notesBlock}>
+          <div className={styles.lecturerApplicantOverviewScreen__notesBlock}>
 
-            <p className={styles.notesHint}>Only visible to you.</p>
+            <p className={styles.lecturerApplicantOverviewScreen__notesHint}>Only visible to you.</p>
 
             {showNotesView ? (
 
               <>
 
-                <div className={styles.notesView}>{savedNotes}</div>
+                <div className={styles.lecturerApplicantOverviewScreen__notesView}>{savedNotes}</div>
 
-                <div className={styles.actionRow}>
+                <div className={styles.lecturerApplicantOverviewScreen__actionRow}>
 
                   <button
 
                     type="button"
 
-                    className={`${styles.actionBtn} ${styles.actionBtnGhost}`}
+                    className={`${styles.lecturerApplicantOverviewScreen__actionBtn} ${styles.lecturerApplicantOverviewScreen__actionBtnGhost}`}
 
                     onClick={() => {
 
@@ -686,7 +686,7 @@ const LecturerApplicantOverviewScreen: React.FC<
 
                     type="button"
 
-                    className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
+                    className={`${styles.lecturerApplicantOverviewScreen__actionBtn} ${styles.lecturerApplicantOverviewScreen__actionBtnDanger}`}
 
                     onClick={handleDeleteNotes}
 
@@ -708,7 +708,7 @@ const LecturerApplicantOverviewScreen: React.FC<
 
                 <textarea
 
-                  className={styles.notesInput}
+                  className={styles.lecturerApplicantOverviewScreen__notesInput}
 
                   value={lecturerNotes}
 
@@ -722,13 +722,13 @@ const LecturerApplicantOverviewScreen: React.FC<
 
                 />
 
-                <div className={styles.actionRow}>
+                <div className={styles.lecturerApplicantOverviewScreen__actionRow}>
 
                   <button
 
                     type="button"
 
-                    className={`${styles.actionBtn} ${styles.actionBtnPrimary}`}
+                    className={`${styles.lecturerApplicantOverviewScreen__actionBtn} ${styles.lecturerApplicantOverviewScreen__actionBtnPrimary}`}
 
                     onClick={handleSaveNotes}
 
@@ -754,7 +754,7 @@ const LecturerApplicantOverviewScreen: React.FC<
 
                       type="button"
 
-                      className={`${styles.actionBtn} ${styles.actionBtnGhost}`}
+                      className={`${styles.lecturerApplicantOverviewScreen__actionBtn} ${styles.lecturerApplicantOverviewScreen__actionBtnGhost}`}
 
                       onClick={() => {
 
@@ -788,13 +788,13 @@ const LecturerApplicantOverviewScreen: React.FC<
 
 
 
-      <footer className={overviewStyles.footer}>
+      <footer className={overviewStyles.applicationOverviewScreen__footer}>
 
         <button
 
           type="button"
 
-          className={overviewStyles.openChatBtn}
+          className={overviewStyles.applicationOverviewScreen__openChatBtn}
 
           onClick={onOpenChat}
 
@@ -802,7 +802,7 @@ const LecturerApplicantOverviewScreen: React.FC<
 
           <svg
 
-            className={overviewStyles.openChatIcon}
+            className={overviewStyles.applicationOverviewScreen__openChatIcon}
 
             width="16"
 
@@ -836,7 +836,7 @@ const LecturerApplicantOverviewScreen: React.FC<
 
           <svg
 
-            className={overviewStyles.openChatChevron}
+            className={overviewStyles.applicationOverviewScreen__openChatChevron}
 
             width="14"
 

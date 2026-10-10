@@ -8,45 +8,45 @@ export default function CoursesSkeleton() {
   useEffect(() => retainPageBusy(), []);
 
   return (
-    <div className={styles.page} aria-busy="true">
+    <div className={styles.courses__page} aria-busy="true">
       <p className="sr-only">Loading…</p>
-      <header className={styles.hero}>
-        <div className={`${styles.skel} ${styles.skelMascot}`} />
-        <div className={styles.searchColumn}>
-          <div className={`${styles.skel} ${styles.skelBubble}`} />
-          <div className={`${styles.skel} ${styles.skelSearch}`} />
-          <div className={styles.skelHints}>
-            <div className={`${styles.skel} ${styles.skelHint}`} />
-            <div className={`${styles.skel} ${styles.skelHint}`} />
-            <div className={`${styles.skel} ${styles.skelHintWide}`} />
+      <header className={styles.courses__hero}>
+        <div className={`${styles.courses__skel} ${styles.courses__skelMascot}`} />
+        <div className={styles.courses__searchColumn}>
+          <div className={`${styles.courses__skel} ${styles.courses__skelBubble}`} />
+          <div className={`${styles.courses__skel} ${styles.courses__skelSearch}`} />
+          <div className={styles.courses__skelHints}>
+            <div className={`${styles.courses__skel} ${styles.courses__skelHint}`} />
+            <div className={`${styles.courses__skel} ${styles.courses__skelHint}`} />
+            <div className={`${styles.courses__skel} ${styles.courses__skelHintWide}`} />
           </div>
         </div>
       </header>
-      <div className={styles.workspace}>
-        <aside className={styles.filters} aria-hidden="true">
-          <div className={`${styles.skel} ${styles.skelFilterLabel}`} />
-          <div className={`${styles.skel} ${styles.skelFilterRow}`} />
-          <div className={`${styles.skel} ${styles.skelFilterRow}`} />
-          <div className={`${styles.skel} ${styles.skelFilterRow}`} />
-          <div className={`${styles.skel} ${styles.skelFilterLabel} ${styles.skelFilterGap}`} />
-          <div className={`${styles.skel} ${styles.skelFilterRow}`} />
-          <div className={`${styles.skel} ${styles.skelFilterRow}`} />
-          <div className={`${styles.skel} ${styles.skelFilterRow}`} />
+      <div className={styles.courses__workspace}>
+        <aside className={styles.courses__filters} aria-hidden="true">
+          <div className={`${styles.courses__skel} ${styles.courses__skelFilterLabel}`} />
+          <div className={`${styles.courses__skel} ${styles.courses__skelFilterRow}`} />
+          <div className={`${styles.courses__skel} ${styles.courses__skelFilterRow}`} />
+          <div className={`${styles.courses__skel} ${styles.courses__skelFilterRow}`} />
+          <div className={`${styles.courses__skel} ${styles.courses__skelFilterLabel} ${styles.courses__skelFilterGap}`} />
+          <div className={`${styles.courses__skel} ${styles.courses__skelFilterRow}`} />
+          <div className={`${styles.courses__skel} ${styles.courses__skelFilterRow}`} />
+          <div className={`${styles.courses__skel} ${styles.courses__skelFilterRow}`} />
         </aside>
-        <ul className={styles.list}>
+        <ul className={styles.courses__list}>
           {Array.from({ length: 6 }).map((_, index) => (
-            <li key={index} className={styles.card}>
-              <div className={styles.face}>
+            <li key={index} className={styles.courses__card}>
+              <div className={styles.courses__face}>
                 <div>
-                  <div className={`${styles.skel} ${styles.skelCode}`} />
-                  <div className={`${styles.skel} ${styles.skelName}`} />
-                  <div className={`${styles.skel} ${styles.skelFact}`} />
-                  <div className={`${styles.skel} ${styles.skelFact}`} />
-                  <div className={`${styles.skel} ${styles.skelFactShort}`} />
+                  <div className={`${styles.courses__skel} ${styles.courses__skelCode}`} />
+                  <div className={`${styles.courses__skel} ${styles.courses__skelName}`} />
+                  <div className={`${styles.courses__skel} ${styles.courses__skelFact}`} />
+                  <div className={`${styles.courses__skel} ${styles.courses__skelFact}`} />
+                  <div className={`${styles.courses__skel} ${styles.courses__skelFactShort}`} />
                 </div>
-                <div className={styles.footer}>
-                  <div className={`${styles.skel} ${styles.skelChip}`} />
-                  <div className={`${styles.skel} ${styles.skelApply}`} />
+                <div className={styles.courses__footer}>
+                  <div className={`${styles.courses__skel} ${styles.courses__skelChip}`} />
+                  <div className={`${styles.courses__skel} ${styles.courses__skelApply}`} />
                 </div>
               </div>
             </li>

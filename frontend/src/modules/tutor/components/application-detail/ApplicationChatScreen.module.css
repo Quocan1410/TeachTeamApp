@@ -1,4 +1,4 @@
-.screen {
+.applicationChatScreen__screen {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -6,7 +6,7 @@
   background: var(--color-bg-primary);
 }
 
-.screen :global(.conversationShell) {
+.applicationChatScreen__screen :global(.conversationShell) {
   flex: 1;
   min-height: 0;
 }

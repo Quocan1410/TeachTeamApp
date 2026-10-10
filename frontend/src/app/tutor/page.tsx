@@ -532,8 +532,12 @@ const TutorDashboardPage: React.FC = () => {
           hideSuccess();
         }, 3000);
       } else {
+        const fieldError = response.errors
+          ? Object.values(response.errors).find(Boolean)
+          : undefined;
         showError(
           response.message ||
+            fieldError ||
             "Failed to submit your application. Please try again."
         );
       }
@@ -575,7 +579,7 @@ const TutorDashboardPage: React.FC = () => {
       </TutorHeroSection>
 
       {/* Main Content */}
-      <main className={`flex-grow pt-0 ${styles.tutorContainer}`}>
+      <main className={`flex-grow pt-0 ${styles.tutorPage__tutorContainer}`}>
         {/* Success/Error Messages */}
         <Toast
           message={successToast.message}
@@ -598,10 +602,10 @@ const TutorDashboardPage: React.FC = () => {
           autoClose={false}
         />
 
-        <div className={styles.results} id="course-results">
+        <div className={styles.tutorPage__results} id="course-results">
           {sortedFilteredCourses.length === 0 ? (
-            <div className={styles.emptyStateCard}>
-              <p className={styles.emptyTitle}>
+            <div className={styles.tutorPage__emptyStateCard}>
+              <p className={styles.tutorPage__emptyTitle}>
                 {activeFilter === "available"
                   ? "No available courses"
                   : activeFilter === "applied"
@@ -612,12 +616,12 @@ const TutorDashboardPage: React.FC = () => {
                         ? "No courses closing soon"
                         : "No courses match"}
               </p>
-              <p className={styles.emptySubtitle}>
+              <p className={styles.tutorPage__emptySubtitle}>
                 Try another search, or clear the filters.
               </p>
               <button
                 type="button"
-                className={styles.emptyClear}
+                className={styles.tutorPage__emptyClear}
                 onClick={() => {
                   setSearchQuery("");
                   setActiveFilter("all");
@@ -631,7 +635,7 @@ const TutorDashboardPage: React.FC = () => {
           ) : (
             <>
             <div
-              className={styles.courseGrid}
+              className={styles.tutorPage__courseGrid}
             >
               {paginatedCourses.map((course) => (
                 <CourseCard

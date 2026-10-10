@@ -13,19 +13,19 @@
   border: 1px solid var(--color-border);
 }
 
-.headerContent {
+.dashboardHeader__headerContent {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
 }
 
-.titleSection {
+.dashboardHeader__titleSection {
   display: flex;
   flex-direction: column;
 }
 
-.dashboardTitle {
+.dashboardHeader__dashboardTitle {
   font-size: 2rem;
   font-weight: 700;
   background: linear-gradient(90deg,
@@ -37,12 +37,12 @@
   margin-bottom: 0.5rem;
 }
 
-.dashboardSubtitle {
+.dashboardHeader__dashboardSubtitle {
   font-size: 1.1rem;
   color: var(--color-text-secondary);
 }
 
-.refreshButton {
+.dashboardHeader__refreshButton {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -58,23 +58,23 @@
   white-space: nowrap;
 }
 
-.refreshButton:hover {
+.dashboardHeader__refreshButton:hover {
   background: var(--color-secondary);
   transform: translateY(-1px);
 }
 
-.refreshIcon {
+.dashboardHeader__refreshIcon {
   width: 1rem;
   height: 1rem;
   transition: transform 0.2s ease;
 }
 
-.refreshButton:hover .refreshIcon {
+.dashboardHeader__refreshButton:hover .dashboardHeader__refreshIcon {
   transform: rotate(45deg);
 }
 
 /* Quick Stats Grid */
-.quickStats {
+.dashboardHeader__quickStats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
@@ -82,7 +82,7 @@
 }
 
 /* Stat Card Styles */
-.statCard {
+.dashboardHeader__statCard {
   display: flex;
   align-items: center;
   padding: 1.25rem;
@@ -93,12 +93,12 @@
   transition: all 0.3s ease;
 }
 
-.statCard:hover {
+.dashboardHeader__statCard:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
 }
 
-.statIcon {
+.dashboardHeader__statIcon {
   width: 48px;
   height: 48px;
   min-width: 48px;
@@ -110,44 +110,44 @@
   transition: all 0.3s ease;
 }
 
-.statIcon svg {
+.dashboardHeader__statIcon svg {
   width: 24px;
   height: 24px;
 }
 
-.statIcon.totalIcon {
+.dashboardHeader__statIcon.dashboardHeader--totalIcon {
   background-color: var(--stat-icon-total-bg);
   color: var(--stat-icon-total-color);
 }
 
-.statIcon.selectedIcon {
+.dashboardHeader__statIcon.dashboardHeader--selectedIcon {
   background-color: var(--stat-icon-selected-bg);
   color: var(--stat-icon-selected-color);
 }
 
-.statIcon.pendingIcon {
+.dashboardHeader__statIcon.dashboardHeader--pendingIcon {
   background-color: var(--stat-icon-pending-bg);
   color: var(--stat-icon-pending-color);
 }
 
-.statIcon.rateIcon {
+.dashboardHeader__statIcon.dashboardHeader--rateIcon {
   background-color: var(--stat-icon-rate-bg);
   color: var(--stat-icon-rate-color);
 }
 
-.statContent {
+.dashboardHeader__statContent {
   display: flex;
   flex-direction: column;
 }
 
-.statLabel {
+.dashboardHeader__statLabel {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   margin-bottom: 0.25rem;
   display: block;
 }
 
-.statValue {
+.dashboardHeader__statValue {
   font-size: 1.75rem;
   font-weight: 700;
   color: var(--color-text-primary);
@@ -157,44 +157,44 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .headerContent {
+  .dashboardHeader__headerContent {
     flex-direction: column;
     gap: 1rem;
   }
 
-  .refreshButton {
+  .dashboardHeader__refreshButton {
     align-self: flex-start;
     padding: 0.5rem 0.75rem;
     font-size: 0.8rem;
   }
 
-  .quickStats {
+  .dashboardHeader__quickStats {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 0.75rem;
   }
 
-  .statCard {
+  .dashboardHeader__statCard {
     padding: 1rem;
   }
 
-  .statIcon {
+  .dashboardHeader__statIcon {
     width: 40px;
     height: 40px;
     min-width: 40px;
   }
 
-  .statIcon svg {
+  .dashboardHeader__statIcon svg {
     width: 20px;
     height: 20px;
   }
 
-  .statValue {
+  .dashboardHeader__statValue {
     font-size: 1.5rem;
   }
 }
 
 /* Dark mode adjustments */
-.dark .dashboardHeader {
+.dashboardHeader__dark .dashboardHeader {
   background: linear-gradient(135deg,
       var(--color-bg-primary) 0%,
       var(--color-bg-secondary) 100%);

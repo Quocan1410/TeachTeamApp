@@ -20,9 +20,9 @@ const SectionTitle: React.FC<SectionTitleProps> = ({
     align === "center" ? { marginLeft: "auto", marginRight: "auto" } : {};
 
   return (
-    <div className={styles.sectionTitleContainer} style={containerStyle}>
-      <div className={styles.sectionTitleBar} style={barStyle}></div>
-      <div className={styles.sectionTitleContent}>
+    <div className={styles.sectionTitle__sectionTitleContainer} style={containerStyle}>
+      <div className={styles.sectionTitle__sectionTitleBar} style={barStyle}></div>
+      <div className={styles.sectionTitle__sectionTitleContent}>
         <h2>{title}</h2>
         {subtitle && <p>{subtitle}</p>}
       </div>

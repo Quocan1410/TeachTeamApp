@@ -79,35 +79,35 @@ const Header: React.FC = () => {
 
   return (
     <header
-      className={`${styles["main-header"]} ${isScrolled ? styles.scrolled : ""}`}
+      className={`${styles["header__main-header"]} ${isScrolled ? styles["header--scrolled"] : ""}`}
     >
-      <div className={styles["header-container"]}>
-        <div className={styles["header-grid"]}>
-          <div className={styles["logo-wrapper"]}>
-            <Link href={homeHref} className={styles["logo-link"]}>
-              <div className={styles["logo-container"]}>
-                <div className={styles["logo-image-container"]}>
+      <div className={styles["header__header-container"]}>
+        <div className={styles["header__header-grid"]}>
+          <div className={styles["header__logo-wrapper"]}>
+            <Link href={homeHref} className={styles["header__logo-link"]}>
+              <div className={styles["header__logo-container"]}>
+                <div className={styles["header__logo-image-container"]}>
                   <Image
                     src="/letter-e.png"
                     alt="duTeam Logo"
                     width={36}
                     height={36}
-                    className={styles["logo-image"]}
+                    className={styles["header__logo-image"]}
                   />
                 </div>
-                <span className={styles["logo-text"]}>
-                  <span className={styles["logo-prefix"]}>du</span>Team
+                <span className={styles["header__logo-text"]}>
+                  <span className={styles["header__logo-prefix"]}>du</span>Team
                 </span>
               </div>
             </Link>
           </div>
 
-          <nav className={styles["main-nav"]}>
-            <div className={styles["nav-links"]}>
+          <nav className={styles["header__main-nav"]}>
+            <div className={styles["header__nav-links"]}>
                 {!user && (
                   <Link
                     href="/"
-                    className={`${styles["nav-link"]} ${pathname === "/" ? styles.active : ""}`}
+                    className={`${styles["header__nav-link"]} ${pathname === "/" ? styles["header--active"] : ""}`}
                   >
                     Home
                   </Link>
@@ -115,7 +115,7 @@ const Header: React.FC = () => {
                 {showGuestNav && (
                   <Link
                     href="/courses"
-                    className={`${styles["nav-link"]} ${pathname === "/courses" ? styles.active : ""}`}
+                    className={`${styles["header__nav-link"]} ${pathname === "/courses" ? styles["header--active"] : ""}`}
                   >
                     Courses
                   </Link>
@@ -123,7 +123,7 @@ const Header: React.FC = () => {
                 {showTutorLink && (
                   <Link
                     href="/tutor"
-                    className={`${styles["nav-link"]} ${pathname === "/tutor" ? styles.active : ""}`}
+                    className={`${styles["header__nav-link"]} ${pathname === "/tutor" ? styles["header--active"] : ""}`}
                   >
                     Candidates
                   </Link>
@@ -131,7 +131,7 @@ const Header: React.FC = () => {
                 {isAuthenticated && user?.userType === "candidate" && (
                   <Link
                     href="/tutor/applications"
-                    className={`${styles["nav-link"]} ${pathname.startsWith("/tutor/applications") ? styles.active : ""}`}
+                    className={`${styles["header__nav-link"]} ${pathname.startsWith("/tutor/applications") ? styles["header--active"] : ""}`}
                   >
                     Applications
                   </Link>
@@ -139,8 +139,8 @@ const Header: React.FC = () => {
                 {isLecturerUser && (
                   <Link
                     href="/lecturer"
-                    className={`${styles["nav-link"]} ${
-                      pathname === "/lecturer" ? styles.active : ""
+                    className={`${styles["header__nav-link"]} ${
+                      pathname === "/lecturer" ? styles["header--active"] : ""
                     }`}
                   >
                     Applicants
@@ -149,7 +149,7 @@ const Header: React.FC = () => {
                 {showGuestNav && (
                   <Link
                     href="/lecturers"
-                    className={`${styles["nav-link"]} ${pathname === "/lecturers" ? styles.active : ""}`}
+                    className={`${styles["header__nav-link"]} ${pathname === "/lecturers" ? styles["header--active"] : ""}`}
                   >
                     Lecturers
                   </Link>
@@ -157,31 +157,31 @@ const Header: React.FC = () => {
               </div>
           </nav>
 
-          <div className={styles["header-actions"]}>
+          <div className={styles["header__header-actions"]}>
             {(isLoading || !isAuthenticated) && (
               <button
                 onClick={toggleDarkMode}
-                className={`${styles["theme-toggle-btn"]} ${
+                className={`${styles["header__theme-toggle-btn"]} ${
                   isThemeToggleRemoving
-                    ? styles.removing
+                    ? styles["header--removing"]
                     : isThemeToggleAdding
-                      ? styles.adding
+                      ? styles["header--adding"]
                       : ""
                 }`}
                 aria-label="Toggle dark mode"
               >
-                <div className={styles["theme-icon-wrapper"]}>
-                  <span className={`${styles["theme-icon"]} ${styles.sun}`}>
+                <div className={styles["header__theme-icon-wrapper"]}>
+                  <span className={`${styles["header__theme-icon"]} ${styles["header--sun"]}`}>
                     <SunIcon aria-hidden />
                   </span>
-                  <span className={`${styles["theme-icon"]} ${styles.moon}`}>
+                  <span className={`${styles["header__theme-icon"]} ${styles["header--moon"]}`}>
                     <MoonIcon aria-hidden />
                   </span>
                 </div>
               </button>
             )}
             {isAuthenticated && user ? (
-              <div className={styles.userSection}>
+              <div className={styles.header__userSection}>
                 {(user.userType === "lecturer" ||
                   user.userType === "candidate") && <NotificationBell />}
                 <UserDropdown
@@ -207,16 +207,16 @@ const Header: React.FC = () => {
                 />
               </div>
             ) : (
-                <div className={styles.authButtons}>
+                <div className={styles.header__authButtons}>
                   <Link
                     href="/signin"
-                    className={`${styles.authButton} ${styles.authButtonSecondary} ${pathname === "/signin" ? styles.active : ""}`}
+                    className={`${styles.header__authButton} ${styles.header__authButtonSecondary} ${pathname === "/signin" ? styles["header--active"] : ""}`}
                   >
                     Sign In
                   </Link>
                   <Link
                     href="/signup"
-                    className={`${styles.authButton} ${styles.authButtonPrimary} ${pathname === "/signup" ? styles.active : ""}`}
+                    className={`${styles.header__authButton} ${styles.header__authButtonPrimary} ${pathname === "/signup" ? styles["header--active"] : ""}`}
                   >
                     Sign Up
                   </Link>

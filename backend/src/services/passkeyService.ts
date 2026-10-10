@@ -298,4 +298,11 @@ export class PasskeyService {
         await credentialRepository().save(stored);
         return { ok: true as const, user };
     }
+
+    static async hasPasskey(userId: string): Promise<boolean> {
+        const existing = await credentialRepository().findOne({
+            where: { userId },
+        });
+        return !!existing;
+    }
 }

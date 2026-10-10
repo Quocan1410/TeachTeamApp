@@ -1,4 +1,4 @@
-.panel {
+.offerResponsePanel__panel {
   margin: 0.75rem 0 0;
   padding: 0.85rem 0.95rem;
   border-radius: 0.75rem;
@@ -6,21 +6,21 @@
   background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-secondary));
 }
 
-.title {
+.offerResponsePanel__title {
   margin: 0 0 0.35rem;
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--color-text-primary);
 }
 
-.hint {
+.offerResponsePanel__hint {
   margin: 0 0 0.65rem;
   font-size: 0.78rem;
   line-height: 1.45;
   color: var(--color-text-secondary);
 }
 
-.input {
+.offerResponsePanel__input {
   width: 100%;
   min-height: 4.5rem;
   padding: 0.55rem 0.65rem;
@@ -35,19 +35,19 @@
   resize: none;
 }
 
-.input:focus {
+.offerResponsePanel__input:focus {
   outline: none;
   border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border));
 }
 
-.actions {
+.offerResponsePanel__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.45rem;
   margin-top: 0.65rem;
 }
 
-.btn {
+.offerResponsePanel__btn {
   flex: 1;
   min-width: 7rem;
   padding: 0.45rem 0.85rem;
@@ -58,17 +58,17 @@
   cursor: pointer;
 }
 
-.btn:disabled {
+.offerResponsePanel__btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.btnAccept {
+.offerResponsePanel__btnAccept {
   background: #16a34a;
   color: #fff;
 }
 
-.btnDecline {
+.offerResponsePanel__btnDecline {
   background: rgba(239, 68, 68, 0.12);
   color: #dc2626;
   border: 1px solid rgba(239, 68, 68, 0.35);

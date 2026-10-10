@@ -71,12 +71,16 @@ export const attachRefreshInterceptor = (client: AxiosInstance): void => {
   );
 };
 
-apiClient.interceptors.request.use((config) => {
-  if (config.data instanceof FormData) {
-    delete config.headers["Content-Type"];
-  }
-  return config;
-});
+function allowMultipart(client: AxiosInstance) {
+  client.interceptors.request.use((config) => {
+    if (typeof FormData !== "undefined" && config.data instanceof FormData) {
+      config.headers.delete("Content-Type");
+    }
+    return config;
+  });
+}
+
+allowMultipart(apiClient);
 
 attachRefreshInterceptor(apiClient);
 
@@ -93,6 +97,7 @@ export const createApiClient = (pathPrefix: string): AxiosInstance => {
       "Content-Type": "application/json",
     },
   });
+  allowMultipart(client);
   attachRefreshInterceptor(client);
   return client;
 };

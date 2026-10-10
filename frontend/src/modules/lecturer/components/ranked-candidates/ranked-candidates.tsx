@@ -61,14 +61,14 @@ const RankedCandidates: React.FC<RankedCandidatesProps> = ({
     .sort((a, b) => (a.rank || 0) - (b.rank || 0)); // Sort by rank
 
   return (
-    <div className={styles.rankingsContainer}>
-      <h2 className={styles.rankingsTitle}>{title}</h2>
+    <div className={styles.rankedCandidates__rankingsContainer}>
+      <h2 className={styles.rankedCandidates__rankingsTitle}>{title}</h2>
 
 
 
       {/* Course Selection Info */}
       {selectedCourse && courseSlotInfo && (
-        <div className={styles.slotSummary}>
+        <div className={styles.rankedCandidates__slotSummary}>
           <strong>Position slots</strong>
           <span>
             Tutor: {courseSlotInfo.selectedTutors ?? 0}/
@@ -86,7 +86,7 @@ const RankedCandidates: React.FC<RankedCandidatesProps> = ({
                 : " · full"}
             </span>
           )}
-          <span className={styles.slotHint}>
+          <span className={styles.rankedCandidates__slotHint}>
             Rankings show shortlist order. Only confirmed final selections use
             slots.
           </span>
@@ -94,11 +94,11 @@ const RankedCandidates: React.FC<RankedCandidatesProps> = ({
       )}
 
       {selectedCourse && (
-        <div className={styles.courseInfo}>
-          <div className={styles.courseInfoContent}>
+        <div className={styles.rankedCandidates__courseInfo}>
+          <div className={styles.rankedCandidates__courseInfoContent}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={styles.courseInfoIcon}
+              className={styles.rankedCandidates__courseInfoIcon}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -115,7 +115,7 @@ const RankedCandidates: React.FC<RankedCandidatesProps> = ({
             </span>
           </div>
           {filteredRankedApplications.length > 0 && (
-            <div className={styles.rankingStats}>
+            <div className={styles.rankedCandidates__rankingStats}>
               {filteredRankedApplications.length} candidate{filteredRankedApplications.length !== 1 ? 's' : ''} ranked
             </div>
           )}
@@ -123,8 +123,8 @@ const RankedCandidates: React.FC<RankedCandidatesProps> = ({
       )}
 
       {filteredRankedApplications.length === 0 ? (
-        <div className={styles.emptyRankings}>
-          <div className={styles.emptyRankingsIcon}>
+        <div className={styles.rankedCandidates__emptyRankings}>
+          <div className={styles.rankedCandidates__emptyRankingsIcon}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -139,59 +139,59 @@ const RankedCandidates: React.FC<RankedCandidatesProps> = ({
               />
             </svg>
           </div>
-          <h3 className={styles.emptyRankingsTitle}>No Ranked Candidates</h3>
-          <p className={styles.emptyRankingsText}>
+          <h3 className={styles.rankedCandidates__emptyRankingsTitle}>No Ranked Candidates</h3>
+          <p className={styles.rankedCandidates__emptyRankingsText}>
             {selectedCourse
               ? `No candidates have been ranked for ${selectedCourse} yet.`
               : "Please select a course to view rankings."}
           </p>
-          <p className={styles.emptyRankingsHelp}>
+          <p className={styles.rankedCandidates__emptyRankingsHelp}>
             Shortlist an applicant from the Applications tab — they will appear
             here automatically.
           </p>
         </div>
       ) : (
-        <div className={styles.rankingsList}>
+        <div className={styles.rankedCandidates__rankingsList}>
           {filteredRankedApplications.map((application, index) => (
             <motion.div
               key={application.id}
-              className={styles.rankedItem}
+              className={styles.rankedCandidates__rankedItem}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               whileHover={{ scale: 1.02 }}
             >
-              <div className={styles.rankBadge}>
-                <span className={styles.rankNumber}>{formatRankDisplay(index)}</span>
+              <div className={styles.rankedCandidates__rankBadge}>
+                <span className={styles.rankedCandidates__rankNumber}>{formatRankDisplay(index)}</span>
               </div>
-              <div className={styles.rankedInfo}>
-                <div className={styles.rankedHeader}>
-                  <div className={styles.rankedName}>{application.fullName}</div>
-                  <div className={styles.rankedEmail}>{application.email}</div>
+              <div className={styles.rankedCandidates__rankedInfo}>
+                <div className={styles.rankedCandidates__rankedHeader}>
+                  <div className={styles.rankedCandidates__rankedName}>{application.fullName}</div>
+                  <div className={styles.rankedCandidates__rankedEmail}>{application.email}</div>
                 </div>
-                <div className={styles.rankedCourses}>
+                <div className={styles.rankedCandidates__rankedCourses}>
                   Ranked for:{" "}
                   {application.rankedForCourse ||
                     application.selectedForCourses?.join(", ") ||
                     application.courses.join(", ")}
                 </div>
-                <div className={styles.rankedSkills}>
+                <div className={styles.rankedCandidates__rankedSkills}>
                   {application.skills.slice(0, 3).map((skill, skillIndex) => (
-                    <span key={skillIndex} className={styles.rankedSkill}>
+                    <span key={skillIndex} className={styles.rankedCandidates__rankedSkill}>
                       {skill}
                     </span>
                   ))}
                   {application.skills.length > 3 && (
-                    <span className={styles.moreSkills}>
+                    <span className={styles.rankedCandidates__moreSkills}>
                       +{application.skills.length - 3} more
                     </span>
                   )}
                 </div>
                 {application.comment && (
-                  <div className={styles.rankedComment}>
+                  <div className={styles.rankedCandidates__rankedComment}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className={styles.commentIcon}
+                      className={styles.rankedCandidates__commentIcon}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -203,7 +203,7 @@ const RankedCandidates: React.FC<RankedCandidatesProps> = ({
                         d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                       />
                     </svg>
-                    <span className={styles.commentText}>
+                    <span className={styles.rankedCandidates__commentText}>
                       {application.comment.length > 100 
                         ? `${application.comment.substring(0, 100)}...` 
                         : application.comment}
@@ -211,12 +211,12 @@ const RankedCandidates: React.FC<RankedCandidatesProps> = ({
                   </div>
                 )}
               </div>
-              <div className={styles.rankedActions}>
-                <div className={styles.moveActions}>
+              <div className={styles.rankedCandidates__rankedActions}>
+                <div className={styles.rankedCandidates__moveActions}>
                   {index > 0 && (
                     <button
                       onClick={() => onMoveUp(application)}
-                      className={`${styles.rankBtn} ${styles.moveUpBtn}`}
+                      className={`${styles.rankedCandidates__rankBtn} ${styles.rankedCandidates__moveUpBtn}`}
                       title="Move up"
                     >
                       <svg
@@ -237,7 +237,7 @@ const RankedCandidates: React.FC<RankedCandidatesProps> = ({
                   {index < filteredRankedApplications.length - 1 && (
                     <button
                       onClick={() => onMoveDown(application)}
-                      className={`${styles.rankBtn} ${styles.moveDownBtn}`}
+                      className={`${styles.rankedCandidates__rankBtn} ${styles.rankedCandidates__moveDownBtn}`}
                       title="Move down"
                     >
                       <svg
@@ -258,7 +258,7 @@ const RankedCandidates: React.FC<RankedCandidatesProps> = ({
                 </div>
                 <button
                   onClick={() => onRemove(application.id)}
-                  className={`${styles.rankBtn} ${styles.removeBtn}`}
+                  className={`${styles.rankedCandidates__rankBtn} ${styles.rankedCandidates__removeBtn}`}
                   title="Remove from ranking"
                 >
                   <svg

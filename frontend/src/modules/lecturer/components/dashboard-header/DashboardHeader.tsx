@@ -25,18 +25,18 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className={styles.headerContent}>
-        <div className={styles.titleSection}>
-          <h1 className={styles.dashboardTitle}>Lecturer Dashboard</h1>
-          <p className={styles.dashboardSubtitle}>
+      <div className={styles.dashboardHeader__headerContent}>
+        <div className={styles.dashboardHeader__titleSection}>
+          <h1 className={styles.dashboardHeader__dashboardTitle}>Lecturer Dashboard</h1>
+          <p className={styles.dashboardHeader__dashboardSubtitle}>
             Welcome back, {lecturerName}
           </p>
         </div>
 
       </div>
-      <div className={styles.quickStats}>
-        <div className={styles.statCard}>
-          <div className={`${styles.statIcon} ${styles.totalIcon}`}>
+      <div className={styles.dashboardHeader__quickStats}>
+        <div className={styles.dashboardHeader__statCard}>
+          <div className={`${styles.dashboardHeader__statIcon} ${styles["dashboardHeader--totalIcon"]}`}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -51,16 +51,16 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               />
             </svg>
           </div>
-          <div className={styles.statContent}>
-            <span className={styles.statLabel}>Total Applications</span>
-            <span className={styles.statValue}>
+          <div className={styles.dashboardHeader__statContent}>
+            <span className={styles.dashboardHeader__statLabel}>Total Applications</span>
+            <span className={styles.dashboardHeader__statValue}>
               {statistics.totalApplications}
             </span>
           </div>
         </div>
 
-        <div className={styles.statCard}>
-          <div className={`${styles.statIcon} ${styles.selectedIcon}`}>
+        <div className={styles.dashboardHeader__statCard}>
+          <div className={`${styles.dashboardHeader__statIcon} ${styles["dashboardHeader--selectedIcon"]}`}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -75,16 +75,16 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               />
             </svg>
           </div>
-          <div className={styles.statContent}>
-            <span className={styles.statLabel}>Selected</span>
-            <span className={styles.statValue}>
+          <div className={styles.dashboardHeader__statContent}>
+            <span className={styles.dashboardHeader__statLabel}>Selected</span>
+            <span className={styles.dashboardHeader__statValue}>
               {statistics.selectedTutorApplications}
             </span>
           </div>
         </div>
 
-        <div className={styles.statCard}>
-          <div className={`${styles.statIcon} ${styles.pendingIcon}`}>
+        <div className={styles.dashboardHeader__statCard}>
+          <div className={`${styles.dashboardHeader__statIcon} ${styles["dashboardHeader--pendingIcon"]}`}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -99,16 +99,16 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               />
             </svg>
           </div>
-          <div className={styles.statContent}>
-            <span className={styles.statLabel}>Pending</span>
-            <span className={styles.statValue}>
+          <div className={styles.dashboardHeader__statContent}>
+            <span className={styles.dashboardHeader__statLabel}>Pending</span>
+            <span className={styles.dashboardHeader__statValue}>
               {statistics.pendingTutorApplications}
             </span>
           </div>
         </div>
 
-        <div className={styles.statCard}>
-          <div className={`${styles.statIcon} ${styles.rateIcon}`}>
+        <div className={styles.dashboardHeader__statCard}>
+          <div className={`${styles.dashboardHeader__statIcon} ${styles["dashboardHeader--rateIcon"]}`}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -123,10 +123,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               />
             </svg>
           </div>
-          <div className={styles.statContent}>
-            <span className={styles.statLabel}>Selection Rate</span>
+          <div className={styles.dashboardHeader__statContent}>
+            <span className={styles.dashboardHeader__statLabel}>Selection Rate</span>
             <span
-              className={styles.statValue}
+              className={styles.dashboardHeader__statValue}
             >{`${statistics.selectionRate}%`}</span>
           </div>
         </div>

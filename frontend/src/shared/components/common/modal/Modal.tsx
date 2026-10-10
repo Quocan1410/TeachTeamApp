@@ -72,7 +72,7 @@ const Modal: React.FC<ModalProps> = ({
 
   return (
     <div
-      className={`${styles.modalOverlay} ${shown ? styles.modalOverlayOpen : ""}`}
+      className={`${styles.modal__modalOverlay} ${shown ? styles.modal__modalOverlayOpen : ""}`}
       onClick={(event) => {
         if (event.target === overlayRef.current) beginClose();
       }}
@@ -82,15 +82,15 @@ const Modal: React.FC<ModalProps> = ({
       aria-labelledby={title ? "modal-title" : undefined}
     >
       <div
-        className={`${styles.modalContainer} ${shown ? styles.modalContainerOpen : ""}`}
+        className={`${styles.modal__modalContainer} ${shown ? styles.modal__modalContainerOpen : ""}`}
         style={{ maxWidth }}
       >
         <button
           type="button"
           onClick={beginClose}
-          className={`${styles.modalClose} iconCloseHit iconCloseCircle ${
-            closeVariant === "danger" ? styles.modalCloseDanger : ""
-          } ${spinning ? styles.modalCloseSpin : ""}`}
+          className={`${styles.modal__modalClose} iconClose__hit iconClose__circle ${
+            closeVariant === "danger" ? styles.modal__modalCloseDanger : ""
+          } ${spinning ? styles.modal__modalCloseSpin : ""}`}
           aria-label="Close modal"
         >
           <CloseIcon size={14} />

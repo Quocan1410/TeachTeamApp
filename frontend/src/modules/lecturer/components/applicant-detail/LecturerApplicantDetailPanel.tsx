@@ -172,13 +172,13 @@ const LecturerApplicantDetailPanel: React.FC<LecturerApplicantDetailPanelProps> 
 
       return (
 
-        <aside className={panelStyles.panel} aria-label="Applicant details">
+        <aside className={panelStyles.applicationDetailPanel__panel} aria-label="Applicant details">
 
-          <div className={emptyStyles.emptyState}>
+          <div className={emptyStyles.lecturerApplicantDetailPanel__emptyState}>
 
-            <p className={emptyStyles.emptyTitle}>No applicant selected</p>
+            <p className={emptyStyles.lecturerApplicantDetailPanel__emptyTitle}>No applicant selected</p>
 
-            <p className={emptyStyles.emptyText}>
+            <p className={emptyStyles.lecturerApplicantDetailPanel__emptyText}>
 
               Select an applicant from the list to review their application.
 
@@ -196,9 +196,9 @@ const LecturerApplicantDetailPanel: React.FC<LecturerApplicantDetailPanelProps> 
 
     return (
 
-      <aside className={panelStyles.panel} aria-label="Applicant details">
+      <aside className={panelStyles.applicationDetailPanel__panel} aria-label="Applicant details">
 
-        <div className={panelStyles.viewStage}>
+        <div className={panelStyles.applicationDetailPanel__viewStage}>
 
           <AnimatePresence initial={false} custom={direction}>
 
@@ -208,7 +208,7 @@ const LecturerApplicantDetailPanel: React.FC<LecturerApplicantDetailPanelProps> 
 
                 key={`overview-${application.id}`}
 
-                className={panelStyles.viewPage}
+                className={panelStyles.applicationDetailPanel__viewPage}
 
                 custom={direction}
 
@@ -258,7 +258,7 @@ const LecturerApplicantDetailPanel: React.FC<LecturerApplicantDetailPanelProps> 
 
                 key={`chat-${application.id}`}
 
-                className={panelStyles.viewPage}
+                className={panelStyles.applicationDetailPanel__viewPage}
 
                 custom={direction}
 

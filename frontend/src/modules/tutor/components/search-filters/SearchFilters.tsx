@@ -32,16 +32,16 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   onClear,
 }) => {
   return (
-    <section className={styles.panel} aria-label="Search courses">
-      <div className={styles.panelHead}>
-        <h2 className={styles.panelTitle}>Search courses</h2>
-        <button type="button" className={styles.clearLink} onClick={onClear}>
+    <section className={styles.searchFilters__panel} aria-label="Search courses">
+      <div className={styles.searchFilters__panelHead}>
+        <h2 className={styles.searchFilters__panelTitle}>Search courses</h2>
+        <button type="button" className={styles.searchFilters__clearLink} onClick={onClear}>
           Clear filters
         </button>
       </div>
 
       <form
-        className={styles.field}
+        className={styles.searchFilters__field}
         onSubmit={(event) => {
           event.preventDefault();
           document.getElementById("course-results")?.scrollIntoView({
@@ -51,22 +51,22 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         }}
       >
         <input
-          className={styles.fieldInput}
+          className={styles.searchFilters__fieldInput}
           type="search"
           value={searchQuery}
           onChange={(event) => onSearchChange(event.target.value)}
           placeholder="Search course, code, or role"
           aria-label="Search course, code, or role"
         />
-        <MagnifyingGlassIcon className={styles.fieldIcon} aria-hidden="true" />
+        <MagnifyingGlassIcon className={styles.searchFilters__fieldIcon} aria-hidden="true" />
       </form>
 
-      <div className={styles.filterHead}>
-        <p className={styles.filterLabel}>Filter courses</p>
+      <div className={styles.searchFilters__filterHead}>
+        <p className={styles.searchFilters__filterLabel}>Filter courses</p>
       </div>
-      <div className={styles.filterRow}>
+      <div className={styles.searchFilters__filterRow}>
         <AppSelect
-          className={styles.filterSelect}
+          className={styles.searchFilters__filterSelect}
           id="course-status"
           aria-label="Status"
           value={status}
@@ -80,7 +80,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           ]}
         />
         <AppSelect
-          className={styles.filterSelect}
+          className={styles.searchFilters__filterSelect}
           id="course-role"
           aria-label="Role"
           value={role}
@@ -92,7 +92,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           ]}
         />
         <AppSelect
-          className={styles.filterSelect}
+          className={styles.searchFilters__filterSelect}
           id="course-order"
           aria-label="Order"
           value={sortOrder}
@@ -106,7 +106,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 
       <button
         type="button"
-        className={styles.applyButton}
+        className={styles.searchFilters__applyButton}
         onClick={() => {
           document.getElementById("course-results")?.scrollIntoView({
             behavior: "smooth",
@@ -117,9 +117,9 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         Apply filters
       </button>
 
-      <div className={styles.notice}>
+      <div className={styles.searchFilters__notice}>
         <p>Heart a course to apply later. We remind you when about a month is left.</p>
-        <Link href="/tutor/applications" className={styles.noticeLink}>
+        <Link href="/tutor/applications" className={styles.searchFilters__noticeLink}>
           Your applications
         </Link>
       </div>

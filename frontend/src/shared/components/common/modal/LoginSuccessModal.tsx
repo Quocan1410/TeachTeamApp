@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { User } from "@/shared/types/user";
 import { getUserDisplayName } from "@/shared/utils/personDisplayName";
 import styles from "./LoginSuccessModal.module.css";
@@ -22,21 +22,21 @@ export const LoginSuccessModal: React.FC<LoginSuccessModalProps> = ({
 }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [showFireworks, setShowFireworks] = useState(false);
+  const onHideRef = useRef(onHide);
+  const preparingRef = useRef(isPreparing);
+  onHideRef.current = onHide;
+  preparingRef.current = isPreparing;
 
-  const handleHide = useCallback(() => {
-    if (isPreparing) return;
+  const hideNow = useCallback(() => {
+    if (preparingRef.current) return;
     setShowFireworks(false);
-    // Navigate immediately to avoid a brief white gap between modal and route loading.
-    onHide();
-  }, [isPreparing, onHide]);
+    onHideRef.current();
+  }, []);
 
   const handleContinueClick = useCallback(() => {
-    if (isPreparing) return;
+    if (preparingRef.current) return;
     setShowFireworks(true);
-    setTimeout(() => {
-      handleHide();
-    }, 1500);
-  }, [handleHide, isPreparing]);
+  }, []);
 
   // Start animation when modal becomes visible
   useEffect(() => {
@@ -45,16 +45,27 @@ export const LoginSuccessModal: React.FC<LoginSuccessModalProps> = ({
     }
   }, [isVisible]);
 
+  // Leave the success modal after the fireworks, even if the parent re-renders.
+  useEffect(() => {
+    if (!showFireworks) return;
+    const timer = window.setTimeout(() => {
+      setShowFireworks(false);
+      onHideRef.current();
+    }, 1500);
+    return () => window.clearTimeout(timer);
+  }, [showFireworks]);
+
   // Auto-continue once prefetch finishes (same path as the Continue button).
   useEffect(() => {
     if (!isVisible || isPreparing) return;
 
-    const timer = setTimeout(() => {
-      handleContinueClick();
+    const timer = window.setTimeout(() => {
+      if (preparingRef.current) return;
+      setShowFireworks(true);
     }, duration);
 
-    return () => clearTimeout(timer);
-  }, [isVisible, isPreparing, duration, handleContinueClick]);
+    return () => window.clearTimeout(timer);
+  }, [isVisible, isPreparing, duration]);
 
   // Enter on keyboard uses the same handler as clicking Continue.
   useEffect(() => {
@@ -82,62 +93,62 @@ export const LoginSuccessModal: React.FC<LoginSuccessModalProps> = ({
     <>
       {/* Modal Overlay */}
       <div
-        className={`${styles.modalOverlay} ${isAnimating ? styles.visible : styles.hidden}`}
-        onClick={isPreparing ? undefined : handleHide}
+        className={`${styles.loginSuccessModal__modalOverlay} ${isAnimating ? styles["loginSuccessModal--visible"] : styles["loginSuccessModal--hidden"]}`}
+        onClick={isPreparing ? undefined : hideNow}
       >
         {/* Modal Content */}
         <div 
-          className={`${styles.modalContent} ${isAnimating ? styles.animated : ''}`}
+          className={`${styles.loginSuccessModal__modalContent} ${isAnimating ? styles["loginSuccessModal--animated"] : ''}`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Success Icon with Enhanced Checkmark */}
-          <div className={styles.successIcon}>
-            <div className={styles.checkmark}>
-              <svg viewBox="0 0 52 52" className={styles.checkmarkSvg}>
+          <div className={styles.loginSuccessModal__successIcon}>
+            <div className={styles.loginSuccessModal__checkmark}>
+              <svg viewBox="0 0 52 52" className={styles.loginSuccessModal__checkmarkSvg}>
                 <circle 
-                  className={styles.checkmarkCircle} 
+                  className={styles.loginSuccessModal__checkmarkCircle} 
                   cx="26" 
                   cy="26" 
                   r="25" 
                   fill="none"
                 />
                 <path 
-                  className={styles.checkmarkCheck} 
+                  className={styles.loginSuccessModal__checkmarkCheck} 
                   fill="none" 
                   d="m14.1 27.2l7.1 7.2 16.7-16.8"
                 />
               </svg>
             </div>
             {/* Pulse rings for enhanced effect */}
-            <div className={styles.pulseRing}></div>
-            <div className={styles.pulseRing} style={{ animationDelay: '0.3s' }}></div>
+            <div className={styles.loginSuccessModal__pulseRing}></div>
+            <div className={styles.loginSuccessModal__pulseRing} style={{ animationDelay: '0.3s' }}></div>
           </div>
 
           {/* Simplified Message Section */}
-          <div className={styles.messageSection}>
-            <h2 className={styles.welcomeTitle}>Success!</h2>
-            <h3 className={styles.welcomeMessage}>{getWelcomeMessage()}</h3>
+          <div className={styles.loginSuccessModal__messageSection}>
+            <h2 className={styles.loginSuccessModal__welcomeTitle}>Success!</h2>
+            <h3 className={styles.loginSuccessModal__welcomeMessage}>{getWelcomeMessage()}</h3>
           </div>
 
           {/* Continue Button with Fireworks Effect */}
-          <div className={styles.buttonContainer}>
+          <div className={styles.loginSuccessModal__buttonContainer}>
             <button
               type="button"
-              className={`${styles.continueButton} ${showFireworks ? styles.fireworksActive : ''}`}
+              className={`${styles.loginSuccessModal__continueButton} ${showFireworks ? styles.fireworksActive : ''}`}
               onClick={handleContinueClick}
               aria-label="Continue to dashboard"
               disabled={isPreparing}
               autoFocus={!isPreparing}
             >
-              <span className={styles.buttonText}>
+              <span className={styles.loginSuccessModal__buttonText}>
                 {isPreparing ? "Preparing dashboard..." : "Continue"}
               </span>
               {showFireworks && (
-                <div className={styles.fireworksContainer}>
+                <div className={styles.loginSuccessModal__fireworksContainer}>
                   {[...Array(8)].map((_, i) => (
                     <div 
                       key={i} 
-                      className={styles.firework} 
+                      className={styles.loginSuccessModal__firework} 
                       style={{ 
                         '--angle': `${i * 45}deg`,
                         '--delay': `${i * 0.1}s` 

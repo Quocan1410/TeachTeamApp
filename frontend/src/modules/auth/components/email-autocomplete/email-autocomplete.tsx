@@ -163,7 +163,7 @@ export default function EmailAutocomplete({
   };
 
   return (
-    <div className={styles.emailAutocompleteContainer}>
+    <div className={styles.emailAutocomplete__emailAutocompleteContainer}>
       <input
         ref={inputRef}
         type="email"
@@ -179,12 +179,12 @@ export default function EmailAutocomplete({
       />
       
       {showSuggestions && suggestions.length > 0 && (
-        <div ref={suggestionsRef} className={styles.suggestionsDropdown}>
+        <div ref={suggestionsRef} className={styles.emailAutocomplete__suggestionsDropdown}>
           {suggestions.map((suggestion, index) => (
             <div
               key={suggestion}
-              className={`${styles.suggestionItem} ${
-                index === selectedIndex ? styles.suggestionSelected : ""
+              className={`${styles.emailAutocomplete__suggestionItem} ${
+                index === selectedIndex ? styles.emailAutocomplete__suggestionSelected : ""
               }`}
               onClick={() => handleSuggestionClick(suggestion)}
               onMouseEnter={() => setSelectedIndex(index)}

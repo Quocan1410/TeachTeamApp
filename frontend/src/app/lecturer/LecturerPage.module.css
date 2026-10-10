@@ -1,5 +1,5 @@
 /* Lecturer Dashboard Page Layout Styles */
-.lecturerDashboard {
+.lecturerPage__lecturerDashboard {
   width: 100%;
   min-height: calc(100vh - 160px);
   padding-top: 6rem;
@@ -8,7 +8,7 @@
   background: linear-gradient(135deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 100%);
 }
 
-.lecturerDashboardContainer {
+.lecturerPage__lecturerDashboardContainer {
   width: 100%;
   margin-left: auto;
   margin-right: auto;
@@ -18,16 +18,16 @@
 }
 
 /* Dashboard Content */
-.dashboardContent {
+.lecturerPage__dashboardContent {
   min-height: 500px;
   margin-top: 2rem;
 }
 
 /* Signature entrance sequence */
-.revealHeader,
-.revealFilters,
-.revealTabs,
-.revealContent {
+.lecturerPage__revealHeader,
+.lecturerPage__revealFilters,
+.lecturerPage__revealTabs,
+.lecturerPage__revealContent {
   opacity: 1;
   transform: translateY(0);
   animation-name: dashboardReveal;
@@ -36,23 +36,23 @@
   animation-fill-mode: both;
 }
 
-.revealHeader {
+.lecturerPage__revealHeader {
   animation-delay: 40ms;
 }
 
-.revealFilters {
+.lecturerPage__revealFilters {
   animation-delay: 130ms;
   position: relative;
   z-index: 20;
 }
 
-.revealTabs {
+.lecturerPage__revealTabs {
   animation-delay: 220ms;
   position: relative;
   z-index: 1;
 }
 
-.revealContent {
+.lecturerPage__revealContent {
   animation-delay: 300ms;
 }
 
@@ -69,7 +69,7 @@
 }
 
 /* Enhanced Course Selector */
-.courseSelector {
+.lecturerPage__courseSelector {
   background: var(--color-bg-surface);
   border-radius: 12px;
   padding: 1.5rem;
@@ -78,7 +78,7 @@
   border: 1px solid var(--color-border);
 }
 
-.courseSelector label {
+.lecturerPage__courseSelector label {
   display: block;
   font-size: 0.875rem;
   font-weight: 600;
@@ -88,7 +88,7 @@
   letter-spacing: 0.025em;
 }
 
-.courseSelect {
+.lecturerPage__courseSelect {
   width: 100%;
   padding: 0.75rem 1rem;
   border: 2px solid var(--color-border);
@@ -106,18 +106,18 @@
   padding-right: 2.5rem;
 }
 
-.courseSelect:focus {
+.lecturerPage__courseSelect:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
 }
 
-.courseSelect:hover {
+.lecturerPage__courseSelect:hover {
   border-color: var(--color-primary);
 }
 
 /* No Course Message */
-.noCourseMessage {
+.lecturerPage__noCourseMessage {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -130,38 +130,38 @@
   font-weight: 500;
 }
 
-.warningIcon {
+.lecturerPage__warningIcon {
   font-size: 1.2rem;
   flex-shrink: 0;
 }
 
 /* Applications Section - Two Column Layout */
-.applicationsSection {
+.lecturerPage__applicationsSection {
   display: grid;
   grid-template-columns: 1fr;
   gap: 2rem;
 }
 
 @media (min-width: 1024px) {
-  .applicationsSection {
+  .lecturerPage__applicationsSection {
     grid-template-columns: 1fr 1fr;
   }
 }
 
-.applicationsGrid {
+.lecturerPage__applicationsGrid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 2rem;
 }
 
 @media (min-width: 1024px) {
-  .applicationsGrid {
+  .lecturerPage__applicationsGrid {
     grid-template-columns: 1fr 1fr;
     grid-column: 1 / -1;
   }
 }
 
-.applicantListSection {
+.lecturerPage__applicantListSection {
   background: var(--color-bg-surface);
   border-radius: 16px;
   border: 1px solid var(--color-border);
@@ -172,7 +172,7 @@
   flex-direction: column;
 }
 
-.applicantDetailsSection {
+.lecturerPage__applicantDetailsSection {
   display: flex;
   flex-direction: column;
   padding: 0;
@@ -183,14 +183,14 @@
   min-height: 600px;
 }
 
-.applicantDetailsSection > * {
+.lecturerPage__applicantDetailsSection > * {
   flex: 1 1 auto;
   min-height: 0;
   width: 100%;
 }
 
 /* Rankings Section */
-.rankingsSection {
+.lecturerPage__rankingsSection {
   background: var(--color-bg-surface);
   border-radius: 16px;
   border: 1px solid var(--color-border);
@@ -199,7 +199,7 @@
 }
 
 /* Stats Section */
-.statsSection {
+.lecturerPage__statsSection {
   background: var(--color-bg-surface);
   border-radius: 16px;
   border: 1px solid var(--color-border);
@@ -208,21 +208,21 @@
 }
 
 /* Application Panels Layout - Legacy Support */
-.applicationPanels {
+.lecturerPage__applicationPanels {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
 @media (min-width: 1024px) {
-  .applicationPanels {
+  .lecturerPage__applicationPanels {
     display: grid;
     grid-template-columns: 1fr 1fr;
   }
 }
 
 /* Filter Enhancement */
-.filterSection {
+.lecturerPage__filterSection {
   background: var(--color-bg-surface);
   border-radius: 12px;
   padding: 1.5rem;
@@ -231,7 +231,7 @@
   border: 1px solid var(--color-border);
 }
 
-.filterSection h3 {
+.lecturerPage__filterSection h3 {
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--color-text-primary);
@@ -241,13 +241,13 @@
   gap: 0.5rem;
 }
 
-.filterSection h3::before {
+.lecturerPage__filterSection h3::before {
   content: "🔍";
   font-size: 1.25rem;
 }
 
 /* Success Message */
-.successMessage {
+.lecturerPage__successMessage {
   background-color: var(--color-success-light, rgba(16, 185, 129, 0.1));
   border-left: 4px solid var(--color-success, #10b981);
   color: var(--color-success-dark, #065f46);
@@ -257,56 +257,56 @@
 }
 
 /* Dark mode adjustments */
-:global(.dark) .lecturerDashboard {
+:global(.dark) .lecturerPage__lecturerDashboard {
   background: linear-gradient(135deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 100%);
 }
 
-:global(.dark) .courseSelector,
-:global(.dark) .applicantListSection,
-:global(.dark) .applicantDetailsSection,
-:global(.dark) .rankingsSection,
-:global(.dark) .statsSection,
-:global(.dark) .filterSection {
+:global(.dark) .lecturerPage__courseSelector,
+:global(.dark) .lecturerPage__applicantListSection,
+:global(.dark) .lecturerPage__applicantDetailsSection,
+:global(.dark) .lecturerPage__rankingsSection,
+:global(.dark) .lecturerPage__statsSection,
+:global(.dark) .lecturerPage__filterSection {
   border-color: var(--color-border);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
 }
 
-:global(.dark) .successMessage {
+:global(.dark) .lecturerPage__successMessage {
   background-color: var(--color-success-dark-bg, rgba(16, 185, 129, 0.15));
   color: var(--color-success, #10b981);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .lecturerDashboard {
+  .lecturerPage__lecturerDashboard {
     padding-top: 6rem;
   }
 
-  .lecturerDashboardContainer {
+  .lecturerPage__lecturerDashboardContainer {
     padding-left: 1rem;
     padding-right: 1rem;
   }
 
-  .courseSelector {
+  .lecturerPage__courseSelector {
     padding: 1rem;
   }
 
-  .applicationsGrid {
+  .lecturerPage__applicationsGrid {
     grid-template-columns: 1fr;
   }
 
-  .applicantListSection,
-  .applicantDetailsSection {
+  .lecturerPage__applicantListSection,
+  .lecturerPage__applicantDetailsSection {
     min-height: 400px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
 
-  .revealHeader,
-  .revealFilters,
-  .revealTabs,
-  .revealContent {
+  .lecturerPage__revealHeader,
+  .lecturerPage__revealFilters,
+  .lecturerPage__revealTabs,
+  .lecturerPage__revealContent {
     animation: none;
     opacity: 1;
     transform: none;
@@ -315,11 +315,11 @@
 }
 
 @media (max-width: 480px) {
-  .courseSelector {
+  .lecturerPage__courseSelector {
     padding: 0.75rem;
   }
 
-  .courseSelect {
+  .lecturerPage__courseSelect {
     padding: 0.5rem 0.75rem;
     font-size: 0.875rem;
   }

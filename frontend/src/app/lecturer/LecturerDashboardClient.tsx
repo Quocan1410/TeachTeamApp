@@ -900,10 +900,10 @@ const LecturerDashboardInner: React.FC = () => {
   ];
 
   return (
-    <div className={styles.lecturerDashboard}>
+    <div className={styles.lecturerPage__lecturerDashboard}>
         <div className="container">
           {/* Dashboard Header */}
-          <div className={styles.revealHeader}>
+          <div className={styles.lecturerPage__revealHeader}>
             <DashboardHeader
               lecturerName={lecturerName}
               statistics={statistics}
@@ -911,7 +911,7 @@ const LecturerDashboardInner: React.FC = () => {
           </div>
 
           {/* Enhanced Application Filters */}
-          <div className={styles.revealFilters}>
+          <div className={styles.lecturerPage__revealFilters}>
             <ApplicationFilters
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
@@ -935,16 +935,16 @@ const LecturerDashboardInner: React.FC = () => {
           </div>
 
           {/* Dashboard Tabs */}
-          <div className={styles.revealTabs}>
+          <div className={styles.lecturerPage__revealTabs}>
             <DashboardTabs activeTab={activeTab} onTabChange={setActiveTab} />
           </div>
 
           {/* Main Content */}
-          <div className={`${styles.dashboardContent} ${styles.revealContent}`}>
+          <div className={`${styles.lecturerPage__dashboardContent} ${styles.lecturerPage__revealContent}`}>
             {activeTab === "applications" && (
-              <div className={styles.applicationsSection}>
-                <div className={styles.applicationsGrid}>
-                  <div className={styles.applicantListSection}>
+              <div className={styles.lecturerPage__applicationsSection}>
+                <div className={styles.lecturerPage__applicationsGrid}>
+                  <div className={styles.lecturerPage__applicantListSection}>
                     <ApplicantList
                       applications={applications}
                       selectedApplication={selectedApplication}
@@ -953,7 +953,7 @@ const LecturerDashboardInner: React.FC = () => {
                     />
                   </div>
 
-                  <div className={styles.applicantDetailsSection}>
+                  <div className={styles.lecturerPage__applicantDetailsSection}>
                     <LecturerApplicantDetailPanel
                       application={rawSelectedApplication}
                       onApplicationUpdated={handleApplicationDetailUpdated}
@@ -976,9 +976,9 @@ const LecturerDashboardInner: React.FC = () => {
             )}
 
             {activeTab === "rankings" && (
-              <div className={styles.rankingsSection}>
+              <div className={styles.lecturerPage__rankingsSection}>
                 {/* Course Selection for Rankings Tab */}
-                <div className={styles.courseSelector}>
+                <div className={styles.lecturerPage__courseSelector}>
                   <label htmlFor="rankingsCourseSelect">
                     View Rankings for:
                   </label>
@@ -991,8 +991,8 @@ const LecturerDashboardInner: React.FC = () => {
                       aria-label="Select course for rankings"
                     />
                   ) : (
-                    <div className={styles.noCourseMessage}>
-                      <span className={styles.warningIcon}>⚠️</span>
+                    <div className={styles.lecturerPage__noCourseMessage}>
+                      <span className={styles.lecturerPage__warningIcon}>⚠️</span>
                       No courses assigned. Contact administrator.
                     </div>
                   )}
@@ -1017,7 +1017,7 @@ const LecturerDashboardInner: React.FC = () => {
             )}
 
             {activeTab === "stats" && (
-              <div className={styles.statsSection}>
+              <div className={styles.lecturerPage__statsSection}>
                 <ApplicantStatsVisualization applications={applications} />
               </div>
             )}

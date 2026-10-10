@@ -1,4 +1,4 @@
-.toolbar {
+.messageHoverToolbar__toolbar {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -13,7 +13,7 @@
     0 1px 2px rgba(15, 23, 42, 0.08);
 }
 
-:global(.dark) .toolbar {
+:global(.dark) .messageHoverToolbar__toolbar {
   border-color: color-mix(in srgb, #57534e 70%, #78716c);
   background: color-mix(in srgb, #292524 94%, #1c1917);
   box-shadow:
@@ -21,7 +21,7 @@
     0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
-.btn {
+.messageHoverToolbar__btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -43,18 +43,18 @@
     color 0.12s ease;
 }
 
-.btn svg {
+.messageHoverToolbar__btn svg {
   display: block;
   width: 1rem;
   height: 1rem;
   flex-shrink: 0;
 }
 
-.btnReply svg {
+.messageHoverToolbar__btnReply svg {
   transform: translateY(-0.5px);
 }
 
-.btnIcon {
+.messageHoverToolbar__btnIcon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -64,11 +64,11 @@
   font-size: 1.05rem;
 }
 
-.btnEmoji {
+.messageHoverToolbar__btnEmoji {
   font-size: 1.05rem;
 }
 
-.divider {
+.messageHoverToolbar__divider {
   width: 1px;
   height: 1.25rem;
   margin: 0 0.06rem;
@@ -77,14 +77,14 @@
   flex-shrink: 0;
 }
 
-.addWrap,
-.moreWrap {
+.messageHoverToolbar__addWrap,
+.messageHoverToolbar__moreWrap {
   position: relative;
   display: inline-flex;
   align-items: center;
 }
 
-.moreDots {
+.messageHoverToolbar__moreDots {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -93,27 +93,27 @@
   gap: 0.14rem;
 }
 
-.btn:hover {
+.messageHoverToolbar__btn:hover {
   background: color-mix(in srgb, var(--color-bg-secondary) 85%, transparent);
   color: var(--color-text-primary);
 }
 
-:global(.dark) .btn:hover {
+:global(.dark) .messageHoverToolbar__btn:hover {
   background: color-mix(in srgb, #44403c 90%, transparent);
 }
 
-.btnActive {
+.messageHoverToolbar__btnActive {
   background: color-mix(in srgb, var(--color-primary) 14%, transparent);
 }
 
-.moreDots span {
+.messageHoverToolbar__moreDots span {
   width: 0.22rem;
   height: 0.22rem;
   border-radius: 999px;
   background: currentColor;
 }
 
-.picker {
+.messageHoverToolbar__picker {
   position: absolute;
   bottom: calc(100% + 0.35rem);
   top: auto;
@@ -129,12 +129,12 @@
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
 }
 
-:global(.dark) .picker {
+:global(.dark) .messageHoverToolbar__picker {
   border-color: color-mix(in srgb, #57534e 70%, transparent);
   background: #292524;
 }
 
-.pickerEmoji {
+.messageHoverToolbar__pickerEmoji {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -147,12 +147,12 @@
   cursor: pointer;
 }
 
-.pickerEmoji:hover,
-.pickerEmojiActive {
+.messageHoverToolbar__pickerEmoji:hover,
+.messageHoverToolbar__pickerEmojiActive {
   background: color-mix(in srgb, var(--color-primary) 14%, transparent);
 }
 
-.menu {
+.messageHoverToolbar__menu {
   position: absolute;
   bottom: calc(100% + 0.35rem);
   top: auto;
@@ -166,12 +166,12 @@
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
 }
 
-:global(.dark) .menu {
+:global(.dark) .messageHoverToolbar__menu {
   border-color: color-mix(in srgb, #57534e 70%, transparent);
   background: #292524;
 }
 
-.menu button {
+.messageHoverToolbar__menu button {
   display: block;
   width: 100%;
   text-align: left;
@@ -184,10 +184,10 @@
   cursor: pointer;
 }
 
-.menu button:hover {
+.messageHoverToolbar__menu button:hover {
   background: var(--color-bg-secondary);
 }
 
-.menuDanger {
+.messageHoverToolbar__menuDanger {
   color: #dc2626 !important;
 }

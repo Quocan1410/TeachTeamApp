@@ -13,10 +13,10 @@ export default function GuestPageIntro({
   subtitle,
 }: GuestPageIntroProps) {
   return (
-    <header className={styles.intro}>
-      <p className={styles.kicker}>{kicker}</p>
-      <h1 className={styles.title}>{title}</h1>
-      <p className={styles.subtitle}>{subtitle}</p>
+    <header className={styles.guestPageIntro__intro}>
+      <p className={styles.guestPageIntro__kicker}>{kicker}</p>
+      <h1 className={styles.guestPageIntro__title}>{title}</h1>
+      <p className={styles.guestPageIntro__subtitle}>{subtitle}</p>
     </header>
   );
 }

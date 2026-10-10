@@ -125,26 +125,26 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
 
   return (
     <div
-      className={`${styles.filtersContainer} ${
-        isExpanded ? styles.filtersExpanded : ""
+      className={`${styles.applicationFilters__filtersContainer} ${
+        isExpanded ? styles.applicationFilters__filtersExpanded : ""
       }`.trim()}
     >
-      <div className={styles.quickSearch}>
-        <div className={styles.quickSearchHead}>
-          <div className={styles.filterSectionTitle}>
-            <span className={styles.filterTitleText}>Filter</span>
-            <span className={styles.filterTitleLine} aria-hidden />
+      <div className={styles.applicationFilters__quickSearch}>
+        <div className={styles.applicationFilters__quickSearchHead}>
+          <div className={styles.applicationFilters__filterSectionTitle}>
+            <span className={styles.applicationFilters__filterTitleText}>Filter</span>
+            <span className={styles.applicationFilters__filterTitleLine} aria-hidden />
           </div>
-          <div className={styles.quickSearchToolbar}>
+          <div className={styles.applicationFilters__quickSearchToolbar}>
           {activeFilterCount > 0 && (
             <>
-              <span className={styles.filterCountBadge}>
+              <span className={styles.applicationFilters__filterCountBadge}>
                 {activeFilterCount} filter{activeFilterCount === 1 ? "" : "s"}
               </span>
               <button
                 type="button"
                 onClick={onClearFilters}
-                className={styles.clearButton}
+                className={styles.applicationFilters__clearButton}
                 title="Clear all filters"
               >
                 Clear all
@@ -154,34 +154,34 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className={`${styles.expandButton} ${isExpanded ? styles.expanded : ""}`}
+            className={`${styles.applicationFilters__expandButton} ${isExpanded ? styles["applicationFilters--expanded"] : ""}`}
             title={isExpanded ? "Collapse filters" : "Expand filters"}
           >
-            <span className={styles.expandIcon}>{isExpanded ? "▲" : "▼"}</span>
+            <span className={styles.applicationFilters__expandIcon}>{isExpanded ? "▲" : "▼"}</span>
             {isExpanded ? "Fewer filters" : "More filters"}
           </button>
           </div>
         </div>
 
-        <div className={styles.quickSearchFields}>
-        <div className={styles.searchGroup}>
-          <label htmlFor="candidateSearch" className={styles.fieldLabel}>
+        <div className={styles.applicationFilters__quickSearchFields}>
+        <div className={styles.applicationFilters__searchGroup}>
+          <label htmlFor="candidateSearch" className={styles.applicationFilters__fieldLabel}>
             Search by candidate name
           </label>
-          <div className={styles.searchInputWrapper}>
+          <div className={styles.applicationFilters__searchInputWrapper}>
             <input
               id="candidateSearch"
               type="text"
               placeholder="Enter candidate name..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className={styles.searchInput}
+              className={styles.applicationFilters__searchInput}
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => onSearchChange('')}
-                className={`${styles.clearSearchButton} iconCloseHit iconCloseCircle`}
+                className={`${styles.applicationFilters__clearSearchButton} iconClose__hit iconClose__circle`}
                 title="Clear search"
                 aria-label="Clear search"
               >
@@ -191,8 +191,8 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
           </div>
         </div>
 
-        <div className={styles.courseGroup}>
-          <label htmlFor="courseSelect" className={styles.fieldLabel}>
+        <div className={styles.applicationFilters__courseGroup}>
+          <label htmlFor="courseSelect" className={styles.applicationFilters__fieldLabel}>
             Course
           </label>
           {courses.length > 0 ? (
@@ -204,7 +204,7 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
               aria-label="Filter by course"
             />
           ) : (
-            <div className={styles.noCoursesMessage}>
+            <div className={styles.applicationFilters__noCoursesMessage}>
               Loading courses...
             </div>
           )}
@@ -216,16 +216,16 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
       <AnimatePresence>
         {isExpanded && (
           <motion.div
-            className={styles.advancedFilters}
+            className={styles.applicationFilters__advancedFilters}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
             {/* Session Type Filter */}
-            <div className={styles.filterRow}>
-              <div className={styles.filterGroup}>
-                <label htmlFor="roleTypeFilter" className={styles.fieldLabel}>
+            <div className={styles.applicationFilters__filterRow}>
+              <div className={styles.applicationFilters__filterGroup}>
+                <label htmlFor="roleTypeFilter" className={styles.applicationFilters__fieldLabel}>
                   Session Type
                 </label>
                 <AppSelect
@@ -237,8 +237,8 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
                 />
               </div>
 
-              <div className={styles.filterGroup}>
-                <label htmlFor="availabilityFilter" className={styles.fieldLabel}>
+              <div className={styles.applicationFilters__filterGroup}>
+                <label htmlFor="availabilityFilter" className={styles.applicationFilters__fieldLabel}>
                   Availability
                 </label>
                 <AppSelect
@@ -250,8 +250,8 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
                 />
               </div>
 
-              <div className={styles.filterGroup}>
-                <label htmlFor="statusFilter" className={styles.fieldLabel}>
+              <div className={styles.applicationFilters__filterGroup}>
+                <label htmlFor="statusFilter" className={styles.applicationFilters__fieldLabel}>
                   Status
                 </label>
                 <AppSelect
@@ -263,8 +263,8 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
                 />
               </div>
 
-              <div className={styles.filterGroup}>
-                <label htmlFor="sortBy" className={styles.fieldLabel}>
+              <div className={styles.applicationFilters__filterGroup}>
+                <label htmlFor="sortBy" className={styles.applicationFilters__fieldLabel}>
                   Sort By
                 </label>
                 <AppSelect
@@ -278,24 +278,24 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
             </div>
 
             {/* Skills Filter */}
-            <div className={styles.skillsSection}>
-              <div className={styles.skillsFilterBlock}>
-                <div className={styles.skillsHeader}>
-                  <label className={styles.fieldLabel}>
+            <div className={styles.applicationFilters__skillsSection}>
+              <div className={styles.applicationFilters__skillsFilterBlock}>
+                <div className={styles.applicationFilters__skillsHeader}>
+                  <label className={styles.applicationFilters__fieldLabel}>
                     Filter by Skills
                     {skillsFilter.length > 0 && (
-                      <span className={styles.skillsCount}>({skillsFilter.length} selected)</span>
+                      <span className={styles.applicationFilters__skillsCount}>({skillsFilter.length} selected)</span>
                     )}
                   </label>
 
-                  <div className={styles.skillsControls}>
-                    <div className={styles.skillSearchWrapper}>
+                  <div className={styles.applicationFilters__skillsControls}>
+                    <div className={styles.applicationFilters__skillSearchWrapper}>
                       <input
                         type="text"
                         placeholder="Search skills..."
                         value={skillSearchQuery}
                         onChange={(e) => setSkillSearchQuery(e.target.value)}
-                        className={styles.skillSearchInput}
+                        className={styles.applicationFilters__skillSearchInput}
                       />
                     </div>
 
@@ -303,7 +303,7 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
                       <button
                         type="button"
                         onClick={() => onSkillsFilterChange([])}
-                        className={styles.clearSkillsButton}
+                        className={styles.applicationFilters__clearSkillsButton}
                         title="Clear selected skills"
                       >
                         Clear Skills
@@ -312,27 +312,27 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
                   </div>
                 </div>
 
-              <div className={styles.skillsGrid}>
+              <div className={styles.applicationFilters__skillsGrid}>
                 {filteredSkills.map((skill) => (
                   <label
                     key={skill}
-                    className={`${styles.skillTag} ${
-                      skillsFilter.includes(skill) ? styles.skillSelected : ''
+                    className={`${styles.applicationFilters__skillTag} ${
+                      skillsFilter.includes(skill) ? styles["applicationFilters--skillSelected"] : ''
                     }`}
                   >
                     <input
                       type="checkbox"
                       checked={skillsFilter.includes(skill)}
                       onChange={() => handleSkillToggle(skill)}
-                      className={styles.skillCheckbox}
+                      className={styles.applicationFilters__skillCheckbox}
                     />
-                    <span className={styles.skillName}>{skill}</span>
+                    <span className={styles.applicationFilters__skillName}>{skill}</span>
                   </label>
                 ))}
               </div>
 
               {filteredSkills.length === 0 && debouncedSkillSearch.trim() && (
-                <div className={styles.noSkillsFound}>
+                <div className={styles.applicationFilters__noSkillsFound}>
                   <p>No skills found matching &quot;{debouncedSkillSearch.trim()}&quot;</p>
                 </div>
               )}

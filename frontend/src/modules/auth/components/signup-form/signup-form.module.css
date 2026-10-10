@@ -1,6 +1,6 @@
 /* Styles adapted from original authentication.css */
 /* Copied from signin-form.module.css as structure is similar */
-.formContainer {
+.signupForm {
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
@@ -9,29 +9,29 @@
 }
 
 @media (max-width: 768px) {
-  .formContainer {
+  .signupForm {
     max-width: 450px;
   }
 }
 
-.formStack {
+.signupForm__stack {
   display: flex;
   flex-direction: column;
   gap: 0;
 }
 
-.accountSection {
+.signupForm__account {
   min-width: 0;
 }
 
-.securitySection {
+.signupForm__security {
   margin-top: 1.75rem;
   padding-top: 1.75rem;
   border-top: 1px solid var(--color-border);
   min-width: 0;
 }
 
-.sectionTitle {
+.signupForm__heading {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-text-secondary);
@@ -40,7 +40,7 @@
   letter-spacing: 0.04em;
 }
 
-.form {
+.signupForm__form {
   background-color: var(--color-bg-primary);
   padding: 2.5rem;
   border-radius: 20px;
@@ -51,12 +51,12 @@
   z-index: 2;
 }
 
-.dark .form {
+:global(.dark) .signupForm__form {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
 }
 
 /* Title styling */
-.title {
+.signupForm__title {
   text-align: center;
   font-size: 1.5rem;
   font-weight: bold;
@@ -65,7 +65,7 @@
 }
 
 /* Password toggle button */
-.passwordToggle {
+.signupForm__toggle {
   position: absolute;
   right: 1rem;
   top: 50%;
@@ -83,22 +83,22 @@
   height: 1.5rem;
 }
 
-.passwordToggle:hover {
+.signupForm__toggle:hover {
   color: var(--color-text-primary);
 }
 
-.icon {
+.signupForm__icon {
   height: 1.25rem;
   width: 1.25rem;
 }
 
 /* Submit button container */
-.submitContainer {
+.signupForm__actions {
   text-align: center;
   margin-top: 2rem;
 }
 
-.submitButton {
+.signupForm__submit {
   width: auto;
   min-width: 180px;
   padding: 0.6rem 2.5rem;
@@ -119,19 +119,19 @@
   box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
 }
 
-.submitButton:hover {
+.signupForm__submit:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(249, 115, 22, 0.4);
 }
 
-.submitButton:disabled {
+.signupForm__submit:disabled {
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
   box-shadow: 0 4px 6px rgba(249, 115, 22, 0.2);
 }
 
-.passwordStrengthMeter {
+.signupForm__meter {
   height: 4px;
   margin: 0.5rem 0 0.25rem;
   width: 100%;
@@ -140,7 +140,7 @@
   gap: 4px;
 }
 
-.segment {
+.signupForm__segment {
   height: 100%;
   flex: 1;
   border-radius: 2px;
@@ -148,7 +148,7 @@
   transition: background-color 0.3s ease;
 }
 
-.passwordStrengthMeter .segment {
+.signupForm__meter .signupForm__segment {
   height: 100%;
   flex: 1;
   border-radius: 2px;
@@ -156,51 +156,58 @@
   transition: background-color 0.3s ease;
 }
 
-.passwordStrengthText {
+.signupForm__match {
+  color: #10b981;
+  font-size: 0.75rem;
+  margin-top: 0.35rem;
+  padding-left: 0.5rem;
+}
+
+.signupForm__strength {
   color: #ef4444;
   font-size: 0.85rem;
   transition: color 0.3s ease;
   margin: 0 0 0.25rem;
 }
 
-.veryWeak .segment:nth-child(1) {
+.signupForm__meter--veryWeak .signupForm__segment:nth-child(1) {
   background-color: #ef4444;
 }
-.veryWeakText {
+.signupForm__strength--veryWeak {
   color: #ef4444;
 }
 
-.weak .segment:nth-child(1),
-.weak .segment:nth-child(2) {
+.signupForm__meter--weak .signupForm__segment:nth-child(1),
+.signupForm__meter--weak .signupForm__segment:nth-child(2) {
   background-color: #f97316;
 }
-.weakText {
+.signupForm__strength--weak {
   color: #f97316;
 }
 
-.medium .segment:nth-child(1),
-.medium .segment:nth-child(2),
-.medium .segment:nth-child(3) {
+.signupForm__meter--medium .signupForm__segment:nth-child(1),
+.signupForm__meter--medium .signupForm__segment:nth-child(2),
+.signupForm__meter--medium .signupForm__segment:nth-child(3) {
   background-color: #10b981;
 }
-.mediumText {
+.signupForm__strength--medium {
   color: #10b981;
 }
 
-.strong .segment {
+.signupForm__meter--strong .signupForm__segment {
   background-color: #10b981;
 }
-.strongText {
+.signupForm__strength--strong {
   color: #10b981;
 }
 
 /* Role section styling */
-.roleSection {
+.signupForm__roleBox {
   margin: 0;
   height: 3.25rem;
 }
 
-.roleLabel {
+.signupForm__roleLabel {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -212,7 +219,7 @@
   border: 0;
 }
 
-.roleToggleContainer {
+.signupForm__roles {
   display: flex;
   width: 100%;
   max-width: 100%;
@@ -224,7 +231,7 @@
   align-items: center;
 }
 
-.roleBtn {
+.signupForm__role {
   flex: 1;
   padding: 0 0.9rem;
   height: 100%;
@@ -241,35 +248,35 @@
   text-align: center;
 }
 
-.roleBtn.active {
+.signupForm__role--active {
   background-color: var(--color-primary);
   color: white;
   box-shadow: 0 2px 4px rgba(249, 115, 22, 0.2);
 }
 
 /* Link section styling */
-.linkSection {
+.signupForm__links {
   text-align: center;
   margin-top: 1rem;
 }
 
-.linkText {
+.signupForm__linkText {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
 }
 
-.link {
+.signupForm__link {
   color: var(--color-primary);
   font-weight: 500;
   text-decoration: none;
   transition: all 0.3s ease;
 }
 
-.link:hover {
+.signupForm__link:hover {
   text-decoration: underline;
 }
 
-.alert {
+.signupForm__alert {
   padding: 1rem 1.5rem;
   border-radius: 15px;
   margin-bottom: 1.5rem;
@@ -277,20 +284,20 @@
   text-align: center;
 }
 
-.alertError {
+.signupForm__alert--error {
   background-color: #fee2e2;
   border: 1px solid #ef4444;
   color: #b91c1c;
 }
 
-.alertSuccess {
+.signupForm__alert--success {
   background-color: #dcfce7;
   border: 1px solid #22c55e;
   color: #166534;
 }
 
 /* Added alertInfo for signup placeholder */
-.alertInfo {
+.signupForm__alert--info {
   background-color: #dbeafe;
   border: 1px solid #3b82f6;
   color: #1d4ed8;

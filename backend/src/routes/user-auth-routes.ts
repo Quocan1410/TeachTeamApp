@@ -47,7 +47,7 @@ const validateSignupFields = (req: any, res: any, next: any) => {
 };
 
 const validateProfileFields = (req: any, res: any, next: any) => {
-    const { firstName, lastName, honorific } = req.body;
+    const { firstName, lastName, honorific, description, skills, website } = req.body;
     const errors: Record<string, string> = {};
 
     if (!firstName || (typeof firstName === "string" && firstName.trim() === "")) {
@@ -70,6 +70,27 @@ const validateProfileFields = (req: any, res: any, next: any) => {
         const valid = ["Mr.", "Ms.", "Mrs.", "Dr.", "Prof."];
         if (typeof honorific !== "string" || !valid.includes(honorific.trim())) {
             errors.honorific = "Please choose a valid title";
+        }
+    }
+
+    if (description !== undefined && description !== null && description !== "") {
+        if (typeof description !== "string" || description.trim().length > 1000) {
+            errors.description = "Description must be 1000 characters or less";
+        }
+    }
+
+    if (skills !== undefined && skills !== null && skills !== "") {
+        if (typeof skills !== "string" || skills.trim().length > 500) {
+            errors.skills = "Skills must be 500 characters or less";
+        }
+    }
+
+    if (website !== undefined && website !== null && String(website).trim() !== "") {
+        const value = String(website).trim();
+        const looksLikeSite =
+            /^https?:\/\/\S+$/i.test(value) || /^[a-z0-9.-]+\.[a-z]{2,}(\/\S*)?$/i.test(value);
+        if (value.length > 255 || /\s/.test(value) || !looksLikeSite) {
+            errors.website = "Enter a valid website";
         }
     }
 
@@ -99,6 +120,10 @@ router.post("/logout", async (req, res) => {
 
 router.post("/refresh", authRateLimiter, async (req, res) => {
     await authController.refreshToken(req, res);
+});
+
+router.get("/passkey/status", authenticateToken, async (req, res) => {
+    await passkeyController.status(req, res);
 });
 
 router.post("/passkey/register/options", authRateLimiter, authenticateToken, async (req, res) => {

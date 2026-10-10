@@ -77,7 +77,7 @@ const ApplicationDetailPanel: React.FC<ApplicationDetailPanelProps> = ({
 
   if (!hideSummary) {
     return (
-      <aside className={styles.panel} aria-label="Application details">
+      <aside className={styles.applicationDetailPanel__panel} aria-label="Application details">
         <ApplicationDetailHero
           application={application}
           isPinned={isPinned}
@@ -96,13 +96,13 @@ const ApplicationDetailPanel: React.FC<ApplicationDetailPanelProps> = ({
   }
 
   return (
-    <aside className={styles.panel} aria-label="Application details">
-      <div className={styles.viewStage}>
+    <aside className={styles.applicationDetailPanel__panel} aria-label="Application details">
+      <div className={styles.applicationDetailPanel__viewStage}>
         <AnimatePresence initial={false} custom={direction}>
           {view === "overview" ? (
             <motion.div
               key={`overview-${application.id}`}
-              className={styles.viewPage}
+              className={styles.applicationDetailPanel__viewPage}
               custom={direction}
               variants={detailViewVariants}
               initial="initial"
@@ -121,7 +121,7 @@ const ApplicationDetailPanel: React.FC<ApplicationDetailPanelProps> = ({
           ) : (
             <motion.div
               key={`chat-${application.id}`}
-              className={styles.viewPage}
+              className={styles.applicationDetailPanel__viewPage}
               custom={direction}
               variants={detailViewVariants}
               initial="initial"

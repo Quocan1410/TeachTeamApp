@@ -120,20 +120,25 @@ const Toast: React.FC<ToastProps> = ({
   // Build CSS classes dynamically
   const getTypeClassName = () => {
     switch (type) {
-      case "success": return styles.toastSuccess;
-      case "error": return styles.toastError;
-      case "info": return styles.toastInfo;
-      case "warning": return styles.toastWarning;
-      default: return styles.toastSuccess;
+      case "success": return styles.toast__toastSuccess;
+      case "error": return styles.toast__toastError;
+      case "info": return styles.toast__toastInfo;
+      case "warning": return styles.toast__toastWarning;
+      default: return styles.toast__toastSuccess;
     }
   };
 
+  const variantClass =
+    variant === "inline" ? styles["toast--inline"] : styles["toast--toast"];
+  const positionClass =
+    variant === "toast" ? styles[`toast--${position}`] : "";
+
   const containerClass = `
-    ${styles.toastNotification} 
-    ${getTypeClassName()} 
-    ${styles[variant]} 
-    ${variant === "toast" ? styles[position] : ""} 
-    ${darkMode ? styles.darkMode : ""}
+    ${styles.toast__toastNotification}
+    ${getTypeClassName()}
+    ${variantClass}
+    ${positionClass}
+    ${darkMode ? styles["toast--darkMode"] : ""}
     ${className}
   `.trim();
 
@@ -170,13 +175,23 @@ const Toast: React.FC<ToastProps> = ({
 
   const animationVariants = getAnimationVariants();
 
-  const effectiveTitle =
-    title ??
-    (type === "error" && message.trim()
-      ? message.trim()
-      : getDefaultTitle());
-  const effectiveMessage =
-    type === "error" && message.trim() && !title ? "" : message;
+  const keywordLines = message
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const stackedKeywords = !title && keywordLines.length > 1;
+
+  const effectiveTitle = stackedKeywords
+    ? ""
+    : title ??
+      (type === "error" && message.trim()
+        ? message.trim()
+        : getDefaultTitle());
+  const effectiveMessage = stackedKeywords
+    ? keywordLines.join("\n")
+    : type === "error" && message.trim() && !title
+      ? ""
+      : message;
 
   return (
     <AnimatePresence>
@@ -189,26 +204,36 @@ const Toast: React.FC<ToastProps> = ({
           transition={{ duration: 0.3 }}
         >
           {/* Floating icon at the top */}
-          <div className={styles.toastFloatingIcon}>
+          <div className={styles.toast__toastFloatingIcon}>
             {icons[type]}
           </div>
           
           {/* Main content wrapper */}
-          <div className={styles.toastInner}>
+          <div className={styles.toast__toastInner}>
             {/* Left side with decorative circles */}
-            <div className={styles.toastDecorative}>
-              <div className={styles.circle1}></div>
-              <div className={styles.circle2}></div>
-              <div className={styles.circle3}></div>
+            <div className={styles.toast__toastDecorative}>
+              <div className={styles.toast__circle1}></div>
+              <div className={styles.toast__circle2}></div>
+              <div className={styles.toast__circle3}></div>
             </div>
             
             {/* Content */}
-            <div className={styles.toastContentArea}>
-              <div className={styles.toastHeader}>
-                <h2 className={styles.toastTitle}>{effectiveTitle}</h2>
-              </div>
+            <div className={styles.toast__toastContentArea}>
+              {effectiveTitle ? (
+                <div className={styles.toast__toastHeader}>
+                  <h2 className={styles.toast__toastTitle}>{effectiveTitle}</h2>
+                </div>
+              ) : null}
               {effectiveMessage ? (
-                <p className={styles.toastMessage}>{effectiveMessage}</p>
+                <p
+                  className={`${styles.toast__toastMessage} ${
+                    stackedKeywords ? styles["toast__toastMessage--keywords"] : ""
+                  }`}
+                >
+                  {stackedKeywords
+                    ? keywordLines.map((line) => <span key={line}>{line}</span>)
+                    : effectiveMessage}
+                </p>
               ) : null}
             </div>
             
@@ -216,7 +241,7 @@ const Toast: React.FC<ToastProps> = ({
             {autoClose && (
               <span
                 key={timerKey}
-                className={styles.toastTimer}
+                className={styles.toast__toastTimer}
                 style={{ animationDuration: `${autoCloseDelay}ms` }}
               />
             )}
@@ -224,7 +249,7 @@ const Toast: React.FC<ToastProps> = ({
             {showCloseButton && (
               <button
                 type="button"
-                className={`${styles.toastClose} iconCloseHit iconCloseCircle`}
+                className={`${styles.toast__toastClose} iconClose__hit iconClose__circle`}
                 onClick={onClose}
                 aria-label="Close toast"
               >

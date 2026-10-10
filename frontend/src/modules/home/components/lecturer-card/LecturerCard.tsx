@@ -24,7 +24,7 @@ function Highlighted({ text, terms }: { text: string; terms: string[] }) {
     const index = match.index ?? 0;
     if (index > last) nodes.push(text.slice(last, index));
     nodes.push(
-      <mark key={`${index}-${match[0]}`} className={styles.hit}>
+      <mark key={`${index}-${match[0]}`} className={styles.lecturerCard__hit}>
         {match[0]}
       </mark>
     );
@@ -73,39 +73,39 @@ const LecturerCard: React.FC<LecturerCardProps> = ({
   if (variant === "directory") {
     const courses = (lecturer.assignedCourses ?? []).slice(0, 3);
     return (
-      <div className={styles.directoryStage}>
+      <div className={styles.lecturerCard__directoryStage}>
       <div
-        className={styles.directoryShell}
+        className={styles.lecturerCard__directoryShell}
         onMouseMove={tiltCard}
         onMouseLeave={resetTilt}
       >
-        <button type="button" className={styles.directory} onClick={handleCardClick}>
-          <span className={styles.ornament} aria-hidden="true">
-            <span className={styles.gem} />
-            <span className={styles.dotBlue} />
-            <span className={styles.dotGreen} />
+        <button type="button" className={styles.lecturerCard__directory} onClick={handleCardClick}>
+          <span className={styles.lecturerCard__ornament} aria-hidden="true">
+            <span className={styles.lecturerCard__gem} />
+            <span className={styles.lecturerCard__dotBlue} />
+            <span className={styles.lecturerCard__dotGreen} />
           </span>
-          <span className={styles.directoryTop}>
-            <span className={styles.directoryPhoto}>
+          <span className={styles.lecturerCard__directoryTop}>
+            <span className={styles.lecturerCard__directoryPhoto}>
               <Image
                 src={lecturer.avatarPath || lecturerPortraitSrc(imageIndex)}
                 alt=""
                 width={112}
                 height={112}
-                className={styles.lecturerImage}
+                className={styles.lecturerCard__lecturerImage}
               />
             </span>
-            <span className={styles.directoryCopy}>
-              <span className={styles.directoryName}>
+            <span className={styles.lecturerCard__directoryCopy}>
+              <span className={styles.lecturerCard__directoryName}>
                 <Highlighted text={lecturer.name} terms={highlightTerms} />
               </span>
-              <span className={styles.directoryRole}>
+              <span className={styles.lecturerCard__directoryRole}>
                 <Highlighted text={lecturer.title} terms={highlightTerms} />
               </span>
             </span>
           </span>
           {courses.length > 0 && (
-            <span className={styles.directoryCourses}>
+            <span className={styles.lecturerCard__directoryCourses}>
               {courses.map((course) => {
                 const codeHit = highlightTerms.some((term) =>
                   course.courseCode.toLowerCase().includes(term)
@@ -114,9 +114,9 @@ const LecturerCard: React.FC<LecturerCardProps> = ({
                   course.courseName.toLowerCase().includes(term)
                 );
                 return (
-                  <span key={`${course.courseCode}-${course.semester}`} className={styles.code}>
+                  <span key={`${course.courseCode}-${course.semester}`} className={styles.lecturerCard__code}>
                     {nameHit && !codeHit ? (
-                      <mark className={styles.hit}>{course.courseCode}</mark>
+                      <mark className={styles.lecturerCard__hit}>{course.courseCode}</mark>
                     ) : (
                       <Highlighted text={course.courseCode} terms={highlightTerms} />
                     )}
@@ -137,21 +137,21 @@ const LecturerCard: React.FC<LecturerCardProps> = ({
       onClick={handleCardClick}
     >
       <div>
-        <div className={styles.lecturerImageContainer}>
+        <div className={styles.lecturerCard__lecturerImageContainer}>
           <Image
             src={lecturer.avatarPath || lecturerPortraitSrc(imageIndex)}
             alt={lecturer.name}
             width={200}
             height={200}
-            className={styles.lecturerImage}
+            className={styles.lecturerCard__lecturerImage}
             loading={imageIndex < 2 ? "eager" : "lazy"}
           />
         </div>
-        <h3 className={styles.lecturerName}>{lecturer.name}</h3>
-        <p className={styles.lecturerTitle}>{lecturer.title}</p>
-        <p className={styles.lecturerSpecialization}>{lecturer.specialization}</p>
+        <h3 className={styles.lecturerCard__lecturerName}>{lecturer.name}</h3>
+        <p className={styles.lecturerCard__lecturerTitle}>{lecturer.title}</p>
+        <p className={styles.lecturerCard__lecturerSpecialization}>{lecturer.specialization}</p>
       </div>
-      <button className={styles.moreInfoBtn} onClick={handleButtonClick}>
+      <button className={styles.lecturerCard__moreInfoBtn} onClick={handleButtonClick}>
         More Information
       </button>
     </div>

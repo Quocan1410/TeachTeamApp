@@ -1,4 +1,4 @@
-.standalone {
+.applicationYourApplication__standalone {
   flex-shrink: 0;
   width: 100%;
   padding: 0.85rem 0.78rem 0.9rem;
@@ -8,13 +8,13 @@
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
 }
 
-.inline {
+.applicationYourApplication__inline {
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
 }
 
-.topRow {
+.applicationYourApplication__topRow {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -22,11 +22,11 @@
   row-gap: 0.35rem;
 }
 
-.topRow .row {
+.applicationYourApplication__topRow .applicationYourApplication__row {
   margin: 0;
 }
 
-.title {
+.applicationYourApplication__title {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -38,7 +38,7 @@
   color: var(--color-text-primary);
 }
 
-.title::before {
+.applicationYourApplication__title::before {
   content: "";
   flex-shrink: 0;
   width: 3px;
@@ -47,10 +47,10 @@
   background: var(--color-primary);
 }
 
-:global(.dark) .title::before {
+:global(.dark) .applicationYourApplication__title::before {
   background: #f97316;
 }
 
-:global(.dark) .standalone {
+:global(.dark) .applicationYourApplication__standalone {
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04);
 }

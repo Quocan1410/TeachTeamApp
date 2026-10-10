@@ -1,5 +1,5 @@
 /* Filter Tools */
-.filterTools {
+.applicationFilters__filterTools {
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -7,30 +7,30 @@
 }
 
 @media (min-width: 768px) {
-  .filterTools {
+  .applicationFilters__filterTools {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
   }
 }
 
-.filterGroup {
+.applicationFilters__filterGroup {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   min-width: 200px;
 }
 
-.filterGroup:first-child {
+.applicationFilters__filterGroup:first-child {
   flex: 1;
 }
 
-.filterSelects {
+.applicationFilters__filterSelects {
   display: flex;
   gap: 1rem;
 }
 
-.filterGroup label {
+.applicationFilters__filterGroup label {
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--color-text-primary);
@@ -42,7 +42,7 @@
   gap: 0.5rem;
 }
 
-.filterGroup label::before {
+.applicationFilters__filterGroup label::before {
   content: "";
   width: 7px;
   height: 7px;
@@ -51,11 +51,11 @@
   flex-shrink: 0;
 }
 
-.filterGroup:hover label::before {
+.applicationFilters__filterGroup:hover label::before {
   transform: none;
 }
 
-.filterTools .filterSelect {
+.applicationFilters__filterTools .applicationFilters__filterSelect {
   padding: 0.875rem 1rem;
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
@@ -75,21 +75,21 @@
   min-height: 2.75rem;
 }
 
-.filterTools .filterSelect:hover {
+.applicationFilters__filterTools .applicationFilters__filterSelect:hover {
   border-color: var(--color-primary);
   background-color: var(--color-bg-secondary);
 }
 
-.filterTools .filterSelect:focus {
+.applicationFilters__filterTools .applicationFilters__filterSelect:focus {
   outline: none;
   border-color: var(--color-primary);
 }
 
-.filterSelect::-ms-expand {
+.applicationFilters__filterSelect::-ms-expand {
   display: none;
 }
 
-.filterInput {
+.applicationFilters__filterInput {
   padding: 0.5rem;
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
@@ -100,17 +100,17 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.filterInput:focus {
+.applicationFilters__filterInput:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--color-primary-light, rgba(249, 115, 22, 0.1));
 }
 
-.filterInput::placeholder {
+.applicationFilters__filterInput::placeholder {
   color: var(--color-text-tertiary);
 }
 
-.dark .filterTools .filterSelect {
+.applicationFilters__dark .applicationFilters__filterTools .applicationFilters__filterSelect {
   background: var(--color-bg-primary);
   border-color: rgba(255, 255, 255, 0.12);
   color: var(--color-text-primary);
@@ -118,13 +118,13 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.dark .filterInput {
+.applicationFilters__dark .applicationFilters__filterInput {
   background-color: var(--color-bg-secondary);
   border-color: var(--color-border-dark);
 }
 
 /* Application Filters - Enhanced Version */
-.filtersContainer {
+.applicationFilters__filtersContainer {
   background: var(--color-bg-primary);
   border-radius: 1rem;
   border: 1px solid var(--color-border);
@@ -136,12 +136,12 @@
   transition: all 0.3s ease;
 }
 
-.filtersContainer.filtersExpanded {
+.applicationFilters__filtersContainer.applicationFilters--filtersExpanded {
   overflow: visible;
 }
 
 /* Filter Header */
-.filtersHeader {
+.applicationFilters__filtersHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -153,11 +153,11 @@
   position: relative;
 }
 
-.headerLeft {
+.applicationFilters__headerLeft {
   flex: 1;
 }
 
-.filtersTitle {
+.applicationFilters__filtersTitle {
   font-size: 1.375rem;
   font-weight: 700;
   color: var(--color-text-primary);
@@ -167,7 +167,7 @@
   gap: 0.75rem;
 }
 
-.filterCount {
+.applicationFilters__filterCount {
   background: var(--color-primary);
   color: white;
   font-size: 0.75rem;
@@ -181,21 +181,21 @@
   vertical-align: middle;
 }
 
-.filtersSubtitle {
+.applicationFilters__filtersSubtitle {
   color: var(--color-text-secondary);
   font-size: 0.95rem;
   margin: 0;
   line-height: 1.4;
 }
 
-.headerActions {
+.applicationFilters__headerActions {
   display: flex;
   align-items: center;
   gap: 1rem;
   flex-shrink: 0;
 }
 
-.clearButton {
+.applicationFilters__clearButton {
   background: transparent;
   color: var(--color-text-secondary);
   border: 1px solid var(--color-border);
@@ -207,22 +207,22 @@
   transition: border-color 0.2s ease, color 0.2s ease;
 }
 
-.clearButton::before {
+.applicationFilters__clearButton::before {
   display: none;
 }
 
-.clearButton:hover {
+.applicationFilters__clearButton:hover {
   border-color: #ef4444;
   color: #ef4444;
   transform: none;
   box-shadow: none;
 }
 
-.clearButton:hover::before {
+.applicationFilters__clearButton:hover::before {
   display: none;
 }
 
-.expandButton {
+.applicationFilters__expandButton {
   background: transparent;
   color: var(--color-text-primary);
   border: 1px solid var(--color-border);
@@ -238,39 +238,39 @@
   box-shadow: none;
 }
 
-.expandButton::before {
+.applicationFilters__expandButton::before {
   display: none;
 }
 
-.expandButton:hover {
+.applicationFilters__expandButton:hover {
   border-color: var(--color-primary);
   color: var(--color-primary);
   transform: none;
   box-shadow: none;
 }
 
-.expandButton:hover::before {
+.applicationFilters__expandButton:hover::before {
   display: none;
 }
 
-.expandButton.expanded {
+.applicationFilters__expandButton.applicationFilters--expanded {
   border-color: var(--color-primary);
   color: var(--color-primary);
   background: rgba(249, 115, 22, 0.06);
   box-shadow: none;
 }
 
-.expandIcon {
+.applicationFilters__expandIcon {
   transition: transform 0.3s ease;
   font-size: 0.75rem;
 }
 
-.expandButton.expanded .expandIcon {
+.applicationFilters__expandButton.applicationFilters--expanded .applicationFilters__expandIcon {
   transform: rotate(180deg);
 }
 
 /* Quick Search Section */
-.quickSearch {
+.applicationFilters__quickSearch {
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -281,11 +281,11 @@
   border-radius: 1rem;
 }
 
-.filtersExpanded .quickSearch {
+.applicationFilters__filtersExpanded .applicationFilters__quickSearch {
   border-radius: 1rem 1rem 0 0;
 }
 
-.quickSearchHead {
+.applicationFilters__quickSearchHead {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -293,14 +293,14 @@
   flex-wrap: wrap;
 }
 
-.filterSectionTitle {
+.applicationFilters__filterSectionTitle {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.4rem;
 }
 
-.filterTitleText {
+.applicationFilters__filterTitleText {
   color: var(--color-text-primary);
   font-size: 1.125rem;
   font-weight: 700;
@@ -308,7 +308,7 @@
   letter-spacing: 0.01em;
 }
 
-.filterTitleLine {
+.applicationFilters__filterTitleLine {
   display: block;
   width: 3.75rem;
   height: 2px;
@@ -317,18 +317,18 @@
   opacity: 0.45;
 }
 
-:global(.dark) .filterTitleText,
-:global(html[data-theme="dark"]) .filterTitleText {
+:global(.dark) .applicationFilters__filterTitleText,
+:global(html[data-theme="dark"]) .applicationFilters__filterTitleText {
   color: #ffffff;
 }
 
-:global(.dark) .filterTitleLine,
-:global(html[data-theme="dark"]) .filterTitleLine {
+:global(.dark) .applicationFilters__filterTitleLine,
+:global(html[data-theme="dark"]) .applicationFilters__filterTitleLine {
   background: rgba(255, 255, 255, 0.9);
   opacity: 0.35;
 }
 
-.quickSearchToolbar {
+.applicationFilters__quickSearchToolbar {
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -336,7 +336,7 @@
   flex-wrap: wrap;
 }
 
-.quickSearchFields {
+.applicationFilters__quickSearchFields {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.5rem;
@@ -344,11 +344,11 @@
   align-items: start;
 }
 
-.searchGroup {
+.applicationFilters__searchGroup {
   grid-column: span 2;
 }
 
-.filterCountBadge {
+.applicationFilters__filterCountBadge {
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--color-primary);
@@ -358,8 +358,8 @@
   border-radius: 999px;
 }
 
-.searchGroup,
-.courseGroup {
+.applicationFilters__searchGroup,
+.applicationFilters__courseGroup {
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -371,14 +371,14 @@
   min-width: 0;
 }
 
-.searchGroup:focus-within,
-.courseGroup:focus-within,
-.filterRow .filterGroup:focus-within {
+.applicationFilters__searchGroup:focus-within,
+.applicationFilters__courseGroup:focus-within,
+.applicationFilters__filterRow .applicationFilters__filterGroup:focus-within {
   background: rgba(249, 115, 22, 0.07);
   border-color: rgba(249, 115, 22, 0.22);
 }
 
-.fieldLabel {
+.applicationFilters__fieldLabel {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -392,7 +392,7 @@
   line-height: 1.125rem;
 }
 
-.fieldLabel::before {
+.applicationFilters__fieldLabel::before {
   content: "";
   width: 7px;
   height: 7px;
@@ -401,7 +401,7 @@
   flex-shrink: 0;
 }
 
-.searchInputWrapper {
+.applicationFilters__searchInputWrapper {
   position: relative;
   display: flex;
   align-items: center;
@@ -409,7 +409,7 @@
   border-radius: 0.5rem;
 }
 
-.searchInput {
+.applicationFilters__searchInput {
   width: 100%;
   padding: 0.875rem 1rem;
   border: 1px solid var(--color-border);
@@ -423,18 +423,18 @@
   box-sizing: border-box;
 }
 
-.searchInput:focus {
+.applicationFilters__searchInput:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
 }
 
-.searchInput::placeholder {
+.applicationFilters__searchInput::placeholder {
   color: var(--color-text-tertiary);
   opacity: 0.8;
 }
 
-.clearSearchButton {
+.applicationFilters__clearSearchButton {
   position: absolute;
   right: 0.5rem;
   width: 1.375rem;
@@ -449,11 +449,11 @@
   transition: background 0.2s ease;
 }
 
-.clearSearchButton:hover {
+.applicationFilters__clearSearchButton:hover {
   background: rgba(239, 68, 68, 0.2);
 }
 
-.selectInput {
+.applicationFilters__selectInput {
   padding: 0.875rem 1rem;
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
@@ -472,17 +472,17 @@
   min-height: 2.75rem;
 }
 
-.selectInput:hover {
+.applicationFilters__selectInput:hover {
   border-color: var(--color-primary);
   background-color: var(--color-bg-secondary);
 }
 
-.selectInput:focus {
+.applicationFilters__selectInput:focus {
   outline: none;
   border-color: var(--color-primary);
 }
 
-.noCoursesMessage {
+.applicationFilters__noCoursesMessage {
   padding: 1rem;
   background: linear-gradient(135deg, rgba(156, 163, 175, 0.1) 0%, rgba(156, 163, 175, 0.05) 100%);
   border: 2px dashed var(--color-border);
@@ -495,7 +495,7 @@
   backdrop-filter: blur(10px);
 }
 
-.noCoursesMessage::before {
+.applicationFilters__noCoursesMessage::before {
   content: '📚';
   display: block;
   font-size: 1.5rem;
@@ -504,7 +504,7 @@
 }
 
 /* Advanced Filters */
-.advancedFilters {
+.applicationFilters__advancedFilters {
   background: var(--color-bg-primary);
   border-top: 1px solid var(--color-border);
   overflow: visible;
@@ -514,7 +514,7 @@
   padding-top: 1.25rem;
 }
 
-.filterRow {
+.applicationFilters__filterRow {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1.5rem;
@@ -522,7 +522,7 @@
   align-items: start;
 }
 
-.filterRow .filterGroup {
+.applicationFilters__filterRow .applicationFilters__filterGroup {
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -533,7 +533,7 @@
   min-width: 0;
 }
 
-.filterLabel {
+.applicationFilters__filterLabel {
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--color-text-secondary);
@@ -541,18 +541,18 @@
   margin-bottom: 0.375rem;
 }
 
-.filterLabel::before {
+.applicationFilters__filterLabel::before {
   display: none;
 }
 
 /* Skills Section */
-.skillsSection {
+.applicationFilters__skillsSection {
   padding: 1.5rem 1.5rem 2rem;
   margin-top: 0.25rem;
   border-top: 1px solid var(--color-border);
 }
 
-.skillsFilterBlock {
+.applicationFilters__skillsFilterBlock {
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -561,7 +561,7 @@
   border: 1px solid transparent;
 }
 
-.skillsHeader {
+.applicationFilters__skillsHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -569,11 +569,11 @@
   margin-bottom: 1.5rem;
 }
 
-.skillsHeader .fieldLabel {
+.applicationFilters__skillsHeader .applicationFilters__fieldLabel {
   margin-bottom: 0;
 }
 
-.skillsCount {
+.applicationFilters__skillsCount {
   color: var(--color-primary);
   font-size: 0.8rem;
   font-weight: 500;
@@ -581,25 +581,25 @@
   letter-spacing: 0;
 }
 
-.skillsControls {
+.applicationFilters__skillsControls {
   display: flex;
   align-items: center;
   gap: 1rem;
   flex-shrink: 0;
 }
 
-.skillsGrid {
+.applicationFilters__skillsGrid {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 0;
 }
 
-.skillSearchWrapper {
+.applicationFilters__skillSearchWrapper {
   position: relative;
 }
 
-.skillSearchInput {
+.applicationFilters__skillSearchInput {
   padding: 0.875rem 1rem;
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
@@ -614,22 +614,22 @@
   box-shadow: 0 0 0 3px transparent;
 }
 
-.skillSearchInput:hover {
+.applicationFilters__skillSearchInput:hover {
   border-color: var(--color-primary);
   background-color: var(--color-bg-secondary);
 }
 
-.skillSearchInput:focus {
+.applicationFilters__skillSearchInput:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
 }
 
-.skillSearchInput::placeholder {
+.applicationFilters__skillSearchInput::placeholder {
   color: var(--color-text-tertiary);
 }
 
-.filterSelect {
+.applicationFilters__filterSelect {
   padding: 0.875rem 1rem;
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
@@ -648,17 +648,17 @@
   min-height: 2.75rem;
 }
 
-.filterSelect:hover {
+.applicationFilters__filterSelect:hover {
   border-color: var(--color-primary);
   background-color: var(--color-bg-secondary);
 }
 
-.filterSelect:focus {
+.applicationFilters__filterSelect:focus {
   outline: none;
   border-color: var(--color-primary);
 }
 
-.clearSkillsButton {
+.applicationFilters__clearSkillsButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -677,12 +677,12 @@
   box-sizing: border-box;
 }
 
-.clearSkillsButton:hover {
+.applicationFilters__clearSkillsButton:hover {
   background: rgba(239, 68, 68, 0.15);
   border-color: rgba(239, 68, 68, 0.45);
 }
 
-.skillTag {
+.applicationFilters__skillTag {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -696,33 +696,33 @@
   user-select: none;
 }
 
-.skillTag:hover {
+.applicationFilters__skillTag:hover {
   background: var(--color-bg-hover);
   border-color: var(--color-primary);
 }
 
-.skillTag.skillSelected {
+.applicationFilters__skillTag.applicationFilters--skillSelected {
   background: rgba(249, 115, 22, 0.1);
   border-color: var(--color-primary);
   color: var(--color-primary);
 }
 
-.skillTag:focus-within {
+.applicationFilters__skillTag:focus-within {
   border-color: var(--color-primary);
   background: rgba(249, 115, 22, 0.08);
 }
 
-.skillCheckbox {
+.applicationFilters__skillCheckbox {
   margin: 0;
   accent-color: var(--color-primary);
   border-radius: 0.25rem;
 }
 
-.skillName {
+.applicationFilters__skillName {
   font-weight: 500;
 }
 
-.noSkillsFound {
+.applicationFilters__noSkillsFound {
   text-align: center;
   padding: 2rem;
   color: var(--color-text-secondary);
@@ -730,26 +730,26 @@
 }
 
 /* Active Filters Summary */
-.activeFilters {
+.applicationFilters__activeFilters {
   background: var(--color-bg-secondary);
   padding: 1.5rem 2rem;
   border-top: 1px solid var(--color-border);
 }
 
-.activeFiltersTitle {
+.applicationFilters__activeFiltersTitle {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin: 0 0 1rem 0;
 }
 
-.activeFiltersList {
+.applicationFilters__activeFiltersList {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
 }
 
-.activeFilter {
+.applicationFilters__activeFilter {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -762,7 +762,7 @@
   border: 1px solid rgba(249, 115, 22, 0.3);
 }
 
-.removeFilter {
+.applicationFilters__removeFilter {
   width: 1rem;
   height: 1rem;
   min-width: 1rem;
@@ -778,7 +778,7 @@
   transition: opacity 0.2s ease, background 0.15s ease;
 }
 
-.removeFilter:hover {
+.applicationFilters__removeFilter:hover {
   opacity: 1;
   background: rgba(249, 115, 22, 0.12);
 }
@@ -804,135 +804,135 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .filterRow {
+  .applicationFilters__filterRow {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
   }
 
-  .skillsHeader {
+  .applicationFilters__skillsHeader {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
 
-  .skillsControls {
+  .applicationFilters__skillsControls {
     width: 100%;
     justify-content: space-between;
   }
 }
 
 @media (max-width: 768px) {
-  .filtersHeader {
+  .applicationFilters__filtersHeader {
     flex-direction: column;
     gap: 1rem;
     align-items: flex-start;
   }
   
-  .headerActions {
+  .applicationFilters__headerActions {
     width: 100%;
     justify-content: space-between;
   }
   
-  .quickSearchFields {
+  .applicationFilters__quickSearchFields {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
 
-  .searchGroup {
+  .applicationFilters__searchGroup {
     grid-column: span 1;
   }
   
-  .filterRow {
+  .applicationFilters__filterRow {
     grid-template-columns: 1fr;
     padding: 0 1rem 1.25rem;
   }
   
-  .skillsSection {
+  .applicationFilters__skillsSection {
     padding: 1.5rem;
   }
   
-  .skillSearchInput {
+  .applicationFilters__skillSearchInput {
     width: 100%;
   }
   
-  .skillsControls {
+  .applicationFilters__skillsControls {
     flex-direction: column;
     gap: 0.75rem;
     align-items: stretch;
   }
   
-  .activeFiltersList {
+  .applicationFilters__activeFiltersList {
     gap: 0.5rem;
   }
   
   /* Mobile optimizations for labels and selects */
-  .searchLabel,
-  .selectLabel,
-  .filterLabel {
+  .applicationFilters__searchLabel,
+  .applicationFilters__selectLabel,
+  .applicationFilters__filterLabel {
     font-size: 0.8rem;
     margin-bottom: 0.375rem;
   }
   
-  .selectInput,
-  .filterSelect,
-  .filterTools .filterSelect {
+  .applicationFilters__selectInput,
+  .applicationFilters__filterSelect,
+  .applicationFilters__filterTools .applicationFilters__filterSelect {
     padding: 0.75rem;
     font-size: 0.875rem;
     min-width: auto;
   }
   
-  .filterGroup label::before,
-  .searchLabel::before,
-  .selectLabel::before,
-  .filterLabel::before {
+  .applicationFilters__filterGroup label::before,
+  .applicationFilters__searchLabel::before,
+  .applicationFilters__selectLabel::before,
+  .applicationFilters__filterLabel::before {
     font-size: 0.7rem;
   }
 }
 
 @media (max-width: 480px) {
-  .filtersContainer {
+  .applicationFilters__filtersContainer {
     margin-bottom: 1rem;
     border-radius: 0.75rem;
   }
   
-  .filtersHeader,
-  .quickSearch,
-  .filterRow,
-  .skillsSection,
-  .activeFilters {
+  .applicationFilters__filtersHeader,
+  .applicationFilters__quickSearch,
+  .applicationFilters__filterRow,
+  .applicationFilters__skillsSection,
+  .applicationFilters__activeFilters {
     padding: 1rem;
   }
   
-  .filtersTitle {
+  .applicationFilters__filtersTitle {
     font-size: 1.125rem;
   }
   
-  .skillsGrid {
+  .applicationFilters__skillsGrid {
     gap: 0.375rem;
   }
   
-  .skillTag {
+  .applicationFilters__skillTag {
     padding: 0.375rem 0.625rem;
     font-size: 0.8rem;
   }
 }
 
 /* Enhanced Dark Mode Support */
-:global(.dark) .filtersContainer {
+:global(.dark) .applicationFilters__filtersContainer {
   background: var(--color-bg-primary);
   border-color: var(--color-border);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(20px);
 }
 
-:global(.dark) .filtersHeader {
+:global(.dark) .applicationFilters__filtersHeader {
   background: linear-gradient(135deg, 
     var(--color-bg-primary) 0%, 
     var(--color-bg-secondary) 100%);
   border-bottom-color: var(--color-border);
 }
 
-:global(.dark) .filtersHeader::before {
+:global(.dark) .applicationFilters__filtersHeader::before {
   background: linear-gradient(90deg, 
     var(--color-primary) 0%, 
     var(--color-secondary) 50%, 
@@ -940,162 +940,162 @@
   opacity: 0.8;
 }
 
-:global(.dark) .quickSearch {
+:global(.dark) .applicationFilters__quickSearch {
   background: var(--color-bg-secondary);
   backdrop-filter: blur(10px);
 }
 
-:global(.dark) .searchInput {
+:global(.dark) .applicationFilters__searchInput {
   background: var(--color-bg-primary);
   border-color: var(--color-border);
   color: var(--color-text-primary);
 }
 
-:global(.dark) .skillSearchInput {
+:global(.dark) .applicationFilters__skillSearchInput {
   background-color: var(--color-bg-primary);
   border-color: var(--color-border);
   color: var(--color-text-primary);
 }
 
-:global(.dark) .skillSearchInput:hover {
+:global(.dark) .applicationFilters__skillSearchInput:hover {
   background-color: var(--color-bg-secondary);
   border-color: var(--color-primary);
 }
 
-:global(.dark) .skillSearchInput::placeholder {
+:global(.dark) .applicationFilters__skillSearchInput::placeholder {
   color: var(--color-text-tertiary);
 }
 
-:global(.dark) .searchInput:focus {
+:global(.dark) .applicationFilters__searchInput:focus {
   border-color: var(--color-primary);
 }
 
-:global(.dark) .searchInput::placeholder {
+:global(.dark) .applicationFilters__searchInput::placeholder {
   color: var(--color-text-tertiary);
   opacity: 0.8;
 }
 
-:global(.dark) .selectInput {
+:global(.dark) .applicationFilters__selectInput {
   background-color: var(--color-bg-primary);
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23f97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,9 12,15 18,9"/></svg>');
   border-color: var(--color-border);
   color: var(--color-text-primary);
 }
 
-:global(.dark) .selectInput:hover {
+:global(.dark) .applicationFilters__selectInput:hover {
   border-color: var(--color-primary);
   background-color: var(--color-bg-secondary);
 }
 
-:global(.dark) .selectInput:focus {
+:global(.dark) .applicationFilters__selectInput:focus {
   border-color: var(--color-primary);
 }
 
-:global(.dark) .clearButton {
+:global(.dark) .applicationFilters__clearButton {
   background: rgba(239, 68, 68, 0.15);
   border-color: rgba(239, 68, 68, 0.4);
 }
 
-:global(.dark) .clearButton:hover {
+:global(.dark) .applicationFilters__clearButton:hover {
   background: rgba(239, 68, 68, 0.2);
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
-:global(.dark) .expandButton {
+:global(.dark) .applicationFilters__expandButton {
   background: transparent;
   border-color: var(--color-border);
   color: var(--color-text-primary);
 }
 
-:global(.dark) .expandButton:hover,
-:global(.dark) .expandButton.expanded {
+:global(.dark) .applicationFilters__expandButton:hover,
+:global(.dark) .applicationFilters__expandButton.applicationFilters--expanded {
   border-color: var(--color-primary);
   color: var(--color-primary);
   background: rgba(249, 115, 22, 0.08);
   box-shadow: none;
 }
 
-:global(.dark) .skillTag {
+:global(.dark) .applicationFilters__skillTag {
   background: var(--color-bg-primary);
   border-color: var(--color-border);
   color: var(--color-text-primary);
 }
 
-:global(.dark) .skillTag:hover {
+:global(.dark) .applicationFilters__skillTag:hover {
   background: var(--color-bg-secondary);
   border-color: var(--color-primary);
 }
 
-:global(.dark) .skillTag.skillSelected {
+:global(.dark) .applicationFilters__skillTag.applicationFilters--skillSelected {
   background: var(--color-primary);
   color: white;
   border-color: var(--color-primary);
   box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
 }
 
-:global(.dark) .filterSelect {
+:global(.dark) .applicationFilters__filterSelect {
   background-color: var(--color-bg-primary);
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23f97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,9 12,15 18,9"/></svg>');
   border-color: var(--color-border);
   color: var(--color-text-primary);
 }
 
-:global(.dark) .filterSelect:hover {
+:global(.dark) .applicationFilters__filterSelect:hover {
   border-color: var(--color-primary);
   background-color: var(--color-bg-secondary);
 }
 
-:global(.dark) .filterSelect:focus {
+:global(.dark) .applicationFilters__filterSelect:focus {
   border-color: var(--color-primary);
 }
 
-:global(.dark) .activeFilter {
+:global(.dark) .applicationFilters__activeFilter {
   background: rgba(249, 115, 22, 0.15);
   border-color: rgba(249, 115, 22, 0.4);
   color: var(--color-primary);
 }
 
-:global(.dark) .noCoursesMessage {
+:global(.dark) .applicationFilters__noCoursesMessage {
   background: var(--color-bg-primary);
   border-color: var(--color-border);
   color: var(--color-text-secondary);
 }
 
-:global(.dark) .advancedFilters {
+:global(.dark) .applicationFilters__advancedFilters {
   background: var(--color-bg-primary);
   border-color: var(--color-border);
 }
 
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) {
-  .filtersContainer,
-  .expandButton,
-  .clearButton,
-  .skillTag,
-  .clearSearchButton {
+  .applicationFilters__filtersContainer,
+  .applicationFilters__expandButton,
+  .applicationFilters__clearButton,
+  .applicationFilters__skillTag,
+  .applicationFilters__clearSearchButton {
     transition: none;
   }
   
-  .filterIcon {
+  .applicationFilters__filterIcon {
     animation: none;
   }
   
-  .filterCount {
+  .applicationFilters__filterCount {
     animation: none;
   }
 }
 
 /* High Contrast Mode */
 @media (prefers-contrast: high) {
-  .filtersContainer {
+  .applicationFilters__filtersContainer {
     border-width: 2px;
   }
   
-  .skillTag {
+  .applicationFilters__skillTag {
     border-width: 2px;
   }
   
-  .activeFilter {
+  .applicationFilters__activeFilter {
     border-width: 2px;
   }
 }

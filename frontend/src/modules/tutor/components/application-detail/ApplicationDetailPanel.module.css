@@ -1,4 +1,4 @@
-.panel {
+.applicationDetailPanel__panel {
   border: 1px solid var(--color-border);
   border-radius: 1rem;
   background: var(--color-bg-primary);
@@ -24,13 +24,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .panel {
+  .applicationDetailPanel__panel {
     animation: none;
   }
 }
 
 /* —— Header: mirrors list card layout —— */
-.hero {
+.applicationDetailPanel__hero {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -41,81 +41,81 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-.heroCompact {
+.applicationDetailPanel__heroCompact {
   padding: 0.85rem 0.78rem 0.8rem;
   gap: 0.65rem;
 }
 
-.heroCompact .heroTitle {
+.applicationDetailPanel__heroCompact .applicationDetailPanel__heroTitle {
   font-size: 0.88rem;
   margin-bottom: 0.35rem;
 }
 
-.heroCompact .heroDescription {
+.applicationDetailPanel__heroCompact .applicationDetailPanel__heroDescription {
   font-size: 0.73rem;
   -webkit-line-clamp: 2;
 }
 
-.heroCompact .heroEyebrow {
+.applicationDetailPanel__heroCompact .applicationDetailPanel__heroEyebrow {
   margin-bottom: 0.45rem;
   font-size: 0.7rem;
 }
 
-.heroCompact .heroMetaLine {
+.applicationDetailPanel__heroCompact .applicationDetailPanel__heroMetaLine {
   font-size: 0.72rem;
   gap: 0.32rem 0.4rem;
 }
 
-.heroCompact .heroMetaLabel {
+.applicationDetailPanel__heroCompact .applicationDetailPanel__heroMetaLabel {
   font-size: 0.64rem;
 }
 
-.heroCompact .iconBtnPin,
-.heroCompact .iconBtnClose {
+.applicationDetailPanel__heroCompact .applicationDetailPanel__iconBtnPin,
+.applicationDetailPanel__heroCompact .applicationDetailPanel__iconBtnClose {
   width: 1.95rem;
   height: 1.95rem;
 }
 
-.heroMetaOnly {
+.applicationDetailPanel__heroMetaOnly {
   background: var(--color-bg-primary);
   border-bottom: none;
 }
 
-.applicationHeader {
+.applicationDetailPanel__applicationHeader {
   flex-shrink: 0;
   padding: 1.1rem 1.25rem 1.15rem;
   background: var(--color-bg-secondary);
   border-bottom: 1px solid var(--color-border);
 }
 
-.applicationHeaderTop {
+.applicationDetailPanel__applicationHeaderTop {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
 }
 
-.applicationHeaderTop:not(:last-child) {
+.applicationDetailPanel__applicationHeaderTop:not(:last-child) {
   margin-bottom: 0.85rem;
 }
 
-.applicationHeaderTitleWrap {
+.applicationDetailPanel__applicationHeaderTitleWrap {
   flex: 0 1 auto;
   min-width: 0;
   max-width: calc(100% - 5rem);
 }
 
-.applicationHeaderTitleWrapDivider {
+.applicationDetailPanel__applicationHeaderTitleWrapDivider {
   padding-bottom: 0.85rem;
   border-bottom: 1px solid
     color-mix(in srgb, var(--color-primary) 14%, var(--color-border));
 }
 
-:global(.dark) .applicationHeaderTitleWrapDivider {
+:global(.dark) .applicationDetailPanel__applicationHeaderTitleWrapDivider {
   border-bottom-color: color-mix(in srgb, #fdba74 20%, var(--color-border));
 }
 
-.applicationHeaderTitle {
+.applicationDetailPanel__applicationHeaderTitle {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -127,7 +127,7 @@
   color: var(--color-text-primary);
 }
 
-.applicationHeaderTitle::before {
+.applicationDetailPanel__applicationHeaderTitle::before {
   content: "";
   flex-shrink: 0;
   width: 3px;
@@ -136,15 +136,15 @@
   background: var(--color-primary);
 }
 
-:global(.dark) .applicationHeaderTitle::before {
+:global(.dark) .applicationDetailPanel__applicationHeaderTitle::before {
   background: #f97316;
 }
 
-.applicationHeaderActions {
+.applicationDetailPanel__applicationHeaderActions {
   flex-shrink: 0;
 }
 
-.heroMain {
+.applicationDetailPanel__heroMain {
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -152,7 +152,7 @@
   flex: 1;
 }
 
-.heroEyebrow {
+.applicationDetailPanel__heroEyebrow {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -164,36 +164,36 @@
   line-height: 1.35;
 }
 
-.heroCode {
+.applicationDetailPanel__heroCode {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-weight: 600;
   color: var(--color-primary);
 }
 
-:global(.dark) .heroCode {
+:global(.dark) .applicationDetailPanel__heroCode {
   color: #fdba74;
 }
 
-.heroSemester {
+.applicationDetailPanel__heroSemester {
   color: color-mix(in srgb, var(--color-primary) 45%, var(--color-text-tertiary));
   font-weight: 600;
 }
 
-:global(.dark) .heroSemester {
+:global(.dark) .applicationDetailPanel__heroSemester {
   color: color-mix(in srgb, #fdba74 55%, var(--color-text-tertiary));
 }
 
-.heroEyebrowDot {
+.applicationDetailPanel__heroEyebrowDot {
   color: color-mix(in srgb, var(--color-primary) 35%, var(--color-text-tertiary));
   opacity: 0.7;
   user-select: none;
 }
 
-:global(.dark) .heroEyebrowDot {
+:global(.dark) .applicationDetailPanel__heroEyebrowDot {
   color: color-mix(in srgb, #fdba74 40%, var(--color-text-tertiary));
 }
 
-.heroTitle {
+.applicationDetailPanel__heroTitle {
   margin: 0 0 0.5rem;
   font-size: 1.02rem;
   font-weight: 650;
@@ -202,7 +202,7 @@
   color: var(--color-text-primary);
 }
 
-.heroDescription {
+.applicationDetailPanel__heroDescription {
   margin: 0;
   font-size: 0.8rem;
   line-height: 1.55;
@@ -213,17 +213,17 @@
   overflow: hidden;
 }
 
-:global(.dark) .heroDescription {
+:global(.dark) .applicationDetailPanel__heroDescription {
   color: color-mix(in srgb, #fdba74 14%, var(--color-text-secondary));
 }
 
-.heroDescription + .heroMetaLine {
+.applicationDetailPanel__heroDescription + .applicationDetailPanel__heroMetaLine {
   margin-top: 1rem;
   padding-top: 1rem;
   border-top: 1px solid color-mix(in srgb, var(--color-primary) 16%, var(--color-border));
 }
 
-.heroMetaLine {
+.applicationDetailPanel__heroMetaLine {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -233,11 +233,11 @@
   line-height: 1.5;
 }
 
-.heroMetaLine + .heroMetaLine {
+.applicationDetailPanel__heroMetaLine + .applicationDetailPanel__heroMetaLine {
   margin-top: 0.55rem;
 }
 
-.heroMetaLabel {
+.applicationDetailPanel__heroMetaLabel {
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -245,77 +245,77 @@
   color: color-mix(in srgb, var(--color-primary) 32%, var(--color-text-tertiary));
 }
 
-.heroMetaValue {
+.applicationDetailPanel__heroMetaValue {
   font-weight: 650;
   color: color-mix(in srgb, var(--color-text-primary) 88%, var(--color-primary) 12%);
 }
 
-.heroMetaMuted {
+.applicationDetailPanel__heroMetaMuted {
   font-weight: 500;
   color: color-mix(in srgb, var(--color-primary) 18%, var(--color-text-tertiary));
   font-style: italic;
 }
 
-:global(.dark) .heroMetaLabel {
+:global(.dark) .applicationDetailPanel__heroMetaLabel {
   color: color-mix(in srgb, #fdba74 38%, var(--color-text-tertiary));
 }
 
-:global(.dark) .heroMetaValue {
+:global(.dark) .applicationDetailPanel__heroMetaValue {
   color: color-mix(in srgb, #fff 90%, #fdba74 10%);
 }
 
-:global(.dark) .heroMetaMuted {
+:global(.dark) .applicationDetailPanel__heroMetaMuted {
   color: color-mix(in srgb, #fdba74 22%, var(--color-text-tertiary));
 }
 
-:global(.dark) .heroDescription + .heroMetaLine {
+:global(.dark) .applicationDetailPanel__heroDescription + .applicationDetailPanel__heroMetaLine {
   border-top-color: color-mix(in srgb, #fdba74 22%, var(--color-border));
 }
 
 /* Status — orange scale only */
-.heroStatusPending {
+.applicationDetailPanel__heroStatusPending {
   color: var(--color-primary);
 }
 
-.heroStatusShortlisted {
+.applicationDetailPanel__heroStatusShortlisted {
   color: #ea580c;
 }
 
-.heroStatusSelected {
+.applicationDetailPanel__heroStatusSelected {
   color: #fdba74;
 }
 
-.heroStatusRejected {
+.applicationDetailPanel__heroStatusRejected {
   color: #9a3412;
 }
 
-.heroStatusWithdrawn {
+.applicationDetailPanel__heroStatusWithdrawn {
   color: var(--color-text-tertiary);
 }
 
-:global(.dark) .heroStatusPending {
+:global(.dark) .applicationDetailPanel__heroStatusPending {
   color: #fbbf24;
 }
 
-:global(.dark) .heroStatusShortlisted {
+:global(.dark) .applicationDetailPanel__heroStatusShortlisted {
   color: #fb923c;
 }
 
-:global(.dark) .heroStatusSelected {
+:global(.dark) .applicationDetailPanel__heroStatusSelected {
   color: #ffedd5;
 }
 
-:global(.dark) .heroStatusRejected {
+:global(.dark) .applicationDetailPanel__heroStatusRejected {
   color: #fdba74;
   opacity: 0.85;
 }
 
-:global(.dark) .heroStatusWithdrawn {
+:global(.dark) .applicationDetailPanel__heroStatusWithdrawn {
   color: var(--color-text-tertiary);
 }
 
 /* Application status — inner gap matches space below step labels */
-.progressSection {
+.applicationDetailPanel__progressSection {
   --progress-inner-gap: 1.8rem;
   flex-shrink: 0;
   display: flex;
@@ -326,7 +326,7 @@
   background: transparent;
 }
 
-.progressSectionHead {
+.applicationDetailPanel__progressSectionHead {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -335,7 +335,7 @@
   margin-bottom: 0;
 }
 
-.progressSectionHead .sectionHeading {
+.applicationDetailPanel__progressSectionHead .applicationDetailPanel__sectionHeading {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -343,7 +343,7 @@
   line-height: 1.2;
 }
 
-.progressSectionHead .sectionHeading::before {
+.applicationDetailPanel__progressSectionHead .applicationDetailPanel__sectionHeading::before {
   content: "";
   flex-shrink: 0;
   width: 3px;
@@ -352,11 +352,11 @@
   background: var(--color-primary);
 }
 
-:global(.dark) .progressSectionHead .sectionHeading::before {
+:global(.dark) .applicationDetailPanel__progressSectionHead .applicationDetailPanel__sectionHeading::before {
   background: #f97316;
 }
 
-.progressSectionMeta {
+.applicationDetailPanel__progressSectionMeta {
   display: flex;
   align-items: center;
   margin: 0;
@@ -364,28 +364,28 @@
   text-align: right;
 }
 
-.progressSectionCount {
+.applicationDetailPanel__progressSectionCount {
   font-size: 0.68rem;
   line-height: 1.2;
   max-width: 16rem;
 }
 
-.progressSectionStep {
+.applicationDetailPanel__progressSectionStep {
   font-weight: 600;
   color: color-mix(in srgb, var(--color-primary) 52%, var(--color-text-secondary));
 }
 
-:global(.dark) .progressSectionStep {
+:global(.dark) .applicationDetailPanel__progressSectionStep {
   color: color-mix(in srgb, #f97316 55%, var(--color-text-tertiary));
 }
 
-.progressSectionCaption {
+.applicationDetailPanel__progressSectionCaption {
   font-weight: 500;
   color: var(--color-text-tertiary);
 }
 
 /* Stepper: SVG connectors edge-to-edge, dots on grid above */
-.stepRailWrap {
+.applicationDetailPanel__stepRailWrap {
   --step-orange: var(--color-primary);
   --step-orange-ring: color-mix(in srgb, var(--color-primary) 88%, white);
   --step-orange-label: color-mix(in srgb, var(--color-primary) 62%, var(--color-text-secondary));
@@ -397,7 +397,7 @@
   width: 100%;
 }
 
-.stepRailSvg {
+.applicationDetailPanel__stepRailSvg {
   position: absolute;
   top: 0;
   left: 0;
@@ -408,20 +408,20 @@
   z-index: 0;
 }
 
-.stepRailSvg .stepLinePending {
+.applicationDetailPanel__stepRailSvg .applicationDetailPanel__stepLinePending {
   stroke: var(--step-track-pending);
   stroke-width: 2;
   stroke-dasharray: 6 5;
   stroke-linecap: butt;
 }
 
-.stepRailSvg .stepLineActive {
+.applicationDetailPanel__stepRailSvg .applicationDetailPanel__stepLineActive {
   stroke: var(--step-track-done);
   stroke-width: 2;
   stroke-linecap: butt;
 }
 
-:global(.dark) .stepRailWrap {
+:global(.dark) .applicationDetailPanel__stepRailWrap {
   --step-orange: #f97316;
   --step-orange-ring: #fb923c;
   --step-orange-label: #fdba74;
@@ -431,7 +431,7 @@
   --step-dot-upcoming: color-mix(in srgb, var(--color-text-tertiary) 65%, #334155);
 }
 
-.stepRail {
+.applicationDetailPanel__stepRail {
   position: relative;
   z-index: 1;
   list-style: none;
@@ -443,7 +443,7 @@
   width: 100%;
 }
 
-.stepSegment {
+.applicationDetailPanel__stepSegment {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -451,7 +451,7 @@
   min-width: 0;
 }
 
-.stepDotCell {
+.applicationDetailPanel__stepDotCell {
   position: relative;
   display: flex;
   align-items: center;
@@ -461,7 +461,7 @@
   flex-shrink: 0;
 }
 
-.stepDot {
+.applicationDetailPanel__stepDot {
   position: relative;
   z-index: 1;
   flex-shrink: 0;
@@ -479,19 +479,19 @@
 }
 
 /* Done: chấm cam đặc, chữ cam nhạt */
-.stepSegment.stepNode_done .stepDot {
+.applicationDetailPanel__stepSegment.applicationDetailPanel--stepNode_done .applicationDetailPanel__stepDot {
   border-color: var(--step-orange-fill);
   background: var(--step-orange-fill);
   box-shadow: none;
 }
 
-.stepSegment.stepNode_done .stepLabel {
+.applicationDetailPanel__stepSegment.applicationDetailPanel--stepNode_done .applicationDetailPanel__stepLabel {
   color: var(--step-orange-label);
   font-weight: 600;
 }
 
 /* Current: vòng cam + glow (focus vừa đủ thấy) */
-.stepSegment.stepNode_current .stepDotCell::after {
+.applicationDetailPanel__stepSegment.applicationDetailPanel--stepNode_current .applicationDetailPanel__stepDotCell::after {
   content: "";
   position: absolute;
   inset: -7px;
@@ -531,14 +531,14 @@
   }
 }
 
-.stepSegment.stepNode_current .stepDot {
+.applicationDetailPanel__stepSegment.applicationDetailPanel--stepNode_current .applicationDetailPanel__stepDot {
   border-color: var(--step-orange-ring);
   border-width: 3px;
   background: var(--color-bg-primary);
   animation: stepFocusGlow 2.4s ease-in-out infinite;
 }
 
-.stepSegment.stepNode_current .stepLabel {
+.applicationDetailPanel__stepSegment.applicationDetailPanel--stepNode_current .applicationDetailPanel__stepLabel {
   color: var(--color-text-primary);
   font-weight: 700;
   letter-spacing: 0.01em;
@@ -546,30 +546,30 @@
 }
 
 /* Upcoming: xám đồng bộ */
-.stepSegment.stepNode_upcoming .stepDot {
+.applicationDetailPanel__stepSegment.applicationDetailPanel--stepNode_upcoming .applicationDetailPanel__stepDot {
   border-color: var(--step-dot-upcoming);
   background: var(--color-bg-primary);
 }
 
-.stepSegment.stepNode_upcoming .stepLabel {
+.applicationDetailPanel__stepSegment.applicationDetailPanel--stepNode_upcoming .applicationDetailPanel__stepLabel {
   color: var(--color-text-tertiary);
   font-weight: 500;
 }
 
 /* Bypassed: mờ, không nhấn mạnh */
-.stepSegment.stepNode_bypassed .stepDot {
+.applicationDetailPanel__stepSegment.applicationDetailPanel--stepNode_bypassed .applicationDetailPanel__stepDot {
   border-style: dashed;
   border-color: color-mix(in srgb, var(--step-dot-upcoming) 70%, transparent);
   background: var(--color-bg-primary);
 }
 
-.stepSegment.stepNode_bypassed .stepLabel {
+.applicationDetailPanel__stepSegment.applicationDetailPanel--stepNode_bypassed .applicationDetailPanel__stepLabel {
   color: var(--color-text-tertiary);
   opacity: 0.38;
   font-weight: 500;
 }
 
-.stepLabel {
+.applicationDetailPanel__stepLabel {
   font-size: 0.6rem;
   font-weight: 600;
   line-height: 1.25;
@@ -579,27 +579,27 @@
   hyphens: auto;
 }
 
-:global(.dark) .stepSegment.stepNode_current .stepDotCell::after {
+:global(.dark) .applicationDetailPanel__stepSegment.applicationDetailPanel--stepNode_current .applicationDetailPanel__stepDotCell::after {
   border-color: color-mix(in srgb, #fb923c 72%, transparent);
 }
 
-:global(.dark) .stepSegment.stepNode_current .stepDot {
+:global(.dark) .applicationDetailPanel__stepSegment.applicationDetailPanel--stepNode_current .applicationDetailPanel__stepDot {
   border-color: #fb923c;
 }
 
-:global(.dark) .stepSegment.stepNode_current .stepLabel {
+:global(.dark) .applicationDetailPanel__stepSegment.applicationDetailPanel--stepNode_current .applicationDetailPanel__stepLabel {
   color: #fff7ed;
   text-shadow: 0 0 18px rgba(249, 115, 22, 0.45);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .stepSegment.stepNode_current .stepDotCell::after {
+  .applicationDetailPanel__stepSegment.applicationDetailPanel--stepNode_current .applicationDetailPanel__stepDotCell::after {
     animation: none;
     opacity: 0.72;
     transform: scale(1.1);
   }
 
-  .stepSegment.stepNode_current .stepDot {
+  .applicationDetailPanel__stepSegment.applicationDetailPanel--stepNode_current .applicationDetailPanel__stepDot {
     animation: none;
     box-shadow:
       0 0 0 2px var(--color-bg-primary),
@@ -608,14 +608,14 @@
   }
 }
 
-.heroActions {
+.applicationDetailPanel__heroActions {
   display: flex;
   gap: 0.45rem;
   flex-shrink: 0;
 }
 
-.iconBtnPin,
-.iconBtnClose {
+.applicationDetailPanel__iconBtnPin,
+.applicationDetailPanel__iconBtnClose {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -638,47 +638,47 @@
     color 0.2s ease;
 }
 
-.iconBtnPin svg {
+.applicationDetailPanel__iconBtnPin svg {
   width: 1rem;
   height: 1rem;
 }
 
-.iconBtnPin:hover:not(.iconBtnPinActive) {
+.applicationDetailPanel__iconBtnPin:hover:not(.applicationDetailPanel__iconBtnPinActive) {
   border-color: #eab308;
   background: color-mix(in srgb, #eab308 14%, var(--color-bg-primary));
   color: #eab308;
 }
 
-.iconBtnPinActive {
+.applicationDetailPanel__iconBtnPinActive {
   border-color: #ca8a04;
   background: #eab308;
   color: #422006;
 }
 
-.iconBtnPinActive:hover {
+.applicationDetailPanel__iconBtnPinActive:hover {
   border-color: #a16207;
   background: #facc15;
   color: #422006;
 }
 
-.iconBtnPinActive:active {
+.applicationDetailPanel__iconBtnPinActive:active {
   background: #ca8a04;
   border-color: #a16207;
 }
 
-.iconBtnClose:hover {
+.applicationDetailPanel__iconBtnClose:hover {
   border-color: rgba(239, 68, 68, 0.5);
   color: #ef4444;
 }
 
-.iconBtnClose:active {
+.applicationDetailPanel__iconBtnClose:active {
   border-color: #ef4444;
   background: #ef4444;
   color: #fff;
 }
 
 /* —— Body —— */
-.body {
+.applicationDetailPanel__body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -688,17 +688,17 @@
   gap: 1.25rem;
 }
 
-.bodyBlock {
+.applicationDetailPanel__bodyBlock {
   margin: 0;
 }
 
-.bodyBlockHead {
+.applicationDetailPanel__bodyBlockHead {
   display: flex;
   align-items: center;
   margin-bottom: 0.65rem;
 }
 
-.bodyBlockHead .sectionHeading {
+.applicationDetailPanel__bodyBlockHead .applicationDetailPanel__sectionHeading {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -706,7 +706,7 @@
   line-height: 1.2;
 }
 
-.bodyBlockHead .sectionHeading::before {
+.applicationDetailPanel__bodyBlockHead .applicationDetailPanel__sectionHeading::before {
   content: "";
   flex-shrink: 0;
   width: 3px;
@@ -715,18 +715,18 @@
   background: var(--color-primary);
 }
 
-:global(.dark) .bodyBlockHead .sectionHeading::before {
+:global(.dark) .applicationDetailPanel__bodyBlockHead .applicationDetailPanel__sectionHeading::before {
   background: #f97316;
 }
 
-.sectionHeading {
+.applicationDetailPanel__sectionHeading {
   font-size: 0.92rem;
   font-weight: 700;
   color: var(--color-text-primary);
   letter-spacing: -0.01em;
 }
 
-.contentCard {
+.applicationDetailPanel__contentCard {
   border: 1px solid var(--color-border);
   border-radius: 0.85rem;
   background: color-mix(in srgb, var(--color-bg-secondary) 55%, var(--color-bg-primary));
@@ -736,11 +736,11 @@
   gap: 0.85rem;
 }
 
-:global(.dark) .contentCard {
+:global(.dark) .applicationDetailPanel__contentCard {
   background: color-mix(in srgb, var(--color-bg-secondary) 70%, transparent);
 }
 
-.fieldRow {
+.applicationDetailPanel__fieldRow {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -748,13 +748,13 @@
   gap: 0.5rem 0.75rem;
 }
 
-.fieldBlock {
+.applicationDetailPanel__fieldBlock {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
 }
 
-.fieldLabel {
+.applicationDetailPanel__fieldLabel {
   font-size: 0.66rem;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -762,7 +762,7 @@
   color: var(--color-text-tertiary);
 }
 
-.fieldPill {
+.applicationDetailPanel__fieldPill {
   display: inline-flex;
   align-items: center;
   padding: 0.3rem 0.7rem;
@@ -774,13 +774,13 @@
   border: 1px solid color-mix(in srgb, var(--color-primary) 22%, var(--color-border));
 }
 
-:global(.dark) .fieldPill {
+:global(.dark) .applicationDetailPanel__fieldPill {
   color: #fdba74;
   background: rgba(249, 115, 22, 0.1);
   border-color: rgba(251, 146, 60, 0.28);
 }
 
-.skillTags {
+.applicationDetailPanel__skillTags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
@@ -789,7 +789,7 @@
   list-style: none;
 }
 
-.skillTag {
+.applicationDetailPanel__skillTag {
   font-size: 0.76rem;
   font-weight: 600;
   padding: 0.28rem 0.6rem;
@@ -799,7 +799,7 @@
   border: 1px solid var(--color-border);
 }
 
-.proseBlock {
+.applicationDetailPanel__proseBlock {
   margin: 0;
   padding: 0.75rem 0.85rem;
   border-radius: 0.55rem;
@@ -810,35 +810,35 @@
   white-space: pre-wrap;
 }
 
-:global(.dark) .proseBlock {
+:global(.dark) .applicationDetailPanel__proseBlock {
   background: color-mix(in srgb, var(--color-bg-primary) 55%, transparent);
 }
 
 /* —— Your application (matches hero meta + status heading) —— */
-.applicationSection {
+.applicationDetailPanel__applicationSection {
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
 }
 
-.applicationSectionBody {
+.applicationDetailPanel__applicationSectionBody {
   padding-top: 0.65rem;
   border-top: 1px solid color-mix(in srgb, var(--color-primary) 16%, var(--color-border));
 }
 
-:global(.dark) .applicationSectionBody {
+:global(.dark) .applicationDetailPanel__applicationSectionBody {
   border-top-color: color-mix(in srgb, #fdba74 22%, var(--color-border));
 }
 
-.applicationSectionBody .heroMetaLine + .heroMetaLine {
+.applicationDetailPanel__applicationSectionBody .applicationDetailPanel__heroMetaLine + .applicationDetailPanel__heroMetaLine {
   margin-top: 0.55rem;
 }
 
-.applicationSectionBody .heroMetaValue {
+.applicationDetailPanel__applicationSectionBody .applicationDetailPanel__heroMetaValue {
   white-space: pre-wrap;
 }
 
-.correspondenceThread {
+.applicationDetailPanel__correspondenceThread {
   --thread-line: color-mix(in srgb, var(--color-border) 88%, transparent);
   --thread-dot: color-mix(in srgb, var(--color-border) 95%, var(--color-text-tertiary));
   display: flex;
@@ -847,7 +847,7 @@
   padding-top: 0.15rem;
 }
 
-.emptyStateText {
+.applicationDetailPanel__emptyStateText {
   margin: 0;
   padding: 0.35rem 0 0.35rem 1.1rem;
   font-size: 0.78rem;
@@ -856,7 +856,7 @@
   border-left: 1px solid var(--thread-line);
 }
 
-.timeline {
+.applicationDetailPanel__timeline {
   list-style: none;
   margin: 0;
   padding: 0 0 0 0.15rem;
@@ -865,7 +865,7 @@
   gap: 0;
 }
 
-.timelineItem {
+.applicationDetailPanel__timelineItem {
   position: relative;
   margin: 0;
   padding: 0.75rem 0 0.85rem 1.15rem;
@@ -874,7 +874,7 @@
   background: transparent;
 }
 
-.timelineItem::before {
+.applicationDetailPanel__timelineItem::before {
   content: "";
   position: absolute;
   left: 0;
@@ -887,7 +887,7 @@
   z-index: 1;
 }
 
-.timelineItem::after {
+.applicationDetailPanel__timelineItem::after {
   content: "";
   position: absolute;
   left: 0;
@@ -898,41 +898,41 @@
   transform: translateX(-50%);
 }
 
-.timelineItem:last-child::after {
+.applicationDetailPanel__timelineItem:last-child::after {
   display: none;
 }
 
-.timelineItemSystem {
+.applicationDetailPanel__timelineItemSystem {
   padding-top: 0.45rem;
   padding-bottom: 0.5rem;
 }
 
-.timelineItemSystem::before {
+.applicationDetailPanel__timelineItemSystem::before {
   width: 5px;
   height: 5px;
   top: 0.65rem;
   opacity: 0.65;
 }
 
-.timelineItemLecturer::before {
+.applicationDetailPanel__timelineItemLecturer::before {
   background: var(--color-primary);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
 
-:global(.dark) .timelineItemLecturer::before {
+:global(.dark) .applicationDetailPanel__timelineItemLecturer::before {
   background: #f97316;
 }
 
-.timelineItemCandidate::before {
+.applicationDetailPanel__timelineItemCandidate::before {
   background: color-mix(in srgb, var(--color-primary) 55%, var(--color-border));
 }
 
-.timelineItemHighlight::before {
+.applicationDetailPanel__timelineItemHighlight::before {
   background: var(--color-primary);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 22%, transparent);
 }
 
-.timelineMeta {
+.applicationDetailPanel__timelineMeta {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -940,47 +940,47 @@
   margin-bottom: 0.3rem;
 }
 
-.timelineKind {
+.applicationDetailPanel__timelineKind {
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
-.timelineKindLecturer {
+.applicationDetailPanel__timelineKindLecturer {
   color: #c2410c;
 }
 
-.timelineKindCandidate {
+.applicationDetailPanel__timelineKindCandidate {
   color: color-mix(in srgb, var(--color-primary) 70%, var(--color-text-secondary));
 }
 
-.timelineKindSystem {
+.applicationDetailPanel__timelineKindSystem {
   color: var(--color-text-tertiary);
 }
 
-:global(.dark) .timelineKindLecturer {
+:global(.dark) .applicationDetailPanel__timelineKindLecturer {
   color: #fdba74;
 }
 
-:global(.dark) .timelineKindCandidate {
+:global(.dark) .applicationDetailPanel__timelineKindCandidate {
   color: #fdba74;
 }
 
-.timelineTime {
+.applicationDetailPanel__timelineTime {
   font-size: 0.68rem;
   color: var(--color-text-tertiary);
   white-space: nowrap;
 }
 
-.timelineTitle {
+.applicationDetailPanel__timelineTitle {
   margin: 0;
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--color-text-secondary);
 }
 
-.timelineBody {
+.applicationDetailPanel__timelineBody {
   margin: 0;
   font-size: 0.84rem;
   line-height: 1.55;
@@ -988,7 +988,7 @@
   white-space: pre-wrap;
 }
 
-.messageReactions {
+.applicationDetailPanel__messageReactions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -996,7 +996,7 @@
   margin-top: 0.45rem;
 }
 
-.reactionBtn {
+.applicationDetailPanel__reactionBtn {
   display: inline-flex;
   align-items: center;
   gap: 0.2rem;
@@ -1015,49 +1015,49 @@
     color 0.15s ease;
 }
 
-.reactionBtn:hover:not(:disabled) {
+.applicationDetailPanel__reactionBtn:hover:not(:disabled) {
   border-color: color-mix(in srgb, var(--color-primary) 35%, var(--thread-line));
   color: var(--color-text-primary);
 }
 
-.reactionBtn:disabled {
+.applicationDetailPanel__reactionBtn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
 
-.reactionBtnActive {
+.applicationDetailPanel__reactionBtnActive {
   border-color: color-mix(in srgb, var(--color-primary) 55%, var(--thread-line));
   background: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface));
   color: var(--color-text-primary);
 }
 
-.reactionEmoji {
+.applicationDetailPanel__reactionEmoji {
   font-size: 0.95rem;
   line-height: 1;
 }
 
-.reactionCount {
+.applicationDetailPanel__reactionCount {
   font-size: 0.68rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--color-text-tertiary);
 }
 
-.reactionBtnActive .reactionCount {
+.applicationDetailPanel__reactionBtnActive .applicationDetailPanel__reactionCount {
   color: color-mix(in srgb, var(--color-primary) 70%, var(--color-text-secondary));
 }
 
-:global(.dark) .reactionBtn {
+:global(.dark) .applicationDetailPanel__reactionBtn {
   background: color-mix(in srgb, #1c1917 88%, transparent);
   border-color: color-mix(in srgb, #44403c 70%, transparent);
 }
 
-:global(.dark) .reactionBtnActive {
+:global(.dark) .applicationDetailPanel__reactionBtnActive {
   border-color: color-mix(in srgb, #fb923c 50%, #44403c);
   background: color-mix(in srgb, #fb923c 14%, #1c1917);
 }
 
-.correspondenceClosed {
+.applicationDetailPanel__correspondenceClosed {
   margin: 0;
   padding: 0.65rem 0 0 1.1rem;
   font-size: 0.76rem;
@@ -1066,24 +1066,24 @@
   border-left: 1px solid var(--thread-line);
 }
 
-.replyBlock {
+.applicationDetailPanel__replyBlock {
   margin-top: 0.1rem;
 }
 
-.replyBlock .bodyBlockHead {
+.applicationDetailPanel__replyBlock .applicationDetailPanel__bodyBlockHead {
   margin-bottom: 0.45rem;
 }
 
-.replyBlock .bodyBlockHead .sectionHeading {
+.applicationDetailPanel__replyBlock .applicationDetailPanel__bodyBlockHead .applicationDetailPanel__sectionHeading {
   font-size: 0.84rem;
 }
 
-.replyBlock .bodyBlockHead .sectionHeading::before {
+.applicationDetailPanel__replyBlock .applicationDetailPanel__bodyBlockHead .applicationDetailPanel__sectionHeading::before {
   height: 0.95rem;
   width: 2px;
 }
 
-.replyComposer {
+.applicationDetailPanel__replyComposer {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -1093,24 +1093,24 @@
   background: transparent;
 }
 
-.replyLineField {
+.applicationDetailPanel__replyLineField {
   border-bottom: 2px solid color-mix(in srgb, var(--color-primary) 38%, var(--color-border));
   transition: border-color 0.2s ease;
 }
 
-.replyLineField:focus-within {
+.applicationDetailPanel__replyLineField:focus-within {
   border-bottom-color: var(--color-primary);
 }
 
-:global(.dark) .replyLineField {
+:global(.dark) .applicationDetailPanel__replyLineField {
   border-bottom-color: rgba(251, 146, 60, 0.45);
 }
 
-:global(.dark) .replyLineField:focus-within {
+:global(.dark) .applicationDetailPanel__replyLineField:focus-within {
   border-bottom-color: #fb923c;
 }
 
-.replyTextarea {
+.applicationDetailPanel__replyTextarea {
   display: block;
   width: 100%;
   margin: 0;
@@ -1133,17 +1133,17 @@
   -ms-overflow-style: none;
 }
 
-.replyTextarea::-webkit-scrollbar {
+.applicationDetailPanel__replyTextarea::-webkit-scrollbar {
   display: none;
   width: 0;
   height: 0;
 }
 
-:global(.dark) .replyTextarea {
+:global(.dark) .applicationDetailPanel__replyTextarea {
   caret-color: #fb923c;
 }
 
-.replyTextarea::placeholder {
+.applicationDetailPanel__replyTextarea::placeholder {
   color: color-mix(in srgb, var(--color-text-tertiary) 72%, var(--color-primary) 18%);
   font-size: 0.8rem;
   font-weight: 450;
@@ -1151,19 +1151,19 @@
   opacity: 1;
 }
 
-.replyLineField:focus-within .replyTextarea::placeholder {
+.applicationDetailPanel__replyLineField:focus-within .applicationDetailPanel__replyTextarea::placeholder {
   color: color-mix(in srgb, var(--color-text-tertiary) 55%, transparent);
 }
 
-:global(.dark) .replyTextarea::placeholder {
+:global(.dark) .applicationDetailPanel__replyTextarea::placeholder {
   color: color-mix(in srgb, var(--color-text-tertiary) 65%, #fdba74 22%);
 }
 
-.replyTextarea::selection {
+.applicationDetailPanel__replyTextarea::selection {
   background: color-mix(in srgb, var(--color-primary) 28%, transparent);
 }
 
-.textarea {
+.applicationDetailPanel__textarea {
   width: 100%;
   min-height: 4.5rem;
   border: 1px solid var(--color-border);
@@ -1179,18 +1179,18 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.replyBlock .composerActions {
+.applicationDetailPanel__replyBlock .applicationDetailPanel__composerActions {
   margin-top: 0;
   gap: 0.35rem;
 }
 
-.textarea:focus {
+.applicationDetailPanel__textarea:focus {
   outline: none;
   border-color: color-mix(in srgb, var(--color-primary) 40%, var(--color-border));
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 12%, transparent);
 }
 
-.composerActions {
+.applicationDetailPanel__composerActions {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
@@ -1198,12 +1198,12 @@
   gap: 0.4rem;
 }
 
-.replyBlock .composerActions .button {
+.applicationDetailPanel__replyBlock .applicationDetailPanel__composerActions .applicationDetailPanel__button {
   padding: 0.38rem 0.75rem;
   font-size: 0.76rem;
 }
 
-.button {
+.applicationDetailPanel__button {
   border: none;
   border-radius: 999px;
   padding: 0.5rem 1.05rem;
@@ -1213,38 +1213,38 @@
   transition: opacity 0.2s ease, transform 0.12s ease;
 }
 
-.button:disabled {
+.applicationDetailPanel__button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.button:active:not(:disabled) {
+.applicationDetailPanel__button:active:not(:disabled) {
   transform: scale(0.97);
 }
 
-.buttonPrimary {
+.applicationDetailPanel__buttonPrimary {
   color: #fff;
   background: var(--color-primary);
 }
 
-.buttonGhost {
+.applicationDetailPanel__buttonGhost {
   color: var(--color-text-secondary);
   background: transparent;
   border: 1px solid var(--color-border);
 }
 
-.buttonGhost:hover:not(:disabled) {
+.applicationDetailPanel__buttonGhost:hover:not(:disabled) {
   color: var(--color-text-primary);
   border-color: color-mix(in srgb, var(--color-text-tertiary) 55%, var(--color-border));
 }
 
-.withdrawSimple {
+.applicationDetailPanel__withdrawSimple {
   display: flex;
   justify-content: center;
   padding: 0.15rem 0 0.25rem;
 }
 
-.withdrawLink {
+.applicationDetailPanel__withdrawLink {
   border: none;
   background: none;
   padding: 0.25rem 0.35rem;
@@ -1258,65 +1258,65 @@
   transition: color 0.2s ease;
 }
 
-.withdrawLink:hover:not(:disabled) {
+.applicationDetailPanel__withdrawLink:hover:not(:disabled) {
   color: #ef4444;
 }
 
-.withdrawLink:disabled {
+.applicationDetailPanel__withdrawLink:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
 
-:global(.dark) .withdrawLink:hover:not(:disabled) {
+:global(.dark) .applicationDetailPanel__withdrawLink:hover:not(:disabled) {
   color: #f87171;
 }
 
-.withdrawnNote {
+.applicationDetailPanel__withdrawnNote {
   font-size: 0.82rem;
   color: var(--color-text-tertiary);
   text-align: center;
 }
 
 @media (max-width: 640px) {
-  .hero {
+  .applicationDetailPanel__hero {
     padding: 1rem 1.1rem;
   }
 
-  .progressSection {
+  .applicationDetailPanel__progressSection {
     --progress-inner-gap: 1.8rem;
     padding: 1.1rem 1.1rem;
     gap: var(--progress-inner-gap);
   }
 
-  .progressSectionMeta {
+  .applicationDetailPanel__progressSectionMeta {
     align-items: flex-start;
     text-align: left;
   }
 
-  .progressSectionCount {
+  .applicationDetailPanel__progressSectionCount {
     max-width: none;
   }
 
-  .stepLabel {
+  .applicationDetailPanel__stepLabel {
     font-size: 0.55rem;
   }
 
-  .progressSectionCount {
+  .applicationDetailPanel__progressSectionCount {
     max-width: none;
     font-size: 0.62rem;
   }
 
-  .body {
+  .applicationDetailPanel__body {
     padding: 0.9rem 1.1rem 1.1rem;
   }
 
-  .contentCard {
+  .applicationDetailPanel__contentCard {
     padding: 0.9rem 0.85rem;
   }
 }
 
 /* —— Overview ↔ chat (motion in ApplicationDetailPanel) —— */
-.viewStage {
+.applicationDetailPanel__viewStage {
   position: relative;
   flex: 1;
   min-height: 0;
@@ -1324,7 +1324,7 @@
   background: var(--color-bg-primary);
 }
 
-.viewPage {
+.applicationDetailPanel__viewPage {
   position: absolute;
   inset: 0;
   z-index: 1;
