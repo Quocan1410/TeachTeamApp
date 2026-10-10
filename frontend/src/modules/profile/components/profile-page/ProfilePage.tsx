@@ -9,9 +9,11 @@ import { User, UserType } from "@/shared/types/user";
 import { AssignedCourse } from "@/shared/types/courseTypes";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import {
+  AVATAR_MAX_BYTES,
   getUserAvatarSrc,
   getUserInitials,
   hasCustomAvatar,
+  isAllowedAvatarFile,
 } from "@/shared/utils/avatarUtils";
 import { clearAvatarFetchCache } from "@/shared/utils/avatarFetchCache";
 import { useProtectedAvatar } from "@/shared/hooks/useProtectedAvatar";
@@ -32,26 +34,8 @@ import {
 import { createPasskey, fetchPasskeyStatus } from "@/modules/auth/utils/passkey";
 import { availableSkills } from "@/modules/tutor/utils/skillOptions";
 import CloseIcon from "@/shared/components/common/icons/CloseIcon";
+import AvatarCropModal from "@/modules/profile/components/avatar-crop-modal/AvatarCropModal";
 import styles from "./ProfilePage.module.css";
-
-const AVATAR_MIME_TYPES = new Set([
-  "image/jpeg",
-  "image/jpg",
-  "image/pjpeg",
-  "image/png",
-  "image/x-png",
-  "image/webp",
-  "image/gif",
-  "image/avif",
-  "image/bmp",
-  "image/x-ms-bmp",
-]);
-
-function isAllowedAvatarFile(file: File): boolean {
-  if (AVATAR_MIME_TYPES.has(file.type)) return true;
-  if (file.type && file.type !== "application/octet-stream") return false;
-  return /\.(jpe?g|png|webp|gif|avif|bmp)$/i.test(file.name);
-}
 
 export const ProfilePage: React.FC = () => {
   const { user: contextUser, updateUser, isLoading: authLoading } = useAuth();
@@ -65,6 +49,7 @@ export const ProfilePage: React.FC = () => {
   const [avatarMessage, setAvatarMessage] = useState("");
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
   const [showAvatarInitials, setShowAvatarInitials] = useState(false);
   const [editingSection, setEditingSection] = useState<
     "name" | "description" | "skills" | "website" | null
@@ -414,7 +399,17 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
-  const handleAvatarFileChange = async (
+  const closeAvatarCrop = () => {
+    if (cropImageSrc) {
+      URL.revokeObjectURL(cropImageSrc);
+    }
+    setCropImageSrc(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleAvatarFileChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
@@ -424,15 +419,26 @@ export const ProfilePage: React.FC = () => {
 
     if (!isAllowedAvatarFile(file)) {
       showError("Use a JPG, PNG, WebP, GIF, AVIF, or BMP image.");
+      if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
 
-    if (file.size > 2 * 1024 * 1024) {
+    if (file.size > AVATAR_MAX_BYTES) {
       showError("Image must be smaller than 2MB.");
+      if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
 
     setAvatarMessage("");
+    if (cropImageSrc) {
+      URL.revokeObjectURL(cropImageSrc);
+    }
+    setCropImageSrc(URL.createObjectURL(file));
+  };
+
+  const handleCroppedAvatarConfirm = async (file: File) => {
+    if (!user) return;
+
     setIsUploadingAvatar(true);
     setAvatarPreview(URL.createObjectURL(file));
     setShowAvatarInitials(false);
@@ -445,6 +451,7 @@ export const ProfilePage: React.FC = () => {
         updateUser(response.data.user);
         AuthService.saveUser(response.data.user);
         showSuccess("Avatar updated successfully.");
+        closeAvatarCrop();
       } else {
         showError(
           response.message ||
@@ -457,9 +464,6 @@ export const ProfilePage: React.FC = () => {
       setAvatarPreview(null);
     } finally {
       setIsUploadingAvatar(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
     }
   };
 
@@ -1261,6 +1265,13 @@ export const ProfilePage: React.FC = () => {
           )}
         </section>
       </div>
+      <AvatarCropModal
+        imageSrc={cropImageSrc}
+        isOpen={!!cropImageSrc}
+        isSaving={isUploadingAvatar}
+        onCancel={closeAvatarCrop}
+        onConfirm={handleCroppedAvatarConfirm}
+      />
       <Toast
         message={toast.message}
         type={toast.type}

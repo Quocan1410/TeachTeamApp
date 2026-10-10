@@ -53,7 +53,7 @@ On the profile page, **Update password** still requires the current password.
 
 `/profile` holds the name, the read-only school email, the avatar, and **Login & security**. **Theme** is in the account menu.
 
-Avatar upload accepts JPG, PNG, WebP, GIF, AVIF, and BMP, up to 2MB.
+Avatar upload accepts JPG, PNG, WebP, GIF, AVIF, and BMP, up to 2MB. After you pick a file, a crop modal lets you frame a circular profile picture before it uploads.
 
 ## Candidate
 

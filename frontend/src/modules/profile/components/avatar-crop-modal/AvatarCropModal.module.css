@@ -1,0 +1,72 @@
+.avatarCropModal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.avatarCropModal__title {
+  margin: 0;
+  padding-right: 2.5rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #f3f3f3);
+}
+
+.avatarCropModal__stage {
+  position: relative;
+  width: 100%;
+  height: min(52vh, 28rem);
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background: #111;
+}
+
+.avatarCropModal__hint {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary, #8a8a8a);
+}
+
+.avatarCropModal__zoomRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatarCropModal__zoomLabel {
+  flex: 0 0 auto;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary, #8a8a8a);
+}
+
+.avatarCropModal__zoom {
+  flex: 1;
+  accent-color: var(--color-primary, #e87722);
+}
+
+.avatarCropModal__actions {
+  display: flex;
+  justify-content: stretch;
+}
+
+.avatarCropModal__confirm {
+  width: 100%;
+  min-height: 2.75rem;
+  border: 0;
+  border-radius: 0.65rem;
+  background: var(--color-primary, #e87722);
+  color: #fff;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.avatarCropModal__confirm:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.avatarCropModal__confirm:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

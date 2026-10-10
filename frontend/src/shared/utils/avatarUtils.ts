@@ -1,6 +1,27 @@
 import { User, UserType } from "@/shared/types/user";
 import { stripHonorificFromDisplayName } from "./personDisplayName";
 
+export const AVATAR_MIME_TYPES = new Set([
+  "image/jpeg",
+  "image/jpg",
+  "image/pjpeg",
+  "image/png",
+  "image/x-png",
+  "image/webp",
+  "image/gif",
+  "image/avif",
+  "image/bmp",
+  "image/x-ms-bmp",
+]);
+
+export const AVATAR_MAX_BYTES = 2 * 1024 * 1024;
+
+export function isAllowedAvatarFile(file: Pick<File, "type" | "name">): boolean {
+  if (AVATAR_MIME_TYPES.has(file.type)) return true;
+  if (file.type && file.type !== "application/octet-stream") return false;
+  return /\.(jpe?g|png|webp|gif|avif|bmp)$/i.test(file.name);
+}
+
 /** Avatar images are served via authenticated API, not public /uploads. */
 export const hasCustomAvatar = (avatarUrl?: string | null): boolean => {
   return !!avatarUrl && avatarUrl.startsWith("/uploads/avatars/");

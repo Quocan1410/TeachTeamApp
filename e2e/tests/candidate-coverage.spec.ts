@@ -84,6 +84,10 @@ test.describe("remaining candidate and lecturer workflows", () => {
         response.url().includes("/api/auth/avatar") && response.request().method() === "POST"
     );
     await page.locator("input[type='file']").setInputFiles(avatar);
+    await expect(
+      page.getByRole("button", { name: "Set new profile picture" })
+    ).toBeVisible();
+    await page.getByRole("button", { name: "Set new profile picture" }).click();
     const uploaded = await upload;
     expect(uploaded.status(), await uploaded.text()).toBe(200);
     await expect(page.getByText("Avatar updated successfully.")).toBeVisible();
