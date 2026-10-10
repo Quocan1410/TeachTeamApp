@@ -33,6 +33,7 @@ const courses = [
   [cosc1, "COSC2123", "Algorithms and Analysis"],
   [cosc2, "COSC2758", "Programming Fundamentals"],
   [cosc3, "COSC2801", "Software Engineering"],
+  ["aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa4", "E2E1001", "Extra Teaching Role"],
 ];
 
 const connection = await mysql.createConnection({

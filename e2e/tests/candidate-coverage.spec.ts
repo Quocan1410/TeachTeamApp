@@ -57,7 +57,9 @@ test.describe("remaining candidate and lecturer workflows", () => {
     await socketPromise;
     await expect(page.getByRole("heading", { name: "Find your Teaching Roles" })).toBeVisible();
 
-    await page.getByRole("button", { name: "Next", exact: true }).click();
+    const nextPage = page.getByRole("button", { name: "Next", exact: true });
+    await expect(nextPage).toBeEnabled();
+    await nextPage.click();
     await expect(page.getByText(/Page 2 of/)).toBeVisible();
     await page.getByRole("button", { name: "Previous" }).click();
     await expect(page.getByText(/Page 1 of/)).toBeVisible();
