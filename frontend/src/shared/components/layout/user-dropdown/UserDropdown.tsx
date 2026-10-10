@@ -157,6 +157,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
               className={`${styles.userDropdown__menuItem} ${styles["userDropdown__menuItem--theme"]}`}
               role="menuitem"
               onClick={onToggleDarkMode}
+              aria-label={isDarkMode ? "Switch to light theme" : "Switch to dark theme"}
             >
               <span className={styles.userDropdown__themeSlot} aria-hidden="true">
                 <SunIcon className={`${styles.userDropdown__menuIcon} ${styles["userDropdown__themeIcon--sun"]}`} />

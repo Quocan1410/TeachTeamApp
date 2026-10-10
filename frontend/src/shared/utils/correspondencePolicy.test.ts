@@ -48,12 +48,7 @@ describe("correspondencePolicy", () => {
     ).toBe(false);
   });
 
-  it("never shows a 5-day inactivity closed notice", () => {
-    expect(
-      getCorrespondenceClosedNotice(
-        app({ appliedAt: "2020-01-01T00:00:00.000Z" })
-      )
-    ).toBeNull();
-    expect(getCorrespondenceClosedNotice(app({ isWithdrawn: true }))).toBeNull();
+  it("never shows a closed notice for inactivity", () => {
+    expect(getCorrespondenceClosedNotice()).toBeNull();
   });
 });

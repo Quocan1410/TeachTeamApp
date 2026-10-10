@@ -33,8 +33,6 @@ export function canLecturerSendCorrespondence(
   return canExchangeCorrespondence(application);
 }
 
-export function getCorrespondenceClosedNotice(
-  _application: ApplicationResponse
-): string | null {
+export function getCorrespondenceClosedNotice(): string | null {
   return null;
 }

@@ -64,6 +64,6 @@ describe("buildApplicationTimeline", () => {
     expect(canCandidateSendCorrespondence(fresh)).toBe(true);
     expect(canLecturerSendCorrespondence(fresh)).toBe(true);
     expect(candidateOfferPending(fresh)).toBe(false);
-    expect(getCorrespondenceClosedNotice(fresh)).toBeNull();
+    expect(getCorrespondenceClosedNotice()).toBeNull();
   });
 });

@@ -86,7 +86,7 @@ const LecturerApplicationChatScreen: React.FC<
     [application]
   );
   const canCompose = canLecturerSendFeedback(application);
-  const closedNotice = getCorrespondenceClosedNotice(application);
+  const closedNotice = getCorrespondenceClosedNotice();
 
   const latestCandidateId = useMemo(() => {
     const candidateItems = timeline.filter((i) => i.kind === "candidate");
