@@ -63,5 +63,4 @@ export {
   canLecturerSendCorrespondence,
   candidateOfferPending,
   getCorrespondenceClosedNotice,
-  isCorrespondenceInactive,
 } from "./correspondencePolicy";

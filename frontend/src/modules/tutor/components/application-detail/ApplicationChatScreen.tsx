@@ -101,7 +101,7 @@ const ApplicationChatScreen: React.FC<ApplicationChatScreenProps> = ({
     [application]
   );
   const canCompose = canCandidateSendCorrespondence(application);
-  const closedNotice = getCorrespondenceClosedNotice(application);
+  const closedNotice = getCorrespondenceClosedNotice();
   const showOfferPanel = candidateOfferPending(application);
 
   const latestLecturerId = useMemo(() => {

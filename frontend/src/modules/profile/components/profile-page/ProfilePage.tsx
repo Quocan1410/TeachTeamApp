@@ -4,9 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { AuthService } from "@/shared/services/authService";
-import { ApplicationService } from "@/shared/services/applicationService";
 import { User, UserType } from "@/shared/types/user";
-import { AssignedCourse } from "@/shared/types/courseTypes";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import {
   AVATAR_MAX_BYTES,
@@ -42,9 +40,6 @@ export const ProfilePage: React.FC = () => {
   const contextUserId = contextUser?.id ?? null;
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [assignedCourses, setAssignedCourses] = useState<AssignedCourse[]>([]);
-  const [availablePositions, setAvailablePositions] = useState<number>(0);
-  const [appliedApplications, setAppliedApplications] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const [avatarMessage, setAvatarMessage] = useState("");
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
@@ -59,7 +54,6 @@ export const ProfilePage: React.FC = () => {
   const [customSkill, setCustomSkill] = useState("");
   const [website, setWebsite] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [profileMessage, setProfileMessage] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
@@ -69,9 +63,7 @@ export const ProfilePage: React.FC = () => {
   const [passwordErrors, setPasswordErrors] = useState<Record<string, string>>(
     {}
   );
-  const [passwordMessage, setPasswordMessage] = useState("");
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [settingsSection, setSettingsSection] = useState<"personal" | "security">("personal");
   const [fullName, setFullName] = useState("");
   const [hasPasskey, setHasPasskey] = useState<boolean | null>(null);
@@ -112,68 +104,16 @@ export const ProfilePage: React.FC = () => {
     let cancelled = false;
 
     const loadProfile = async () => {
-
       try {
-        if (savedUser.userType === UserType.CANDIDATE) {
-          const [profileResponse, coursesResponse, applicationsResponse] =
-            await Promise.all([
-              AuthService.getProfile(),
-              ApplicationService.getCoursesAndRoles(),
-              ApplicationService.getMyCandidateApplications(),
-            ]);
+        const profileResponse = await AuthService.getProfile();
+        if (cancelled) return;
 
-          if (cancelled) return;
-
-          if (profileResponse.success && profileResponse.data?.user) {
-            setUser(profileResponse.data.user);
-            updateUser(profileResponse.data.user);
-          }
-
-          if (coursesResponse.success && coursesResponse.data) {
-            const courses = coursesResponse.data.courses || [];
-            const roles = coursesResponse.data.roles || [];
-            const applications = applicationsResponse.data || [];
-
-            let availableOpportunities = 0;
-            courses.forEach(
-              (course: { id: string; courseCode: string; courseName: string }) => {
-                roles.forEach((role: { id: string; roleName: string }) => {
-                  const hasApplied = applications.some(
-                    (app: { courseId: string; roleId: string }) =>
-                      app.courseId === course.id && app.roleId === role.id
-                  );
-                  if (!hasApplied) {
-                    availableOpportunities += 1;
-                  }
-                });
-              }
-            );
-
-            setAvailablePositions(availableOpportunities);
-          }
-
-          if (applicationsResponse.success && applicationsResponse.data) {
-            setAppliedApplications(applicationsResponse.data.length || 0);
-          }
-        } else {
-          const profileResponse = await AuthService.getProfile();
-          if (cancelled) return;
-
-          if (profileResponse.success && profileResponse.data) {
-            setUser(profileResponse.data.user);
-            updateUser(profileResponse.data.user);
-
-            if (
-              savedUser.userType === UserType.LECTURER &&
-              Array.isArray(profileResponse.data.assignedCourses)
-            ) {
-              setAssignedCourses(profileResponse.data.assignedCourses);
-            }
-          }
+        if (profileResponse.success && profileResponse.data?.user) {
+          setUser(profileResponse.data.user);
+          updateUser(profileResponse.data.user);
         }
       } catch {
-        if (!cancelled) {
-        }
+        // Keep the signed-in context user if the profile refresh fails.
       } finally {
         if (!cancelled) {
           setIsLoading(false);
@@ -209,16 +149,7 @@ export const ProfilePage: React.FC = () => {
         (user.honorific as Honorific) ||
         (user.userType === UserType.LECTURER ? "Dr." : "Mr."),
     });
-  }, [
-    user?.id,
-    user?.firstName,
-    user?.lastName,
-    user?.honorific,
-    user?.userType,
-    user?.description,
-    user?.skills,
-    user?.website,
-  ]);
+  }, [user]);
 
   useEffect(() => {
     if (settingsSection !== "security") return;
@@ -237,15 +168,6 @@ export const ProfilePage: React.FC = () => {
       year: "numeric",
       month: "long",
       day: "numeric",
-    });
-  };
-
-  const formatAssignedDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
     });
   };
 
@@ -279,16 +201,8 @@ export const ProfilePage: React.FC = () => {
         (user.userType === UserType.LECTURER ? "Dr." : "Mr."),
     });
     setFieldErrors({});
-    setProfileMessage("");
     setEditingSection(section);
-    setIsEditingPassword(false);
     resetPasswordForm();
-  };
-
-  const cancelEditing = () => {
-    setEditingSection(null);
-    setFieldErrors({});
-    setProfileMessage("");
   };
 
   const resetPasswordForm = () => {
@@ -298,7 +212,6 @@ export const ProfilePage: React.FC = () => {
       confirmPassword: "",
     });
     setPasswordErrors({});
-    setPasswordMessage("");
   };
 
   const startPasswordEditing = () => {
@@ -307,13 +220,10 @@ export const ProfilePage: React.FC = () => {
     }
     setEditingSection(null);
     setFieldErrors({});
-    setProfileMessage("");
     resetPasswordForm();
-    setIsEditingPassword(true);
   };
 
   const cancelPasswordEditing = () => {
-    setIsEditingPassword(false);
     resetPasswordForm();
   };
 
@@ -331,7 +241,6 @@ export const ProfilePage: React.FC = () => {
     }
 
     setIsSaving(true);
-    setProfileMessage("");
     setFieldErrors({});
 
     try {
@@ -377,14 +286,12 @@ export const ProfilePage: React.FC = () => {
     }
 
     setIsChangingPassword(true);
-    setPasswordMessage("");
     setPasswordErrors({});
 
     try {
       const response = await AuthService.changePassword(passwordForm);
       if (response.success) {
         resetPasswordForm();
-        setIsEditingPassword(false);
         showSuccess("Password changed successfully.");
       } else if (response.errors) {
         setPasswordErrors(response.errors);
@@ -569,7 +476,6 @@ export const ProfilePage: React.FC = () => {
       honorific: savedHonorific,
     });
     setFieldErrors({});
-    setProfileMessage("");
     setEditingSection(null);
   };
 

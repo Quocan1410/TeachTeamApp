@@ -111,7 +111,6 @@
 .profilePage__accountNavItem--active:hover {
   background: #fff;
   color: var(--color-text-primary);
-  box-shadow: inset 3px 0 0 var(--color-primary);
 }
 
 .profilePage__accountNavItem--active .profilePage__accountNavIcon {
@@ -818,7 +817,6 @@ button.profilePage__methodRow:hover:not(:disabled) {
 :global(.dark) .profilePage__accountNavItem--active:hover {
   background: rgba(249, 115, 22, 0.12);
   color: #fff7ed;
-  box-shadow: inset 3px 0 0 #f97316;
 }
 
 :global(.dark) .profilePage__accountNavItem--active .profilePage__accountNavIcon {
