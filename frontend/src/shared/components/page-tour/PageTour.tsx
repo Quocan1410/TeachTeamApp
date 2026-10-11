@@ -2,11 +2,9 @@
 
 import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import Image from "next/image";
-import {
-  clearTourCompleted,
-  hasCompletedTour,
-  markTourCompleted,
-} from "./tourStorage";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
+import { AuthService } from "@/shared/services/authService";
+import { hasCompletedPageTour } from "./tourCatalog";
 import styles from "./PageTour.module.css";
 
 export type PageTourStep = {
@@ -27,7 +25,6 @@ type SpotlightRect = {
 type PageTourProps = {
   tourId: string;
   steps: PageTourStep[];
-  userId?: string | null;
   /** Delay before the tour starts so the page can settle. */
   startDelayMs?: number;
   enabled?: boolean;
@@ -53,24 +50,34 @@ function readTargetRect(selector?: string): SpotlightRect | null {
 export default function PageTour({
   tourId,
   steps,
-  userId,
   startDelayMs = 700,
   enabled = true,
 }: PageTourProps) {
+  const { user, updateUser } = useAuth();
   const [active, setActive] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const [spotlight, setSpotlight] = useState<SpotlightRect | null>(null);
 
+  const persistTour = useCallback(
+    async (completed: boolean) => {
+      const response = await AuthService.updatePageTour(tourId, completed);
+      if (response.success && response.data?.user) {
+        updateUser(response.data.user);
+      }
+    },
+    [tourId, updateUser]
+  );
+
   const finish = useCallback(() => {
-    markTourCompleted(tourId, userId);
+    void persistTour(true);
     setActive(false);
     setSpotlight(null);
     document.documentElement.classList.remove("page-tour-active");
-  }, [tourId, userId]);
+  }, [persistTour]);
 
   useEffect(() => {
-    if (!enabled || steps.length === 0) return;
-    if (hasCompletedTour(tourId, userId)) return;
+    if (!enabled || steps.length === 0 || !user) return;
+    if (hasCompletedPageTour(user.completedPageTours, tourId)) return;
     const timer = window.setTimeout(() => {
       setActive(true);
       setStepIndex(0);
@@ -80,22 +87,24 @@ export default function PageTour({
       window.clearTimeout(timer);
       document.documentElement.classList.remove("page-tour-active");
     };
-  }, [enabled, steps.length, tourId, userId, startDelayMs]);
+  }, [enabled, steps.length, tourId, user, startDelayMs]);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || !user) return;
     const onReplay = (event: Event) => {
       const detail = (event as CustomEvent<{ tourId?: string }>).detail;
       if (detail?.tourId && detail.tourId !== tourId) return;
-      clearTourCompleted(tourId, userId);
-      setStepIndex(0);
-      setActive(true);
-      document.documentElement.classList.add("page-tour-active");
+      void (async () => {
+        await persistTour(false);
+        setStepIndex(0);
+        setActive(true);
+        document.documentElement.classList.add("page-tour-active");
+      })();
     };
     window.addEventListener("teachteam:replay-page-tour", onReplay);
     return () =>
       window.removeEventListener("teachteam:replay-page-tour", onReplay);
-  }, [enabled, tourId, userId]);
+  }, [enabled, tourId, user, persistTour]);
 
   const step = steps[stepIndex];
 
@@ -172,11 +181,7 @@ export default function PageTour({
         />
       )}
 
-      <div
-        className={`${styles.pageTour__card} ${
-          spotlight ? styles["pageTour__card--anchored"] : ""
-        }`}
-      >
+      <div className={styles.pageTour__card}>
         <div className={styles.pageTour__mascotSeat} aria-hidden="true">
           <Image
             src={mascotSrc}

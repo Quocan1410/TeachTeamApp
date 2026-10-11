@@ -614,8 +614,46 @@
   cursor: default;
 }
 
-.profilePage__methodList > .profilePage__methodRow:last-child {
+.profilePage__methodList > .profilePage__methodRow:last-child,
+.profilePage__methodList > .profilePage__tourRow:last-child {
   border-bottom: 0;
+}
+
+.profilePage__tourRow {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.profilePage__tourStatus {
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: var(--color-primary);
+}
+
+.profilePage__tourReplay {
+  flex-shrink: 0;
+  border: 1px solid var(--color-primary);
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.profilePage__tourReplay:hover:not(:disabled) {
+  background: rgba(249, 115, 22, 0.1);
+}
+
+.profilePage__tourReplay:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 button.profilePage__methodRow {

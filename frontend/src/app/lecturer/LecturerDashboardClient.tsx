@@ -1056,11 +1056,7 @@ const LecturerDashboardInner: React.FC = () => {
         {confirmModal}
 
         {user?.id && (
-          <PageTour
-            tourId={LECTURER_TOUR_ID}
-            steps={lecturerTourSteps}
-            userId={user.id}
-          />
+          <PageTour tourId={LECTURER_TOUR_ID} steps={lecturerTourSteps} />
         )}
       </div>
   );

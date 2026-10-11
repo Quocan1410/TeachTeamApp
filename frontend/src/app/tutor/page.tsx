@@ -683,11 +683,7 @@ const TutorDashboardPage: React.FC = () => {
         isSubmitting={isSubmitting}
       />
 
-      <PageTour
-        tourId={TUTOR_TOUR_ID}
-        steps={tutorTourSteps}
-        userId={user.id}
-      />
+      <PageTour tourId={TUTOR_TOUR_ID} steps={tutorTourSteps} />
     </>
   );
 };

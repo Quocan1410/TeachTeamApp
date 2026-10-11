@@ -168,6 +168,10 @@ router.patch("/theme", authenticateToken, async (req, res) => {
     await authController.updateTheme(req, res);
 });
 
+router.patch("/page-tours", authenticateToken, async (req, res) => {
+    await authController.updatePageTour(req, res);
+});
+
 router.get("/avatar/image", authenticateToken, async (req, res) => {
     await authController.getMyAvatar(req, res);
 });

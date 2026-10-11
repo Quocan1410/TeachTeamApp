@@ -109,14 +109,10 @@ const TutorHeroSection: React.FC<TutorHeroSectionProps> = ({
                   className={styles.tutorHeroSection__replayTour}
                   onClick={() => {
                     setNotesOpen(false);
-                    window.dispatchEvent(
-                      new CustomEvent("teachteam:replay-page-tour", {
-                        detail: { tourId: "tutor-dashboard-v1" },
-                      })
-                    );
+                    window.location.assign("/profile#help-guides");
                   }}
                 >
-                  Show page tour again
+                  Guides in Settings
                 </button>
               </div>
             )}

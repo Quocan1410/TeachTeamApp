@@ -194,6 +194,28 @@ export class AuthService {
     }
   }
 
+  static async updatePageTour(
+    tourId: string,
+    completed: boolean
+  ): Promise<AuthResponse> {
+    try {
+      const response = await authAPI.patch("/page-tours", {
+        tourId,
+        completed,
+      });
+      return response.data;
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<AuthResponse>;
+      if (axiosError.response?.data) {
+        return axiosError.response.data;
+      }
+      return {
+        success: false,
+        message: "Network error occurred while updating page tours.",
+      };
+    }
+  }
+
   static saveUser(user: User): void {
     try {
       StorageManager.setVersionedItem("user", user);
