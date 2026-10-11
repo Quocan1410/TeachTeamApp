@@ -222,6 +222,12 @@ const ensureProfileColumns = async (): Promise<void> => {
         "website",
         "ALTER TABLE `users` ADD `website` varchar(255) NULL"
     );
+    // Always ensure: ncc production bundle does not load glob migration files.
+    await ensureColumn(
+        "users",
+        "completedPageTours",
+        "ALTER TABLE `users` ADD `completedPageTours` json NULL"
+    );
 };
 
 export const initializeDatabase = async () => {
