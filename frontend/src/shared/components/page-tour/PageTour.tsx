@@ -47,6 +47,10 @@ function readTargetRect(selector?: string): SpotlightRect | null {
   };
 }
 
+const pageTourDisabled =
+  process.env.NEXT_PUBLIC_DISABLE_PAGE_TOUR === "1" ||
+  process.env.NEXT_PUBLIC_DISABLE_PAGE_TOUR === "true";
+
 export default function PageTour({
   tourId,
   steps,
@@ -57,6 +61,7 @@ export default function PageTour({
   const [active, setActive] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const [spotlight, setSpotlight] = useState<SpotlightRect | null>(null);
+  const tourEnabled = enabled && !pageTourDisabled;
 
   const persistTour = useCallback(
     async (completed: boolean) => {
@@ -76,7 +81,7 @@ export default function PageTour({
   }, [persistTour]);
 
   useEffect(() => {
-    if (!enabled || steps.length === 0 || !user) return;
+    if (!tourEnabled || steps.length === 0 || !user) return;
     if (hasCompletedPageTour(user.completedPageTours, tourId)) return;
     const timer = window.setTimeout(() => {
       setActive(true);
@@ -87,10 +92,10 @@ export default function PageTour({
       window.clearTimeout(timer);
       document.documentElement.classList.remove("page-tour-active");
     };
-  }, [enabled, steps.length, tourId, user, startDelayMs]);
+  }, [tourEnabled, steps.length, tourId, user, startDelayMs]);
 
   useEffect(() => {
-    if (!enabled || !user) return;
+    if (!tourEnabled || !user) return;
     const onReplay = (event: Event) => {
       const detail = (event as CustomEvent<{ tourId?: string }>).detail;
       if (detail?.tourId && detail.tourId !== tourId) return;
@@ -104,7 +109,7 @@ export default function PageTour({
     window.addEventListener("teachteam:replay-page-tour", onReplay);
     return () =>
       window.removeEventListener("teachteam:replay-page-tour", onReplay);
-  }, [enabled, tourId, user, persistTour]);
+  }, [tourEnabled, tourId, user, persistTour]);
 
   const step = steps[stepIndex];
 

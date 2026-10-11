@@ -25,6 +25,15 @@ export const lecturer = {
   password: "Password123!",
 };
 
+/** Dismiss the first-visit page tour if it is covering the dashboard. */
+export async function dismissPageTourIfPresent(page: Page) {
+  const skip = page.getByRole("button", { name: "Skip", exact: true });
+  if (await skip.isVisible().catch(() => false)) {
+    await skip.click();
+    await expect(skip).toHaveCount(0);
+  }
+}
+
 export async function signIn(page: Page, email: string, password: string) {
   await page.goto("/signin");
   await page.getByRole("textbox", { name: "Email Address" }).fill(email);
@@ -34,6 +43,7 @@ export async function signIn(page: Page, email: string, password: string) {
   await expect(continueButton).toBeEnabled({ timeout: 20_000 });
   await continueButton.click();
   await expect(page).toHaveURL(/\/(tutor|lecturer)/, { timeout: 20_000 });
+  await dismissPageTourIfPresent(page);
 }
 
 export async function signOut(page: Page) {
