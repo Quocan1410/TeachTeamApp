@@ -247,9 +247,19 @@ export default function SignInForm() {
 
   const handlePasskey = async () => {
     if (showLoginSuccess || isLoading) return;
+    const email = formData.email.trim();
+    if (!email) {
+      setErrors((prev) => ({
+        ...prev,
+        email: "Enter your email to use a passkey",
+      }));
+      setShakeEmail(true);
+      window.setTimeout(() => setShakeEmail(false), 450);
+      return;
+    }
     setIsLoading(true);
     try {
-      const response = await signInWithPasskey();
+      const response = await signInWithPasskey(email);
       if (response.success && response.data?.user) {
         beginSignedInSession(response.data.user);
       } else {

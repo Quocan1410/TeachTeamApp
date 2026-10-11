@@ -5,6 +5,7 @@ import {
     verifyRegistrationResponse,
 } from "@simplewebauthn/server";
 import type {
+    AuthenticatorTransportFuture,
     AuthenticationResponseJSON,
     RegistrationResponseJSON,
 } from "@simplewebauthn/server";
@@ -274,11 +275,52 @@ export class PasskeyService {
         return { ok: true as const };
     }
 
-    static async loginOptions() {
+    static async loginOptions(email?: string) {
+        const normalizedEmail = email?.trim().toLowerCase() || "";
+        let allowCredentials:
+            | { id: string; transports?: AuthenticatorTransportFuture[] }[]
+            | undefined;
+
+        if (normalizedEmail) {
+            const account = await userRepository().findOne({
+                where: { email: normalizedEmail },
+            });
+            if (!canUsePasskey(account)) {
+                return {
+                    ok: false as const,
+                    status: 400,
+                    message:
+                        "No passkey is set up for this email. Sign in with password, then add a passkey in Settings.",
+                };
+            }
+            const stored = await credentialRepository().findOne({
+                where: { userId: account.id },
+            });
+            if (!stored) {
+                return {
+                    ok: false as const,
+                    status: 400,
+                    message:
+                        "No passkey is set up for this email. Sign in with password, then add a passkey in Settings.",
+                };
+            }
+            allowCredentials = [
+                {
+                    id: stored.credentialId,
+                    transports: stored.transports
+                        ? (stored.transports.split(
+                              ","
+                          ) as AuthenticatorTransportFuture[])
+                        : undefined,
+                },
+            ];
+        }
+
         const options = await generateAuthenticationOptions({
             rpID: rpID(),
             userVerification: "required",
             timeout: 60_000,
+            allowCredentials,
         });
         await challengeRepository().delete({ expiresAt: LessThan(new Date()) });
         const row = challengeRepository().create({
@@ -288,7 +330,7 @@ export class PasskeyService {
             expiresAt: new Date(Date.now() + CHALLENGE_TTL_MS),
         });
         await challengeRepository().save(row);
-        return options;
+        return { ok: true as const, options };
     }
 
     static async verifyLogin(
@@ -310,7 +352,11 @@ export class PasskeyService {
             where: { credentialId: response.id },
         });
         if (!stored) {
-            return { ok: false as const, message: GENERIC_LOGIN_FAILURE };
+            return {
+                ok: false as const,
+                message:
+                    "That passkey is not registered on this account. Remove old site passkeys in your browser, sign in with password, then set up a new passkey in Settings.",
+            };
         }
         const user = await userRepository().findOne({
             where: { id: stored.userId },
