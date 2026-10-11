@@ -26,6 +26,11 @@ import { useApplicationRealtime } from "@/shared/hooks/useApplicationRealtime";
 import type { ApplicationUpdatedPayload } from "@/shared/socket/applicationEvents";
 import { formatCandidateDisplayName } from "@/shared/utils/personDisplayName";
 import { useConfirmModal } from "@/shared/hooks/useConfirmModal";
+import PageTour from "@/shared/components/page-tour/PageTour";
+import {
+  LECTURER_TOUR_ID,
+  lecturerTourSteps,
+} from "@/shared/components/page-tour/lecturerTour";
 
 const ApplicantStatsVisualization = dynamic(
   () =>
@@ -911,7 +916,10 @@ const LecturerDashboardInner: React.FC = () => {
           </div>
 
           {/* Enhanced Application Filters */}
-          <div className={styles.lecturerPage__revealFilters}>
+          <div
+            className={styles.lecturerPage__revealFilters}
+            data-tour="lecturer-filters"
+          >
             <ApplicationFilters
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
@@ -944,7 +952,10 @@ const LecturerDashboardInner: React.FC = () => {
             {activeTab === "applications" && (
               <div className={styles.lecturerPage__applicationsSection}>
                 <div className={styles.lecturerPage__applicationsGrid}>
-                  <div className={styles.lecturerPage__applicantListSection}>
+                  <div
+                    className={styles.lecturerPage__applicantListSection}
+                    data-tour="lecturer-list"
+                  >
                     <ApplicantList
                       applications={applications}
                       selectedApplication={selectedApplication}
@@ -953,7 +964,10 @@ const LecturerDashboardInner: React.FC = () => {
                     />
                   </div>
 
-                  <div className={styles.lecturerPage__applicantDetailsSection}>
+                  <div
+                    className={styles.lecturerPage__applicantDetailsSection}
+                    data-tour="lecturer-details"
+                  >
                     <LecturerApplicantDetailPanel
                       application={rawSelectedApplication}
                       onApplicationUpdated={handleApplicationDetailUpdated}
@@ -1040,6 +1054,14 @@ const LecturerDashboardInner: React.FC = () => {
         )}
 
         {confirmModal}
+
+        {user?.id && (
+          <PageTour
+            tourId={LECTURER_TOUR_ID}
+            steps={lecturerTourSteps}
+            userId={user.id}
+          />
+        )}
       </div>
   );
 };

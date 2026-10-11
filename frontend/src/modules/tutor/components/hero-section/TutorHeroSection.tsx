@@ -72,11 +72,15 @@ const TutorHeroSection: React.FC<TutorHeroSectionProps> = ({
 
         <div className={styles.tutorHeroSection__heroRow}>
           <div className={styles.tutorHeroSection__searchCol}>{children}</div>
-          <div className={styles.tutorHeroSection__mascotCol}>
+          <div
+            className={styles.tutorHeroSection__mascotCol}
+            data-tour="tutor-helper"
+          >
             <button
               type="button"
               className={styles.tutorHeroSection__mascotButton}
               aria-expanded={notesOpen}
+              aria-label="Open helpful notes"
               onClick={() => setNotesOpen((open) => !open)}
             >
               {!notesOpen && bubbleOn && (
@@ -100,6 +104,20 @@ const TutorHeroSection: React.FC<TutorHeroSectionProps> = ({
                     <li key={note}>{note}</li>
                   ))}
                 </ul>
+                <button
+                  type="button"
+                  className={styles.tutorHeroSection__replayTour}
+                  onClick={() => {
+                    setNotesOpen(false);
+                    window.dispatchEvent(
+                      new CustomEvent("teachteam:replay-page-tour", {
+                        detail: { tourId: "tutor-dashboard-v1" },
+                      })
+                    );
+                  }}
+                >
+                  Show page tour again
+                </button>
               </div>
             )}
           </div>
