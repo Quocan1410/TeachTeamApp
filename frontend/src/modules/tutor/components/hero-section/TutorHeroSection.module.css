@@ -55,6 +55,12 @@
   justify-content: flex-end;
 }
 
+/* Hide the floating helper while PageTour owns the screen */
+:global(html.page-tour-active) .tutorHeroSection__mascotCol {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .tutorHeroSection__mascotButton {
   position: relative;
   display: flex;

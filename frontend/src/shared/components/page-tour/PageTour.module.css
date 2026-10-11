@@ -183,9 +183,3 @@
     margin-top: -2.2rem;
   }
 }
-
-/* Hide the floating helper mascot while the tour owns the screen */
-:global(html.page-tour-active) [data-tour="tutor-helper"] {
-  visibility: hidden;
-  pointer-events: none;
-}
