@@ -42,6 +42,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 
       <form
         className={styles.searchFilters__field}
+        data-tour="tutor-search"
         onSubmit={(event) => {
           event.preventDefault();
           document.getElementById("course-results")?.scrollIntoView({
@@ -64,7 +65,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       <div className={styles.searchFilters__filterHead}>
         <p className={styles.searchFilters__filterLabel}>Filter courses</p>
       </div>
-      <div className={styles.searchFilters__filterRow}>
+      <div className={styles.searchFilters__filterRow} data-tour="tutor-filters">
         <AppSelect
           className={styles.searchFilters__filterSelect}
           id="course-status"
@@ -117,7 +118,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         Apply filters
       </button>
 
-      <div className={styles.searchFilters__notice}>
+      <div className={styles.searchFilters__notice} data-tour="tutor-applications">
         <p>Heart a course to apply later. We remind you when about a month is left.</p>
         <Link href="/tutor/applications" className={styles.searchFilters__noticeLink}>
           Your applications

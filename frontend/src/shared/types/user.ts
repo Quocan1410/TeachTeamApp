@@ -19,6 +19,8 @@ export interface User {
   skills?: string | null;
   website?: string | null;
   theme?: "light" | "dark";
+  /** Tour ids finished on this account (synced from the API). */
+  completedPageTours?: string[] | null;
   createdAt: string;
   updatedAt: string;
 }

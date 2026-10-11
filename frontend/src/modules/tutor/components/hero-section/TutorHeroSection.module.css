@@ -55,6 +55,12 @@
   justify-content: flex-end;
 }
 
+/* Hide the floating helper while PageTour owns the screen */
+:global(html.page-tour-active) .tutorHeroSection__mascotCol {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .tutorHeroSection__mascotButton {
   position: relative;
   display: flex;
@@ -155,6 +161,26 @@
   margin: 0.15rem 0;
   font-size: 0.92rem;
   line-height: 1.35;
+}
+
+.tutorHeroSection__replayTour {
+  display: block;
+  width: 100%;
+  margin-top: 0.65rem;
+  padding: 0.4rem 0.2rem 0.15rem;
+  border: 0;
+  border-top: 1px dashed rgba(249, 115, 22, 0.45);
+  background: transparent;
+  color: #c2410c;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tutorHeroSection__replayTour:hover {
+  color: #9a3412;
 }
 
 .tutorHeroSection__reminders {
