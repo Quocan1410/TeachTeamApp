@@ -27,12 +27,17 @@ import {
   FingerPrintIcon,
   LockClosedIcon,
   PencilSquareIcon,
+  QuestionMarkCircleIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
 import { createPasskey, fetchPasskeyStatus } from "@/modules/auth/utils/passkey";
 import { availableSkills } from "@/modules/tutor/utils/skillOptions";
 import CloseIcon from "@/shared/components/common/icons/CloseIcon";
 import AvatarCropModal from "@/modules/profile/components/avatar-crop-modal/AvatarCropModal";
+import {
+  hasCompletedPageTour,
+  toursForRole,
+} from "@/shared/components/page-tour/tourCatalog";
 import styles from "./ProfilePage.module.css";
 
 export const ProfilePage: React.FC = () => {
@@ -64,10 +69,13 @@ export const ProfilePage: React.FC = () => {
     {}
   );
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [settingsSection, setSettingsSection] = useState<"personal" | "security">("personal");
+  const [settingsSection, setSettingsSection] = useState<
+    "personal" | "security" | "help"
+  >("personal");
   const [fullName, setFullName] = useState("");
   const [hasPasskey, setHasPasskey] = useState<boolean | null>(null);
   const [passkeyBusy, setPasskeyBusy] = useState(false);
+  const [tourReplayId, setTourReplayId] = useState<string | null>(null);
   const [passwordMethod, setPasswordMethod] = useState<"choose" | "current">("choose");
   const [laterMethod, setLaterMethod] = useState<null | "passkey" | "authenticator" | "email">(null);
   const [editForm, setEditForm] = useState({
@@ -93,6 +101,12 @@ export const ProfilePage: React.FC = () => {
     }
     setUser(contextUser);
     setIsLoading(false);
+    if (
+      typeof window !== "undefined" &&
+      window.location.hash === "#help-guides"
+    ) {
+      setSettingsSection("help");
+    }
   }, [authLoading, contextUser, router]);
 
   useEffect(() => {
@@ -479,10 +493,25 @@ export const ProfilePage: React.FC = () => {
     setEditingSection(null);
   };
 
-  const showAccountSection = (section: "personal" | "security") => {
+  const showAccountSection = (section: "personal" | "security" | "help") => {
     setSettingsSection(section);
     setLaterMethod(null);
     setPasswordMethod("choose");
+    setEditingSection(null);
+  };
+
+  const replayPageTour = async (tourId: string, href: string) => {
+    setTourReplayId(tourId);
+    const response = await AuthService.updatePageTour(tourId, false);
+    setTourReplayId(null);
+    if (!response.success || !response.data?.user) {
+      showError(response.message || "Could not reset that tour.");
+      return;
+    }
+    updateUser(response.data.user);
+    setUser(response.data.user);
+    showSuccess("Opening the guide…");
+    router.push(href);
   };
 
   const savePasskey = async () => {
@@ -607,16 +636,40 @@ export const ProfilePage: React.FC = () => {
             <LockClosedIcon className={styles.profilePage__accountNavIcon} aria-hidden="true" />
             Login & security
           </button>
+          <button
+            type="button"
+            id="help-guides"
+            className={`${styles.profilePage__accountNavItem} ${
+              settingsSection === "help" ? styles["profilePage__accountNavItem--active"] : ""
+            }`}
+            onClick={() => showAccountSection("help")}
+          >
+            <QuestionMarkCircleIcon
+              className={styles.profilePage__accountNavIcon}
+              aria-hidden="true"
+            />
+            Help & guides
+          </button>
         </aside>
 
         <section className={styles.profilePage__accountMain} ref={accountRef}>
           <header className={styles.profilePage__accountHeader}>
             <h1 className={styles.profilePage__accountTitle}>
-              {settingsSection === "personal" ? "Profile" : "Login & security"}
+              {settingsSection === "personal"
+                ? "Profile"
+                : settingsSection === "security"
+                  ? "Login & security"
+                  : "Help & guides"}
             </h1>
             {settingsSection === "personal" && (
               <p className={styles.profilePage__accountMeta}>
                 {getUserTypeLabel(user.userType)} · Joined {formatDate(user.createdAt)}
+              </p>
+            )}
+            {settingsSection === "help" && (
+              <p className={styles.profilePage__accountMeta}>
+                Replay a page tour tied to this account. Progress syncs when you
+                sign in on another device.
               </p>
             )}
           </header>
@@ -941,7 +994,7 @@ export const ProfilePage: React.FC = () => {
             )}
           </div>
             </>
-          ) : (
+          ) : settingsSection === "security" ? (
             <div className={styles.profilePage__securityPage}>
               <section className={styles.profilePage__securityBlock}>
                 <h2 className={styles.profilePage__passwordTitle}>Sign-in methods</h2>
@@ -1168,7 +1221,59 @@ export const ProfilePage: React.FC = () => {
                 )}
               </section>
             </div>
-          )}
+          ) : settingsSection === "help" ? (
+            <div className={styles.profilePage__securityPage}>
+              <section className={styles.profilePage__securityBlock}>
+                <h2 className={styles.profilePage__passwordTitle}>
+                  Page tours
+                </h2>
+                <p className={styles.profilePage__passwordText}>
+                  Short guided walkthroughs with the mascot. Choose one to play
+                  again anytime.
+                </p>
+                <div className={styles.profilePage__methodList}>
+                  {toursForRole(user.userType).map((tour) => {
+                    const done = hasCompletedPageTour(
+                      user.completedPageTours,
+                      tour.id
+                    );
+                    const busy = tourReplayId === tour.id;
+                    return (
+                      <div
+                        key={tour.id}
+                        className={styles.profilePage__tourRow}
+                      >
+                        <span className={styles.profilePage__methodCopy}>
+                          <span className={styles.profilePage__methodTitle}>
+                            {tour.title}
+                          </span>
+                          <span className={styles.profilePage__methodHint}>
+                            {tour.description}
+                          </span>
+                          <span className={styles.profilePage__tourStatus}>
+                            {done ? "Completed on this account" : "Not completed yet"}
+                          </span>
+                        </span>
+                        <button
+                          type="button"
+                          className={styles.profilePage__tourReplay}
+                          disabled={busy || user.isBlocked}
+                          onClick={() => void replayPageTour(tour.id, tour.href)}
+                        >
+                          {busy ? "Opening…" : "Play again"}
+                        </button>
+                      </div>
+                    );
+                  })}
+                  {toursForRole(user.userType).length === 0 && (
+                    <p className={styles.profilePage__methodHint}>
+                      No guided tours are available for this account type.
+                    </p>
+                  )}
+                </div>
+              </section>
+            </div>
+          ) : null}
         </section>
       </div>
       <AvatarCropModal

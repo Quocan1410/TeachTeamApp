@@ -84,6 +84,13 @@ export class User {
     })
     theme: "light" | "dark";
 
+    /** Page-tour ids this account has finished (persists across devices). */
+    @Column({
+        type: "json",
+        nullable: true,
+    })
+    completedPageTours: string[] | null;
+
     @Column({
         type: "text",
         nullable: true,

@@ -145,6 +145,11 @@ const ensureSchemaColumns = async (): Promise<void> => {
         );
         await ensureColumn(
             "users",
+            "completedPageTours",
+            "ALTER TABLE `users` ADD `completedPageTours` json NULL"
+        );
+        await ensureColumn(
+            "users",
             "honorific",
             "ALTER TABLE `users` ADD `honorific` varchar(10) NULL"
         );

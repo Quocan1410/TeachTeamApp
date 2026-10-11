@@ -469,6 +469,75 @@ export class AuthController {
         }
     }
 
+    async updatePageTour(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = (req as any).user?.userId;
+            const tourId =
+                typeof req.body.tourId === "string" ? req.body.tourId.trim() : "";
+            const completed = req.body.completed;
+
+            if (!userId) {
+                res.status(401).json({
+                    success: false,
+                    message: "User not authenticated",
+                });
+                return;
+            }
+
+            if (!tourId || tourId.length > 64 || !/^[a-z0-9-]+$/i.test(tourId)) {
+                res.status(400).json({
+                    success: false,
+                    message: "A valid tourId is required",
+                });
+                return;
+            }
+
+            if (typeof completed !== "boolean") {
+                res.status(400).json({
+                    success: false,
+                    message: "completed must be true or false",
+                });
+                return;
+            }
+
+            const user = await this.userRepository.findOne({
+                where: { id: userId },
+            });
+
+            if (!user) {
+                res.status(404).json({
+                    success: false,
+                    message: "User not found",
+                });
+                return;
+            }
+
+            const current = Array.isArray(user.completedPageTours)
+                ? user.completedPageTours.filter(
+                      (id): id is string => typeof id === "string"
+                  )
+                : [];
+            const next = completed
+                ? Array.from(new Set([...current, tourId]))
+                : current.filter((id) => id !== tourId);
+
+            user.completedPageTours = next;
+            const updatedUser = await this.userRepository.save(user);
+            const { password: _, ...userProfile } = updatedUser;
+
+            res.status(200).json({
+                success: true,
+                message: completed ? "Tour marked complete" : "Tour reset",
+                data: { user: userProfile },
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: "Internal server error while updating page tours",
+            });
+        }
+    }
+
     async uploadAvatar(req: Request, res: Response): Promise<void> {
         try {
             const userId = (req as any).user?.userId;
