@@ -66,20 +66,28 @@ export async function createPasskey(): Promise<AuthResponse> {
   }
 }
 
-export async function signInWithPasskey(): Promise<AuthResponse> {
+export async function signInWithPasskey(
+  email?: string
+): Promise<AuthResponse> {
   if (!browserSupportsPasskey()) {
     return {
       success: false,
       message: "This browser cannot use a passkey.",
     };
   }
+  const trimmedEmail = email?.trim() || "";
   try {
-    const optionsResponse = await authAPI.post("/passkey/login/options");
+    const optionsResponse = await authAPI.post(
+      "/passkey/login/options",
+      trimmedEmail ? { email: trimmedEmail } : {}
+    );
     const options = optionsResponse.data?.options;
     if (!optionsResponse.data?.success || !options) {
       return {
         success: false,
-        message: "Passkey could not be started.",
+        message:
+          optionsResponse.data?.message ||
+          "Passkey could not be started.",
       };
     }
     const assertion = await startAuthentication({ optionsJSON: options });

@@ -55,9 +55,18 @@ export class PasskeyController {
         });
     }
 
-    async loginOptions(_req: Request, res: Response): Promise<void> {
-        const options = await PasskeyService.loginOptions();
-        res.status(200).json({ success: true, options });
+    async loginOptions(req: Request, res: Response): Promise<void> {
+        const email =
+            typeof req.body?.email === "string" ? req.body.email : undefined;
+        const result = await PasskeyService.loginOptions(email);
+        if (!result.ok) {
+            res.status(result.status).json({
+                success: false,
+                message: result.message,
+            });
+            return;
+        }
+        res.status(200).json({ success: true, options: result.options });
     }
 
     async verifyLogin(req: Request, res: Response): Promise<void> {

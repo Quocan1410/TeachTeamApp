@@ -37,6 +37,7 @@ test.describe("remaining candidate and lecturer workflows", () => {
     await expect(page).toHaveURL(/\/signin/, { timeout: 20_000 });
     await expect(page.getByText("Passkey saved")).toBeVisible();
 
+    await page.getByRole("textbox", { name: "Email Address" }).fill(email);
     await page.getByRole("button", { name: "Use a passkey" }).click();
     const continueButton = page.getByRole("button", { name: "Continue to dashboard" });
     await expect(continueButton).toBeEnabled({ timeout: 20_000 });
