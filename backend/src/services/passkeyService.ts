@@ -17,6 +17,7 @@ import { User, UserType } from "../entities/User";
 
 const CHALLENGE_TTL_MS = 5 * 60 * 1000;
 const GENERIC_LOGIN_FAILURE = "Passkey could not be verified.";
+const GENERIC_REGISTER_FAILURE = "Passkey could not be saved.";
 
 function rpID(): string {
     const configured = process.env.WEBAUTHN_RP_ID?.trim();
@@ -25,10 +26,53 @@ function rpID(): string {
     return new URL(frontend).hostname;
 }
 
-function expectedOrigin(): string {
-    const configured = process.env.WEBAUTHN_ORIGIN?.trim();
-    if (configured) return configured;
-    return process.env.FRONTEND_URL || "http://localhost:3000";
+/** Strip trailing slash so https://app.example/ matches the browser origin. */
+export function normalizeWebAuthnOrigin(origin: string): string {
+    return origin.trim().replace(/\/+$/, "");
+}
+
+/**
+ * Origins the browser may send during WebAuthn.
+ * Always includes https://{rpID} in production so a correct WEBAUTHN_RP_ID
+ * still works when FRONTEND_URL was left on localhost.
+ */
+export function expectedOrigins(requestOrigin?: string): string[] {
+    const origins = new Set<string>();
+    const add = (value?: string) => {
+        if (!value?.trim()) return;
+        try {
+            origins.add(normalizeWebAuthnOrigin(new URL(value.trim()).origin));
+        } catch {
+            // ignore invalid URLs
+        }
+    };
+
+    add(process.env.WEBAUTHN_ORIGIN);
+    add(process.env.FRONTEND_URL);
+    for (const part of (process.env.ALLOWED_ORIGINS || "").split(",")) {
+        add(part);
+    }
+
+    const id = rpID();
+    if (id === "localhost" || id === "127.0.0.1") {
+        add("http://localhost:3000");
+        add("http://127.0.0.1:3000");
+    } else {
+        add(`https://${id}`);
+    }
+
+    if (requestOrigin?.trim()) {
+        try {
+            const url = new URL(requestOrigin.trim());
+            if (url.hostname === id || url.hostname.endsWith(`.${id}`)) {
+                add(url.origin);
+            }
+        } catch {
+            // ignore invalid Origin header
+        }
+    }
+
+    return [...origins];
 }
 
 function challengeRepository() {
@@ -136,7 +180,8 @@ export class PasskeyService {
 
     static async verifyRegistration(
         user: User,
-        response: RegistrationResponseJSON
+        response: RegistrationResponseJSON,
+        requestOrigin?: string
     ) {
         if (!canUsePasskey(user)) {
             return {
@@ -152,7 +197,7 @@ export class PasskeyService {
             return {
                 ok: false as const,
                 status: 400,
-                message: "Passkey could not be saved.",
+                message: GENERIC_REGISTER_FAILURE,
             };
         }
         const fresh = await consumeChallenge(
@@ -164,31 +209,38 @@ export class PasskeyService {
             return {
                 ok: false as const,
                 status: 400,
-                message: "Passkey could not be saved.",
+                message: GENERIC_REGISTER_FAILURE,
             };
         }
 
+        const origins = expectedOrigins(requestOrigin);
         let verified;
         try {
             verified = await verifyRegistrationResponse({
                 response,
                 expectedChallenge: clientChallenge,
-                expectedOrigin: expectedOrigin(),
+                expectedOrigin: origins.length === 1 ? origins[0] : origins,
                 expectedRPID: rpID(),
                 requireUserVerification: true,
             });
-        } catch {
+        } catch (error) {
+            console.error("[passkey] registration verify failed", {
+                rpID: rpID(),
+                expectedOrigins: origins,
+                requestOrigin: requestOrigin || null,
+                message: error instanceof Error ? error.message : String(error),
+            });
             return {
                 ok: false as const,
                 status: 400,
-                message: "Passkey could not be saved.",
+                message: GENERIC_REGISTER_FAILURE,
             };
         }
         if (!verified.verified || !verified.registrationInfo.userVerified) {
             return {
                 ok: false as const,
                 status: 400,
-                message: "Passkey could not be saved.",
+                message: GENERIC_REGISTER_FAILURE,
             };
         }
 
@@ -239,7 +291,10 @@ export class PasskeyService {
         return options;
     }
 
-    static async verifyLogin(response: AuthenticationResponseJSON) {
+    static async verifyLogin(
+        response: AuthenticationResponseJSON,
+        requestOrigin?: string
+    ) {
         const clientChallenge = readClientChallenge(
             response?.response?.clientDataJSON
         );
@@ -264,12 +319,13 @@ export class PasskeyService {
             return { ok: false as const, message: GENERIC_LOGIN_FAILURE };
         }
 
+        const origins = expectedOrigins(requestOrigin);
         let verified;
         try {
             verified = await verifyAuthenticationResponse({
                 response,
                 expectedChallenge: clientChallenge,
-                expectedOrigin: expectedOrigin(),
+                expectedOrigin: origins.length === 1 ? origins[0] : origins,
                 expectedRPID: rpID(),
                 requireUserVerification: true,
                 credential: {
@@ -281,7 +337,13 @@ export class PasskeyService {
                         : undefined,
                 },
             });
-        } catch {
+        } catch (error) {
+            console.error("[passkey] login verify failed", {
+                rpID: rpID(),
+                expectedOrigins: origins,
+                requestOrigin: requestOrigin || null,
+                message: error instanceof Error ? error.message : String(error),
+            });
             return { ok: false as const, message: GENERIC_LOGIN_FAILURE };
         }
         if (!verified.verified || !verified.authenticationInfo.userVerified) {
