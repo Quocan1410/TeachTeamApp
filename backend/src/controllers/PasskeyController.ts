@@ -37,7 +37,11 @@ export class PasskeyController {
             });
             return;
         }
-        const result = await PasskeyService.verifyRegistration(user, req.body);
+        const result = await PasskeyService.verifyRegistration(
+            user,
+            req.body,
+            typeof req.headers.origin === "string" ? req.headers.origin : undefined
+        );
         if (!result.ok) {
             res.status(result.status).json({
                 success: false,
@@ -57,7 +61,10 @@ export class PasskeyController {
     }
 
     async verifyLogin(req: Request, res: Response): Promise<void> {
-        const result = await PasskeyService.verifyLogin(req.body);
+        const result = await PasskeyService.verifyLogin(
+            req.body,
+            typeof req.headers.origin === "string" ? req.headers.origin : undefined
+        );
         if (!result.ok) {
             res.status(401).json({
                 success: false,
