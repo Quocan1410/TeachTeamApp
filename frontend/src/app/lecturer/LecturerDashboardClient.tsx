@@ -392,7 +392,8 @@ const LecturerDashboardInner: React.FC = () => {
     if (user.userType !== "lecturer") {
       router.replace(user.userType === "candidate" ? "/tutor" : "/");
     }
-  }, [user, isAuthenticated, authLoading, router]);
+    // Identity fields only — tour/profile patches must not re-run routing.
+  }, [user?.id, user?.userType, isAuthenticated, authLoading, router]);
 
   // Load available courses and extract skills
   const loadCourses = useCallback(async () => {
@@ -916,30 +917,29 @@ const LecturerDashboardInner: React.FC = () => {
           </div>
 
           {/* Enhanced Application Filters */}
-          <div
-            className={styles.lecturerPage__revealFilters}
-            data-tour="lecturer-filters"
-          >
-            <ApplicationFilters
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              selectedCourse={selectedCourse}
-              onCourseChange={setSelectedCourse}
-              courses={courses}
-              roleTypeFilter={roleTypeFilter}
-              onRoleTypeChange={setRoleTypeFilter}
-              availabilityFilter={availabilityFilter}
-              onAvailabilityChange={setAvailabilityFilter}
-              skillsFilter={skillsFilterArray}
-              onSkillsFilterChange={handleSkillsFilterChange}
-              availableSkills={availableSkills}
-              statusFilter={statusFilter}
-              onStatusFilterChange={setStatusFilter}
-              sortBy={sortBy}
-              onSortChange={setSortBy}
-              onClearFilters={handleClearAllFilters}
-              activeFilterCount={getActiveFilterCount()}
-            />
+          <div className={styles.lecturerPage__revealFilters}>
+            <div data-tour="lecturer-filters">
+              <ApplicationFilters
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                selectedCourse={selectedCourse}
+                onCourseChange={setSelectedCourse}
+                courses={courses}
+                roleTypeFilter={roleTypeFilter}
+                onRoleTypeChange={setRoleTypeFilter}
+                availabilityFilter={availabilityFilter}
+                onAvailabilityChange={setAvailabilityFilter}
+                skillsFilter={skillsFilterArray}
+                onSkillsFilterChange={handleSkillsFilterChange}
+                availableSkills={availableSkills}
+                statusFilter={statusFilter}
+                onStatusFilterChange={setStatusFilter}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                onClearFilters={handleClearAllFilters}
+                activeFilterCount={getActiveFilterCount()}
+              />
+            </div>
           </div>
 
           {/* Dashboard Tabs */}

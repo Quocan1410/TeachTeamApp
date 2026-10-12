@@ -55,9 +55,8 @@
   justify-content: flex-end;
 }
 
-/* Hide the floating helper while PageTour owns the screen */
+/* Keep helper measurable for the last tour step; dim handles focus. */
 :global(html.page-tour-active) .tutorHeroSection__mascotCol {
-  visibility: hidden;
   pointer-events: none;
 }
 

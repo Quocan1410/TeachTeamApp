@@ -86,7 +86,7 @@ const TutorDashboardPage: React.FC = () => {
   const isCandidate = user?.userType === "candidate";
 
   useEffect(() => {
-    if (!user) return;
+    if (!user?.id) return;
     try {
       const raw = localStorage.getItem(favouriteStorageKey(user.id));
       const parsed = raw ? (JSON.parse(raw) as unknown) : [];
@@ -94,7 +94,7 @@ const TutorDashboardPage: React.FC = () => {
     } catch {
       setFavouriteIds([]);
     }
-  }, [user]);
+  }, [user?.id]);
 
   const toggleFavourite = (courseId: string) => {
     if (!user) return;
@@ -119,12 +119,14 @@ const TutorDashboardPage: React.FC = () => {
     if (user.userType !== "candidate") {
       router.replace(user.userType === "lecturer" ? "/lecturer" : "/");
     }
-  }, [user, isAuthenticated, authLoading, router]);
+    // Intentionally depend on identity fields only — profile patches (e.g. page
+    // tour completion) must not re-trigger auth routing.
+  }, [user?.id, user?.userType, isAuthenticated, authLoading, router]);
 
   // Load initial data
   useEffect(() => {
     const loadData = async () => {
-      if (!user || user.userType !== "candidate") {
+      if (!user?.id || user.userType !== "candidate") {
         setIsDataLoading(false);
         return;
       }
@@ -162,7 +164,9 @@ const TutorDashboardPage: React.FC = () => {
     };
 
     void loadData();
-  }, [user, showError]);
+    // Only reload when the signed-in account changes — not on every user patch
+    // (page-tour "Got it" was flipping the dashboard back to a skeleton).
+  }, [user?.id, user?.userType, showError]);
 
   // Function to refresh course data (useful after application status changes)
   const refreshCourseData = async () => {
