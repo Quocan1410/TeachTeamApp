@@ -98,7 +98,7 @@ export class NotificationService {
                             type: NotificationType.APPLICATION_SUBMITTED,
                             title: "New application",
                             message: `${candidateName} applied for ${application.role.roleName} in ${application.course.courseCode}.`,
-                            link: "/lecturer",
+                            link: `/lecturer?applicationId=${application.id}`,
                             metadata,
                         })
                     ) {
@@ -118,7 +118,7 @@ export class NotificationService {
                                 type: NotificationType.APPLICATION_RESPONSE,
                                 title: "Candidate replied",
                                 message: `${application.candidate.firstName} sent additional details for ${application.course.courseCode}.`,
-                                link: "/lecturer",
+                                link: `/lecturer?applicationId=${application.id}`,
                                 metadata,
                             })
                         ) {
@@ -134,7 +134,7 @@ export class NotificationService {
                             type: NotificationType.APPLICATION_WITHDRAWN,
                             title: "Application withdrawn",
                             message: `${candidateName} withdrew ${application.role.roleName} application in ${application.course.courseCode}.`,
-                            link: "/lecturer",
+                            link: `/lecturer?applicationId=${application.id}`,
                             metadata,
                         })
                     ) {
@@ -156,7 +156,7 @@ export class NotificationService {
                         type: NotificationType.APPLICATION_COMMENT,
                         title: "New feedback on your application",
                         message: `A lecturer left feedback on your ${application.role.roleName} application for ${application.course.courseCode}.`,
-                        link: "/tutor",
+                        link: `/tutor/applications?applicationId=${application.id}`,
                         metadata,
                     })
                 ) {
@@ -191,7 +191,7 @@ export class NotificationService {
                         type: statusNotification.type,
                         title: statusNotification.title,
                         message: statusNotification.message,
-                        link: "/tutor",
+                        link: `/tutor/applications?applicationId=${application.id}`,
                         metadata: {
                             ...metadata,
                             status: application.status,

@@ -96,6 +96,8 @@
   position: absolute;
   top: calc(100% + 0.625rem);
   right: 0;
+  display: flex;
+  flex-direction: column;
   width: min(26rem, calc(100vw - 1.5rem));
   overflow: hidden;
   border-radius: 1.125rem;
@@ -271,9 +273,9 @@
 .notificationBell__notificationItem {
   position: relative;
   display: flex;
-  align-items: stretch;
-  gap: 0.65rem;
-  padding: 0.75rem 0.85rem;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.75rem 0.85rem 0.65rem;
   margin: 0;
   border: none;
   border-radius: 0.75rem;
@@ -281,7 +283,20 @@
   cursor: pointer;
   text-align: left;
   width: 100%;
-  transition: background 0.15s ease;
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.notificationBell__notificationItemInteractive {
+  cursor: pointer;
+}
+
+.notificationBell__notificationMain {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  width: 100%;
 }
 
 .notificationBell__notificationItem:hover {
@@ -298,6 +313,15 @@
 
 :global(.dark) .notificationBell__notificationItem.notificationBell--unread {
   background: rgba(251, 146, 60, 0.09);
+}
+
+.notificationBell__notificationItemPeeked {
+  background: rgba(249, 115, 22, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(249, 115, 22, 0.28);
+}
+
+:global(.dark) .notificationBell__notificationItemPeeked {
+  background: rgba(251, 146, 60, 0.12);
 }
 
 .notificationBell__notificationItem.notificationBell--unread::before {
@@ -407,23 +431,18 @@
   color: var(--color-text-primary);
 }
 
-.notificationBell__itemAside {
+.notificationBell__notificationTimeRow {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  align-self: stretch;
-  justify-content: space-between;
-  flex-shrink: 0;
-  width: 1.625rem;
-  min-height: 100%;
-  padding: 0.05rem 0 0.05rem;
+  justify-content: flex-end;
+  width: 100%;
+  padding-left: 3.15rem;
 }
 
 .notificationBell__notificationTime {
   margin-top: 0;
   font-size: 0.6875rem;
   font-weight: 600;
-  line-height: 1;
+  line-height: 1.2;
   color: var(--color-primary);
   white-space: nowrap;
 }
@@ -441,6 +460,107 @@
   -webkit-box-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.notificationBell__peek {
+  flex-shrink: 0;
+  margin: 0.35rem 0.65rem 0.75rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(249, 115, 22, 0.28);
+  background: linear-gradient(
+    165deg,
+    rgba(249, 115, 22, 0.1) 0%,
+    var(--color-bg-primary) 55%
+  );
+  animation: notificationPeekIn 0.22s ease both;
+}
+
+:global(.dark) .notificationBell__peek {
+  background: linear-gradient(
+    165deg,
+    rgba(251, 146, 60, 0.12) 0%,
+    rgba(15, 20, 28, 0.96) 55%
+  );
+  border-color: rgba(251, 146, 60, 0.32);
+}
+
+.notificationBell__peekEyebrow {
+  margin: 0 0 0.25rem;
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.notificationBell__peekTitle {
+  margin: 0 0 0.3rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.notificationBell__peekMessage {
+  margin: 0 0 0.45rem;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
+.notificationBell__peekHint {
+  margin: 0 0 0.75rem;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--color-text-tertiary);
+}
+
+.notificationBell__peekActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+}
+
+.notificationBell__peekStay {
+  border: 0;
+  background: transparent;
+  padding: 0.45rem 0.35rem;
+  color: var(--color-text-tertiary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.notificationBell__peekStay:hover {
+  color: var(--color-text-primary);
+}
+
+.notificationBell__peekOpen {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.55rem 1.05rem;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(249, 115, 22, 0.3);
+}
+
+.notificationBell__peekOpen:hover {
+  background: var(--color-primary-dark);
+}
+
+@keyframes notificationPeekIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .notificationBell__unreadDot {
@@ -461,6 +581,8 @@
   height: 1rem;
   min-width: 1rem;
   min-height: 1rem;
+  margin-left: auto;
+  flex-shrink: 0;
   border: none;
   background: rgba(249, 115, 22, 0.12);
   color: var(--color-primary);
