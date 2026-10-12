@@ -1,6 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, {
+  Suspense,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import dynamic from "next/dynamic";
 import {
   ApplicationService,
@@ -19,7 +26,7 @@ import DashboardTabs from "@/modules/lecturer/components/dashboard-tabs/Dashboar
 import ApplicationFilters from "@/modules/lecturer/components/application-filters/ApplicationFilters";
 import AppSelect from "@/shared/components/common/app-select/AppSelect";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./LecturerPage.module.css";
 import { useCandidateBlockingSubscription } from "@/hooks/useCandidateBlockingSubscription";
 import { useApplicationRealtime } from "@/shared/hooks/useApplicationRealtime";
@@ -157,8 +164,10 @@ const convertToLegacyStatistics = (stats: unknown) => {
 const LecturerDashboardInner: React.FC = () => {
   // Authentication
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { lecturerName } = useLecturerAuth();
+  const openedFromNotificationRef = useRef<string | null>(null);
 
   // UI state
   const [activeTab, setActiveTab] = useState<TabType>("applications");
@@ -514,6 +523,30 @@ const LecturerDashboardInner: React.FC = () => {
       rawHandleSelectApplication(originalApp);
     }
   };
+
+  // Deep-link from notifications: /lecturer?applicationId=…
+  useEffect(() => {
+    if (!isInitialized) return;
+    const applicationId = searchParams.get("applicationId")?.trim();
+    if (!applicationId) return;
+    if (openedFromNotificationRef.current === applicationId) return;
+
+    const match = rawApplications.find(
+      (app) => String(app.id) === applicationId
+    );
+    if (!match) return;
+
+    openedFromNotificationRef.current = applicationId;
+    setActiveTab("applications");
+    rawHandleSelectApplication(match);
+    router.replace("/lecturer", { scroll: false });
+  }, [
+    isInitialized,
+    searchParams,
+    rawApplications,
+    rawHandleSelectApplication,
+    router,
+  ]);
 
   const handleRemoveBlockedApplication = useCallback(
     async (app?: Application) => {
@@ -1065,7 +1098,9 @@ const LecturerDashboardInner: React.FC = () => {
 const LecturerDashboardClient: React.FC = () => {
   return (
     <AdminApolloProvider>
-      <LecturerDashboardInner />
+      <Suspense fallback={<PageSkeleton variant="lecturer" />}>
+        <LecturerDashboardInner />
+      </Suspense>
     </AdminApolloProvider>
   );
 };

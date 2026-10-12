@@ -242,7 +242,7 @@ export class ApplicationController {
                 type: NotificationType.APPLICATION_SUBMITTED,
                 title: "New application",
                 message: `${candidateName} applied for ${role.roleName} in ${course.courseCode}`,
-                link: "/lecturer",
+                link: `/lecturer?applicationId=${savedApplication.id}`,
                 metadata: applicationSubmittedMeta,
             });
 
@@ -259,7 +259,7 @@ export class ApplicationController {
                 type: NotificationType.APPLICATION_SUBMITTED,
                 title: "Application submitted",
                 message: `Your ${role.roleName} application for ${course.courseCode} was submitted and is pending review`,
-                link: "/tutor",
+                link: `/tutor/applications?applicationId=${savedApplication.id}`,
                 metadata: {
                     applicationId: savedApplication.id,
                     courseId,
@@ -477,9 +477,9 @@ export class ApplicationController {
 
             await NotificationService.notifyLecturersForCourse(application.courseId, {
                 type: NotificationType.APPLICATION_RESPONSE,
-                title: "Candidate sent more details",
+                title: "Candidate replied",
                 message: candidateResponseMessage,
-                link: "/lecturer",
+                link: `/lecturer?applicationId=${application.id}`,
                 metadata: candidateResponseMeta,
             });
 
@@ -620,7 +620,7 @@ export class ApplicationController {
                 type: NotificationType.APPLICATION_RESPONSE,
                 title: offerResponseTitle,
                 message: offerResponseMessage,
-                link: "/lecturer",
+                link: `/lecturer?applicationId=${application.id}`,
                 metadata: offerResponseMeta,
             });
 
@@ -893,7 +893,7 @@ export class ApplicationController {
                 type: NotificationType.APPLICATION_WITHDRAWN,
                 title: "Application withdrawn",
                 message: withdrawnMessage,
-                link: "/lecturer",
+                link: `/lecturer?applicationId=${application.id}`,
                 metadata: withdrawnMeta,
             });
 
@@ -1516,7 +1516,7 @@ export class ApplicationController {
                     type: statusNotification.type,
                     title: statusNotification.title,
                     message: statusNotification.message,
-                    link: "/tutor",
+                    link: `/tutor/applications?applicationId=${application.id}`,
                     metadata: {
                         applicationId: application.id,
                         courseId: application.courseId,
@@ -1829,7 +1829,7 @@ export class ApplicationController {
                     type: NotificationType.APPLICATION_COMMENT,
                     title: "New feedback on your application",
                     message: `A lecturer left feedback on your ${application.role.roleName} application for ${application.course.courseCode}`,
-                    link: "/tutor",
+                    link: `/tutor/applications?applicationId=${application.id}`,
                     metadata: {
                         applicationId: application.id,
                         courseId: application.courseId,
