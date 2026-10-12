@@ -392,7 +392,8 @@ const LecturerDashboardInner: React.FC = () => {
     if (user.userType !== "lecturer") {
       router.replace(user.userType === "candidate" ? "/tutor" : "/");
     }
-  }, [user, isAuthenticated, authLoading, router]);
+    // Identity fields only — tour/profile patches must not re-run routing.
+  }, [user?.id, user?.userType, isAuthenticated, authLoading, router]);
 
   // Load available courses and extract skills
   const loadCourses = useCallback(async () => {

@@ -239,11 +239,23 @@ export default function PageTour({
   );
 
   const finish = useCallback(() => {
-    void persistTour(true);
     setActive(false);
     setSpotlight(null);
     document.documentElement.classList.remove("page-tour-active");
-  }, [persistTour]);
+    // Optimistic local mark so profile patches don't re-open the tour.
+    if (user) {
+      const current = Array.isArray(user.completedPageTours)
+        ? user.completedPageTours
+        : [];
+      if (!current.includes(tourId)) {
+        updateUser({
+          ...user,
+          completedPageTours: [...current, tourId],
+        });
+      }
+    }
+    void persistTour(true);
+  }, [persistTour, tourId, updateUser, user]);
 
   useEffect(() => {
     if (!tourEnabled || steps.length === 0 || !user) return;
@@ -255,9 +267,19 @@ export default function PageTour({
     }, startDelayMs);
     return () => {
       window.clearTimeout(timer);
-      document.documentElement.classList.remove("page-tour-active");
     };
-  }, [tourEnabled, steps.length, tourId, user, startDelayMs]);
+  }, [
+    tourEnabled,
+    steps.length,
+    tourId,
+    user?.id,
+    // Primitive join so array identity changes from unrelated patches don't
+    // re-arm the auto-start timer after "Got it".
+    Array.isArray(user?.completedPageTours)
+      ? user.completedPageTours.join("\0")
+      : "",
+    startDelayMs,
+  ]);
 
   useEffect(() => {
     if (!tourEnabled || !user) return;
