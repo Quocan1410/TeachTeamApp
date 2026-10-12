@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
 import { AuthService } from "@/shared/services/authService";
@@ -36,10 +36,13 @@ type PageTourProps = {
   enabled?: boolean;
 };
 
-const PAD = 8;
-const VIEW_MARGIN = 10;
-const CARD_WIDTH = 360;
-const CARD_GAP = 14;
+const PAD = 6;
+const VIEW_MARGIN = 12;
+const CARD_WIDTH = 340;
+const CARD_HEIGHT_EST = 230;
+const CARD_GAP = 12;
+/** Space the peeking mascot needs above the card top edge. */
+const MASCOT_PEEK = 72;
 const DEFAULT_MASCOT = "/mascot/mascot-1.png";
 
 function headerOffset(): number {
@@ -53,7 +56,15 @@ function headerOffset(): number {
   return Number.isFinite(bottom) ? Math.max(56, bottom) : 72;
 }
 
-/** Intersect padded target with the visible area below the fixed header. */
+function overlaps(a: SpotlightRect, b: SpotlightRect, pad = 10): boolean {
+  return !(
+    a.left + a.width + pad < b.left ||
+    b.left + b.width + pad < a.left ||
+    a.top + a.height + pad < b.top ||
+    b.top + b.height + pad < a.top
+  );
+}
+
 function readTargetRect(selector?: string): SpotlightRect | null {
   if (!selector || typeof document === "undefined") return null;
   const el = document.querySelector(selector);
@@ -66,15 +77,10 @@ function readTargetRect(selector?: string): SpotlightRect | null {
   const viewRight = window.innerWidth - VIEW_MARGIN;
   const viewBottom = window.innerHeight - VIEW_MARGIN;
 
-  const rawTop = rect.top - PAD;
-  const rawLeft = rect.left - PAD;
-  const rawRight = rect.right + PAD;
-  const rawBottom = rect.bottom + PAD;
-
-  const top = Math.min(Math.max(rawTop, viewTop), viewBottom - 48);
-  const left = Math.min(Math.max(rawLeft, viewLeft), viewRight - 48);
-  const right = Math.max(Math.min(rawRight, viewRight), left + 48);
-  const bottom = Math.max(Math.min(rawBottom, viewBottom), top + 48);
+  const top = Math.min(Math.max(rect.top - PAD, viewTop), viewBottom - 40);
+  const left = Math.min(Math.max(rect.left - PAD, viewLeft), viewRight - 40);
+  const right = Math.max(Math.min(rect.right + PAD, viewRight), left + 40);
+  const bottom = Math.max(Math.min(rect.bottom + PAD, viewBottom), top + 40);
 
   return {
     top,
@@ -84,39 +90,73 @@ function readTargetRect(selector?: string): SpotlightRect | null {
   };
 }
 
+function cardViewportBox(pos: CardPos, width: number): SpotlightRect {
+  const height = CARD_HEIGHT_EST + MASCOT_PEEK;
+  if (pos.top != null) {
+    return {
+      left: pos.left,
+      top: Math.max(0, pos.top - MASCOT_PEEK),
+      width,
+      height,
+    };
+  }
+  const bottom = pos.bottom ?? VIEW_MARGIN;
+  return {
+    left: pos.left,
+    top: window.innerHeight - bottom - CARD_HEIGHT_EST - MASCOT_PEEK,
+    width,
+    height,
+  };
+}
+
+/**
+ * Prefer bottom-left so the card stays out of the way.
+ * If that covers the spotlight, try bottom-right, then under/above the target.
+ */
 function placeCard(spotlight: SpotlightRect | null): CardPos {
   const width = Math.min(CARD_WIDTH, window.innerWidth - VIEW_MARGIN * 2);
-  const estimatedHeight = 220;
-  const centerX = spotlight
-    ? spotlight.left + spotlight.width / 2
-    : window.innerWidth / 2;
-  const left = Math.min(
-    Math.max(VIEW_MARGIN, centerX - width / 2),
-    window.innerWidth - VIEW_MARGIN - width
-  );
+  const leftBL = VIEW_MARGIN;
+  const leftBR = Math.max(VIEW_MARGIN, window.innerWidth - VIEW_MARGIN - width);
+  const bottomSafe = VIEW_MARGIN + 10;
 
-  if (!spotlight) {
-    return { left, bottom: VIEW_MARGIN + 8 };
-  }
+  const bottomLeft: CardPos = { left: leftBL, bottom: bottomSafe };
+  const bottomRight: CardPos = { left: leftBR, bottom: bottomSafe };
 
-  const spaceBelow =
-    window.innerHeight - VIEW_MARGIN - (spotlight.top + spotlight.height);
-  const spaceAbove = spotlight.top - headerOffset() - VIEW_MARGIN;
+  if (!spotlight) return bottomLeft;
 
-  if (spaceBelow >= estimatedHeight + CARD_GAP || spaceBelow >= spaceAbove) {
-    const top = Math.min(
-      spotlight.top + spotlight.height + CARD_GAP,
-      window.innerHeight - VIEW_MARGIN - estimatedHeight
+  const minTop = headerOffset() + MASCOT_PEEK + 4;
+  const belowTop = spotlight.top + spotlight.height + CARD_GAP + MASCOT_PEEK;
+  const aboveTop = spotlight.top - CARD_GAP - CARD_HEIGHT_EST;
+
+  const candidates: CardPos[] = [bottomLeft, bottomRight];
+
+  if (belowTop + CARD_HEIGHT_EST <= window.innerHeight - VIEW_MARGIN) {
+    candidates.push(
+      {
+        left: Math.min(Math.max(leftBL, spotlight.left), leftBR),
+        top: Math.max(minTop, belowTop),
+      },
+      { left: leftBL, top: Math.max(minTop, belowTop) }
     );
-    return { left, top: Math.max(headerOffset() + 4, top) };
   }
 
-  // Sit just above the spotlight (CSS `bottom` = distance from viewport bottom).
-  const bottom = Math.max(
-    VIEW_MARGIN,
-    window.innerHeight - (spotlight.top - CARD_GAP)
-  );
-  return { left, bottom };
+  if (aboveTop >= minTop) {
+    candidates.push(
+      {
+        left: Math.min(Math.max(leftBL, spotlight.left), leftBR),
+        top: aboveTop,
+      },
+      { left: leftBL, top: aboveTop }
+    );
+  }
+
+  for (const candidate of candidates) {
+    if (!overlaps(cardViewportBox(candidate, width), spotlight, 16)) {
+      return candidate;
+    }
+  }
+
+  return bottomLeft;
 }
 
 function scrollTargetIntoView(selector?: string) {
@@ -126,26 +166,45 @@ function scrollTargetIntoView(selector?: string) {
 
   const rect = el.getBoundingClientRect();
   const topLimit = headerOffset() + 12;
-  const bottomLimit = window.innerHeight - 24;
-  const visibleHeight = bottomLimit - topLimit;
+  const bottomLimit = window.innerHeight - CARD_HEIGHT_EST - MASCOT_PEEK - 28;
+  const visibleHeight = Math.max(120, bottomLimit - topLimit);
 
   if (rect.top >= topLimit && rect.bottom <= bottomLimit) return;
 
-  // Tall targets: pin top just under the header instead of centering
-  // (centering pulls the box through the logo).
   if (rect.height >= visibleHeight * 0.85) {
     const delta = rect.top - topLimit;
-    if (Math.abs(delta) > 4) {
-      window.scrollBy({ top: delta, behavior: "smooth" });
-    }
+    if (Math.abs(delta) > 4) window.scrollBy(0, delta);
     return;
   }
 
   if (rect.top < topLimit) {
-    window.scrollBy({ top: rect.top - topLimit, behavior: "smooth" });
+    window.scrollBy(0, rect.top - topLimit);
   } else if (rect.bottom > bottomLimit) {
-    window.scrollBy({ top: rect.bottom - bottomLimit, behavior: "smooth" });
+    window.scrollBy(0, rect.bottom - bottomLimit);
   }
+}
+
+function lockBodyScroll(scrollY: number) {
+  const html = document.documentElement;
+  const body = document.body;
+  html.style.overflow = "hidden";
+  body.style.overflow = "hidden";
+  body.style.position = "fixed";
+  body.style.top = `-${scrollY}px`;
+  body.style.width = "100%";
+}
+
+function unlockBodyScroll(): number {
+  const html = document.documentElement;
+  const body = document.body;
+  const y = Math.abs(Number.parseInt(body.style.top || "0", 10)) || window.scrollY;
+  html.style.overflow = "";
+  body.style.overflow = "";
+  body.style.position = "";
+  body.style.top = "";
+  body.style.width = "";
+  window.scrollTo(0, y);
+  return y;
 }
 
 const pageTourDisabled =
@@ -162,7 +221,11 @@ export default function PageTour({
   const [active, setActive] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const [spotlight, setSpotlight] = useState<SpotlightRect | null>(null);
-  const [cardPos, setCardPos] = useState<CardPos>({ left: 0, bottom: 24 });
+  const [cardPos, setCardPos] = useState<CardPos>({
+    left: VIEW_MARGIN,
+    bottom: VIEW_MARGIN + 10,
+  });
+  const scrollYRef = useRef(0);
   const tourEnabled = enabled && !pageTourDisabled;
 
   const persistTour = useCallback(
@@ -213,6 +276,33 @@ export default function PageTour({
       window.removeEventListener("teachteam:replay-page-tour", onReplay);
   }, [tourEnabled, tourId, user, persistTour]);
 
+  // Lock background scroll while the tour is open.
+  useEffect(() => {
+    if (!active) return;
+    scrollYRef.current = window.scrollY;
+    document.documentElement.classList.add("page-tour-active");
+    lockBodyScroll(scrollYRef.current);
+
+    const blockScroll = (event: Event) => {
+      const target = event.target;
+      if (
+        target instanceof Element &&
+        target.closest(`.${styles.pageTour__card}`)
+      ) {
+        return;
+      }
+      event.preventDefault();
+    };
+    document.addEventListener("wheel", blockScroll, { passive: false });
+    document.addEventListener("touchmove", blockScroll, { passive: false });
+
+    return () => {
+      document.removeEventListener("wheel", blockScroll);
+      document.removeEventListener("touchmove", blockScroll);
+      unlockBodyScroll();
+    };
+  }, [active]);
+
   const step = steps[stepIndex];
 
   const refreshSpotlight = useCallback(() => {
@@ -224,26 +314,29 @@ export default function PageTour({
 
   useLayoutEffect(() => {
     if (!active || !step) return;
+
+    // Temporarily unlock so we can scroll the target into place, then re-lock.
+    unlockBodyScroll();
     scrollTargetIntoView(step.target);
+    scrollYRef.current = window.scrollY;
     refreshSpotlight();
-    // Smooth scroll settles after a beat — remeasure so the hole tracks the target.
-    const t1 = window.setTimeout(refreshSpotlight, 280);
-    const t2 = window.setTimeout(refreshSpotlight, 560);
-    return () => {
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
-    };
+    lockBodyScroll(scrollYRef.current);
+
+    const t1 = window.setTimeout(() => {
+      unlockBodyScroll();
+      refreshSpotlight();
+      scrollYRef.current = window.scrollY;
+      lockBodyScroll(scrollYRef.current);
+    }, 40);
+
+    return () => window.clearTimeout(t1);
   }, [refreshSpotlight, stepIndex, active, step]);
 
   useEffect(() => {
     if (!active) return;
     const onResize = () => refreshSpotlight();
     window.addEventListener("resize", onResize);
-    window.addEventListener("scroll", onResize, true);
-    return () => {
-      window.removeEventListener("resize", onResize);
-      window.removeEventListener("scroll", onResize, true);
-    };
+    return () => window.removeEventListener("resize", onResize);
   }, [active, refreshSpotlight]);
 
   useEffect(() => {

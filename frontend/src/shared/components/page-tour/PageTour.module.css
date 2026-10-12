@@ -3,6 +3,7 @@
   inset: 0;
   z-index: 1200;
   pointer-events: none;
+  overflow: visible;
 }
 
 .pageTour__dim {
@@ -10,11 +11,14 @@
   inset: 0;
   background: rgba(10, 14, 22, 0.62);
   pointer-events: auto;
+  /* Catch wheels so the page underneath cannot scroll. */
+  touch-action: none;
+  overscroll-behavior: none;
 }
 
 .pageTour__hole {
   position: absolute;
-  border-radius: 1rem;
+  border-radius: 0.85rem;
   box-shadow:
     0 0 0 9999px rgba(10, 14, 22, 0.62),
     0 0 0 2px rgba(249, 115, 22, 0.95),
@@ -22,10 +26,10 @@
   background: transparent;
   pointer-events: none;
   transition:
-    top 0.28s ease,
-    left 0.28s ease,
-    width 0.28s ease,
-    height 0.28s ease;
+    top 0.22s ease,
+    left 0.22s ease,
+    width 0.22s ease,
+    height 0.22s ease;
   animation: pageTourPulse 1.8s ease-in-out infinite;
 }
 
@@ -37,38 +41,43 @@
 .pageTour__card {
   position: absolute;
   z-index: 2;
-  /* left / top / bottom set inline so the card anchors to the spotlight */
-  width: min(22.5rem, calc(100vw - 2rem));
-  padding: 2.6rem 1.25rem 1.15rem;
+  /* left / top / bottom set inline — prefer bottom-left, flexible if needed */
+  width: min(21.25rem, calc(100vw - 1.5rem));
+  padding: 1.15rem 1.2rem 1.1rem;
   border-radius: 1.1rem;
   border: 1px solid var(--color-border);
   background: var(--color-bg-primary);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
   text-align: center;
   pointer-events: auto;
+  overflow: visible;
   animation: pageTourCardIn 0.35s ease both;
   transition:
-    top 0.28s ease,
-    left 0.28s ease,
-    bottom 0.28s ease;
+    top 0.22s ease,
+    left 0.22s ease,
+    bottom 0.22s ease;
 }
 
 .pageTour__mascotSeat {
   position: absolute;
   left: 50%;
   top: 0;
-  width: 6.5rem;
-  height: 3.4rem;
-  transform: translate(-50%, -62%);
-  overflow: hidden;
+  width: 6.75rem;
+  height: 5.5rem;
+  transform: translate(-50%, -82%);
+  overflow: visible;
   pointer-events: none;
 }
 
 .pageTour__mascot {
   display: block;
-  width: 6.5rem;
+  width: 6.75rem;
   height: auto;
-  margin-top: -2.55rem;
+  max-width: none;
+  object-fit: contain;
+  object-position: center bottom;
+  /* No negative crop — that was cutting the head in half */
+  margin: 0;
 }
 
 .pageTour__progress {
@@ -82,7 +91,7 @@
 
 .pageTour__title {
   margin: 0 0 0.45rem;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   font-weight: 750;
   letter-spacing: -0.02em;
   line-height: 1.2;
@@ -90,8 +99,8 @@
 }
 
 .pageTour__body {
-  margin: 0 0 1.1rem;
-  font-size: 0.92rem;
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
   line-height: 1.45;
   color: var(--color-text-secondary);
 }
@@ -137,7 +146,7 @@
 @keyframes pageTourCardIn {
   from {
     opacity: 0;
-    transform: translateY(0.75rem) scale(0.97);
+    transform: translateY(0.65rem) scale(0.98);
   }
   to {
     opacity: 1;
@@ -171,17 +180,16 @@
 
 @media (max-width: 640px) {
   .pageTour__card {
-    bottom: max(0.85rem, env(safe-area-inset-bottom));
-    padding-top: 2.4rem;
+    padding-top: 1.05rem;
   }
 
   .pageTour__mascotSeat {
-    width: 5.6rem;
-    height: 3rem;
+    width: 5.75rem;
+    height: 4.75rem;
+    transform: translate(-50%, -80%);
   }
 
   .pageTour__mascot {
-    width: 5.6rem;
-    margin-top: -2.2rem;
+    width: 5.75rem;
   }
 }
