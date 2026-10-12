@@ -916,30 +916,29 @@ const LecturerDashboardInner: React.FC = () => {
           </div>
 
           {/* Enhanced Application Filters */}
-          <div
-            className={styles.lecturerPage__revealFilters}
-            data-tour="lecturer-filters"
-          >
-            <ApplicationFilters
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              selectedCourse={selectedCourse}
-              onCourseChange={setSelectedCourse}
-              courses={courses}
-              roleTypeFilter={roleTypeFilter}
-              onRoleTypeChange={setRoleTypeFilter}
-              availabilityFilter={availabilityFilter}
-              onAvailabilityChange={setAvailabilityFilter}
-              skillsFilter={skillsFilterArray}
-              onSkillsFilterChange={handleSkillsFilterChange}
-              availableSkills={availableSkills}
-              statusFilter={statusFilter}
-              onStatusFilterChange={setStatusFilter}
-              sortBy={sortBy}
-              onSortChange={setSortBy}
-              onClearFilters={handleClearAllFilters}
-              activeFilterCount={getActiveFilterCount()}
-            />
+          <div className={styles.lecturerPage__revealFilters}>
+            <div data-tour="lecturer-filters">
+              <ApplicationFilters
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                selectedCourse={selectedCourse}
+                onCourseChange={setSelectedCourse}
+                courses={courses}
+                roleTypeFilter={roleTypeFilter}
+                onRoleTypeChange={setRoleTypeFilter}
+                availabilityFilter={availabilityFilter}
+                onAvailabilityChange={setAvailabilityFilter}
+                skillsFilter={skillsFilterArray}
+                onSkillsFilterChange={handleSkillsFilterChange}
+                availableSkills={availableSkills}
+                statusFilter={statusFilter}
+                onStatusFilterChange={setStatusFilter}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                onClearFilters={handleClearAllFilters}
+                activeFilterCount={getActiveFilterCount()}
+              />
+            </div>
           </div>
 
           {/* Dashboard Tabs */}

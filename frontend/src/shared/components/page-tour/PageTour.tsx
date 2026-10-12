@@ -22,6 +22,12 @@ type SpotlightRect = {
   height: number;
 };
 
+type CardPos = {
+  top?: number;
+  bottom?: number;
+  left: number;
+};
+
 type PageTourProps = {
   tourId: string;
   steps: PageTourStep[];
@@ -30,21 +36,116 @@ type PageTourProps = {
   enabled?: boolean;
 };
 
-const PAD = 10;
+const PAD = 8;
+const VIEW_MARGIN = 10;
+const CARD_WIDTH = 360;
+const CARD_GAP = 14;
 const DEFAULT_MASCOT = "/mascot/mascot-1.png";
 
+function headerOffset(): number {
+  if (typeof document === "undefined") return 72;
+  const header =
+    document.querySelector<HTMLElement>(".header__main-header") ||
+    document.querySelector<HTMLElement>(".header__header-sticky") ||
+    document.querySelector("header");
+  if (!header) return 72;
+  const bottom = header.getBoundingClientRect().bottom;
+  return Number.isFinite(bottom) ? Math.max(56, bottom) : 72;
+}
+
+/** Intersect padded target with the visible area below the fixed header. */
 function readTargetRect(selector?: string): SpotlightRect | null {
   if (!selector || typeof document === "undefined") return null;
   const el = document.querySelector(selector);
   if (!(el instanceof HTMLElement)) return null;
   const rect = el.getBoundingClientRect();
   if (rect.width < 2 || rect.height < 2) return null;
+
+  const viewTop = headerOffset() + 4;
+  const viewLeft = VIEW_MARGIN;
+  const viewRight = window.innerWidth - VIEW_MARGIN;
+  const viewBottom = window.innerHeight - VIEW_MARGIN;
+
+  const rawTop = rect.top - PAD;
+  const rawLeft = rect.left - PAD;
+  const rawRight = rect.right + PAD;
+  const rawBottom = rect.bottom + PAD;
+
+  const top = Math.min(Math.max(rawTop, viewTop), viewBottom - 48);
+  const left = Math.min(Math.max(rawLeft, viewLeft), viewRight - 48);
+  const right = Math.max(Math.min(rawRight, viewRight), left + 48);
+  const bottom = Math.max(Math.min(rawBottom, viewBottom), top + 48);
+
   return {
-    top: Math.max(0, rect.top - PAD),
-    left: Math.max(0, rect.left - PAD),
-    width: Math.min(window.innerWidth - 8, rect.width + PAD * 2),
-    height: Math.min(window.innerHeight - 8, rect.height + PAD * 2),
+    top,
+    left,
+    width: right - left,
+    height: bottom - top,
   };
+}
+
+function placeCard(spotlight: SpotlightRect | null): CardPos {
+  const width = Math.min(CARD_WIDTH, window.innerWidth - VIEW_MARGIN * 2);
+  const estimatedHeight = 220;
+  const centerX = spotlight
+    ? spotlight.left + spotlight.width / 2
+    : window.innerWidth / 2;
+  const left = Math.min(
+    Math.max(VIEW_MARGIN, centerX - width / 2),
+    window.innerWidth - VIEW_MARGIN - width
+  );
+
+  if (!spotlight) {
+    return { left, bottom: VIEW_MARGIN + 8 };
+  }
+
+  const spaceBelow =
+    window.innerHeight - VIEW_MARGIN - (spotlight.top + spotlight.height);
+  const spaceAbove = spotlight.top - headerOffset() - VIEW_MARGIN;
+
+  if (spaceBelow >= estimatedHeight + CARD_GAP || spaceBelow >= spaceAbove) {
+    const top = Math.min(
+      spotlight.top + spotlight.height + CARD_GAP,
+      window.innerHeight - VIEW_MARGIN - estimatedHeight
+    );
+    return { left, top: Math.max(headerOffset() + 4, top) };
+  }
+
+  // Sit just above the spotlight (CSS `bottom` = distance from viewport bottom).
+  const bottom = Math.max(
+    VIEW_MARGIN,
+    window.innerHeight - (spotlight.top - CARD_GAP)
+  );
+  return { left, bottom };
+}
+
+function scrollTargetIntoView(selector?: string) {
+  if (!selector) return;
+  const el = document.querySelector(selector);
+  if (!(el instanceof HTMLElement)) return;
+
+  const rect = el.getBoundingClientRect();
+  const topLimit = headerOffset() + 12;
+  const bottomLimit = window.innerHeight - 24;
+  const visibleHeight = bottomLimit - topLimit;
+
+  if (rect.top >= topLimit && rect.bottom <= bottomLimit) return;
+
+  // Tall targets: pin top just under the header instead of centering
+  // (centering pulls the box through the logo).
+  if (rect.height >= visibleHeight * 0.85) {
+    const delta = rect.top - topLimit;
+    if (Math.abs(delta) > 4) {
+      window.scrollBy({ top: delta, behavior: "smooth" });
+    }
+    return;
+  }
+
+  if (rect.top < topLimit) {
+    window.scrollBy({ top: rect.top - topLimit, behavior: "smooth" });
+  } else if (rect.bottom > bottomLimit) {
+    window.scrollBy({ top: rect.bottom - bottomLimit, behavior: "smooth" });
+  }
 }
 
 const pageTourDisabled =
@@ -61,6 +162,7 @@ export default function PageTour({
   const [active, setActive] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const [spotlight, setSpotlight] = useState<SpotlightRect | null>(null);
+  const [cardPos, setCardPos] = useState<CardPos>({ left: 0, bottom: 24 });
   const tourEnabled = enabled && !pageTourDisabled;
 
   const persistTour = useCallback(
@@ -117,21 +219,21 @@ export default function PageTour({
     if (!active || !step) return;
     const rect = readTargetRect(step.target);
     setSpotlight(rect);
-    if (step.target) {
-      const el = document.querySelector(step.target);
-      if (el instanceof HTMLElement) {
-        el.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-          inline: "nearest",
-        });
-      }
-    }
+    setCardPos(placeCard(rect));
   }, [active, step]);
 
   useLayoutEffect(() => {
+    if (!active || !step) return;
+    scrollTargetIntoView(step.target);
     refreshSpotlight();
-  }, [refreshSpotlight, stepIndex]);
+    // Smooth scroll settles after a beat — remeasure so the hole tracks the target.
+    const t1 = window.setTimeout(refreshSpotlight, 280);
+    const t2 = window.setTimeout(refreshSpotlight, 560);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+  }, [refreshSpotlight, stepIndex, active, step]);
 
   useEffect(() => {
     if (!active) return;
@@ -169,6 +271,14 @@ export default function PageTour({
       }
     : undefined;
 
+  const cardStyle: React.CSSProperties = {
+    left: `${cardPos.left}px`,
+    width: `min(${CARD_WIDTH}px, calc(100vw - ${VIEW_MARGIN * 2}px))`,
+    ...(cardPos.top != null
+      ? { top: `${cardPos.top}px`, bottom: "auto" }
+      : { bottom: `${cardPos.bottom ?? 24}px`, top: "auto" }),
+  };
+
   return (
     <div
       className={styles.pageTour}
@@ -186,7 +296,7 @@ export default function PageTour({
         />
       )}
 
-      <div className={styles.pageTour__card}>
+      <div className={styles.pageTour__card} style={cardStyle}>
         <div className={styles.pageTour__mascotSeat} aria-hidden="true">
           <Image
             src={mascotSrc}
