@@ -35,7 +35,7 @@
   display: flex;
   align-items: flex-start;
   margin: 0.2rem;
-  padding: 1.25rem;
+  padding: 1.25rem 1.25rem 1rem;
   border-radius: 0.75rem;
   background-color: var(--color-bg-secondary);
   transition:
@@ -44,7 +44,7 @@
   cursor: pointer;
   position: relative;
   border: 1px solid transparent;
-  min-height: 120px;
+  min-height: 148px;
   box-sizing: border-box;
 }
 
@@ -149,6 +149,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  /* Leave the date on its own row underneath — no absolute overlap. */
+  margin-bottom: 0.15rem;
 }
 
 .applicantList__skillBadge {
@@ -198,11 +200,15 @@
 }
 
 .applicantList__appliedDate {
-  position: absolute;
-  bottom: 1rem;
-  right: 1rem;
+  display: block;
+  width: 100%;
+  margin-top: 0.65rem;
+  padding-top: 0.15rem;
+  text-align: right;
   font-size: 0.75rem;
+  line-height: 1.2;
   color: var(--color-text-secondary);
+  white-space: nowrap;
 }
 
 /* New styles for role and course information */

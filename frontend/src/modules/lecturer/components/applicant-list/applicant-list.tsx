@@ -117,6 +117,9 @@ const ApplicantItem = React.memo<{
             </span>
           )}
         </div>
+        <div className={styles.applicantList__appliedDate}>
+          {new Date(application.dateApplied).toLocaleDateString()}
+        </div>
       </div>
       {application.rank !== undefined &&
         application.rank !== null &&
@@ -176,9 +179,6 @@ const ApplicantItem = React.memo<{
           Remove
         </button>
       )}
-      <div className={styles.applicantList__appliedDate}>
-        {new Date(application.dateApplied).toLocaleDateString()}
-      </div>
     </div>
   );
 
