@@ -225,7 +225,10 @@ export default function PageTour({
     left: VIEW_MARGIN,
     bottom: VIEW_MARGIN + 10,
   });
+  const [nudgeNext, setNudgeNext] = useState(false);
   const scrollYRef = useRef(0);
+  const nudgeTimerRef = useRef<number | null>(null);
+  const nextButtonRef = useRef<HTMLButtonElement | null>(null);
   const tourEnabled = enabled && !pageTourDisabled;
 
   const persistTour = useCallback(
@@ -361,17 +364,69 @@ export default function PageTour({
     return () => window.removeEventListener("resize", onResize);
   }, [active, refreshSpotlight]);
 
+  const pulseNext = useCallback(() => {
+    setNudgeNext(false);
+    // Restart animation even if already nudging.
+    window.requestAnimationFrame(() => {
+      setNudgeNext(true);
+      nextButtonRef.current?.focus({ preventScroll: true });
+    });
+    if (nudgeTimerRef.current) window.clearTimeout(nudgeTimerRef.current);
+    nudgeTimerRef.current = window.setTimeout(() => {
+      setNudgeNext(false);
+      nudgeTimerRef.current = null;
+    }, 700);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (nudgeTimerRef.current) window.clearTimeout(nudgeTimerRef.current);
+    };
+  }, []);
+
   useEffect(() => {
     if (!active) return;
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
         finish();
+        return;
+      }
+      // Keep focus inside the tour — Tab stays on Skip/Next only.
+      if (event.key === "Tab") {
+        const skip = document.getElementById("page-tour-skip");
+        const next = nextButtonRef.current;
+        if (!skip || !next) return;
+        event.preventDefault();
+        const focusNext =
+          event.shiftKey
+            ? document.activeElement === skip
+              ? next
+              : skip
+            : document.activeElement === next
+              ? skip
+              : next;
+        focusNext.focus({ preventScroll: true });
+        return;
+      }
+      // Any other key while touring → nudge Next (except Enter/Space on focused btn).
+      if (event.key !== "Enter" && event.key !== " ") {
+        event.preventDefault();
+        pulseNext();
       }
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [active, finish]);
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [active, finish, pulseNext]);
+
+  useEffect(() => {
+    if (!active) return;
+    // Land focus on Next so keyboard users know the primary action.
+    const t = window.setTimeout(() => {
+      nextButtonRef.current?.focus({ preventScroll: true });
+    }, 40);
+    return () => window.clearTimeout(t);
+  }, [active, stepIndex]);
 
   if (!active || !step) return null;
 
@@ -394,6 +449,15 @@ export default function PageTour({
       : { bottom: `${cardPos.bottom ?? 24}px`, top: "auto" }),
   };
 
+  const goNext = () => {
+    setNudgeNext(false);
+    if (isLast) {
+      finish();
+      return;
+    }
+    setStepIndex((i) => i + 1);
+  };
+
   return (
     <div
       className={styles.pageTour}
@@ -401,6 +465,15 @@ export default function PageTour({
       aria-modal="true"
       aria-labelledby="page-tour-title"
       aria-describedby="page-tour-body"
+      onMouseDown={(event) => {
+        // Block the page underneath; only Skip / Next may act.
+        event.preventDefault();
+        pulseNext();
+      }}
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+      }}
     >
       <div className={styles.pageTour__dim} aria-hidden="true" />
       {spotlight && (
@@ -411,7 +484,22 @@ export default function PageTour({
         />
       )}
 
-      <div className={styles.pageTour__card} style={cardStyle}>
+      <div
+        className={styles.pageTour__card}
+        style={cardStyle}
+        onMouseDown={(event) => {
+          event.stopPropagation();
+          const target = event.target;
+          // Card body is not Skip/Next — nudge so the primary action is obvious.
+          if (
+            target instanceof Element &&
+            !target.closest("button")
+          ) {
+            pulseNext();
+          }
+        }}
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className={styles.pageTour__mascotSeat} aria-hidden="true">
           <Image
             src={mascotSrc}
@@ -436,20 +524,27 @@ export default function PageTour({
         <div className={styles.pageTour__actions}>
           <button
             type="button"
+            id="page-tour-skip"
             className={styles.pageTour__skip}
-            onClick={finish}
+            onMouseDown={(event) => event.stopPropagation()}
+            onClick={(event) => {
+              event.stopPropagation();
+              finish();
+            }}
           >
             Skip
           </button>
           <button
+            ref={nextButtonRef}
             type="button"
-            className={styles.pageTour__next}
-            onClick={() => {
-              if (isLast) {
-                finish();
-                return;
-              }
-              setStepIndex((i) => i + 1);
+            id="page-tour-next"
+            className={`${styles.pageTour__next}${
+              nudgeNext ? ` ${styles.pageTour__nextNudge}` : ""
+            }`}
+            onMouseDown={(event) => event.stopPropagation()}
+            onClick={(event) => {
+              event.stopPropagation();
+              goNext();
             }}
           >
             {isLast ? "Got it" : "Next"}
