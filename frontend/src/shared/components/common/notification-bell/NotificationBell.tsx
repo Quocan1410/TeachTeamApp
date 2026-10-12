@@ -2,7 +2,12 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useNotifications } from "@/shared/contexts/NotificationContext";
+import { useAuth } from "@/modules/auth/hooks/useAuth";
+import {
+  useNotifications,
+  type Notification,
+} from "@/shared/contexts/NotificationContext";
+import { resolveNotificationNav } from "@/shared/utils/notificationNav";
 import CloseIcon from "@/shared/components/common/icons/CloseIcon";
 import styles from "./NotificationBell.module.css";
 
@@ -15,8 +20,10 @@ const NotificationBell: React.FC = () => {
     markAllAsRead,
     removeNotification,
   } = useNotifications();
+  const { user } = useAuth();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [peek, setPeek] = useState<Notification | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -26,6 +33,7 @@ const NotificationBell: React.FC = () => {
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
+        setPeek(null);
       }
     };
 
@@ -33,15 +41,26 @@ const NotificationBell: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleNotificationClick = (
-    notificationId: string,
-    link?: string | null
-  ) => {
-    markAsRead(notificationId);
-    if (link) {
-      router.push(link);
-      setIsOpen(false);
-    }
+  const peekNav = peek
+    ? resolveNotificationNav({
+        type: peek.type,
+        link: peek.link,
+        applicationId: peek.applicationId,
+        userType: user?.userType,
+      })
+    : null;
+
+  const handleNotificationClick = (notification: Notification) => {
+    markAsRead(notification.id);
+    setPeek(notification);
+  };
+
+  const openPeekDestination = () => {
+    if (!peek || !peekNav) return;
+    markAsRead(peek.id);
+    setIsOpen(false);
+    setPeek(null);
+    router.push(peekNav.href);
   };
 
   const formatTimeAgo = (date: Date) => {
@@ -123,6 +142,7 @@ const NotificationBell: React.FC = () => {
             </svg>
           );
         case "application_comment":
+        case "application_response":
         case "application_submitted":
           return (
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -156,7 +176,10 @@ const NotificationBell: React.FC = () => {
       <button
         type="button"
         className={`${styles.notificationBell__bellButton} ${isOpen ? styles.notificationBell__bellButtonActive : ""}`}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          setIsOpen((open) => !open);
+          setPeek(null);
+        }}
         aria-label={`Notifications (${unreadCount} unread)`}
         aria-expanded={isOpen}
       >
@@ -234,6 +257,15 @@ const NotificationBell: React.FC = () => {
               <div className={styles.notificationBell__notificationListInner}>
                 {notifications.map((notification) => {
                   const actor = getNotificationActor(notification.type);
+                  const isPeeked = peek?.id === notification.id;
+                  const hasNav = Boolean(
+                    resolveNotificationNav({
+                      type: notification.type,
+                      link: notification.link,
+                      applicationId: notification.applicationId,
+                      userType: user?.userType,
+                    })
+                  );
                   return (
                     <div
                       key={notification.id}
@@ -241,47 +273,49 @@ const NotificationBell: React.FC = () => {
                       tabIndex={0}
                       className={`${styles.notificationBell__notificationItem} ${
                         !notification.read ? styles["notificationBell--unread"] : ""
+                      } ${isPeeked ? styles.notificationBell__notificationItemPeeked : ""} ${
+                        hasNav ? styles.notificationBell__notificationItemInteractive : ""
                       }`}
-                      onClick={() =>
-                        handleNotificationClick(notification.id, notification.link)
-                      }
+                      onClick={() => handleNotificationClick(notification)}
                       onKeyDown={(event) => {
                         if (event.key === "Enter" || event.key === " ") {
                           event.preventDefault();
-                          handleNotificationClick(
-                            notification.id,
-                            notification.link
-                          );
+                          handleNotificationClick(notification);
                         }
                       }}
                     >
-                      <div className={styles.notificationBell__notificationIconWrap}>
-                        {getNotificationIcon(notification.type)}
-                        {!notification.read && (
-                          <span className={styles.notificationBell__unreadDot} aria-hidden />
-                        )}
-                      </div>
-                      <div className={styles.notificationBell__notificationContent}>
-                        {actor && <span className={styles.notificationBell__actorBadge}>{actor}</span>}
-                        <span className={styles.notificationBell__notificationTitle}>
-                          {notification.title}
-                        </span>
-                        <p className={styles.notificationBell__notificationMessage}>
-                          {notification.message}
-                        </p>
-                      </div>
-                      <div className={styles.notificationBell__itemAside}>
+                      <div className={styles.notificationBell__notificationMain}>
+                        <div className={styles.notificationBell__notificationIconWrap}>
+                          {getNotificationIcon(notification.type)}
+                          {!notification.read && (
+                            <span className={styles.notificationBell__unreadDot} aria-hidden />
+                          )}
+                        </div>
+                        <div className={styles.notificationBell__notificationContent}>
+                          {actor && (
+                            <span className={styles.notificationBell__actorBadge}>{actor}</span>
+                          )}
+                          <span className={styles.notificationBell__notificationTitle}>
+                            {notification.title}
+                          </span>
+                          <p className={styles.notificationBell__notificationMessage}>
+                            {notification.message}
+                          </p>
+                        </div>
                         <button
                           type="button"
                           className={`${styles.notificationBell__removeButton} iconClose__hit iconClose__circle`}
                           onClick={(event) => {
                             event.stopPropagation();
+                            if (peek?.id === notification.id) setPeek(null);
                             removeNotification(notification.id);
                           }}
                           aria-label="Remove notification"
                         >
                           <CloseIcon size={7} />
                         </button>
+                      </div>
+                      <div className={styles.notificationBell__notificationTimeRow}>
                         <span className={styles.notificationBell__notificationTime}>
                           {formatTimeAgo(notification.timestamp)}
                         </span>
@@ -293,6 +327,38 @@ const NotificationBell: React.FC = () => {
             )}
           </div>
 
+          {peek && (
+            <div className={styles.notificationBell__peek} role="region" aria-label="Notification preview">
+              <p className={styles.notificationBell__peekEyebrow}>Quick look</p>
+              <p className={styles.notificationBell__peekTitle}>{peek.title}</p>
+              <p className={styles.notificationBell__peekMessage}>{peek.message}</p>
+              {peekNav ? (
+                <p className={styles.notificationBell__peekHint}>{peekNav.hint}</p>
+              ) : (
+                <p className={styles.notificationBell__peekHint}>
+                  Marked as read. There’s no page you can open for this update.
+                </p>
+              )}
+              <div className={styles.notificationBell__peekActions}>
+                <button
+                  type="button"
+                  className={styles.notificationBell__peekStay}
+                  onClick={() => setPeek(null)}
+                >
+                  Not now
+                </button>
+                {peekNav && (
+                  <button
+                    type="button"
+                    className={styles.notificationBell__peekOpen}
+                    onClick={openPeekDestination}
+                  >
+                    {peekNav.actionLabel}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

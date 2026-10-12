@@ -27,6 +27,7 @@ export interface Notification {
   timestamp: Date;
   read: boolean;
   link?: string | null;
+  applicationId?: string;
   candidateId?: string;
   candidateName?: string;
   unselectedCount?: number;
@@ -75,6 +76,10 @@ function mapStoredNotification(n: StoredNotification): Notification {
     timestamp: new Date(n.createdAt),
     read: Boolean(n.read),
     link: n.link,
+    applicationId:
+      typeof n.metadata?.applicationId === "string"
+        ? n.metadata.applicationId
+        : undefined,
     candidateId:
       typeof n.metadata?.candidateId === "string"
         ? n.metadata.candidateId
