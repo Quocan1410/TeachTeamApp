@@ -425,7 +425,12 @@ export default function PageTour({
     unlockBodyScroll();
     scrollTargetIntoView(step.target);
 
-    const settleMs = step.target ? 220 : 40;
+    // Details / list may trigger parent state (select applicant) before paint.
+    const settleMs = step.target
+      ? step.id === "details" || step.id === "list"
+        ? 360
+        : 220
+      : 40;
     measureTimerRef.current = window.setTimeout(() => {
       refreshSpotlight();
       scrollYRef.current = window.scrollY;
@@ -435,7 +440,7 @@ export default function PageTour({
         refreshSpotlight();
         setEntered(true);
         measureTimerRef.current = null;
-      }, 48);
+      }, 64);
     }, settleMs);
 
     return () => {

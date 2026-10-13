@@ -1,6 +1,6 @@
 import type { PageTourStep } from "./PageTour";
 
-export const LECTURER_TOUR_ID = "lecturer-dashboard-v2";
+export const LECTURER_TOUR_ID = "lecturer-dashboard-v3";
 
 export const lecturerTourSteps: PageTourStep[] = [
   {

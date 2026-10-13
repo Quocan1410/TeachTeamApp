@@ -1087,6 +1087,14 @@ const LecturerDashboardInner: React.FC = () => {
               ) {
                 setActiveTab("applications");
               }
+              // Details step needs a real pane — pick the first applicant if none selected.
+              if (
+                (step.id === "list" || step.id === "details") &&
+                !rawSelectedApplication &&
+                rawApplications.length > 0
+              ) {
+                rawHandleSelectApplication(rawApplications[0]);
+              }
             }}
           />
         )}
