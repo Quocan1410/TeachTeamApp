@@ -65,8 +65,13 @@ const LECTURER_PROFILES: Record<
         rank: "Lecturer",
         years: 3,
     },
-    "linh.tran@lecturer.edu.au": {
+    "lauren.taylor@lecturer.edu.au": {
         portrait: 3,
+        rank: "Lecturer",
+        years: 3,
+    },
+    "claire.parker@lecturer.edu.au": {
+        portrait: 14,
         rank: "Lecturer",
         years: 3,
     },
