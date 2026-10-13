@@ -4,7 +4,8 @@ export const TUTOR_TOUR_ID = "tutor-dashboard-v1";
 
 export const tutorTourSteps: PageTourStep[] = [
   {
-    id: "welcome",
+    id: "header",
+    target: "[data-tour='tutor-header']",
     title: "Welcome to your roles",
     body: "This page is where you find tutor and lab-assistant openings. I’ll point out the useful bits.",
     mascotSrc: "/mascot/mascot-1.png",

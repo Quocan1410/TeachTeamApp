@@ -137,14 +137,36 @@ const Header: React.FC = () => {
                   </Link>
                 )}
                 {isLecturerUser && (
-                  <Link
-                    href="/lecturer"
-                    className={`${styles["header__nav-link"]} ${
-                      pathname === "/lecturer" ? styles["header--active"] : ""
-                    }`}
-                  >
-                    Applicants
-                  </Link>
+                  <>
+                    <Link
+                      href="/lecturer"
+                      className={`${styles["header__nav-link"]} ${
+                        pathname === "/lecturer" ? styles["header--active"] : ""
+                      }`}
+                    >
+                      Applicants
+                    </Link>
+                    <Link
+                      href="/lecturer/courses"
+                      className={`${styles["header__nav-link"]} ${
+                        pathname.startsWith("/lecturer/courses")
+                          ? styles["header--active"]
+                          : ""
+                      }`}
+                    >
+                      My courses
+                    </Link>
+                    <Link
+                      href="/lecturer/analytics"
+                      className={`${styles["header__nav-link"]} ${
+                        pathname.startsWith("/lecturer/analytics")
+                          ? styles["header--active"]
+                          : ""
+                      }`}
+                    >
+                      Analytics
+                    </Link>
+                  </>
                 )}
                 {showGuestNav && (
                   <Link

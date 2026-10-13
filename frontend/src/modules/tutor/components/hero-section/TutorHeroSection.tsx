@@ -63,7 +63,10 @@ const TutorHeroSection: React.FC<TutorHeroSectionProps> = ({
   return (
     <section className={styles.tutorHeroSection}>
       <div className={styles.tutorHeroSection__inner}>
-        <h1 className={styles.tutorHeroSection__tutorHeroTitle}>
+        <h1
+          className={styles.tutorHeroSection__tutorHeroTitle}
+          data-tour="tutor-header"
+        >
           Find your{" "}
           <span className={styles.tutorHeroSection__doubleWord} data-text="Teaching Roles">
             Teaching Roles

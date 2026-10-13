@@ -5,10 +5,11 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     OneToMany,
-    Index,
 } from "typeorm";
 import { CourseAssignment } from "./CourseAssignment";
 import { Application } from "./Application";
+import { CourseSession } from "./CourseSession";
+import { CourseChangeRequest } from "./CourseChangeRequest";
 
 @Entity("courses")
 export class Course {
@@ -55,6 +56,20 @@ export class Course {
     })
     maxLabAssistants: number;
 
+    /** Target students per tutorial class (about 10–20). */
+    @Column({
+        type: "int",
+        default: 15,
+    })
+    studentsPerClass: number;
+
+    /** When true, public openings use live fields; further edits need approval. */
+    @Column({
+        type: "boolean",
+        default: false,
+    })
+    isPublished: boolean;
+
     @Column({
         type: "datetime",
         nullable: true,
@@ -76,6 +91,12 @@ export class Course {
 
     @OneToMany(() => Application, (application) => application.course)
     applications: Application[];
+
+    @OneToMany(() => CourseSession, (session) => session.course)
+    sessions: CourseSession[];
+
+    @OneToMany(() => CourseChangeRequest, (request) => request.course)
+    changeRequests: CourseChangeRequest[];
 
     // Virtual properties
     get displayName(): string {

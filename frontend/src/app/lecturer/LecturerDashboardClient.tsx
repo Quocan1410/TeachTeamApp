@@ -39,13 +39,6 @@ import {
   lecturerTourSteps,
 } from "@/shared/components/page-tour/lecturerTour";
 
-const ApplicantStatsVisualization = dynamic(
-  () =>
-    import(
-      "@/modules/lecturer/components/applicant-stats-visualization/applicant-stats-visualization"
-    ),
-  { ssr: false }
-);
 const AdminApolloProvider = dynamic(
   () =>
     import("@/components/AdminApolloProvider").then((m) => ({
@@ -55,7 +48,7 @@ const AdminApolloProvider = dynamic(
 );
 import { CandidateBlockedEvent } from "@/lib/graphql-subscriptions";
 
-type TabType = "applications" | "rankings" | "stats";
+type TabType = "applications" | "rankings";
 
 const matchesRankingCourse = (
   app: { rankedForCourse?: string; courses: string[] },
@@ -951,28 +944,26 @@ const LecturerDashboardInner: React.FC = () => {
 
           {/* Enhanced Application Filters */}
           <div className={styles.lecturerPage__revealFilters}>
-            <div data-tour="lecturer-filters">
-              <ApplicationFilters
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-                selectedCourse={selectedCourse}
-                onCourseChange={setSelectedCourse}
-                courses={courses}
-                roleTypeFilter={roleTypeFilter}
-                onRoleTypeChange={setRoleTypeFilter}
-                availabilityFilter={availabilityFilter}
-                onAvailabilityChange={setAvailabilityFilter}
-                skillsFilter={skillsFilterArray}
-                onSkillsFilterChange={handleSkillsFilterChange}
-                availableSkills={availableSkills}
-                statusFilter={statusFilter}
-                onStatusFilterChange={setStatusFilter}
-                sortBy={sortBy}
-                onSortChange={setSortBy}
-                onClearFilters={handleClearAllFilters}
-                activeFilterCount={getActiveFilterCount()}
-              />
-            </div>
+            <ApplicationFilters
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              selectedCourse={selectedCourse}
+              onCourseChange={setSelectedCourse}
+              courses={courses}
+              roleTypeFilter={roleTypeFilter}
+              onRoleTypeChange={setRoleTypeFilter}
+              availabilityFilter={availabilityFilter}
+              onAvailabilityChange={setAvailabilityFilter}
+              skillsFilter={skillsFilterArray}
+              onSkillsFilterChange={handleSkillsFilterChange}
+              availableSkills={availableSkills}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+              onClearFilters={handleClearAllFilters}
+              activeFilterCount={getActiveFilterCount()}
+            />
           </div>
 
           {/* Dashboard Tabs */}
@@ -1063,11 +1054,6 @@ const LecturerDashboardInner: React.FC = () => {
               </div>
             )}
 
-            {activeTab === "stats" && (
-              <div className={styles.lecturerPage__statsSection}>
-                <ApplicantStatsVisualization applications={applications} />
-              </div>
-            )}
           </div>
         </div>
 
@@ -1089,7 +1075,20 @@ const LecturerDashboardInner: React.FC = () => {
         {confirmModal}
 
         {user?.id && (
-          <PageTour tourId={LECTURER_TOUR_ID} steps={lecturerTourSteps} />
+          <PageTour
+            tourId={LECTURER_TOUR_ID}
+            steps={lecturerTourSteps}
+            onStepChange={(step) => {
+              if (
+                step.id === "list" ||
+                step.id === "details" ||
+                step.id === "header" ||
+                step.id === "filters"
+              ) {
+                setActiveTab("applications");
+              }
+            }}
+          />
         )}
       </div>
   );

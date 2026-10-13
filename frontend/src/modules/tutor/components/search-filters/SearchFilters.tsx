@@ -33,90 +33,93 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 }) => {
   return (
     <section className={styles.searchFilters__panel} aria-label="Search courses">
-      <div className={styles.searchFilters__panelHead}>
-        <h2 className={styles.searchFilters__panelTitle}>Search courses</h2>
-        <button type="button" className={styles.searchFilters__clearLink} onClick={onClear}>
-          Clear filters
+      <div data-tour="tutor-search">
+        <div className={styles.searchFilters__panelHead}>
+          <h2 className={styles.searchFilters__panelTitle}>Search courses</h2>
+          <button type="button" className={styles.searchFilters__clearLink} onClick={onClear}>
+            Clear filters
+          </button>
+        </div>
+
+        <form
+          className={styles.searchFilters__field}
+          onSubmit={(event) => {
+            event.preventDefault();
+            document.getElementById("course-results")?.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }}
+        >
+          <input
+            className={styles.searchFilters__fieldInput}
+            type="search"
+            value={searchQuery}
+            onChange={(event) => onSearchChange(event.target.value)}
+            placeholder="Search course, code, or role"
+            aria-label="Search course, code, or role"
+          />
+          <MagnifyingGlassIcon className={styles.searchFilters__fieldIcon} aria-hidden="true" />
+        </form>
+      </div>
+
+      <div data-tour="tutor-filters">
+        <div className={styles.searchFilters__filterHead}>
+          <p className={styles.searchFilters__filterLabel}>Filter courses</p>
+        </div>
+        <div className={styles.searchFilters__filterRow}>
+          <AppSelect
+            className={styles.searchFilters__filterSelect}
+            id="course-status"
+            aria-label="Status"
+            value={status}
+            onChange={(value) => onStatusChange(value as CourseFilter)}
+            options={[
+              { value: "all", label: "All statuses" },
+              { value: "available", label: "Available" },
+              { value: "applied", label: "Applied" },
+              { value: "unavailable", label: "Closed" },
+              { value: "soon", label: "Closing soon" },
+            ]}
+          />
+          <AppSelect
+            className={styles.searchFilters__filterSelect}
+            id="course-role"
+            aria-label="Role"
+            value={role}
+            onChange={(value) => onRoleChange(value as CourseRoleFilter)}
+            options={[
+              { value: "all", label: "All roles" },
+              { value: "tutor", label: "Tutor" },
+              { value: "lab", label: "Lab assistant" },
+            ]}
+          />
+          <AppSelect
+            className={styles.searchFilters__filterSelect}
+            id="course-order"
+            aria-label="Order"
+            value={sortOrder}
+            onChange={(value) => onSortOrderChange(value as CourseSortOrder)}
+            options={[
+              { value: "asc", label: "Course code A–Z" },
+              { value: "desc", label: "Course code Z–A" },
+            ]}
+          />
+        </div>
+
+        <button
+          type="button"
+          className={styles.searchFilters__applyButton}
+          onClick={() => {
+            document.getElementById("course-results")?.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }}
+        >
+          Apply filters
         </button>
       </div>
-
-      <form
-        className={styles.searchFilters__field}
-        data-tour="tutor-search"
-        onSubmit={(event) => {
-          event.preventDefault();
-          document.getElementById("course-results")?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        }}
-      >
-        <input
-          className={styles.searchFilters__fieldInput}
-          type="search"
-          value={searchQuery}
-          onChange={(event) => onSearchChange(event.target.value)}
-          placeholder="Search course, code, or role"
-          aria-label="Search course, code, or role"
-        />
-        <MagnifyingGlassIcon className={styles.searchFilters__fieldIcon} aria-hidden="true" />
-      </form>
-
-      <div className={styles.searchFilters__filterHead}>
-        <p className={styles.searchFilters__filterLabel}>Filter courses</p>
-      </div>
-      <div className={styles.searchFilters__filterRow} data-tour="tutor-filters">
-        <AppSelect
-          className={styles.searchFilters__filterSelect}
-          id="course-status"
-          aria-label="Status"
-          value={status}
-          onChange={(value) => onStatusChange(value as CourseFilter)}
-          options={[
-            { value: "all", label: "All statuses" },
-            { value: "available", label: "Available" },
-            { value: "applied", label: "Applied" },
-            { value: "unavailable", label: "Closed" },
-            { value: "soon", label: "Closing soon" },
-          ]}
-        />
-        <AppSelect
-          className={styles.searchFilters__filterSelect}
-          id="course-role"
-          aria-label="Role"
-          value={role}
-          onChange={(value) => onRoleChange(value as CourseRoleFilter)}
-          options={[
-            { value: "all", label: "All roles" },
-            { value: "tutor", label: "Tutor" },
-            { value: "lab", label: "Lab assistant" },
-          ]}
-        />
-        <AppSelect
-          className={styles.searchFilters__filterSelect}
-          id="course-order"
-          aria-label="Order"
-          value={sortOrder}
-          onChange={(value) => onSortOrderChange(value as CourseSortOrder)}
-          options={[
-            { value: "asc", label: "Course code A–Z" },
-            { value: "desc", label: "Course code Z–A" },
-          ]}
-        />
-      </div>
-
-      <button
-        type="button"
-        className={styles.searchFilters__applyButton}
-        onClick={() => {
-          document.getElementById("course-results")?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        }}
-      >
-        Apply filters
-      </button>
 
       <div className={styles.searchFilters__notice} data-tour="tutor-applications">
         <p>Heart a course to apply later. We remind you when about a month is left.</p>

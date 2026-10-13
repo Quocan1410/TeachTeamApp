@@ -44,32 +44,71 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
 
     if (variant === "profile") {
       return (
-        <div className={styles.pageSkeleton__profileColumn}>
-          <div className={`${styles.pageSkeleton__profileCard} ${styles.pageSkeleton__profileCardCenter}`}>
-            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__avatar}`} />
-            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileName}`} />
-            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileBadge}`} />
-            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileLineShort}`} />
-            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileStat}`} />
-            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileStat}`} />
-            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileSecurity}`} />
-          </div>
-          <div className={styles.pageSkeleton__profileCard}>
-            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileSectionTitle}`} />
-            <div className={styles.pageSkeleton__fieldList}>
-              {Array.from({ length: 4 }).map((_, index) => (
-                <div key={`field-${index}`} className={styles.pageSkeleton__fieldRow}>
-                  <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__fieldLabel}`} />
-                  <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__fieldValue}`} />
-                </div>
-              ))}
+        <div className={styles.pageSkeleton__profileShell}>
+          <aside className={styles.pageSkeleton__profileSide} aria-hidden="true">
+            <div className={styles.pageSkeleton__profileIdentity}>
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileSideAvatar}`} />
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileSideName}`} />
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileSideRole}`} />
             </div>
-          </div>
-          <div className={styles.pageSkeleton__profileCard}>
-            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileSectionTitle}`} />
-            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileStat}`} />
-            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileStat}`} />
-            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileButton}`} />
+            <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileSideGroup}`} />
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={`nav-${index}`}
+                className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileNavItem} ${
+                  index === 0 ? styles.pageSkeleton__profileNavItemActive : ""
+                }`}
+              />
+            ))}
+          </aside>
+
+          <div className={styles.pageSkeleton__profileMain}>
+            <header className={styles.pageSkeleton__profileHeader}>
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileTitle}`} />
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileMeta}`} />
+            </header>
+
+            <div className={styles.pageSkeleton__profileEditBlock}>
+              <div className={styles.pageSkeleton__profilePictureRow}>
+                <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profilePictureAvatar}`} />
+                <div className={styles.pageSkeleton__profilePictureCopy}>
+                  <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileBlockTitle}`} />
+                  <div className={styles.pageSkeleton__profilePictureActions}>
+                    <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileActionBtn}`} />
+                    <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileActionBtnGhost}`} />
+                  </div>
+                  <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileHint}`} />
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.pageSkeleton__profileEditBlock}>
+              <div className={styles.pageSkeleton__profileNameRow}>
+                <div className={styles.pageSkeleton__profileField}>
+                  <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileFieldLabel}`} />
+                  <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileInput}`} />
+                </div>
+                <div className={styles.pageSkeleton__profileField}>
+                  <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileFieldLabel}`} />
+                  <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileInput}`} />
+                </div>
+              </div>
+            </div>
+
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={`block-${index}`} className={styles.pageSkeleton__profileEditBlock}>
+                <div className={styles.pageSkeleton__profileField}>
+                  <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__profileFieldLabel}`} />
+                  <div
+                    className={`${styles.pageSkeleton__pulse} ${
+                      index === 1 || index === 2
+                        ? styles.pageSkeleton__profileInputTall
+                        : styles.pageSkeleton__profileInput
+                    }`}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       );
@@ -243,11 +282,15 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
     <div
       className={`${styles.pageSkeleton__wrapper} ${
         variant === "tutor" ? styles.pageSkeleton__wrapperTutor : ""
-      }`}
+      } ${variant === "profile" ? styles.pageSkeleton__wrapperProfile : ""}`}
       aria-busy="true"
       aria-live="polite"
     >
-      <div className={styles.pageSkeleton__container}>
+      <div
+        className={`${styles.pageSkeleton__container} ${
+          variant === "profile" ? styles.pageSkeleton__containerProfile : ""
+        }`}
+      >
         {status}
         {body}
       </div>
