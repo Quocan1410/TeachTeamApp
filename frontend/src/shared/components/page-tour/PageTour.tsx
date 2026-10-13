@@ -40,11 +40,12 @@ type PageTourProps = {
 const PAD = 8;
 const VIEW_MARGIN = 12;
 const CARD_WIDTH = 340;
-const CARD_HEIGHT_EST = 280;
+/** Keep in sync with real tour card (title + body + mascot + actions). */
+const CARD_HEIGHT_EST = 248;
 const CARD_GAP = 16;
 const DEFAULT_MASCOT = "/mascot/mascot-1.png";
-/** Tall targets only spotlight the top band so the hole fits the viewport. */
-const MAX_SPOTLIGHT_HEIGHT = 280;
+/** Tall targets only spotlight the top band so the hole + card fit the viewport. */
+const MAX_SPOTLIGHT_HEIGHT = 240;
 const MOVE_MS = 420;
 
 function headerOffset(): number {
@@ -95,6 +96,14 @@ function readTargetRect(selector?: string): SpotlightRect | null {
   if (top + height > viewBottom) {
     height = Math.max(48, viewBottom - top);
   }
+
+  // Prefer leaving room under the hole so the card can sit next to the focus.
+  const roomUnder =
+    window.innerHeight - VIEW_MARGIN - CARD_HEIGHT_EST - CARD_GAP - top;
+  if (roomUnder > 72) {
+    height = Math.min(height, roomUnder);
+  }
+
   left = clamp(left, viewLeft, viewRight - 48);
   width = Math.min(width, viewRight - left);
 
@@ -121,7 +130,7 @@ function fallbackCardPos(): CardPos {
 }
 
 /**
- * Anchor the card near the spotlight (below → above → sides), then corners.
+ * Anchor the card near the spotlight (below → above → sides), then near-focus fallbacks.
  * Always returns top/left so CSS can tween smoothly with transform.
  */
 function placeCard(spotlight: SpotlightRect | null): CardPos {
@@ -129,7 +138,10 @@ function placeCard(spotlight: SpotlightRect | null): CardPos {
   const leftMin = VIEW_MARGIN;
   const leftMax = Math.max(VIEW_MARGIN, window.innerWidth - VIEW_MARGIN - width);
   const minTop = headerOffset() + 8;
-  const maxTop = window.innerHeight - VIEW_MARGIN - CARD_HEIGHT_EST;
+  const maxTop = Math.max(
+    minTop,
+    window.innerHeight - VIEW_MARGIN - CARD_HEIGHT_EST
+  );
   const corner = fallbackCardPos();
 
   if (!spotlight) return corner;
@@ -147,6 +159,8 @@ function placeCard(spotlight: SpotlightRect | null): CardPos {
     minTop,
     maxTop
   );
+  // Closest-under slot when full "below" won't fit — keep card by the hole.
+  const snugBelowTop = clamp(belowTop, minTop, maxTop);
 
   const candidates: CardPos[] = [];
 
@@ -154,6 +168,11 @@ function placeCard(spotlight: SpotlightRect | null): CardPos {
     candidates.push(
       { left: centerLeft, top: Math.max(minTop, belowTop) },
       { left: alignLeft, top: Math.max(minTop, belowTop) }
+    );
+  } else {
+    candidates.push(
+      { left: centerLeft, top: snugBelowTop },
+      { left: alignLeft, top: snugBelowTop }
     );
   }
   if (aboveTop >= minTop) {
@@ -173,6 +192,8 @@ function placeCard(spotlight: SpotlightRect | null): CardPos {
   }
 
   candidates.push(
+    { left: centerLeft, top: snugBelowTop },
+    { left: alignLeft, top: snugBelowTop },
     corner,
     {
       left: leftMax,
@@ -186,7 +207,8 @@ function placeCard(spotlight: SpotlightRect | null): CardPos {
     }
   }
 
-  return corner;
+  // Last resort: stay near the focus even if boxes touch slightly.
+  return { left: centerLeft, top: snugBelowTop };
 }
 
 function scrollTargetIntoView(selector?: string) {
