@@ -8,6 +8,20 @@
   background: linear-gradient(135deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 100%);
 }
 
+.lecturerPage__pageHeading {
+  margin: 0 0 0.35rem;
+  color: var(--color-text-primary);
+  font-size: 1.85rem;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+}
+
+.lecturerPage__pageLead {
+  margin: 0 0 1.5rem;
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+}
+
 .lecturerPage__lecturerDashboardContainer {
   width: 100%;
   margin-left: auto;

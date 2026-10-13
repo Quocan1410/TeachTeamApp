@@ -14,6 +14,7 @@ import applicationRoutes from "./routes/application-routes";
 import applicationDraftRoutes from "./routes/application-draft-routes";
 import notificationRoutes from "./routes/notification-routes";
 import publicRoutes from "./routes/public-routes";
+import lecturerCourseRoutes from "./routes/lecturer-course-routes";
 import cookieParser from "cookie-parser";
 import { getAppTimestamp, getAppTimezoneLabel } from "./utils/appTime";
 import { ensureAvatarUploadDir, UPLOADS_DIR } from "./utils/avatarUtils";
@@ -39,6 +40,7 @@ app.use("/api/applications", applicationRoutes);
 app.use("/api/application-drafts", applicationDraftRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/public", publicRoutes);
+app.use("/api/lecturer/courses", lecturerCourseRoutes);
 
 app.get("/health", async (_req, res) => {
     const databaseConnected = await pingDatabase();

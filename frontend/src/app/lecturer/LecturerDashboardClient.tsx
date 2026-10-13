@@ -39,13 +39,6 @@ import {
   lecturerTourSteps,
 } from "@/shared/components/page-tour/lecturerTour";
 
-const ApplicantStatsVisualization = dynamic(
-  () =>
-    import(
-      "@/modules/lecturer/components/applicant-stats-visualization/applicant-stats-visualization"
-    ),
-  { ssr: false }
-);
 const AdminApolloProvider = dynamic(
   () =>
     import("@/components/AdminApolloProvider").then((m) => ({
@@ -55,7 +48,7 @@ const AdminApolloProvider = dynamic(
 );
 import { CandidateBlockedEvent } from "@/lib/graphql-subscriptions";
 
-type TabType = "applications" | "rankings" | "stats";
+type TabType = "applications" | "rankings";
 
 const matchesRankingCourse = (
   app: { rankedForCourse?: string; courses: string[] },
@@ -1061,11 +1054,6 @@ const LecturerDashboardInner: React.FC = () => {
               </div>
             )}
 
-            {activeTab === "stats" && (
-              <div className={styles.lecturerPage__statsSection}>
-                <ApplicantStatsVisualization applications={applications} />
-              </div>
-            )}
           </div>
         </div>
 
