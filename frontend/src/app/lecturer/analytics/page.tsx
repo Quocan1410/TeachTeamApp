@@ -6,7 +6,6 @@ import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton"
 import { useLecturerAuth } from "@/modules/lecturer/hooks/useLecturerAuth";
 import { useApplicationManagement } from "@/modules/lecturer/hooks/useApplicationManagement";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
-import { Application } from "@/shared/types/application";
 import styles from "../LecturerPage.module.css";
 
 const ApplicantStatsVisualization = dynamic(
@@ -36,9 +35,7 @@ function LecturerAnalyticsInner() {
           </p>
         </header>
         <div className={styles.lecturerPage__statsSection}>
-          <ApplicantStatsVisualization
-            applications={applications as unknown as Application[]}
-          />
+          <ApplicantStatsVisualization applications={applications} />
         </div>
       </div>
     </div>
