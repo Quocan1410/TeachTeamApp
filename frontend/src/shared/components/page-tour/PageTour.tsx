@@ -23,8 +23,7 @@ type SpotlightRect = {
 };
 
 type CardPos = {
-  top?: number;
-  bottom?: number;
+  top: number;
   left: number;
 };
 
@@ -34,16 +33,19 @@ type PageTourProps = {
   /** Delay before the tour starts so the page can settle. */
   startDelayMs?: number;
   enabled?: boolean;
+  /** Called when the active step changes (before spotlight measure). */
+  onStepChange?: (step: PageTourStep, index: number) => void;
 };
 
-const PAD = 6;
+const PAD = 8;
 const VIEW_MARGIN = 12;
 const CARD_WIDTH = 340;
-const CARD_HEIGHT_EST = 230;
-const CARD_GAP = 12;
-/** Space the peeking mascot needs above the card top edge. */
-const MASCOT_PEEK = 72;
+const CARD_HEIGHT_EST = 280;
+const CARD_GAP = 16;
 const DEFAULT_MASCOT = "/mascot/mascot-1.png";
+/** Tall targets only spotlight the top band so the hole fits the viewport. */
+const MAX_SPOTLIGHT_HEIGHT = 280;
+const MOVE_MS = 420;
 
 function headerOffset(): number {
   if (typeof document === "undefined") return 72;
@@ -65,6 +67,10 @@ function overlaps(a: SpotlightRect, b: SpotlightRect, pad = 10): boolean {
   );
 }
 
+function clamp(n: number, min: number, max: number): number {
+  return Math.min(Math.max(n, min), max);
+}
+
 function readTargetRect(selector?: string): SpotlightRect | null {
   if (!selector || typeof document === "undefined") return null;
   const el = document.querySelector(selector);
@@ -77,86 +83,110 @@ function readTargetRect(selector?: string): SpotlightRect | null {
   const viewRight = window.innerWidth - VIEW_MARGIN;
   const viewBottom = window.innerHeight - VIEW_MARGIN;
 
-  const top = Math.min(Math.max(rect.top - PAD, viewTop), viewBottom - 40);
-  const left = Math.min(Math.max(rect.left - PAD, viewLeft), viewRight - 40);
-  const right = Math.max(Math.min(rect.right + PAD, viewRight), left + 40);
-  const bottom = Math.max(Math.min(rect.bottom + PAD, viewBottom), top + 40);
+  let top = rect.top - PAD;
+  let left = rect.left - PAD;
+  let width = rect.width + PAD * 2;
+  let height = Math.min(rect.height + PAD * 2, MAX_SPOTLIGHT_HEIGHT);
 
-  return {
-    top,
-    left,
-    width: right - left,
-    height: bottom - top,
-  };
+  if (top < viewTop) {
+    height = Math.max(48, height - (viewTop - top));
+    top = viewTop;
+  }
+  if (top + height > viewBottom) {
+    height = Math.max(48, viewBottom - top);
+  }
+  left = clamp(left, viewLeft, viewRight - 48);
+  width = Math.min(width, viewRight - left);
+
+  return { top, left, width, height };
 }
 
 function cardViewportBox(pos: CardPos, width: number): SpotlightRect {
-  const height = CARD_HEIGHT_EST + MASCOT_PEEK;
-  if (pos.top != null) {
-    return {
-      left: pos.left,
-      top: Math.max(0, pos.top - MASCOT_PEEK),
-      width,
-      height,
-    };
-  }
-  const bottom = pos.bottom ?? VIEW_MARGIN;
   return {
     left: pos.left,
-    top: window.innerHeight - bottom - CARD_HEIGHT_EST - MASCOT_PEEK,
+    top: pos.top,
     width,
-    height,
+    height: CARD_HEIGHT_EST,
+  };
+}
+
+function fallbackCardPos(): CardPos {
+  return {
+    left: VIEW_MARGIN,
+    top: Math.max(
+      headerOffset() + 8,
+      window.innerHeight - VIEW_MARGIN - 10 - CARD_HEIGHT_EST
+    ),
   };
 }
 
 /**
- * Prefer bottom-left so the card stays out of the way.
- * If that covers the spotlight, try bottom-right, then under/above the target.
+ * Anchor the card near the spotlight (below → above → sides), then corners.
+ * Always returns top/left so CSS can tween smoothly with transform.
  */
 function placeCard(spotlight: SpotlightRect | null): CardPos {
   const width = Math.min(CARD_WIDTH, window.innerWidth - VIEW_MARGIN * 2);
-  const leftBL = VIEW_MARGIN;
-  const leftBR = Math.max(VIEW_MARGIN, window.innerWidth - VIEW_MARGIN - width);
-  const bottomSafe = VIEW_MARGIN + 10;
+  const leftMin = VIEW_MARGIN;
+  const leftMax = Math.max(VIEW_MARGIN, window.innerWidth - VIEW_MARGIN - width);
+  const minTop = headerOffset() + 8;
+  const maxTop = window.innerHeight - VIEW_MARGIN - CARD_HEIGHT_EST;
+  const corner = fallbackCardPos();
 
-  const bottomLeft: CardPos = { left: leftBL, bottom: bottomSafe };
-  const bottomRight: CardPos = { left: leftBR, bottom: bottomSafe };
+  if (!spotlight) return corner;
 
-  if (!spotlight) return bottomLeft;
-
-  const minTop = headerOffset() + MASCOT_PEEK + 4;
-  const belowTop = spotlight.top + spotlight.height + CARD_GAP + MASCOT_PEEK;
+  const alignLeft = clamp(spotlight.left, leftMin, leftMax);
+  const centerLeft = clamp(
+    spotlight.left + spotlight.width / 2 - width / 2,
+    leftMin,
+    leftMax
+  );
+  const belowTop = spotlight.top + spotlight.height + CARD_GAP;
   const aboveTop = spotlight.top - CARD_GAP - CARD_HEIGHT_EST;
+  const sideTop = clamp(
+    spotlight.top + spotlight.height / 2 - CARD_HEIGHT_EST / 2,
+    minTop,
+    maxTop
+  );
 
-  const candidates: CardPos[] = [bottomLeft, bottomRight];
+  const candidates: CardPos[] = [];
 
-  if (belowTop + CARD_HEIGHT_EST <= window.innerHeight - VIEW_MARGIN) {
+  if (belowTop <= maxTop) {
     candidates.push(
-      {
-        left: Math.min(Math.max(leftBL, spotlight.left), leftBR),
-        top: Math.max(minTop, belowTop),
-      },
-      { left: leftBL, top: Math.max(minTop, belowTop) }
+      { left: centerLeft, top: Math.max(minTop, belowTop) },
+      { left: alignLeft, top: Math.max(minTop, belowTop) }
     );
   }
-
   if (aboveTop >= minTop) {
     candidates.push(
-      {
-        left: Math.min(Math.max(leftBL, spotlight.left), leftBR),
-        top: aboveTop,
-      },
-      { left: leftBL, top: aboveTop }
+      { left: centerLeft, top: aboveTop },
+      { left: alignLeft, top: aboveTop }
     );
   }
 
+  const rightLeft = spotlight.left + spotlight.width + CARD_GAP;
+  if (rightLeft + width <= window.innerWidth - VIEW_MARGIN) {
+    candidates.push({ left: rightLeft, top: sideTop });
+  }
+  const leftLeft = spotlight.left - CARD_GAP - width;
+  if (leftLeft >= VIEW_MARGIN) {
+    candidates.push({ left: leftLeft, top: sideTop });
+  }
+
+  candidates.push(
+    corner,
+    {
+      left: leftMax,
+      top: corner.top,
+    }
+  );
+
   for (const candidate of candidates) {
-    if (!overlaps(cardViewportBox(candidate, width), spotlight, 16)) {
+    if (!overlaps(cardViewportBox(candidate, width), spotlight, 12)) {
       return candidate;
     }
   }
 
-  return bottomLeft;
+  return corner;
 }
 
 function scrollTargetIntoView(selector?: string) {
@@ -166,21 +196,26 @@ function scrollTargetIntoView(selector?: string) {
 
   const rect = el.getBoundingClientRect();
   const topLimit = headerOffset() + 12;
-  const bottomLimit = window.innerHeight - CARD_HEIGHT_EST - MASCOT_PEEK - 28;
+  const bottomLimit = window.innerHeight - CARD_HEIGHT_EST - 36;
   const visibleHeight = Math.max(120, bottomLimit - topLimit);
 
-  if (rect.top >= topLimit && rect.bottom <= bottomLimit) return;
+  if (
+    rect.top >= topLimit &&
+    rect.top + Math.min(rect.height, MAX_SPOTLIGHT_HEIGHT) <= bottomLimit
+  ) {
+    return;
+  }
 
   if (rect.height >= visibleHeight * 0.85) {
     const delta = rect.top - topLimit;
-    if (Math.abs(delta) > 4) window.scrollBy(0, delta);
+    if (Math.abs(delta) > 4) window.scrollBy({ top: delta, behavior: "smooth" });
     return;
   }
 
   if (rect.top < topLimit) {
-    window.scrollBy(0, rect.top - topLimit);
+    window.scrollBy({ top: rect.top - topLimit, behavior: "smooth" });
   } else if (rect.bottom > bottomLimit) {
-    window.scrollBy(0, rect.bottom - bottomLimit);
+    window.scrollBy({ top: rect.bottom - bottomLimit, behavior: "smooth" });
   }
 }
 
@@ -197,7 +232,8 @@ function lockBodyScroll(scrollY: number) {
 function unlockBodyScroll(): number {
   const html = document.documentElement;
   const body = document.body;
-  const y = Math.abs(Number.parseInt(body.style.top || "0", 10)) || window.scrollY;
+  const y =
+    Math.abs(Number.parseInt(body.style.top || "0", 10)) || window.scrollY;
   html.style.overflow = "";
   body.style.overflow = "";
   body.style.position = "";
@@ -216,20 +252,25 @@ export default function PageTour({
   steps,
   startDelayMs = 700,
   enabled = true,
+  onStepChange,
 }: PageTourProps) {
   const { user, updateUser } = useAuth();
   const [active, setActive] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const [spotlight, setSpotlight] = useState<SpotlightRect | null>(null);
-  const [cardPos, setCardPos] = useState<CardPos>({
-    left: VIEW_MARGIN,
-    bottom: VIEW_MARGIN + 10,
-  });
+  const [cardPos, setCardPos] = useState<CardPos>({ left: VIEW_MARGIN, top: 120 });
   const [nudgeNext, setNudgeNext] = useState(false);
+  const [entered, setEntered] = useState(false);
   const scrollYRef = useRef(0);
   const nudgeTimerRef = useRef<number | null>(null);
+  const measureTimerRef = useRef<number | null>(null);
   const nextButtonRef = useRef<HTMLButtonElement | null>(null);
+  const onStepChangeRef = useRef(onStepChange);
   const tourEnabled = enabled && !pageTourDisabled;
+
+  useEffect(() => {
+    onStepChangeRef.current = onStepChange;
+  }, [onStepChange]);
 
   const persistTour = useCallback(
     async (completed: boolean) => {
@@ -244,8 +285,8 @@ export default function PageTour({
   const finish = useCallback(() => {
     setActive(false);
     setSpotlight(null);
+    setEntered(false);
     document.documentElement.classList.remove("page-tour-active");
-    // Optimistic local mark so profile patches don't re-open the tour.
     if (user) {
       const current = Array.isArray(user.completedPageTours)
         ? user.completedPageTours
@@ -266,6 +307,7 @@ export default function PageTour({
     const timer = window.setTimeout(() => {
       setActive(true);
       setStepIndex(0);
+      setEntered(false);
       document.documentElement.classList.add("page-tour-active");
     }, startDelayMs);
     return () => {
@@ -276,8 +318,6 @@ export default function PageTour({
     steps.length,
     tourId,
     user?.id,
-    // Primitive join so array identity changes from unrelated patches don't
-    // re-arm the auto-start timer after "Got it".
     Array.isArray(user?.completedPageTours)
       ? user.completedPageTours.join("\0")
       : "",
@@ -292,6 +332,7 @@ export default function PageTour({
       void (async () => {
         await persistTour(false);
         setStepIndex(0);
+        setEntered(false);
         setActive(true);
         document.documentElement.classList.add("page-tour-active");
       })();
@@ -301,7 +342,6 @@ export default function PageTour({
       window.removeEventListener("teachteam:replay-page-tour", onReplay);
   }, [tourEnabled, tourId, user, persistTour]);
 
-  // Lock background scroll while the tour is open.
   useEffect(() => {
     if (!active) return;
     scrollYRef.current = window.scrollY;
@@ -340,21 +380,36 @@ export default function PageTour({
   useLayoutEffect(() => {
     if (!active || !step) return;
 
-    // Temporarily unlock so we can scroll the target into place, then re-lock.
+    onStepChangeRef.current?.(step, stepIndex);
+
+    if (measureTimerRef.current) {
+      window.clearTimeout(measureTimerRef.current);
+      measureTimerRef.current = null;
+    }
+
+    // One unlock → scroll → wait for layout → measure → lock (no double thrash).
     unlockBodyScroll();
     scrollTargetIntoView(step.target);
-    scrollYRef.current = window.scrollY;
-    refreshSpotlight();
-    lockBodyScroll(scrollYRef.current);
 
-    const t1 = window.setTimeout(() => {
-      unlockBodyScroll();
+    const settleMs = step.target ? 220 : 40;
+    measureTimerRef.current = window.setTimeout(() => {
       refreshSpotlight();
       scrollYRef.current = window.scrollY;
       lockBodyScroll(scrollYRef.current);
-    }, 40);
+      measureTimerRef.current = window.setTimeout(() => {
+        // Second pass after lock so rects match the fixed body.
+        refreshSpotlight();
+        setEntered(true);
+        measureTimerRef.current = null;
+      }, 48);
+    }, settleMs);
 
-    return () => window.clearTimeout(t1);
+    return () => {
+      if (measureTimerRef.current) {
+        window.clearTimeout(measureTimerRef.current);
+        measureTimerRef.current = null;
+      }
+    };
   }, [refreshSpotlight, stepIndex, active, step]);
 
   useEffect(() => {
@@ -366,7 +421,6 @@ export default function PageTour({
 
   const pulseNext = useCallback(() => {
     setNudgeNext(false);
-    // Restart animation even if already nudging.
     window.requestAnimationFrame(() => {
       setNudgeNext(true);
       nextButtonRef.current?.focus({ preventScroll: true });
@@ -392,7 +446,6 @@ export default function PageTour({
         finish();
         return;
       }
-      // Keep focus inside the tour — Tab stays on Skip/Next only.
       if (event.key === "Tab") {
         const skip = document.getElementById("page-tour-skip");
         const next = nextButtonRef.current;
@@ -409,7 +462,6 @@ export default function PageTour({
         focusNext.focus({ preventScroll: true });
         return;
       }
-      // Any other key while touring → nudge Next (except Enter/Space on focused btn).
       if (event.key !== "Enter" && event.key !== " ") {
         event.preventDefault();
         pulseNext();
@@ -421,7 +473,6 @@ export default function PageTour({
 
   useEffect(() => {
     if (!active) return;
-    // Land focus on Next so keyboard users know the primary action.
     const t = window.setTimeout(() => {
       nextButtonRef.current?.focus({ preventScroll: true });
     }, 40);
@@ -438,15 +489,20 @@ export default function PageTour({
         left: `${spotlight.left}px`,
         width: `${spotlight.width}px`,
         height: `${spotlight.height}px`,
+        opacity: 1,
       }
-    : undefined;
+    : {
+        top: `${cardPos.top}px`,
+        left: `${cardPos.left}px`,
+        width: "0px",
+        height: "0px",
+        opacity: 0,
+      };
 
   const cardStyle: React.CSSProperties = {
-    left: `${cardPos.left}px`,
     width: `min(${CARD_WIDTH}px, calc(100vw - ${VIEW_MARGIN * 2}px))`,
-    ...(cardPos.top != null
-      ? { top: `${cardPos.top}px`, bottom: "auto" }
-      : { bottom: `${cardPos.bottom ?? 24}px`, top: "auto" }),
+    transform: `translate3d(${cardPos.left}px, ${cardPos.top}px, 0)`,
+    transitionDuration: entered ? `${MOVE_MS}ms` : "0ms",
   };
 
   const goNext = () => {
@@ -466,7 +522,6 @@ export default function PageTour({
       aria-labelledby="page-tour-title"
       aria-describedby="page-tour-body"
       onMouseDown={(event) => {
-        // Block the page underneath; only Skip / Next may act.
         event.preventDefault();
         pulseNext();
       }}
@@ -476,30 +531,35 @@ export default function PageTour({
       }}
     >
       <div className={styles.pageTour__dim} aria-hidden="true" />
-      {spotlight && (
-        <div
-          className={styles.pageTour__hole}
-          style={holeStyle}
-          aria-hidden="true"
-        />
-      )}
+      <div
+        className={`${styles.pageTour__hole}${
+          spotlight ? "" : ` ${styles.pageTour__holeHidden}`
+        }`}
+        style={holeStyle}
+        aria-hidden="true"
+      />
 
       <div
-        className={styles.pageTour__card}
+        className={`${styles.pageTour__card}${
+          entered ? ` ${styles.pageTour__cardReady}` : ""
+        }`}
         style={cardStyle}
         onMouseDown={(event) => {
           event.stopPropagation();
           const target = event.target;
-          // Card body is not Skip/Next — nudge so the primary action is obvious.
-          if (
-            target instanceof Element &&
-            !target.closest("button")
-          ) {
+          if (target instanceof Element && !target.closest("button")) {
             pulseNext();
           }
         }}
         onClick={(event) => event.stopPropagation()}
       >
+        <h2 id="page-tour-title" className={styles.pageTour__title}>
+          {step.title}
+        </h2>
+        <p id="page-tour-body" className={styles.pageTour__body}>
+          {step.body}
+        </p>
+
         <div className={styles.pageTour__mascotSeat} aria-hidden="true">
           <Image
             src={mascotSrc}
@@ -510,16 +570,6 @@ export default function PageTour({
             priority
           />
         </div>
-
-        <p className={styles.pageTour__progress}>
-          {stepIndex + 1} / {steps.length}
-        </p>
-        <h2 id="page-tour-title" className={styles.pageTour__title}>
-          {step.title}
-        </h2>
-        <p id="page-tour-body" className={styles.pageTour__body}>
-          {step.body}
-        </p>
 
         <div className={styles.pageTour__actions}>
           <button
@@ -534,6 +584,9 @@ export default function PageTour({
           >
             Skip
           </button>
+          <p className={styles.pageTour__progress} aria-live="polite">
+            {stepIndex + 1}/{steps.length}
+          </p>
           <button
             ref={nextButtonRef}
             type="button"

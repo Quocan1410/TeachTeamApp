@@ -951,28 +951,26 @@ const LecturerDashboardInner: React.FC = () => {
 
           {/* Enhanced Application Filters */}
           <div className={styles.lecturerPage__revealFilters}>
-            <div data-tour="lecturer-filters">
-              <ApplicationFilters
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-                selectedCourse={selectedCourse}
-                onCourseChange={setSelectedCourse}
-                courses={courses}
-                roleTypeFilter={roleTypeFilter}
-                onRoleTypeChange={setRoleTypeFilter}
-                availabilityFilter={availabilityFilter}
-                onAvailabilityChange={setAvailabilityFilter}
-                skillsFilter={skillsFilterArray}
-                onSkillsFilterChange={handleSkillsFilterChange}
-                availableSkills={availableSkills}
-                statusFilter={statusFilter}
-                onStatusFilterChange={setStatusFilter}
-                sortBy={sortBy}
-                onSortChange={setSortBy}
-                onClearFilters={handleClearAllFilters}
-                activeFilterCount={getActiveFilterCount()}
-              />
-            </div>
+            <ApplicationFilters
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              selectedCourse={selectedCourse}
+              onCourseChange={setSelectedCourse}
+              courses={courses}
+              roleTypeFilter={roleTypeFilter}
+              onRoleTypeChange={setRoleTypeFilter}
+              availabilityFilter={availabilityFilter}
+              onAvailabilityChange={setAvailabilityFilter}
+              skillsFilter={skillsFilterArray}
+              onSkillsFilterChange={handleSkillsFilterChange}
+              availableSkills={availableSkills}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+              onClearFilters={handleClearAllFilters}
+              activeFilterCount={getActiveFilterCount()}
+            />
           </div>
 
           {/* Dashboard Tabs */}
@@ -1089,7 +1087,20 @@ const LecturerDashboardInner: React.FC = () => {
         {confirmModal}
 
         {user?.id && (
-          <PageTour tourId={LECTURER_TOUR_ID} steps={lecturerTourSteps} />
+          <PageTour
+            tourId={LECTURER_TOUR_ID}
+            steps={lecturerTourSteps}
+            onStepChange={(step) => {
+              if (
+                step.id === "list" ||
+                step.id === "details" ||
+                step.id === "header" ||
+                step.id === "filters"
+              ) {
+                setActiveTab("applications");
+              }
+            }}
+          />
         )}
       </div>
   );

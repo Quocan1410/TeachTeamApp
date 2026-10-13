@@ -614,10 +614,12 @@ const TutorDashboardPage: React.FC = () => {
         <div
           className={styles.tutorPage__results}
           id="course-results"
-          data-tour="tutor-courses"
         >
           {sortedFilteredCourses.length === 0 ? (
-            <div className={styles.tutorPage__emptyStateCard}>
+            <div
+              className={styles.tutorPage__emptyStateCard}
+              data-tour="tutor-courses"
+            >
               <p className={styles.tutorPage__emptyTitle}>
                 {activeFilter === "available"
                   ? "No available courses"
@@ -649,6 +651,7 @@ const TutorDashboardPage: React.FC = () => {
             <>
             <div
               className={styles.tutorPage__courseGrid}
+              data-tour="tutor-courses"
             >
               {paginatedCourses.map((course) => (
                 <CourseCard

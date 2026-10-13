@@ -4,7 +4,8 @@ export const LECTURER_TOUR_ID = "lecturer-dashboard-v1";
 
 export const lecturerTourSteps: PageTourStep[] = [
   {
-    id: "welcome",
+    id: "header",
+    target: "[data-tour='lecturer-header']",
     title: "Review applications",
     body: "This is your hiring desk. I’ll show how to filter, shortlist, and rank candidates.",
     mascotSrc: "/mascot/mascot-4.png",

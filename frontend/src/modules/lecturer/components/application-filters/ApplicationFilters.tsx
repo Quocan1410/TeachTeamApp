@@ -125,6 +125,7 @@ const ApplicationFilters: React.FC<ApplicationFiltersProps> = ({
 
   return (
     <div
+      data-tour="lecturer-filters"
       className={`${styles.applicationFilters__filtersContainer} ${
         isExpanded ? styles.applicationFilters__filtersExpanded : ""
       }`.trim()}
