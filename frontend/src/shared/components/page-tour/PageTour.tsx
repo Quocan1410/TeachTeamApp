@@ -44,8 +44,9 @@ const CARD_WIDTH = 340;
 const CARD_HEIGHT_EST = 248;
 const CARD_GAP = 16;
 const DEFAULT_MASCOT = "/mascot/mascot-1.png";
-/** Tall targets only spotlight the top band so the hole + card fit the viewport. */
+/** Tall targets: short band when card must sit below; taller when card can sit beside. */
 const MAX_SPOTLIGHT_HEIGHT = 240;
+const MAX_SPOTLIGHT_HEIGHT_SIDE = 420;
 const MOVE_MS = 420;
 
 function headerOffset(): number {
@@ -87,7 +88,16 @@ function readTargetRect(selector?: string): SpotlightRect | null {
   let top = rect.top - PAD;
   let left = rect.left - PAD;
   let width = rect.width + PAD * 2;
-  let height = Math.min(rect.height + PAD * 2, MAX_SPOTLIGHT_HEIGHT);
+
+  const cardW = Math.min(CARD_WIDTH, window.innerWidth - VIEW_MARGIN * 2);
+  const canPlaceSide =
+    left - CARD_GAP - cardW >= viewLeft ||
+    left + width + CARD_GAP + cardW <= viewRight;
+  const maxHeight = canPlaceSide
+    ? MAX_SPOTLIGHT_HEIGHT_SIDE
+    : MAX_SPOTLIGHT_HEIGHT;
+
+  let height = Math.min(rect.height + PAD * 2, maxHeight);
 
   if (top < viewTop) {
     height = Math.max(48, height - (viewTop - top));
@@ -97,11 +107,13 @@ function readTargetRect(selector?: string): SpotlightRect | null {
     height = Math.max(48, viewBottom - top);
   }
 
-  // Prefer leaving room under the hole so the card can sit next to the focus.
-  const roomUnder =
-    window.innerHeight - VIEW_MARGIN - CARD_HEIGHT_EST - CARD_GAP - top;
-  if (roomUnder > 72) {
-    height = Math.min(height, roomUnder);
+  // Only reserve vertical room for the card when it cannot sit beside the hole.
+  if (!canPlaceSide) {
+    const roomUnder =
+      window.innerHeight - VIEW_MARGIN - CARD_HEIGHT_EST - CARD_GAP - top;
+    if (roomUnder > 72) {
+      height = Math.min(height, roomUnder);
+    }
   }
 
   left = clamp(left, viewLeft, viewRight - 48);
