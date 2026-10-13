@@ -21,13 +21,15 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   return (
     <motion.div
       className={styles.dashboardHeader}
-      data-tour="lecturer-header"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       <div className={styles.dashboardHeader__headerContent}>
-        <div className={styles.dashboardHeader__titleSection}>
+        <div
+          className={styles.dashboardHeader__titleSection}
+          data-tour="lecturer-header"
+        >
           <h1 className={styles.dashboardHeader__dashboardTitle}>Lecturer Dashboard</h1>
           <p className={styles.dashboardHeader__dashboardSubtitle}>
             Welcome back, {lecturerName}

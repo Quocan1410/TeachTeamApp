@@ -1,13 +1,13 @@
 import type { PageTourStep } from "./PageTour";
 
-export const LECTURER_TOUR_ID = "lecturer-dashboard-v1";
+export const LECTURER_TOUR_ID = "lecturer-dashboard-v2";
 
 export const lecturerTourSteps: PageTourStep[] = [
   {
     id: "header",
     target: "[data-tour='lecturer-header']",
-    title: "Review applications",
-    body: "This is your hiring desk. I’ll show how to filter, shortlist, and rank candidates.",
+    title: "Your hiring desk",
+    body: "Start here. Next I’ll show filters, the applicant list, and the details pane.",
     mascotSrc: "/mascot/mascot-4.png",
   },
   {

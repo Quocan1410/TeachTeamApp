@@ -63,7 +63,7 @@
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
   text-align: center;
   pointer-events: auto;
-  overflow: hidden;
+  overflow: visible;
   opacity: 0;
   transform: translate3d(0, 12px, 0) scale(0.98);
   transition:
@@ -97,9 +97,9 @@
   align-items: flex-end;
   justify-content: center;
   width: 100%;
-  height: 5.5rem;
-  margin: 0 0 0.85rem;
-  overflow: hidden;
+  min-height: 6.75rem;
+  margin: 0.15rem 0 0.85rem;
+  overflow: visible;
   pointer-events: none;
 }
 
@@ -234,7 +234,7 @@
 
 @media (max-width: 640px) {
   .pageTour__mascotSeat {
-    height: 4.75rem;
+    min-height: 5.75rem;
   }
 
   .pageTour__mascot {
