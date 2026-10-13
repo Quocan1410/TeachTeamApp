@@ -33,12 +33,6 @@ import { useApplicationRealtime } from "@/shared/hooks/useApplicationRealtime";
 import type { ApplicationUpdatedPayload } from "@/shared/socket/applicationEvents";
 import { formatCandidateDisplayName } from "@/shared/utils/personDisplayName";
 import { useConfirmModal } from "@/shared/hooks/useConfirmModal";
-import PageTour from "@/shared/components/page-tour/PageTour";
-import {
-  LECTURER_TOUR_ID,
-  lecturerTourSteps,
-} from "@/shared/components/page-tour/lecturerTour";
-
 const AdminApolloProvider = dynamic(
   () =>
     import("@/components/AdminApolloProvider").then((m) => ({
@@ -1073,23 +1067,6 @@ const LecturerDashboardInner: React.FC = () => {
         )}
 
         {confirmModal}
-
-        {user?.id && (
-          <PageTour
-            tourId={LECTURER_TOUR_ID}
-            steps={lecturerTourSteps}
-            onStepChange={(step) => {
-              if (
-                step.id === "list" ||
-                step.id === "details" ||
-                step.id === "header" ||
-                step.id === "filters"
-              ) {
-                setActiveTab("applications");
-              }
-            }}
-          />
-        )}
       </div>
   );
 };
