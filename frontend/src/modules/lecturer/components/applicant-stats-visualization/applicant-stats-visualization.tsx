@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import type { Application as TutorApplication } from "@/shared/types/application";
+import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   PieChart,
@@ -16,13 +15,13 @@ import {
   LineChart,
   Line,
 } from "recharts";
+import type { ApplicationResponse } from "@/shared/services/applicationService";
 import styles from "./applicant-stats-visualization.module.css";
 
 interface ApplicantStatsVisualizationProps {
-  applications: TutorApplication[];
+  applications: ApplicationResponse[];
 }
 
-// Define more specific types for the tooltip
 interface CustomTooltipProps {
   active?: boolean;
   payload?: Array<{
@@ -36,39 +35,44 @@ interface CustomTooltipProps {
   label?: string;
 }
 
+const COLORS = [
+  "#0088FE",
+  "#00C49F",
+  "#FFBB28",
+  "#FF8042",
+  "#8884D8",
+  "#4CAF50",
+  "#FF5252",
+  "#9C27B0",
+];
+const SELECTION_COLORS = ["#00C49F", "#FF8042"];
+
+const parseSkills = (skills?: string | null): string[] => {
+  if (!skills || typeof skills !== "string") return [];
+  return skills
+    .split(/[,;|]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+};
+
+const applicantName = (app: ApplicationResponse): string => {
+  const first = app.candidate?.firstName?.trim() || "";
+  const last = app.candidate?.lastName?.trim() || "";
+  const full = `${first} ${last}`.trim();
+  return full || app.candidate?.email || "Unknown";
+};
+
+const availabilityLabel = (app: ApplicationResponse): string => {
+  const raw = app.availability?.type || "";
+  const normalized = raw.toLowerCase().replace(/[_-]/g, " ").trim();
+  if (normalized.includes("full")) return "Full Time";
+  if (normalized.includes("part")) return "Part Time";
+  return raw || "Unknown";
+};
+
 const ApplicantStatsVisualization: React.FC<
   ApplicantStatsVisualizationProps
 > = ({ applications }) => {
-  const [selectedData, setSelectedData] = useState<
-    { name: string; value: number }[]
-  >([]);
-  const [applicantStats, setApplicantStats] = useState<{
-    mostChosen: { name: string; count: number } | null;
-    leastChosen: { name: string; count: number } | null;
-    notSelected: number;
-    selectedCount: number;
-    trendData: { date: string; count: number }[];
-    skillDistribution: { skill: string; count: number }[];
-  }>({
-    mostChosen: null,
-    leastChosen: null,
-    notSelected: 0,
-    selectedCount: 0,
-    trendData: [],
-    skillDistribution: [],
-  });
-
-  const [courseDistribution, setCourseDistribution] = useState<
-    { name: string; count: number }[]
-  >([]);
-  const [availabilityData, setAvailabilityData] = useState<
-    { name: string; value: number }[]
-  >([]);
-  const [timelineData, setTimelineData] = useState<
-    { date: string; count: number }[]
-  >([]);
-
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -84,159 +88,112 @@ const ApplicantStatsVisualization: React.FC<
     show: { opacity: 1, y: 0 },
   };
 
-  // Colors for charts
-  const COLORS = [
-    "#0088FE",
-    "#00C49F",
-    "#FFBB28",
-    "#FF8042",
-    "#8884D8",
-    "#4CAF50",
-    "#FF5252",
-    "#9C27B0",
-  ];
-  const SELECTION_COLORS = ["#00C49F", "#FF8042"];
+  const stats = useMemo(() => {
+    const selectedApps = applications.filter((app) => app.status === "selected");
+    const notSelected = applications.filter(
+      (app) => app.status !== "selected"
+    ).length;
+    const selectedCount = selectedApps.length;
 
-  // Function to process timeline data
-  const processTimelineData = (apps: TutorApplication[]) => {
-    const timeline: Record<string, number> = {};
-    apps.forEach((app) => {
-      const date = new Date(app.dateApplied).toLocaleDateString();
-      timeline[date] = (timeline[date] || 0) + 1;
+    const applicantSelectionCount: Record<string, number> = {};
+    selectedApps.forEach((app) => {
+      const name = applicantName(app);
+      applicantSelectionCount[name] = (applicantSelectionCount[name] || 0) + 1;
     });
-    return Object.entries(timeline)
-      .map(([date, count]) => ({ date, count }))
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  };
 
-  // Function to process skill distribution
-  const processSkillDistribution = (apps: TutorApplication[]) => {
-    const skillCount: Record<string, number> = {};
-    apps.forEach((app) => {
-      app.skills.forEach((skill) => {
-        skillCount[skill] = (skillCount[skill] || 0) + 1;
-      });
-    });
-    return Object.entries(skillCount)
-      .map(([skill, count]) => ({ skill, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 8); // Top 8 skills
-  };
+    const applicantArray = Object.entries(applicantSelectionCount)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
 
-  // Calculate statistics based on applications
-  useEffect(() => {
-    if (applications.length === 0) return;
-
-    // Process timeline data
-    const timelineStats = processTimelineData(applications);
-    setTimelineData(timelineStats);
-
-    // Count selected applications per applicant
-    const applicantSelectionCount = applications.reduce(
-      (acc, app) => {
-        if (app.selected) {
-          acc[app.fullName] = (acc[app.fullName] || 0) + 1;
-        }
-        return acc;
-      },
-      {} as Record<string, number>
-    );
-
-    // Convert to array for sorting
-    const applicantArray = Object.entries(applicantSelectionCount).map(
-      ([name, count]) => ({
-        name,
-        count,
-      })
-    );
-
-    // Sort by count
-    applicantArray.sort((a, b) => b.count - a.count);
-
-    // Get most and least chosen
-    const mostChosen = applicantArray.length > 0 ? applicantArray[0] : null;
+    const mostChosen = applicantArray[0] ?? null;
     const leastChosen =
       applicantArray.length > 0
         ? applicantArray[applicantArray.length - 1]
         : null;
 
-    // Count not selected
-    const notSelected = applications.filter((app) => !app.selected).length;
-    const selectedCount = applications.filter((app) => app.selected).length;
+    const topApplicants = applicantArray
+      .slice(0, 5)
+      .map(({ name, count }) => ({
+        name: name.split(" ")[0] || name,
+        count,
+      }));
 
-    // Process skills distribution
-    const skillDistributionData = processSkillDistribution(applications);
-
-    setApplicantStats({
-      mostChosen,
-      leastChosen,
-      notSelected,
-      selectedCount,
-      trendData: timelineStats,
-      skillDistribution: skillDistributionData,
-    });
-
-    // Prepare data for pie chart
-    setSelectedData([
-      { name: "Selected", value: selectedCount },
-      { name: "Not Selected", value: notSelected },
-    ]);
-
-    // Process course distribution
-    const courseCount: Record<string, number> = {};
+    const timeline: Record<string, number> = {};
     applications.forEach((app) => {
-      app.courses.forEach((course) => {
-        courseCount[course] = (courseCount[course] || 0) + 1;
+      const raw = app.appliedAt || app.updatedAt;
+      if (!raw) return;
+      const date = new Date(raw);
+      if (Number.isNaN(date.getTime())) return;
+      const key = date.toLocaleDateString();
+      timeline[key] = (timeline[key] || 0) + 1;
+    });
+    const timelineData = Object.entries(timeline)
+      .map(([date, count]) => ({ date, count }))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    const skillCount: Record<string, number> = {};
+    applications.forEach((app) => {
+      parseSkills(app.skills).forEach((skill) => {
+        skillCount[skill] = (skillCount[skill] || 0) + 1;
       });
     });
+    const skillDistribution = Object.entries(skillCount)
+      .map(([skill, count]) => ({ skill, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 8);
 
-    const courseData = Object.entries(courseCount)
+    const courseCount: Record<string, number> = {};
+    applications.forEach((app) => {
+      const code =
+        app.course?.courseCode ||
+        app.course?.courseName ||
+        app.courseId ||
+        "Unknown";
+      courseCount[code] = (courseCount[code] || 0) + 1;
+    });
+    const courseDistribution = Object.entries(courseCount)
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count)
-      .slice(0, 6); // Top 6 courses
+      .slice(0, 6);
 
-    setCourseDistribution(courseData);
-
-    // Process availability data
     const availabilityCount: Record<string, number> = {
       "Full Time": 0,
       "Part Time": 0,
     };
-
     applications.forEach((app) => {
-      availabilityCount[app.availability] =
-        (availabilityCount[app.availability] || 0) + 1;
+      const label = availabilityLabel(app);
+      availabilityCount[label] = (availabilityCount[label] || 0) + 1;
     });
+    const availabilityData = Object.entries(availabilityCount)
+      .filter(([, value]) => value > 0)
+      .map(([name, value]) => ({ name, value }));
 
-    const availabilityChartData = Object.entries(availabilityCount).map(
-      ([name, value]) => ({ name, value })
-    );
+    const selectedData = [
+      { name: "Selected", value: selectedCount },
+      { name: "Not Selected", value: notSelected },
+    ];
 
-    setAvailabilityData(availabilityChartData);
+    const preferredAvailability =
+      availabilityData.length === 0
+        ? null
+        : [...availabilityData].sort((a, b) => b.value - a.value)[0]?.name ??
+          null;
+
+    return {
+      mostChosen,
+      leastChosen,
+      notSelected,
+      selectedCount,
+      selectedData,
+      topApplicants,
+      timelineData,
+      skillDistribution,
+      courseDistribution,
+      availabilityData,
+      preferredAvailability,
+    };
   }, [applications]);
 
-  // Get top applicants for bar chart
-  const getTopApplicantsData = () => {
-    const applicantSelectionCount = applications.reduce(
-      (acc, app) => {
-        if (app.selected) {
-          acc[app.fullName] = (acc[app.fullName] || 0) + 1;
-        }
-        return acc;
-      },
-      {} as Record<string, number>
-    );
-
-    return Object.entries(applicantSelectionCount)
-      .map(([name, count]) => ({
-        name: name.split(" ")[0], // Use first name only for better display
-        count,
-      }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5); // Top 5 applicants
-  };
-
-  // Custom tooltip component with proper typing
   const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
       return (
@@ -284,10 +241,15 @@ const ApplicantStatsVisualization: React.FC<
       initial="hidden"
       animate="show"
     >
-      <motion.div className={styles.applicantStatsVisualization__statsHeader} variants={itemVariants}>
+      <motion.div
+        className={styles.applicantStatsVisualization__statsHeader}
+        variants={itemVariants}
+      >
         <div className={styles.applicantStatsVisualization__statsSummaryCards}>
           <div className={styles.applicantStatsVisualization__summaryCard}>
-            <div className={`${styles.applicantStatsVisualization__summaryIcon} ${styles.applicantStatsVisualization__totalIcon}`}>
+            <div
+              className={`${styles.applicantStatsVisualization__summaryIcon} ${styles.applicantStatsVisualization__totalIcon}`}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className={styles.applicantStatsVisualization__iconMedium}
@@ -304,8 +266,12 @@ const ApplicantStatsVisualization: React.FC<
               </svg>
             </div>
             <div className={styles.applicantStatsVisualization__summaryContent}>
-              <div className={styles.applicantStatsVisualization__summaryLabel}>Total Applications</div>
-              <div className={styles.applicantStatsVisualization__summaryValue}>{applications.length}</div>
+              <div className={styles.applicantStatsVisualization__summaryLabel}>
+                Total Applications
+              </div>
+              <div className={styles.applicantStatsVisualization__summaryValue}>
+                {applications.length}
+              </div>
               <div className={styles.applicantStatsVisualization__summaryDesc}>
                 All submitted applications
               </div>
@@ -313,7 +279,9 @@ const ApplicantStatsVisualization: React.FC<
           </div>
 
           <div className={styles.applicantStatsVisualization__summaryCard}>
-            <div className={`${styles.applicantStatsVisualization__summaryIcon} ${styles.applicantStatsVisualization__selectedIcon}`}>
+            <div
+              className={`${styles.applicantStatsVisualization__summaryIcon} ${styles.applicantStatsVisualization__selectedIcon}`}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className={styles.applicantStatsVisualization__iconMedium}
@@ -330,16 +298,22 @@ const ApplicantStatsVisualization: React.FC<
               </svg>
             </div>
             <div className={styles.applicantStatsVisualization__summaryContent}>
-              <div className={styles.applicantStatsVisualization__summaryLabel}>Selected</div>
-              <div className={styles.applicantStatsVisualization__summaryValue}>
-                {applicantStats.selectedCount}
+              <div className={styles.applicantStatsVisualization__summaryLabel}>
+                Selected
               </div>
-              <div className={styles.applicantStatsVisualization__summaryDesc}>Approved applicants</div>
+              <div className={styles.applicantStatsVisualization__summaryValue}>
+                {stats.selectedCount}
+              </div>
+              <div className={styles.applicantStatsVisualization__summaryDesc}>
+                Approved applicants
+              </div>
             </div>
           </div>
 
           <div className={styles.applicantStatsVisualization__summaryCard}>
-            <div className={`${styles.applicantStatsVisualization__summaryIcon} ${styles.applicantStatsVisualization__pendingIcon}`}>
+            <div
+              className={`${styles.applicantStatsVisualization__summaryIcon} ${styles.applicantStatsVisualization__pendingIcon}`}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className={styles.applicantStatsVisualization__iconMedium}
@@ -356,16 +330,22 @@ const ApplicantStatsVisualization: React.FC<
               </svg>
             </div>
             <div className={styles.applicantStatsVisualization__summaryContent}>
-              <div className={styles.applicantStatsVisualization__summaryLabel}>Pending</div>
-              <div className={styles.applicantStatsVisualization__summaryValue}>
-                {applicantStats.notSelected}
+              <div className={styles.applicantStatsVisualization__summaryLabel}>
+                Pending
               </div>
-              <div className={styles.applicantStatsVisualization__summaryDesc}>Awaiting review</div>
+              <div className={styles.applicantStatsVisualization__summaryValue}>
+                {stats.notSelected}
+              </div>
+              <div className={styles.applicantStatsVisualization__summaryDesc}>
+                Awaiting review
+              </div>
             </div>
           </div>
 
           <div className={styles.applicantStatsVisualization__summaryCard}>
-            <div className={`${styles.applicantStatsVisualization__summaryIcon} ${styles.applicantStatsVisualization__rateIcon}`}>
+            <div
+              className={`${styles.applicantStatsVisualization__summaryIcon} ${styles.applicantStatsVisualization__rateIcon}`}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className={styles.applicantStatsVisualization__iconMedium}
@@ -382,29 +362,38 @@ const ApplicantStatsVisualization: React.FC<
               </svg>
             </div>
             <div className={styles.applicantStatsVisualization__summaryContent}>
-              <div className={styles.applicantStatsVisualization__summaryLabel}>Selection Rate</div>
+              <div className={styles.applicantStatsVisualization__summaryLabel}>
+                Selection Rate
+              </div>
               <div className={styles.applicantStatsVisualization__summaryValue}>
                 {applications.length > 0
                   ? Math.round(
-                      (applicantStats.selectedCount / applications.length) * 100
+                      (stats.selectedCount / applications.length) * 100
                     )
                   : 0}
                 %
               </div>
-              <div className={styles.applicantStatsVisualization__summaryDesc}>Overall acceptance rate</div>
+              <div className={styles.applicantStatsVisualization__summaryDesc}>
+                Overall acceptance rate
+              </div>
             </div>
           </div>
         </div>
       </motion.div>
 
       <div className={styles.applicantStatsVisualization__statsChartsContainer}>
-        <motion.div className={styles.applicantStatsVisualization__statsChartCard} variants={itemVariants}>
-          <h3 className={styles.applicantStatsVisualization__chartTitle}>Selection Status</h3>
+        <motion.div
+          className={styles.applicantStatsVisualization__statsChartCard}
+          variants={itemVariants}
+        >
+          <h3 className={styles.applicantStatsVisualization__chartTitle}>
+            Selection Status
+          </h3>
           <div className={styles.applicantStatsVisualization__pieChartContainer}>
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie
-                  data={selectedData}
+                  data={stats.selectedData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -412,7 +401,7 @@ const ApplicantStatsVisualization: React.FC<
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {selectedData.map((entry, index) => (
+                  {stats.selectedData.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={SELECTION_COLORS[index % SELECTION_COLORS.length]}
@@ -425,53 +414,46 @@ const ApplicantStatsVisualization: React.FC<
             </ResponsiveContainer>
           </div>
           <div className={styles.applicantStatsVisualization__chartStats}>
-            <div className={`${styles.applicantStatsVisualization__chartStatItem} ${styles["applicantStatsVisualization--selected"]}`}>
-              <div className={styles.applicantStatsVisualization__statTitle}>Selected</div>
-              <div className={styles.applicantStatsVisualization__statValue}>
-                {applicantStats.selectedCount}
+            <div
+              className={`${styles.applicantStatsVisualization__chartStatItem} ${styles["applicantStatsVisualization--selected"]}`}
+            >
+              <div className={styles.applicantStatsVisualization__statTitle}>
+                Selected
               </div>
-              <div className={styles.applicantStatsVisualization__statDesc}>Confirmed positions</div>
-              <div className={styles.applicantStatsVisualization__statDetails}>
-                <div className={styles.applicantStatsVisualization__statDetailItem}>
-                  <span className={styles.applicantStatsVisualization__detailLabel}>Last selected:</span>
-                  <span className={styles.applicantStatsVisualization__detailValue}>Today</span>
-                </div>
-                <div className={styles.applicantStatsVisualization__statDetailItem}>
-                  <span className={styles.applicantStatsVisualization__detailLabel}>Status:</span>
-                  <span className={`${styles.applicantStatsVisualization__detailBadge} ${styles["applicantStatsVisualization--success"]}`}>
-                    Active
-                  </span>
-                </div>
+              <div className={styles.applicantStatsVisualization__statValue}>
+                {stats.selectedCount}
+              </div>
+              <div className={styles.applicantStatsVisualization__statDesc}>
+                Confirmed positions
               </div>
             </div>
-            <div className={`${styles.applicantStatsVisualization__chartStatItem} ${styles["applicantStatsVisualization--pending"]}`}>
-              <div className={styles.applicantStatsVisualization__statTitle}>Pending</div>
-              <div className={styles.applicantStatsVisualization__statValue}>
-                {applicantStats.notSelected}
+            <div
+              className={`${styles.applicantStatsVisualization__chartStatItem} ${styles["applicantStatsVisualization--pending"]}`}
+            >
+              <div className={styles.applicantStatsVisualization__statTitle}>
+                Pending
               </div>
-              <div className={styles.applicantStatsVisualization__statDesc}>Under review</div>
-              <div className={styles.applicantStatsVisualization__statDetails}>
-                <div className={styles.applicantStatsVisualization__statDetailItem}>
-                  <span className={styles.applicantStatsVisualization__detailLabel}>Updated:</span>
-                  <span className={styles.applicantStatsVisualization__detailValue}>2 hrs ago</span>
-                </div>
-                <div className={styles.applicantStatsVisualization__statDetailItem}>
-                  <span className={styles.applicantStatsVisualization__detailLabel}>Priority:</span>
-                  <span className={`${styles.applicantStatsVisualization__detailBadge} ${styles["applicantStatsVisualization--warning"]}`}>
-                    High
-                  </span>
-                </div>
+              <div className={styles.applicantStatsVisualization__statValue}>
+                {stats.notSelected}
+              </div>
+              <div className={styles.applicantStatsVisualization__statDesc}>
+                Under review
               </div>
             </div>
           </div>
         </motion.div>
 
-        <motion.div className={styles.applicantStatsVisualization__statsChartCard} variants={itemVariants}>
-          <h3 className={styles.applicantStatsVisualization__chartTitle}>Top Selected Applicants</h3>
+        <motion.div
+          className={styles.applicantStatsVisualization__statsChartCard}
+          variants={itemVariants}
+        >
+          <h3 className={styles.applicantStatsVisualization__chartTitle}>
+            Top Selected Applicants
+          </h3>
           <div className={styles.applicantStatsVisualization__barChartContainer}>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart
-                data={getTopApplicantsData()}
+                data={stats.topApplicants}
                 margin={{
                   top: 5,
                   right: 30,
@@ -485,7 +467,7 @@ const ApplicantStatsVisualization: React.FC<
                 <Tooltip content={<CustomTooltip />} />
                 <Legend wrapperStyle={{ display: "none" }} />
                 <Bar dataKey="count" name="Selection Count" fill="#8884d8">
-                  {getTopApplicantsData().map((entry, index) => (
+                  {stats.topApplicants.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}
@@ -496,30 +478,39 @@ const ApplicantStatsVisualization: React.FC<
             </ResponsiveContainer>
           </div>
           <div className={styles.applicantStatsVisualization__chartInfo}>
-            {applicantStats.mostChosen ? (
+            {stats.mostChosen ? (
               <div className={styles.applicantStatsVisualization__topApplicant}>
-                <span className={styles.applicantStatsVisualization__infoLabel}>Most Selected: </span>
+                <span className={styles.applicantStatsVisualization__infoLabel}>
+                  Most Selected:{" "}
+                </span>
                 <span className={styles.applicantStatsVisualization__infoValue}>
-                  {applicantStats.mostChosen.name}
+                  {stats.mostChosen.name}
                 </span>
                 <span className={styles.applicantStatsVisualization__infoCount}>
-                  ({applicantStats.mostChosen.count} selections)
+                  ({stats.mostChosen.count} selections)
                 </span>
               </div>
             ) : (
-              <div className={styles.applicantStatsVisualization__noData}>No selection data available</div>
+              <div className={styles.applicantStatsVisualization__noData}>
+                No selection data available
+              </div>
             )}
           </div>
         </motion.div>
       </div>
 
       <div className={styles.applicantStatsVisualization__statsChartsContainer}>
-        <motion.div className={styles.applicantStatsVisualization__statsChartCard} variants={itemVariants}>
-          <h3 className={styles.applicantStatsVisualization__chartTitle}>Course Distribution</h3>
+        <motion.div
+          className={styles.applicantStatsVisualization__statsChartCard}
+          variants={itemVariants}
+        >
+          <h3 className={styles.applicantStatsVisualization__chartTitle}>
+            Course Distribution
+          </h3>
           <div className={styles.applicantStatsVisualization__barChartContainer}>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart
-                data={courseDistribution}
+                data={stats.courseDistribution}
                 margin={{
                   top: 5,
                   right: 30,
@@ -534,7 +525,7 @@ const ApplicantStatsVisualization: React.FC<
                 <Tooltip content={<CustomTooltip />} />
                 <Legend wrapperStyle={{ display: "none" }} />
                 <Bar dataKey="count" name="Applicants" fill="#8884d8">
-                  {courseDistribution.map((entry, index) => (
+                  {stats.courseDistribution.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}
@@ -546,13 +537,18 @@ const ApplicantStatsVisualization: React.FC<
           </div>
         </motion.div>
 
-        <motion.div className={styles.applicantStatsVisualization__statsChartCard} variants={itemVariants}>
-          <h3 className={styles.applicantStatsVisualization__chartTitle}>Availability Distribution</h3>
+        <motion.div
+          className={styles.applicantStatsVisualization__statsChartCard}
+          variants={itemVariants}
+        >
+          <h3 className={styles.applicantStatsVisualization__chartTitle}>
+            Availability Distribution
+          </h3>
           <div className={styles.applicantStatsVisualization__pieChartContainer}>
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie
-                  data={availabilityData}
+                  data={stats.availabilityData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -560,10 +556,10 @@ const ApplicantStatsVisualization: React.FC<
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {availabilityData.map((entry, index) => (
+                  {stats.availabilityData.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
-                      fill={COLORS[index + (2 % COLORS.length)]}
+                      fill={COLORS[index % COLORS.length]}
                     />
                   ))}
                 </Pie>
@@ -575,14 +571,18 @@ const ApplicantStatsVisualization: React.FC<
         </motion.div>
       </div>
 
-      <motion.div className={styles.applicantStatsVisualization__statsInsights} variants={itemVariants}>
-        <h3 className={styles.applicantStatsVisualization__insightsTitle}>Key Insights</h3>
+      <motion.div
+        className={styles.applicantStatsVisualization__statsInsights}
+        variants={itemVariants}
+      >
+        <h3 className={styles.applicantStatsVisualization__insightsTitle}>
+          Key Insights
+        </h3>
         <div className={styles.applicantStatsVisualization__insightsContent}>
-          {/* Application Trends */}
           <div className={styles.applicantStatsVisualization__trendChart}>
             <h4>Application Trends</h4>
             <ResponsiveContainer width="100%" height={100}>
-              <LineChart data={timelineData}>
+              <LineChart data={stats.timelineData}>
                 <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip />
@@ -591,14 +591,12 @@ const ApplicantStatsVisualization: React.FC<
             </ResponsiveContainer>
           </div>
 
-          {/* Top Skills Distribution - Using skillsListContainer instead of skillsDistribution */}
-          <div className={styles.applicantStatsVisualization__skillsListContainer}>
+          <div
+            className={styles.applicantStatsVisualization__skillsListContainer}
+          >
             <h4>Top Skills</h4>
             <ResponsiveContainer width="100%" height={100}>
-              <BarChart
-                data={applicantStats.skillDistribution}
-                layout="vertical"
-              >
+              <BarChart data={stats.skillDistribution} layout="vertical">
                 <XAxis type="number" />
                 <YAxis dataKey="skill" type="category" width={100} />
                 <Tooltip />
@@ -629,11 +627,11 @@ const ApplicantStatsVisualization: React.FC<
               <p>
                 {applications.length > 0
                   ? `${Math.round(
-                      (applicantStats.selectedCount / applications.length) * 100
+                      (stats.selectedCount / applications.length) * 100
                     )}% of applicants have been selected.`
                   : "No applications yet."}
-                {applicantStats.selectedCount > 0 &&
-                  ` That's ${applicantStats.selectedCount} out of ${applications.length} total applicants.`}
+                {stats.selectedCount > 0 &&
+                  ` That's ${stats.selectedCount} out of ${applications.length} total applicants.`}
               </p>
             </div>
           </div>
@@ -658,8 +656,8 @@ const ApplicantStatsVisualization: React.FC<
             <div className={styles.applicantStatsVisualization__insightContent}>
               <h4>Course Distribution</h4>
               <p>
-                {courseDistribution.length > 0
-                  ? `Most popular course: ${courseDistribution[0].name} with ${courseDistribution[0].count} applications.`
+                {stats.courseDistribution.length > 0
+                  ? `Most popular course: ${stats.courseDistribution[0].name} with ${stats.courseDistribution[0].count} applications.`
                   : "No course applications yet."}
               </p>
             </div>
@@ -685,8 +683,8 @@ const ApplicantStatsVisualization: React.FC<
             <div className={styles.applicantStatsVisualization__insightContent}>
               <h4>Top Performer</h4>
               <p>
-                {applicantStats.mostChosen
-                  ? `${applicantStats.mostChosen.name} leads with ${applicantStats.mostChosen.count} selections.`
+                {stats.mostChosen
+                  ? `${stats.mostChosen.name} leads with ${stats.mostChosen.count} selections.`
                   : "No selections made yet."}
               </p>
             </div>
@@ -712,12 +710,8 @@ const ApplicantStatsVisualization: React.FC<
             <div className={styles.applicantStatsVisualization__insightContent}>
               <h4>Availability Trend</h4>
               <p>
-                {availabilityData.length > 0
-                  ? `${
-                      availabilityData[0].value > availabilityData[1].value
-                        ? "Full-time"
-                        : "Part-time"
-                    } availability is preferred by applicants.`
+                {stats.preferredAvailability
+                  ? `${stats.preferredAvailability} availability is preferred by applicants.`
                   : "No availability data yet."}
               </p>
             </div>
