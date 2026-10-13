@@ -13,6 +13,7 @@ import AccountStatusMonitor from "@/shared/components/common/AccountStatusMonito
 import RoutePending from "@/shared/components/route-pending/RoutePending";
 import ReleaseScrollLock from "@/shared/components/route-pending/ReleaseScrollLock";
 import { ROUTE_PENDING_BOOT } from "@/shared/components/route-pending/routePendingBoot";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -84,6 +85,7 @@ export default function RootLayout({
             </NotificationProvider>
           </ThemeProvider>
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   );
