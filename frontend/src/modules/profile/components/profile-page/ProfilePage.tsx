@@ -34,10 +34,7 @@ import { createPasskey, fetchPasskeyStatus } from "@/modules/auth/utils/passkey"
 import { availableSkills } from "@/modules/tutor/utils/skillOptions";
 import CloseIcon from "@/shared/components/common/icons/CloseIcon";
 import AvatarCropModal from "@/modules/profile/components/avatar-crop-modal/AvatarCropModal";
-import {
-  hasCompletedPageTour,
-  toursForRole,
-} from "@/shared/components/page-tour/tourCatalog";
+import { toursForRole } from "@/shared/components/page-tour/tourCatalog";
 import styles from "./ProfilePage.module.css";
 
 export const ProfilePage: React.FC = () => {
@@ -75,7 +72,6 @@ export const ProfilePage: React.FC = () => {
   const [fullName, setFullName] = useState("");
   const [hasPasskey, setHasPasskey] = useState<boolean | null>(null);
   const [passkeyBusy, setPasskeyBusy] = useState(false);
-  const [tourReplayId, setTourReplayId] = useState<string | null>(null);
   const [passwordMethod, setPasswordMethod] = useState<"choose" | "current">("choose");
   const [laterMethod, setLaterMethod] = useState<null | "passkey" | "authenticator" | "email">(null);
   const [editForm, setEditForm] = useState({
@@ -498,20 +494,6 @@ export const ProfilePage: React.FC = () => {
     setLaterMethod(null);
     setPasswordMethod("choose");
     setEditingSection(null);
-  };
-
-  const replayPageTour = async (tourId: string, href: string) => {
-    setTourReplayId(tourId);
-    const response = await AuthService.updatePageTour(tourId, false);
-    setTourReplayId(null);
-    if (!response.success || !response.data?.user) {
-      showError(response.message || "Could not reset that tour.");
-      return;
-    }
-    updateUser(response.data.user);
-    setUser(response.data.user);
-    showSuccess("Opening the guide…");
-    router.push(href);
   };
 
   const savePasskey = async () => {
@@ -1228,43 +1210,38 @@ export const ProfilePage: React.FC = () => {
                   Page tours
                 </h2>
                 <p className={styles.profilePage__passwordText}>
-                  Short guided walkthroughs with the mascot. Choose one to play
-                  again anytime.
+                  Short guided walkthroughs with the mascot. Coming soon — tap a
+                  guide when you want to try it later.
                 </p>
                 <div className={styles.profilePage__methodList}>
-                  {toursForRole(user.userType).map((tour) => {
-                    const done = hasCompletedPageTour(
-                      user.completedPageTours,
-                      tour.id
-                    );
-                    const busy = tourReplayId === tour.id;
-                    return (
-                      <div
-                        key={tour.id}
-                        className={styles.profilePage__tourRow}
-                      >
-                        <span className={styles.profilePage__methodCopy}>
-                          <span className={styles.profilePage__methodTitle}>
-                            {tour.title}
-                          </span>
-                          <span className={styles.profilePage__methodHint}>
-                            {tour.description}
-                          </span>
-                          <span className={styles.profilePage__tourStatus}>
-                            {done ? "Completed on this account" : "Not completed yet"}
-                          </span>
+                  {toursForRole(user.userType).map((tour) => (
+                    <div
+                      key={tour.id}
+                      className={styles.profilePage__tourRow}
+                    >
+                      <span className={styles.profilePage__methodCopy}>
+                        <span className={styles.profilePage__methodTitle}>
+                          {tour.title}
                         </span>
-                        <button
-                          type="button"
-                          className={styles.profilePage__tourReplay}
-                          disabled={busy || user.isBlocked}
-                          onClick={() => void replayPageTour(tour.id, tour.href)}
-                        >
-                          {busy ? "Opening…" : "Play again"}
-                        </button>
-                      </div>
-                    );
-                  })}
+                        <span className={styles.profilePage__methodHint}>
+                          {tour.description}
+                        </span>
+                        <span className={styles.profilePage__tourStatus}>
+                          Coming soon
+                        </span>
+                      </span>
+                      <button
+                        type="button"
+                        className={styles.profilePage__tourReplay}
+                        disabled={user.isBlocked}
+                        onClick={() =>
+                          showSuccess("Page tours will be available soon.")
+                        }
+                      >
+                        Coming soon
+                      </button>
+                    </div>
+                  ))}
                   {toursForRole(user.userType).length === 0 && (
                     <p className={styles.profilePage__methodHint}>
                       No guided tours are available for this account type.

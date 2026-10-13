@@ -34,11 +34,6 @@ import {
   isClosedCourse,
 } from "@/modules/tutor/utils/tutorCourseAvailability";
 
-import PageTour from "@/shared/components/page-tour/PageTour";
-import {
-  TUTOR_TOUR_ID,
-  tutorTourSteps,
-} from "@/shared/components/page-tour/tutorTour";
 import styles from "./TutorPage.module.css";
 
 const COURSE_PAGE_SIZE = 6;
@@ -690,7 +685,6 @@ const TutorDashboardPage: React.FC = () => {
         isSubmitting={isSubmitting}
       />
 
-      <PageTour tourId={TUTOR_TOUR_ID} steps={tutorTourSteps} />
     </>
   );
 };
