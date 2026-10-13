@@ -21,6 +21,7 @@
     "@apollo/client": "^3.13.8",
     "@heroicons/react": "^2.2.0",
     "@simplewebauthn/browser": "^13.2.2",
+    "@vercel/analytics": "^2.0.1",
     "axios": "^1.9.0",
     "framer-motion": "^12.6.5",
     "graphql": "^16.11.0",
