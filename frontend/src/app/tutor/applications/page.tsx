@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import {
   useCallback,
@@ -25,7 +26,11 @@ import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton"
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import ApplicationsHeroSection from "@/modules/tutor/components/hero-section/ApplicationsHeroSection";
 import ApplicationStatusBadge from "@/shared/components/common/application-status-badge/ApplicationStatusBadge";
-import { resolveApplicationStatusDisplay } from "@/shared/utils/applicationStatus";
+import {
+  getCandidateApplicationStatusKey,
+  resolveApplicationStatusDisplay,
+  type CandidateApplicationStatusKey,
+} from "@/shared/utils/applicationStatus";
 import {
   formatAppliedDate,
   formatRoleLabel,
@@ -34,21 +39,39 @@ import PinIcon from "@/shared/components/common/icons/PinIcon";
 import ApplicationDetailPanel from "@/modules/tutor/components/application-detail/ApplicationDetailPanel";
 import ConfirmModal from "@/shared/components/common/modal/ConfirmModal";
 import AppSelect from "@/shared/components/common/app-select/AppSelect";
+import CloseIcon from "@/shared/components/common/icons/CloseIcon";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { LayoutGroup, motion } from "framer-motion";
 import styles from "./ApplicationsPage.module.css";
+
+/** Soft layout move — only enabled briefly while pinning / unpinning. */
+const CARD_PIN_LAYOUT_TRANSITION = {
+  layout: {
+    type: "spring" as const,
+    stiffness: 160,
+    damping: 26,
+    mass: 1.05,
+  },
+};
 
 type ViewMode = "grid" | "list";
 
-const STATUS_FILTER_OPTIONS = [
+const STATUS_FILTER_OPTIONS: {
+  value: "all" | CandidateApplicationStatusKey;
+  label: string;
+}[] = [
   { value: "all", label: "All statuses" },
-  { value: "active", label: "In review" },
+  { value: "pending", label: "Pending" },
+  { value: "reviewed", label: "Reviewed" },
   { value: "selected", label: "Selected" },
-  { value: "closed", label: "Closed" },
-] as const;
+  { value: "rejected", label: "Not selected" },
+  { value: "withdrawn", label: "Withdrawn" },
+];
 
 const SORT_OPTIONS = [
   { value: "date", label: "Newest first" },
   { value: "course", label: "Course code" },
-  { value: "status", label: "Status" },
+  { value: "status", label: "By status" },
 ] as const;
 
 const APPLICATION_PAGE_SIZE = 8;
@@ -69,11 +92,21 @@ export default function TutorApplicationsPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [withdrawTargetId, setWithdrawTargetId] = useState<string | null>(null);
   const { toast, showSuccess, showError, hideToast } = useToast();
-  const { togglePin, isPinned } = usePinnedApplications();
+  const { togglePin, isPinned, pinnedIds } = usePinnedApplications();
+  const [pinLayoutActive, setPinLayoutActive] = useState(false);
+  const pinLayoutTimerRef = useRef<number | null>(null);
   const selectedIdRef = useRef<string | null>(null);
   const listPaneRef = useRef<HTMLDivElement>(null);
   const preserveWindowScrollY = useRef<number | null>(null);
   const preserveListScrollTop = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (pinLayoutTimerRef.current !== null) {
+        window.clearTimeout(pinLayoutTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     selectedIdRef.current = selectedId;
@@ -147,13 +180,9 @@ export default function TutorApplicationsPage() {
       );
     }
 
-    if (statusFilter === "active") {
-      list = list.filter((app) => !app.isWithdrawn && app.status === "pending");
-    } else if (statusFilter === "selected") {
-      list = list.filter((app) => app.status === "selected" && !app.isWithdrawn);
-    } else if (statusFilter === "closed") {
+    if (statusFilter !== "all") {
       list = list.filter(
-        (app) => app.isWithdrawn || app.status === "rejected"
+        (app) => getCandidateApplicationStatusKey(app) === statusFilter
       );
     }
 
@@ -169,8 +198,17 @@ export default function TutorApplicationsPage() {
       );
     });
 
+    if (pinnedIds.length > 0) {
+      const pinSet = new Set(pinnedIds);
+      const pinnedApps = pinnedIds
+        .map((id) => list.find((app) => app.id === id))
+        .filter((app): app is ApplicationResponse => Boolean(app));
+      const rest = list.filter((app) => !pinSet.has(app.id));
+      return [...pinnedApps, ...rest];
+    }
+
     return list;
-  }, [applications, debouncedSearch, statusFilter, sortBy]);
+  }, [applications, debouncedSearch, statusFilter, sortBy, pinnedIds]);
 
   const totalPages = Math.max(
     1,
@@ -191,6 +229,44 @@ export default function TutorApplicationsPage() {
       setPage(totalPages);
     }
   }, [page, totalPages]);
+
+  useEffect(() => {
+    if (
+      selectedId &&
+      !sortedApplications.some((application) => application.id === selectedId)
+    ) {
+      setSelectedId(null);
+    }
+  }, [selectedId, sortedApplications]);
+
+  const hasApplications = applications.length > 0;
+  const hasActiveFilters =
+    Boolean(searchQuery.trim()) || statusFilter !== "all";
+  const isFilterEmpty = hasApplications && sortedApplications.length === 0;
+
+  const clearFilters = useCallback(() => {
+    setSearchQuery("");
+    setStatusFilter("all");
+    setSortBy("date");
+    setPage(1);
+  }, []);
+
+  const handleTogglePin = useCallback(
+    (id: string) => {
+      const willPin = !isPinned(id);
+      if (pinLayoutTimerRef.current !== null) {
+        window.clearTimeout(pinLayoutTimerRef.current);
+      }
+      setPinLayoutActive(true);
+      togglePin(id);
+      if (willPin) setPage(1);
+      pinLayoutTimerRef.current = window.setTimeout(() => {
+        setPinLayoutActive(false);
+        pinLayoutTimerRef.current = null;
+      }, 820);
+    },
+    [isPinned, togglePin]
+  );
 
   const selectedApplication = useMemo(
     () => sortedApplications.find((a) => a.id === selectedId) ?? null,
@@ -491,13 +567,13 @@ export default function TutorApplicationsPage() {
     );
 
     return (
-      <button
+      <motion.button
         key={application.id}
         type="button"
+        layout={pinLayoutActive}
+        transition={CARD_PIN_LAYOUT_TRANSITION}
         className={`${styles.applicationsPage__listCard} ${isActive ? styles.applicationsPage__listCardActive : ""} ${
           pinned ? styles.applicationsPage__listCardPinned : ""
-        } ${
-          pinned && !hasSelection ? styles.applicationsPage__listCardPinnedFirst : ""
         }`}
         onMouseDown={onListCardMouseDown}
         onClick={() => selectApplication(application.id)}
@@ -574,7 +650,7 @@ export default function TutorApplicationsPage() {
             </p>
           </div>
         </div>
-      </button>
+      </motion.button>
     );
   };
 
@@ -609,9 +685,21 @@ export default function TutorApplicationsPage() {
           onClose={() => setWithdrawTargetId(null)}
         />
 
-        {sortedApplications.length === 0 ? (
+        {!hasApplications ? (
           <div className={styles.applicationsPage__empty}>
-            <p>You have not submitted any applications yet.</p>
+            <Image
+              src="/mascot/mascot-2.png"
+              alt=""
+              width={160}
+              height={160}
+              className={styles.applicationsPage__emptyMascot}
+            />
+            <p className={styles.applicationsPage__emptyTitle}>
+              You have not submitted any applications yet.
+            </p>
+            <p className={styles.applicationsPage__emptySubtitle}>
+              Browse open courses and apply when you find a fit.
+            </p>
             <Link href="/tutor" className={styles.applicationsPage__emptyCta}>
               Browse courses
             </Link>
@@ -625,13 +713,30 @@ export default function TutorApplicationsPage() {
             >
               {!hasSelection && (
                 <div className={styles.applicationsPage__filtersRow}>
-                  <input
-                    type="search"
-                    className={styles.applicationsPage__filterInput}
-                    placeholder="Search course or role..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
+                  <div className={styles.applicationsPage__searchField}>
+                    <MagnifyingGlassIcon
+                      className={styles.applicationsPage__searchIcon}
+                      aria-hidden="true"
+                    />
+                    <input
+                      type="search"
+                      className={styles.applicationsPage__filterInput}
+                      placeholder="Search course or role..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      aria-label="Search course or role"
+                    />
+                    {searchQuery ? (
+                      <button
+                        type="button"
+                        className={styles.applicationsPage__searchClear}
+                        onClick={() => setSearchQuery("")}
+                        aria-label="Clear search"
+                      >
+                        <CloseIcon size={11} />
+                      </button>
+                    ) : null}
+                  </div>
                   <AppSelect
                     id="applications-status-filter"
                     className={styles.applicationsPage__filterAppSelect}
@@ -650,32 +755,6 @@ export default function TutorApplicationsPage() {
                   />
                 </div>
               )}
-              {!hasSelection && (
-                <div
-                  className={styles.applicationsPage__viewToggle}
-                  role="group"
-                  aria-label="View mode"
-                >
-                  <button
-                    type="button"
-                    className={`${styles.applicationsPage__viewBtn} ${
-                      viewMode === "grid" ? styles.applicationsPage__viewBtnActive : ""
-                    }`}
-                    onClick={() => setViewMode("grid")}
-                  >
-                    Grid
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.applicationsPage__viewBtn} ${
-                      viewMode === "list" ? styles.applicationsPage__viewBtnActive : ""
-                    }`}
-                    onClick={() => setViewMode("list")}
-                  >
-                    List
-                  </button>
-                </div>
-              )}
               {hasSelection ? (
                 <p className={styles.applicationsPage__hint}>
                   <span className={styles.applicationsPage__stackCount}>
@@ -687,92 +766,167 @@ export default function TutorApplicationsPage() {
                   Select another card in the list to switch
                 </p>
               ) : (
-                <p className={styles.applicationsPage__hint}>Click a card to open details</p>
+                <div className={styles.applicationsPage__toolbarEnd}>
+                  <div
+                    className={styles.applicationsPage__viewToggle}
+                    role="group"
+                    aria-label="View mode"
+                  >
+                    <button
+                      type="button"
+                      className={`${styles.applicationsPage__viewBtn} ${
+                        viewMode === "grid"
+                          ? styles.applicationsPage__viewBtnActive
+                          : ""
+                      }`}
+                      onClick={() => setViewMode("grid")}
+                    >
+                      Grid
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.applicationsPage__viewBtn} ${
+                        viewMode === "list"
+                          ? styles.applicationsPage__viewBtnActive
+                          : ""
+                      }`}
+                      onClick={() => setViewMode("list")}
+                    >
+                      List
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
 
-            <div
-              className={`${styles.applicationsPage__workspace} ${
-                hasSelection ? styles.applicationsPage__workspaceSplit : ""
-              }`}
-            >
+            {isFilterEmpty ? (
               <div
-                className={
-                  hasSelection ? styles.applicationsPage__leftColumn : styles.applicationsPage__listHostWide
-                }
+                className={styles.applicationsPage__filterEmpty}
+                role="status"
+              >
+                <Image
+                  src="/mascot/mascot-3.png"
+                  alt=""
+                  width={148}
+                  height={148}
+                  className={styles.applicationsPage__emptyMascot}
+                />
+                <p className={styles.applicationsPage__emptyTitle}>
+                  No applications match
+                </p>
+                <p className={styles.applicationsPage__emptySubtitle}>
+                  Try another search, or clear the filters to see everything
+                  again.
+                </p>
+                {hasActiveFilters ? (
+                  <button
+                    type="button"
+                    className={styles.applicationsPage__emptyClear}
+                    onClick={clearFilters}
+                  >
+                    Clear filters
+                  </button>
+                ) : null}
+              </div>
+            ) : (
+              <div
+                className={`${styles.applicationsPage__workspace} ${
+                  hasSelection ? styles.applicationsPage__workspaceSplit : ""
+                }`}
               >
                 <div
                   className={
-                    hasSelection ? styles.applicationsPage__stackSection : styles.applicationsPage__listHostInner
+                    hasSelection
+                      ? styles.applicationsPage__leftColumn
+                      : styles.applicationsPage__listHostWide
                   }
                 >
                   <div
-                    ref={listPaneRef}
-                    className={`${styles.applicationsPage__listPane} ${
+                    className={
                       hasSelection
-                        ? styles.applicationsPage__listPaneStack
-                        : viewMode === "grid"
-                          ? styles.applicationsPage__listPaneGrid
-                          : styles.applicationsPage__listPaneList
-                    }`}
+                        ? styles.applicationsPage__stackSection
+                        : styles.applicationsPage__listHostInner
+                    }
                   >
-                    {paginatedApplications.map((application) =>
-                      renderListCard(application)
+                    <LayoutGroup id="applications-list">
+                      <div
+                        ref={listPaneRef}
+                        className={`${styles.applicationsPage__listPane} ${
+                          hasSelection
+                            ? styles.applicationsPage__listPaneStack
+                            : viewMode === "grid"
+                              ? styles.applicationsPage__listPaneGrid
+                              : styles.applicationsPage__listPaneList
+                        }`}
+                      >
+                        {paginatedApplications.map((application) =>
+                          renderListCard(application)
+                        )}
+                      </div>
+                    </LayoutGroup>
+                    {!hasSelection && (
+                      <PaginationBar
+                        page={page}
+                        pageSize={APPLICATION_PAGE_SIZE}
+                        totalCount={sortedApplications.length}
+                        totalPages={totalPages}
+                        onPageChange={setPage}
+                      />
                     )}
                   </div>
-                  {!hasSelection && (
-                    <PaginationBar
-                      page={page}
-                      pageSize={APPLICATION_PAGE_SIZE}
-                      totalCount={sortedApplications.length}
-                      totalPages={totalPages}
-                      onPageChange={setPage}
-                    />
-                  )}
                 </div>
-              </div>
 
-              {selectedApplication && (
-                <aside className={styles.applicationsPage__detailColumn}>
-                  <ApplicationDetailPanel
-                    application={selectedApplication}
-                    draft={drafts[selectedApplication.id] ?? ""}
-                    busy={busyId === selectedApplication.id}
-                    isPinned={isPinned(selectedApplication.id)}
-                    hideSummary
-                    onDraftChange={(value) =>
-                      setDrafts((prev) => ({
-                        ...prev,
-                        [selectedApplication.id]: value,
-                      }))
-                    }
-                    onSendNew={(replyToMessageId) =>
-                      sendNewMessage(selectedApplication.id, replyToMessageId)
-                    }
-                    onEditMessage={(messageId) =>
-                      editMessage(selectedApplication.id, messageId)
-                    }
-                    onDeleteMessage={(messageId) =>
-                      deleteMessage(selectedApplication.id, messageId)
-                    }
-                    onWithdraw={() => withdraw(selectedApplication.id)}
-                    onClose={clearSelection}
-                    onTogglePin={() => togglePin(selectedApplication.id)}
-                    onToggleReaction={(messageId, emoji) =>
-                      toggleReaction(
-                        selectedApplication.id,
-                        messageId,
-                        emoji
-                      )
-                    }
-                    onOfferResponse={(decision, message) =>
-                      respondToOffer(selectedApplication.id, decision, message)
-                    }
-                    onApplicationUpdated={refreshApplication}
-                  />
-                </aside>
-              )}
-            </div>
+                {selectedApplication && (
+                  <aside className={styles.applicationsPage__detailColumn}>
+                    <ApplicationDetailPanel
+                      application={selectedApplication}
+                      draft={drafts[selectedApplication.id] ?? ""}
+                      busy={busyId === selectedApplication.id}
+                      isPinned={isPinned(selectedApplication.id)}
+                      hideSummary
+                      onDraftChange={(value) =>
+                        setDrafts((prev) => ({
+                          ...prev,
+                          [selectedApplication.id]: value,
+                        }))
+                      }
+                      onSendNew={(replyToMessageId) =>
+                        sendNewMessage(
+                          selectedApplication.id,
+                          replyToMessageId
+                        )
+                      }
+                      onEditMessage={(messageId) =>
+                        editMessage(selectedApplication.id, messageId)
+                      }
+                      onDeleteMessage={(messageId) =>
+                        deleteMessage(selectedApplication.id, messageId)
+                      }
+                      onWithdraw={() => withdraw(selectedApplication.id)}
+                      onClose={clearSelection}
+                      onTogglePin={() =>
+                        handleTogglePin(selectedApplication.id)
+                      }
+                      onToggleReaction={(messageId, emoji) =>
+                        toggleReaction(
+                          selectedApplication.id,
+                          messageId,
+                          emoji
+                        )
+                      }
+                      onOfferResponse={(decision, message) =>
+                        respondToOffer(
+                          selectedApplication.id,
+                          decision,
+                          message
+                        )
+                      }
+                      onApplicationUpdated={refreshApplication}
+                    />
+                  </aside>
+                )}
+              </div>
+            )}
           </>
         )}
       </main>

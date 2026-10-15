@@ -6,7 +6,7 @@ import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton"
 import { useLecturerAuth } from "@/modules/lecturer/hooks/useLecturerAuth";
 import { useApplicationManagement } from "@/modules/lecturer/hooks/useApplicationManagement";
 import { useAuth } from "@/modules/auth/hooks/useAuth";
-import styles from "../LecturerPage.module.css";
+import styles from "./LecturerAnalyticsPage.module.css";
 
 const ApplicantStatsVisualization = dynamic(
   () =>
@@ -26,17 +26,15 @@ function LecturerAnalyticsInner() {
   }
 
   return (
-    <div className={styles.lecturerPage__lecturerDashboard}>
-      <div className="container">
-        <header className={styles.lecturerPage__revealHeader}>
-          <h1 className={styles.lecturerPage__pageHeading}>Analytics</h1>
-          <p className={styles.lecturerPage__pageLead}>
-            Charts for the applications on your assigned courses.
+    <div className={styles.page}>
+      <div className={styles.inner}>
+        <header className={styles.header}>
+          <h1 className={styles.title}>Analytics</h1>
+          <p className={styles.lead}>
+            A quiet read of applications across your assigned courses.
           </p>
         </header>
-        <div className={styles.lecturerPage__statsSection}>
-          <ApplicantStatsVisualization applications={applications} />
-        </div>
+        <ApplicantStatsVisualization applications={applications} />
       </div>
     </div>
   );

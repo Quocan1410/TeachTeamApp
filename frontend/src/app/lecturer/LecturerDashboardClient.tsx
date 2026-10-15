@@ -377,19 +377,22 @@ const LecturerDashboardInner: React.FC = () => {
   const [skillsFilterArray, setSkillsFilterArray] = useState<string[]>([]);
 
   // Authentication check
+  const lecturerUserId = user?.id;
+  const lecturerUserType = user?.userType;
+
   useEffect(() => {
     if (authLoading) return;
 
-    if (!isAuthenticated || !user) {
+    if (!isAuthenticated || !lecturerUserId || !lecturerUserType) {
       router.replace("/signin");
       return;
     }
 
-    if (user.userType !== "lecturer") {
-      router.replace(user.userType === "candidate" ? "/tutor" : "/");
+    if (lecturerUserType !== "lecturer") {
+      router.replace(lecturerUserType === "candidate" ? "/tutor" : "/");
     }
     // Identity fields only — tour/profile patches must not re-run routing.
-  }, [user?.id, user?.userType, isAuthenticated, authLoading, router]);
+  }, [lecturerUserId, lecturerUserType, isAuthenticated, authLoading, router]);
 
   // Load available courses and extract skills
   const loadCourses = useCallback(async () => {

@@ -119,3 +119,33 @@ export function resolveApplicationStatusDisplay(
     isReviewed,
   };
 }
+
+/** Candidate-facing status keys — matches badge labels on /tutor/applications. */
+export type CandidateApplicationStatusKey =
+  | "pending"
+  | "reviewed"
+  | "selected"
+  | "rejected"
+  | "withdrawn";
+
+export function getCandidateApplicationStatusKey(application: {
+  status: ApplicationStatus;
+  isWithdrawn?: boolean;
+  isShortlisted?: boolean;
+  rank?: number | null;
+  candidate?: { isBlocked?: boolean } | null;
+  comment?: string | null;
+  correspondenceMessages?: unknown;
+  reviewedAt?: string | null;
+}): CandidateApplicationStatusKey {
+  const display = resolveApplicationStatusDisplay(
+    application.status,
+    application,
+    "candidate"
+  );
+  if (display.isWithdrawn) return "withdrawn";
+  if (display.status === "selected") return "selected";
+  if (display.status === "rejected") return "rejected";
+  if (display.isReviewed) return "reviewed";
+  return "pending";
+}

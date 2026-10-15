@@ -2,51 +2,86 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-const STORAGE_KEY = "tutor-applications-pinned-id";
+const STORAGE_KEY = "tutor-applications-pinned-ids";
+const LEGACY_STORAGE_KEY = "tutor-applications-pinned-id";
 
-export function getStoredPinnedApplicationId(): string | null {
+function readPinnedIds(): string[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    const id = raw?.trim();
-    return id ? id : null;
+    if (raw) {
+      const parsed = JSON.parse(raw) as unknown;
+      if (Array.isArray(parsed)) {
+        return parsed.filter(
+          (id): id is string => typeof id === "string" && id.trim().length > 0
+        );
+      }
+    }
+
+    // Migrate single-id storage from earlier builds.
+    const legacy = localStorage.getItem(LEGACY_STORAGE_KEY)?.trim();
+    if (legacy) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([legacy]));
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
+      return [legacy];
+    }
   } catch {
-    return null;
+    /* ignore */
+  }
+  return [];
+}
+
+function writePinnedIds(ids: string[]) {
+  try {
+    if (ids.length === 0) {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
+      return;
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+    localStorage.removeItem(LEGACY_STORAGE_KEY);
+  } catch {
+    /* ignore */
   }
 }
 
 export function usePinnedApplications() {
-  const [pinnedId, setPinnedId] = useState<string | null>(null);
+  const [pinnedIds, setPinnedIds] = useState<string[]>([]);
 
   useEffect(() => {
-    const stored = getStoredPinnedApplicationId();
-    if (stored !== null) setPinnedId(stored);
+    setPinnedIds(readPinnedIds());
   }, []);
 
-  const pin = useCallback((id: string) => {
-    setPinnedId(id);
-    try {
-      localStorage.setItem(STORAGE_KEY, String(id));
-    } catch {
-      /* ignore */
-    }
+  const persist = useCallback((ids: string[]) => {
+    setPinnedIds(ids);
+    writePinnedIds(ids);
   }, []);
 
-  const unpin = useCallback(() => {
-    setPinnedId(null);
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch {
-      /* ignore */
-    }
-  }, []);
+  const pin = useCallback(
+    (id: string) => {
+      persist([id, ...pinnedIds.filter((pinnedId) => pinnedId !== id)]);
+    },
+    [persist, pinnedIds]
+  );
+
+  const unpin = useCallback(
+    (id: string) => {
+      persist(pinnedIds.filter((pinnedId) => pinnedId !== id));
+    },
+    [persist, pinnedIds]
+  );
 
   const togglePin = useCallback(
     (id: string) => {
-      if (pinnedId === id) unpin();
+      if (pinnedIds.includes(id)) unpin(id);
       else pin(id);
     },
-    [pin, pinnedId, unpin]
+    [pin, pinnedIds, unpin]
   );
 
-  return { pinnedId, pin, unpin, togglePin, isPinned: (id: string) => pinnedId === id };
+  const isPinned = useCallback(
+    (id: string) => pinnedIds.includes(id),
+    [pinnedIds]
+  );
+
+  return { pinnedIds, pin, unpin, togglePin, isPinned };
 }

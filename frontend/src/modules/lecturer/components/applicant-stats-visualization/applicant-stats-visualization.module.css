@@ -1,562 +1,182 @@
-.applicantStatsVisualization__statsVisualizationContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.applicantStatsVisualization__emptyStats {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 1rem;
-  text-align: center;
-  min-height: 300px;
-}
-
-.applicantStatsVisualization__emptyStatsIcon {
-  color: var(--color-text-secondary);
-  opacity: 0.3;
-  margin-bottom: 1.5rem;
-}
-
-.applicantStatsVisualization__emptyStatsTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: 0.5rem;
-}
-
-.applicantStatsVisualization__emptyStatsText {
-  color: var(--color-text-secondary);
-}
-
-.applicantStatsVisualization__statsHeader {
-  margin-bottom: 1rem;
-}
-
-.applicantStatsVisualization__statsSummaryCards {
+.root {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.applicantStatsVisualization__summaryCard {
-  display: flex;
-  align-items: center;
-  padding: 1.25rem;
-  background-color: var(--color-bg-primary);
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
-  border: 1px solid var(--color-border);
-  transition: all 0.3s ease;
-}
-
-.applicantStatsVisualization__summaryCard:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
-}
-
-.applicantStatsVisualization__summaryIcon {
-  width: 48px;
-  height: 48px;
-  min-width: 48px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(79, 70, 229, 0.1);
-  color: #4f46e5;
-  margin-right: 1rem;
-  transition: all 0.3s ease;
-}
-
-.applicantStatsVisualization__summaryIcon svg {
-  width: 24px;
-  height: 24px;
-}
-
-.applicantStatsVisualization__summaryIcon.applicantStatsVisualization--totalIcon {
-  background-color: var(--stat-icon-total-bg);
-  color: var(--stat-icon-total-color);
-}
-
-.applicantStatsVisualization__totalIcon {
-  background-color: var(--stat-icon-total-bg);
-  color: var(--stat-icon-total-color);
-}
-
-.applicantStatsVisualization__summaryIcon.applicantStatsVisualization--selectedIcon {
-  background-color: var(--stat-icon-selected-bg);
-  color: var(--stat-icon-selected-color);
-}
-
-.applicantStatsVisualization__selectedIcon {
-  background-color: var(--stat-icon-selected-bg);
-  color: var(--stat-icon-selected-color);
-}
-
-.applicantStatsVisualization__summaryIcon.applicantStatsVisualization--pendingIcon {
-  background-color: var(--stat-icon-pending-bg);
-  color: var(--stat-icon-pending-color);
-}
-
-.applicantStatsVisualization__pendingIcon {
-  background-color: var(--stat-icon-pending-bg);
-  color: var(--stat-icon-pending-color);
-}
-
-.applicantStatsVisualization__summaryIcon.applicantStatsVisualization--rateIcon {
-  background-color: var(--stat-icon-rate-bg);
-  color: var(--stat-icon-rate-color);
-}
-
-.applicantStatsVisualization__rateIcon {
-  background-color: var(--stat-icon-rate-bg);
-  color: var(--stat-icon-rate-color);
-}
-
-.applicantStatsVisualization__summaryContent {
-  display: flex;
-  flex-direction: column;
-}
-
-.applicantStatsVisualization__summaryLabel {
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-  margin-bottom: 0.25rem;
-  display: block;
-}
-
-.applicantStatsVisualization__summaryValue {
-  font-size: 1.75rem;
-  font-weight: 700;
+  gap: 2rem;
   color: var(--color-text-primary);
-  line-height: 1.2;
-  margin-bottom: 0.25rem;
 }
 
-.applicantStatsVisualization__summaryDesc {
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-  opacity: 0.8;
+.empty {
+  padding: 2.5rem 0.25rem 1rem;
 }
 
-.applicantStatsVisualization__statsChartsContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 1rem;
+.emptyTitle {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
 }
 
-.applicantStatsVisualization__statsChartCard {
-  background-color: var(--color-bg-primary);
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
-  border: 1px solid var(--color-border);
-  padding: 1.25rem;
-  transition: all 0.3s ease;
-}
-
-.applicantStatsVisualization__statsChartCard:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
-}
-
-.applicantStatsVisualization__chartTitle {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: 1rem;
-}
-
-.applicantStatsVisualization__pieChartContainer,
-.applicantStatsVisualization__barChartContainer {
-  height: 200px;
-  display: flex;
-  justify-content: center;
-}
-
-.applicantStatsVisualization__customTooltip {
-  background-color: var(--color-bg-primary);
-  border: 1px solid var(--color-border);
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.applicantStatsVisualization__tooltipValue {
-  color: var(--color-text-primary);
-  font-size: 0.875rem;
+.emptyText {
   margin: 0;
-  font-weight: 500;
-}
-
-.applicantStatsVisualization__chartStats {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 1rem;
-}
-
-.applicantStatsVisualization__chartStatItem {
-  text-align: center;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-}
-
-.applicantStatsVisualization__chartStatItem.applicantStatsVisualization--selected {
-  background-color: var(--color-success-light);
-}
-.applicantStatsVisualization__chartStatItem.applicantStatsVisualization--pending {
-  background-color: var(--color-warning-light);
-}
-
-.applicantStatsVisualization__chartStatItem .applicantStatsVisualization__statValue {
-  color: var(--color-primary);
-} /* Default, can be overridden */
-.applicantStatsVisualization__chartStatItem.applicantStatsVisualization--selected .applicantStatsVisualization__statValue {
-  color: var(--color-success);
-}
-.applicantStatsVisualization__chartStatItem.applicantStatsVisualization--pending .applicantStatsVisualization__statValue {
-  color: var(--color-warning);
-}
-
-.applicantStatsVisualization__statTitle {
-  font-size: 0.875rem;
+  max-width: 28rem;
   color: var(--color-text-secondary);
-  margin-bottom: 0.25rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
 }
 
-.applicantStatsVisualization__statValue {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: 0.25rem;
-}
-
-.applicantStatsVisualization__statDesc {
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-  opacity: 0.8;
-}
-
-.applicantStatsVisualization__chartInfo {
-  margin-top: 1rem;
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-  text-align: center;
-}
-
-.applicantStatsVisualization__topApplicant {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.25rem;
-}
-
-.applicantStatsVisualization__infoLabel {
-  font-weight: 500;
-}
-.applicantStatsVisualization__infoValue {
-  color: var(--color-primary);
-  font-weight: 600;
-}
-.applicantStatsVisualization__infoCount {
-  color: var(--color-text-secondary);
-}
-.applicantStatsVisualization__noData {
-  font-style: italic;
-}
-
-.applicantStatsVisualization__statsInsights {
-  background-color: var(--color-bg-primary);
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
-  border: 1px solid var(--color-border);
-  padding: 1.25rem;
-  transition: all 0.3s ease;
-}
-
-.applicantStatsVisualization__insightsTitle {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: 1rem;
-}
-
-.applicantStatsVisualization__insightsContent {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.applicantStatsVisualization__trendChart,
-.applicantStatsVisualization__skillsDistribution {
-  background-color: var(--color-bg-secondary);
-  padding: 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-border);
-}
-
-.applicantStatsVisualization__trendChart h4,
-.applicantStatsVisualization__skillsDistribution h4 {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: 0.75rem;
-}
-
-.applicantStatsVisualization__insightsGrid {
+.metrics {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);
 }
 
-.applicantStatsVisualization__insightItem {
-  display: flex;
-  align-items: flex-start;
-  background-color: var(--color-bg-secondary);
-  padding: 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-border);
+.metric {
+  display: grid;
+  gap: 0.35rem;
 }
 
-.applicantStatsVisualization__insightContent h4 {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: 0.5rem;
-}
-
-.applicantStatsVisualization__insightContent p {
-  font-size: 0.875rem;
+.metricLabel {
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--color-text-secondary);
+}
+
+.metricValue {
+  font-size: clamp(1.55rem, 2.2vw, 1.9rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.charts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.75rem 2rem;
+}
+
+.block,
+.blockWide {
+  min-width: 0;
+}
+
+.blockTitle {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.chartFrame,
+.chartFrameTall {
+  width: 100%;
+  color: var(--color-text-secondary);
+}
+
+.blockNote {
+  margin: 0.55rem 0 0;
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
   line-height: 1.4;
 }
 
-.applicantStatsVisualization__insightIcon {
-  display: flex;
-  justify-content: center;
+.lower {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 1.75rem 2rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);
+}
+
+.skillList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.skillRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(4.5rem, 2fr) auto;
+  gap: 0.65rem;
   align-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: var(--color-primary);
-  color: white;
-  margin-right: 0.75rem;
-  flex-shrink: 0;
 }
 
-.applicantStatsVisualization__insightIcon svg {
-  width: 16px;
-  height: 16px;
-}
-
-.applicantStatsVisualization__insightText {
-  font-size: 0.875rem;
+.skillName {
+  font-size: 0.84rem;
   color: var(--color-text-primary);
-  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.applicantStatsVisualization__insightText strong {
-  color: var(--color-primary);
-  font-weight: 600;
+.skillTrack {
+  display: block;
+  height: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-border) 80%, transparent);
+  overflow: hidden;
 }
 
-.applicantStatsVisualization__dark .applicantStatsVisualization__summaryCard,
-.applicantStatsVisualization__dark .applicantStatsVisualization__statsChartCard,
-.applicantStatsVisualization__dark .applicantStatsVisualization__statsInsights,
-.applicantStatsVisualization__dark .applicantStatsVisualization__trendChart,
-.applicantStatsVisualization__dark .applicantStatsVisualization__skillsDistribution {
-  background-color: var(--color-bg-primary);
-  border-color: var(--color-border);
+.skillFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-primary);
 }
 
-.applicantStatsVisualization__dark .applicantStatsVisualization__insightItem {
-  background-color: rgba(255, 255, 255, 0.05);
-}
-.applicantStatsVisualization__dark .applicantStatsVisualization__customTooltip {
-  background-color: #1f2937;
-  border-color: #374151;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+.skillCount {
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
 }
 
-/* Recharts specific overrides, if needed, might be better in global styles */
-/* :global(.recharts-legend-item-text) { color: var(--color-text-primary) !important; } */
-/* :global(.recharts-cartesian-axis-tick-value) { fill: var(--color-text-secondary) !important; } */
-/* :global(.recharts-cartesian-grid-horizontal line), :global(.recharts-cartesian-grid-vertical line) { stroke: var(--color-border) !important; } */
+.tip {
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.4rem 0.55rem;
+  border-radius: 0.45rem;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
 
-@media (max-width: 768px) {
-  .applicantStatsVisualization__statsChartsContainer,
-  .applicantStatsVisualization__insightsContent {
+.tipLabel {
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+}
+
+.tipValue {
+  font-size: 0.88rem;
+  font-weight: 650;
+  color: var(--color-text-primary);
+}
+
+@media (max-width: 900px) {
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .charts,
+  .lower {
     grid-template-columns: 1fr;
   }
-  .applicantStatsVisualization__chartStats {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.75rem;
+}
+
+@media (max-width: 560px) {
+  .metrics {
+    grid-template-columns: 1fr 1fr;
   }
-  .applicantStatsVisualization__chartStatItem {
-    width: 100%;
-    max-width: 200px;
+
+  .skillRow {
+    grid-template-columns: minmax(0, 1fr) auto;
   }
-}
 
-.applicantStatsVisualization__lineChartContainer {
-  height: 200px;
-  display: flex;
-  justify-content: center;
-}
-
-/* Ensure skillsListContainer has the chart styling */
-.applicantStatsVisualization__skillsListContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 1rem;
-  background-color: var(--color-bg-secondary);
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-border);
-}
-
-.applicantStatsVisualization__skillsListContainer h4 {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: 0.75rem;
-}
-
-.applicantStatsVisualization__skillStatItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0.75rem;
-  background-color: var(--color-bg-secondary);
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-border);
-  transition: all 0.2s ease;
-}
-
-.applicantStatsVisualization__skillStatItem:hover {
-  background-color: var(--color-bg-hover);
-  transform: translateY(-1px);
-}
-
-.applicantStatsVisualization__skillName {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-primary);
-  flex: 1;
-}
-
-.applicantStatsVisualization__skillCount {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  min-width: 80px;
-}
-
-.applicantStatsVisualization__skillCount span {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-primary);
-  min-width: 20px;
-  text-align: right;
-}
-
-.applicantStatsVisualization__skillBar {
-  height: 4px;
-  background-color: var(--color-primary);
-  border-radius: 2px;
-  min-width: 40px;
-  transition: width 0.3s ease;
-}
-
-/* Container styles moved from dashboard */
-.applicantStatsVisualization__analyticsContainer {
-  background-color: var(--color-bg-primary);
-  border-radius: 1rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--color-border);
-  padding: 1.5rem;
-}
-
-.applicantStatsVisualization__analyticsTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: 1rem;
-}
-
-.applicantStatsVisualization__analyticsContent {
-  min-height: 300px;
-}
-
-/* Dark mode for container styles */
-.applicantStatsVisualization__dark .applicantStatsVisualization__analyticsContainer {
-  background-color: var(--color-bg-primary);
-  border-color: var(--color-border);
-}
-
-.applicantStatsVisualization__dark .applicantStatsVisualization__analyticsTitle {
-  color: var(--color-text-primary);
-}
-
-/* Icon size classes for consistency */
-.applicantStatsVisualization__iconLarge {
-  width: 48px;
-  height: 48px;
-}
-
-.applicantStatsVisualization__iconMedium {
-  width: 24px;
-  height: 24px;
-}
-
-.applicantStatsVisualization__iconSmall {
-  width: 20px;
-  height: 20px;
-}
-
-/* Additional styles for detailed chart stats */
-.applicantStatsVisualization__statDetails {
-  margin-top: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.applicantStatsVisualization__statDetailItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.75rem;
-}
-
-.applicantStatsVisualization__detailLabel {
-  color: var(--color-text-secondary);
-  font-weight: 500;
-}
-
-.applicantStatsVisualization__detailValue {
-  color: var(--color-text-primary);
-  font-weight: 600;
-}
-
-.applicantStatsVisualization__detailBadge {
-  padding: 0.125rem 0.5rem;
-  border-radius: 0.25rem;
-  font-size: 0.675rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.applicantStatsVisualization__detailBadge.applicantStatsVisualization--success {
-  background-color: var(--color-success-light);
-  color: var(--color-success);
-}
-
-.applicantStatsVisualization__detailBadge.applicantStatsVisualization--warning {
-  background-color: var(--color-warning-light);
-  color: var(--color-warning);
+  .skillTrack {
+    display: none;
+  }
 }

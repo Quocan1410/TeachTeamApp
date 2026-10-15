@@ -357,10 +357,218 @@
   gap: 0.75rem;
 }
 
-.pageSkeleton__applicationList {
+.pageSkeleton__wrapperApps {
+  padding: 0;
+  background: var(--color-bg-primary);
+}
+
+.pageSkeleton__containerApps {
+  max-width: none;
+  margin: 0;
+}
+
+.pageSkeleton__appsPage {
+  width: 100%;
+}
+
+.pageSkeleton__appsHero {
+  position: relative;
+  width: 100%;
+  padding: 7.5rem 0 3.5rem;
+  background: linear-gradient(
+    160deg,
+    var(--color-bg-secondary) 0%,
+    var(--color-bg-primary) 55%,
+    var(--color-bg-secondary) 100%
+  );
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pageSkeleton__appsHeroInner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.pageSkeleton__appsHeroTitle {
+  width: min(22rem, 88%);
+  height: 2.35rem;
+}
+
+.pageSkeleton__appsHeroSubtitle {
+  width: min(28rem, 92%);
+  height: 0.95rem;
+  margin-bottom: 0.2rem;
+}
+
+.pageSkeleton__appsTips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 0.65rem;
+  margin-bottom: 0.35rem;
+}
+
+.pageSkeleton__appsTip {
+  width: 6.5rem;
+  height: 1.7rem;
+  border-radius: 999px;
+}
+
+.pageSkeleton__appsStats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.25rem;
+  width: min(32rem, 100%);
+  padding: 1.1rem 1rem;
+  border-radius: 1rem;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+.pageSkeleton__appsStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.pageSkeleton__appsStatValue {
+  width: 2.25rem;
+  height: 1.5rem;
+}
+
+.pageSkeleton__appsStatLabel {
+  width: 3.5rem;
+  height: 0.7rem;
+}
+
+.pageSkeleton__appsMain {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 2.25rem 1.75rem 4rem;
+}
+
+.pageSkeleton__appsToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  margin-bottom: 2rem;
+  min-height: 2.75rem;
+}
+
+.pageSkeleton__appsFilters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 0.75rem;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+}
+
+.pageSkeleton__appsSearch {
+  width: 100%;
+  height: 2.5rem;
+  border-radius: 0.65rem;
+}
+
+.pageSkeleton__appsSelect {
+  width: 7.5rem;
+  height: 2.5rem;
+  border-radius: 0.65rem;
+}
+
+.pageSkeleton__appsToggle {
+  width: 7.25rem;
+  height: 2.35rem;
+  border-radius: 999px;
+}
+
+.pageSkeleton__appsHint {
+  width: 11rem;
+  height: 0.85rem;
+}
+
+.pageSkeleton__appsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.pageSkeleton__appsCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-height: 11.5rem;
+  padding: 1rem 1.05rem 0.95rem;
+  border: 2px solid color-mix(in srgb, var(--color-border) 90%, transparent);
+  border-radius: 1rem;
+  background: var(--color-bg-primary);
+  box-sizing: border-box;
+}
+
+.pageSkeleton__appsCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.pageSkeleton__appsCardEyebrow {
+  width: 7.5rem;
+  height: 0.7rem;
+}
+
+.pageSkeleton__appsCardBadge {
+  width: 4.25rem;
+  height: 1.35rem;
+  border-radius: 999px;
+}
+
+.pageSkeleton__appsCardTitle {
+  width: 78%;
+  height: 1.05rem;
+  margin-top: 0.15rem;
+}
+
+.pageSkeleton__appsCardLine {
+  width: 100%;
+  height: 0.7rem;
+}
+
+.pageSkeleton__appsCardLineShort {
+  width: 68%;
+  height: 0.7rem;
+}
+
+.pageSkeleton__appsCardBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 0.55rem;
+}
+
+.pageSkeleton__appsCardRole {
+  width: 5.5rem;
+  height: 1.45rem;
+  border-radius: 0.55rem;
+}
+
+.pageSkeleton__appsCardDate {
+  width: 6.5rem;
+  height: 0.7rem;
 }
 
 .pageSkeleton__authWrap {
@@ -568,6 +776,22 @@
   .pageSkeleton__tutorFilters,
   .pageSkeleton__tutorGrid {
     grid-template-columns: 1fr;
+  }
+
+  .pageSkeleton__appsFilters {
+    grid-template-columns: 1fr;
+  }
+
+  .pageSkeleton__appsSelect {
+    width: 100%;
+  }
+
+  .pageSkeleton__appsStats {
+    gap: 0.75rem;
+  }
+
+  .pageSkeleton__appsMain {
+    padding: 1.75rem 1.25rem 3rem;
   }
 }
 
