@@ -178,13 +178,11 @@ export default function LecturerCoursesPage() {
     <div className={styles.page}>
       <div className={styles.inner}>
         <header className={styles.header}>
-          <div>
-            <h1 className={styles.title}>My courses</h1>
-            <p className={styles.lead}>
-              Courses assigned to you this term. Draft content and timetable
-              freely before publish; after publish, edits need admin approval.
-            </p>
-          </div>
+          <h1 className={styles.title}>My courses</h1>
+          <p className={styles.lead}>
+            Shape content and teaching times for your assigned courses. Draft
+            freely; published courses need admin approval for changes.
+          </p>
         </header>
 
         {courses.length === 0 ? (
@@ -454,9 +452,9 @@ export default function LecturerCoursesPage() {
         )}
 
         <section className={styles.timetableSection}>
-          <h2 className={styles.timetableTitle}>My timetable</h2>
+          <h2 className={styles.timetableTitle}>Timetable</h2>
           <p className={styles.lead}>
-            Live teaching times across your assigned courses.
+            Your teaching slots across every assigned course.
           </p>
           {timetable.length === 0 ? (
             <div className={styles.empty}>No sessions scheduled yet.</div>

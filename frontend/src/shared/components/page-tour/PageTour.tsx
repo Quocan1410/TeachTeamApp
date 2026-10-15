@@ -301,9 +301,12 @@ export default function PageTour({
     void persistTour(true);
   }, [persistTour, tourId, updateUser, user]);
 
+  const tourUserId = user?.id;
+  const completedPageTours = user?.completedPageTours;
+
   useEffect(() => {
-    if (!tourEnabled || steps.length === 0 || !user) return;
-    if (hasCompletedPageTour(user.completedPageTours, tourId)) return;
+    if (!tourEnabled || steps.length === 0 || !tourUserId) return;
+    if (hasCompletedPageTour(completedPageTours, tourId)) return;
     const timer = window.setTimeout(() => {
       setActive(true);
       setStepIndex(0);
@@ -317,10 +320,8 @@ export default function PageTour({
     tourEnabled,
     steps.length,
     tourId,
-    user?.id,
-    Array.isArray(user?.completedPageTours)
-      ? user.completedPageTours.join("\0")
-      : "",
+    tourUserId,
+    completedPageTours,
     startDelayMs,
   ]);
 

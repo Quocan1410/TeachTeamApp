@@ -198,17 +198,87 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
 
     if (variant === "applications") {
       return (
-        <>
-          <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__filterBar}`} />
-          <div className={styles.pageSkeleton__applicationList}>
-            {Array.from({ length: Math.max(cards, 4) }).map((_, index) => (
-              <div
-                key={`application-${index}`}
-                className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__listItem}`}
-              />
-            ))}
+        <div className={styles.pageSkeleton__appsPage}>
+          <section className={styles.pageSkeleton__appsHero} aria-hidden="true">
+            <div className={styles.pageSkeleton__appsHeroInner}>
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__appsHeroTitle}`} />
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__appsHeroSubtitle}`} />
+              <div className={styles.pageSkeleton__appsTips}>
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div
+                    key={`apps-tip-${index}`}
+                    className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__appsTip}`}
+                  />
+                ))}
+              </div>
+              <div className={styles.pageSkeleton__appsStats}>
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <div key={`apps-stat-${index}`} className={styles.pageSkeleton__appsStat}>
+                    <div
+                      className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__appsStatValue}`}
+                    />
+                    <div
+                      className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__appsStatLabel}`}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <div className={styles.pageSkeleton__appsMain}>
+            <div className={styles.pageSkeleton__appsToolbar}>
+              <div className={styles.pageSkeleton__appsFilters}>
+                <div
+                  className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__appsSearch}`}
+                />
+                <div
+                  className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__appsSelect}`}
+                />
+                <div
+                  className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__appsSelect}`}
+                />
+              </div>
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__appsToggle}`} />
+              <div className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__appsHint}`} />
+            </div>
+
+            <div className={styles.pageSkeleton__appsGrid}>
+              {Array.from({ length: Math.max(cards, 6) }).map((_, index) => (
+                <div
+                  key={`application-${index}`}
+                  className={styles.pageSkeleton__appsCard}
+                >
+                  <div className={styles.pageSkeleton__appsCardTop}>
+                    <div
+                      className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__appsCardEyebrow}`}
+                    />
+                    <div
+                      className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__appsCardBadge}`}
+                    />
+                  </div>
+                  <div
+                    className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__appsCardTitle}`}
+                  />
+                  <div
+                    className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__appsCardLine}`}
+                  />
+                  <div
+                    className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__appsCardLineShort}`}
+                  />
+                  <div className={styles.pageSkeleton__appsCardBottom}>
+                    <div
+                      className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__appsCardRole}`}
+                    />
+                    <div
+                      className={`${styles.pageSkeleton__pulse} ${styles.pageSkeleton__appsCardDate}`}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        </>
+        </div>
       );
     }
 
@@ -282,14 +352,16 @@ const PageSkeleton: React.FC<PageSkeletonProps> = ({
     <div
       className={`${styles.pageSkeleton__wrapper} ${
         variant === "tutor" ? styles.pageSkeleton__wrapperTutor : ""
-      } ${variant === "profile" ? styles.pageSkeleton__wrapperProfile : ""}`}
+      } ${variant === "profile" ? styles.pageSkeleton__wrapperProfile : ""} ${
+        variant === "applications" ? styles.pageSkeleton__wrapperApps : ""
+      }`}
       aria-busy="true"
       aria-live="polite"
     >
       <div
         className={`${styles.pageSkeleton__container} ${
           variant === "profile" ? styles.pageSkeleton__containerProfile : ""
-        }`}
+        } ${variant === "applications" ? styles.pageSkeleton__containerApps : ""}`}
       >
         {status}
         {body}

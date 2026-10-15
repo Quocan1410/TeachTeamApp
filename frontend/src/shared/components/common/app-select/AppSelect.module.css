@@ -81,7 +81,10 @@
   z-index: 201;
   top: calc(100% + 0.35rem);
   left: 0;
-  right: 0;
+  right: auto;
+  min-width: 100%;
+  width: max-content;
+  max-width: min(18rem, 90vw);
   display: flex;
   flex-direction: column;
   gap: 0.55rem;

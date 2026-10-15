@@ -1,0 +1,46 @@
+.page {
+  --analytics-ink: var(--color-text-primary);
+  --analytics-mute: var(--color-text-secondary);
+  --analytics-line: color-mix(in srgb, var(--color-border) 88%, transparent);
+  --analytics-wash: color-mix(in srgb, var(--color-bg-secondary) 55%, var(--color-bg-primary));
+  --analytics-accent: var(--color-primary);
+
+  width: 100%;
+  min-height: calc(100vh - 160px);
+  padding: 5.75rem 1.25rem 3.5rem;
+  background:
+    radial-gradient(
+      1000px 420px at 88% -8%,
+      color-mix(in srgb, var(--analytics-accent) 7%, transparent),
+      transparent 58%
+    ),
+    linear-gradient(180deg, var(--color-bg-primary) 0%, var(--analytics-wash) 100%);
+  color: var(--analytics-ink);
+}
+
+.inner {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--analytics-line);
+}
+
+.title {
+  margin: 0 0 0.4rem;
+  font-size: clamp(1.7rem, 2.4vw, 2.15rem);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+}
+
+.lead {
+  margin: 0;
+  max-width: 34rem;
+  color: var(--analytics-mute);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}

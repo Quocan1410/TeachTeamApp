@@ -28,7 +28,7 @@ const ApplicationDetailHeroActions: React.FC<ApplicationDetailHeroActionsProps> 
       }}
       aria-pressed={isPinned}
       aria-label={isPinned ? "Unpin application" : "Pin application"}
-      title={isPinned ? "Unpin" : "Pin to top"}
+      title={isPinned ? "Unpin" : "Pin to top of list"}
     >
       <PinIcon />
     </button>

@@ -14,6 +14,7 @@ import Toast from "@/shared/components/common/toast/toast";
 import { useToast } from "@/shared/hooks/useNotification";
 import { preloadDashboardRoute } from "@/modules/auth/utils/preloadDashboard";
 import { signInWithPasskey } from "@/modules/auth/utils/passkey";
+import PageSkeleton from "@/shared/components/common/page-skeleton/PageSkeleton";
 import styles from "./signin-form.module.css";
 
 const PRELOAD_TIMEOUT_MS = 12000;
@@ -92,7 +93,18 @@ export default function SignInForm() {
 
   useEffect(() => {
     if (isAuthLoading || !isAuthenticated || !user || showLoginSuccess) return;
-    navigateAfterLogin(getRedirectPath(user));
+    const destination = getRedirectPath(user);
+    navigateAfterLogin(destination);
+    // Soft navigation can stall; hard-fallback so /signin never stays blank.
+    const fallbackId = window.setTimeout(() => {
+      if (!window.location.pathname.startsWith("/signin")) return;
+      if (/^https?:\/\//i.test(destination)) {
+        window.location.assign(destination);
+        return;
+      }
+      window.location.replace(destination);
+    }, 1200);
+    return () => window.clearTimeout(fallbackId);
   }, [
     isAuthLoading,
     isAuthenticated,
@@ -132,8 +144,8 @@ export default function SignInForm() {
     // Router identity changes must not restart this timer and disable Continue again.
   }, [showLoginSuccess, redirectPath]);
 
-  if (!isAuthLoading && isAuthenticated && !showLoginSuccess) {
-    return null;
+  if (isAuthLoading || (isAuthenticated && !showLoginSuccess)) {
+    return <PageSkeleton variant="auth" fullPage={false} />;
   }
 
   const shakeFields = (email: boolean, password: boolean) => {

@@ -102,21 +102,24 @@ const TutorDashboardPage: React.FC = () => {
     });
   };
 
+  const tutorUserId = user?.id;
+  const tutorUserType = user?.userType;
+
   // Authentication and authorization check (client navigation — not redirect())
   useEffect(() => {
     if (authLoading) return;
 
-    if (!isAuthenticated || !user) {
+    if (!isAuthenticated || !tutorUserId || !tutorUserType) {
       router.replace("/signin");
       return;
     }
 
-    if (user.userType !== "candidate") {
-      router.replace(user.userType === "lecturer" ? "/lecturer" : "/");
+    if (tutorUserType !== "candidate") {
+      router.replace(tutorUserType === "lecturer" ? "/lecturer" : "/");
     }
     // Intentionally depend on identity fields only — profile patches (e.g. page
     // tour completion) must not re-trigger auth routing.
-  }, [user?.id, user?.userType, isAuthenticated, authLoading, router]);
+  }, [tutorUserId, tutorUserType, isAuthenticated, authLoading, router]);
 
   // Load initial data
   useEffect(() => {
