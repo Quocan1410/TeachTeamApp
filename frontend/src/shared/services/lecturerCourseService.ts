@@ -31,6 +31,7 @@ export type LecturerManagedCourse = {
   courseName: string;
   semester: string;
   description: string;
+  coverImageUrl?: string | null;
   maxTutors: number;
   maxLabAssistants: number;
   studentsPerClass: number;
@@ -122,6 +123,20 @@ export const LecturerCourseService = {
           capacity: session.capacity,
         })),
       })
+    );
+  },
+
+  uploadCover(courseId: string, file: File) {
+    const formData = new FormData();
+    formData.append("cover", file);
+    return unwrap<{ coverImageUrl: string }>(
+      lecturerCourseAPI.post(`/${courseId}/cover`, formData)
+    );
+  },
+
+  deleteCover(courseId: string) {
+    return unwrap<{ coverImageUrl: null }>(
+      lecturerCourseAPI.delete(`/${courseId}/cover`)
     );
   },
 };

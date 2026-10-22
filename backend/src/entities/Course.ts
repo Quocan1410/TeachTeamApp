@@ -44,6 +44,14 @@ export class Course {
     })
     description?: string;
 
+    /** Lecturer-managed cover shown on My Courses cards. */
+    @Column({
+        type: "varchar",
+        length: 512,
+        nullable: true,
+    })
+    coverImageUrl: string | null;
+
     @Column({
         type: "int",
         default: 5,

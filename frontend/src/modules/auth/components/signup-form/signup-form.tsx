@@ -223,7 +223,7 @@ export default function SignUpForm() {
       return;
     }
     if (user.userType === "lecturer") {
-      router.replace("/lecturer");
+      router.replace("/lecturer/courses");
       return;
     }
     if (user.userType === "candidate") {

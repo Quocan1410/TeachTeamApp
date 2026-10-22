@@ -6,6 +6,9 @@ export async function preloadDashboardRoute(path: string): Promise<void> {
     case "/lecturer":
       await import("@/app/lecturer/LecturerDashboardClient");
       break;
+    case "/lecturer/courses":
+      await import("@/app/lecturer/courses/page");
+      break;
     case "/tutor":
       // Tutor page is a single client bundle; importing the module warms the chunk.
       await import("@/app/tutor/page");

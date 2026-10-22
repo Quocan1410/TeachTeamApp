@@ -25,7 +25,7 @@ function destinationFor(user: User): string {
   if (user.userType === "admin") {
     return process.env.NEXT_PUBLIC_ADMIN_APP_URL || "http://localhost:3001";
   }
-  if (user.userType === "lecturer") return "/lecturer";
+  if (user.userType === "lecturer") return "/lecturer/courses";
   if (user.userType === "candidate") return "/tutor";
   return "/";
 }

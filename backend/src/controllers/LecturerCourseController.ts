@@ -11,6 +11,10 @@ import {
     CourseChangeRequestType,
 } from "../entities/CourseChangeRequest";
 import { AuthenticatedRequest } from "../middleware/authMiddleware";
+import {
+    buildCourseCoverPublicPath,
+    deleteCourseCoverFileIfExists,
+} from "../utils/courseCoverUtils";
 
 const DAY_LABELS = [
     "Sunday",
@@ -61,6 +65,7 @@ function serializeCourse(
         courseName: course.courseName,
         semester: course.semester,
         description: course.description ?? "",
+        coverImageUrl: course.coverImageUrl ?? null,
         maxTutors: course.maxTutors,
         maxLabAssistants: course.maxLabAssistants,
         studentsPerClass: course.studentsPerClass,
@@ -545,6 +550,90 @@ export class LecturerCourseController {
             res.status(500).json({
                 success: false,
                 message: "Failed to save schedule",
+            });
+        }
+    };
+
+    uploadCoverImage = async (req: AuthenticatedRequest, res: Response) => {
+        try {
+            const lecturerId = req.user?.userId;
+            const courseId = req.params.courseId;
+            if (!lecturerId) {
+                res.status(401).json({ success: false, message: "Unauthorized" });
+                return;
+            }
+
+            const course = await this.requireAssignedCourse(lecturerId, courseId);
+            if (!course) {
+                res.status(404).json({
+                    success: false,
+                    message: "Course not found or not assigned",
+                });
+                return;
+            }
+
+            const file = req.file;
+            if (!file) {
+                res.status(400).json({
+                    success: false,
+                    message: "Cover image file is required",
+                });
+                return;
+            }
+
+            const previous = course.coverImageUrl;
+            const coverImageUrl = buildCourseCoverPublicPath(file.filename);
+            course.coverImageUrl = coverImageUrl;
+            await this.courseRepository.save(course);
+            deleteCourseCoverFileIfExists(previous);
+
+            res.json({
+                success: true,
+                message: "Course cover updated",
+                data: { coverImageUrl },
+            });
+        } catch (error) {
+            console.error("uploadCoverImage failed:", error);
+            res.status(500).json({
+                success: false,
+                message: "Failed to upload course cover",
+            });
+        }
+    };
+
+    deleteCoverImage = async (req: AuthenticatedRequest, res: Response) => {
+        try {
+            const lecturerId = req.user?.userId;
+            const courseId = req.params.courseId;
+            if (!lecturerId) {
+                res.status(401).json({ success: false, message: "Unauthorized" });
+                return;
+            }
+
+            const course = await this.requireAssignedCourse(lecturerId, courseId);
+            if (!course) {
+                res.status(404).json({
+                    success: false,
+                    message: "Course not found or not assigned",
+                });
+                return;
+            }
+
+            const previous = course.coverImageUrl;
+            course.coverImageUrl = null;
+            await this.courseRepository.save(course);
+            deleteCourseCoverFileIfExists(previous);
+
+            res.json({
+                success: true,
+                message: "Course cover removed",
+                data: { coverImageUrl: null },
+            });
+        } catch (error) {
+            console.error("deleteCoverImage failed:", error);
+            res.status(500).json({
+                success: false,
+                message: "Failed to remove course cover",
             });
         }
     };
