@@ -1,10 +1,12 @@
 import { expect, test } from "@playwright/test";
-import { lecturer, signIn } from "./helpers";
+import { dismissPageTourIfPresent, lecturer, signIn } from "./helpers";
 
 test.describe("lecturer", () => {
   test.beforeEach(async ({ page }) => {
     await signIn(page, lecturer.email, lecturer.password);
-    await expect(page.getByRole("heading", { name: "Lecturer Dashboard" })).toBeVisible();
+    await page.goto("/lecturer");
+    await dismissPageTourIfPresent(page);
+    await expect(page.getByRole("heading", { name: "Applicants" })).toBeVisible();
   });
 
   test("the dashboard lists assigned applicants", async ({ page }) => {
@@ -14,7 +16,7 @@ test.describe("lecturer", () => {
   });
 
   test("searching by candidate name filters the list", async ({ page }) => {
-    await page.getByPlaceholder("Enter candidate name...").fill("Zoe");
+    await page.getByPlaceholder("Search candidate name...").fill("Zoe");
     await expect(page.getByText("Zoe Hayes")).toBeVisible();
     await expect(page.getByText("Chloe Martin")).toBeHidden();
   });
@@ -28,6 +30,6 @@ test.describe("lecturer", () => {
 
   test("a lecturer cannot stay on the candidate course page", async ({ page }) => {
     await page.goto("/tutor");
-    await expect(page).toHaveURL(/\/lecturer/);
+    await expect(page).toHaveURL(/\/lecturer\/courses/);
   });
 });
