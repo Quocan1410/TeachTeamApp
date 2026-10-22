@@ -115,7 +115,7 @@ const TutorDashboardPage: React.FC = () => {
     }
 
     if (tutorUserType !== "candidate") {
-      router.replace(tutorUserType === "lecturer" ? "/lecturer" : "/");
+      router.replace(tutorUserType === "lecturer" ? "/lecturer/courses" : "/");
     }
     // Intentionally depend on identity fields only — profile patches (e.g. page
     // tour completion) must not re-trigger auth routing.

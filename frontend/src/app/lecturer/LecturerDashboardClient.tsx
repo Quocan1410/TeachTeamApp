@@ -930,46 +930,44 @@ const LecturerDashboardInner: React.FC = () => {
 
   return (
     <div className={styles.lecturerPage__lecturerDashboard}>
-        <div className="container">
-          {/* Dashboard Header */}
-          <div className={styles.lecturerPage__revealHeader}>
-            <DashboardHeader
-              lecturerName={lecturerName}
-              statistics={statistics}
-            />
-          </div>
+      <div className={styles.lecturerPage__inner}>
+        <div className={styles.lecturerPage__revealHeader}>
+          <DashboardHeader
+            lecturerName={lecturerName}
+            statistics={statistics}
+          />
+        </div>
 
-          {/* Enhanced Application Filters */}
-          <div className={styles.lecturerPage__revealFilters}>
-            <ApplicationFilters
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              selectedCourse={selectedCourse}
-              onCourseChange={setSelectedCourse}
-              courses={courses}
-              roleTypeFilter={roleTypeFilter}
-              onRoleTypeChange={setRoleTypeFilter}
-              availabilityFilter={availabilityFilter}
-              onAvailabilityChange={setAvailabilityFilter}
-              skillsFilter={skillsFilterArray}
-              onSkillsFilterChange={handleSkillsFilterChange}
-              availableSkills={availableSkills}
-              statusFilter={statusFilter}
-              onStatusFilterChange={setStatusFilter}
-              sortBy={sortBy}
-              onSortChange={setSortBy}
-              onClearFilters={handleClearAllFilters}
-              activeFilterCount={getActiveFilterCount()}
-            />
-          </div>
+        <div className={styles.lecturerPage__revealFilters}>
+          <ApplicationFilters
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            selectedCourse={selectedCourse}
+            onCourseChange={setSelectedCourse}
+            courses={courses}
+            roleTypeFilter={roleTypeFilter}
+            onRoleTypeChange={setRoleTypeFilter}
+            availabilityFilter={availabilityFilter}
+            onAvailabilityChange={setAvailabilityFilter}
+            skillsFilter={skillsFilterArray}
+            onSkillsFilterChange={handleSkillsFilterChange}
+            availableSkills={availableSkills}
+            statusFilter={statusFilter}
+            onStatusFilterChange={setStatusFilter}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+            onClearFilters={handleClearAllFilters}
+            activeFilterCount={getActiveFilterCount()}
+          />
+        </div>
 
-          {/* Dashboard Tabs */}
-          <div className={styles.lecturerPage__revealTabs}>
-            <DashboardTabs activeTab={activeTab} onTabChange={setActiveTab} />
-          </div>
+        <div className={styles.lecturerPage__revealTabs}>
+          <DashboardTabs activeTab={activeTab} onTabChange={setActiveTab} />
+        </div>
 
-          {/* Main Content */}
-          <div className={`${styles.lecturerPage__dashboardContent} ${styles.lecturerPage__revealContent}`}>
+        <div
+          className={`${styles.lecturerPage__dashboardContent} ${styles.lecturerPage__revealContent}`}
+        >
             {activeTab === "applications" && (
               <div className={styles.lecturerPage__applicationsSection}>
                 <div className={styles.lecturerPage__applicationsGrid}>

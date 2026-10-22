@@ -1,0 +1,72 @@
+.body {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  height: min(52vh, 22rem);
+  border-radius: 1rem;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.hint {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.zoomRow {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.zoomLabel {
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: var(--color-text-secondary);
+}
+
+.zoom {
+  width: 100%;
+  accent-color: var(--color-primary);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.primary,
+.ghost {
+  border-radius: 999px;
+  min-height: 2.4rem;
+  padding: 0.45rem 1.1rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary {
+  border: 0;
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ghost {
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-primary);
+}

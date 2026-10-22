@@ -46,7 +46,7 @@ export default function HomePage() {
     if (user.userType === "candidate") {
       router.replace("/tutor");
     } else if (user.userType === "lecturer") {
-      router.replace("/lecturer");
+      router.replace("/lecturer/courses");
     }
   }, [redirecting, user, router]);
 

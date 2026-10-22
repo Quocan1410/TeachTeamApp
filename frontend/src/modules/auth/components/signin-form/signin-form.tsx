@@ -50,7 +50,7 @@ export default function SignInForm() {
         process.env.NEXT_PUBLIC_ADMIN_APP_URL || "http://localhost:3001"
       );
     }
-    if (targetUser.userType === "lecturer") return "/lecturer";
+    if (targetUser.userType === "lecturer") return "/lecturer/courses";
     if (targetUser.userType === "candidate") return "/tutor";
     return "/";
   }, []);

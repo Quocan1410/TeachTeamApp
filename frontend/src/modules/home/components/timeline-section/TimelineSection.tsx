@@ -109,10 +109,10 @@ const TimelineSection: React.FC<TimelineSectionProps> = ({
             </Link>
           ) : userRole === "lecturer" ? (
             <Link
-              href="/lecturer"
+              href="/lecturer/courses"
               className={`${buttonStyles.button__btn} ${buttonStyles.button__btnPrimary} ${styles.timelineSection__applyButton}`}
             >
-              Go to Lecturer Dashboard
+              Go to My Courses
             </Link>
           ) : null}
         </div>

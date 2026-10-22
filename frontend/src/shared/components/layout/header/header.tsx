@@ -72,7 +72,7 @@ const Header: React.FC = () => {
     !isLoading && isAuthenticated && user?.userType === "lecturer";
   const homeHref =
     !isLoading && user?.userType === "lecturer"
-      ? "/lecturer"
+      ? "/lecturer/courses"
       : !isLoading && user?.userType === "candidate"
         ? "/tutor"
         : "/";
@@ -139,14 +139,6 @@ const Header: React.FC = () => {
                 {isLecturerUser && (
                   <>
                     <Link
-                      href="/lecturer"
-                      className={`${styles["header__nav-link"]} ${
-                        pathname === "/lecturer" ? styles["header--active"] : ""
-                      }`}
-                    >
-                      Applicants
-                    </Link>
-                    <Link
                       href="/lecturer/courses"
                       className={`${styles["header__nav-link"]} ${
                         pathname.startsWith("/lecturer/courses")
@@ -154,7 +146,15 @@ const Header: React.FC = () => {
                           : ""
                       }`}
                     >
-                      My courses
+                      My Courses
+                    </Link>
+                    <Link
+                      href="/lecturer"
+                      className={`${styles["header__nav-link"]} ${
+                        pathname === "/lecturer" ? styles["header--active"] : ""
+                      }`}
+                    >
+                      Applicants
                     </Link>
                     <Link
                       href="/lecturer/analytics"

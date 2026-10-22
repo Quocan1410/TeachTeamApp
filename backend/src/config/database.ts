@@ -178,6 +178,11 @@ const ensureSchemaColumns = async (): Promise<void> => {
             "ALTER TABLE `courses` ADD `applicationDeadline` datetime NULL"
         );
         await ensureColumn(
+            "courses",
+            "coverImageUrl",
+            "ALTER TABLE `courses` ADD `coverImageUrl` varchar(512) NULL"
+        );
+        await ensureColumn(
             "applications",
             "lecturerNotes",
             "ALTER TABLE `applications` ADD `lecturerNotes` text NULL"
@@ -245,6 +250,11 @@ const ensureCoursePublishingSchema = async (): Promise<void> => {
         "courses",
         "isPublished",
         "ALTER TABLE `courses` ADD `isPublished` tinyint NOT NULL DEFAULT 0"
+    );
+    await ensureColumn(
+        "courses",
+        "coverImageUrl",
+        "ALTER TABLE `courses` ADD `coverImageUrl` varchar(512) NULL"
     );
 
     const queryRunner = AppDataSource.createQueryRunner();

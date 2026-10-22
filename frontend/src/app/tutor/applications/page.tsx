@@ -313,7 +313,7 @@ export default function TutorApplicationsPage() {
       return;
     }
     if (user.userType !== "candidate") {
-      router.replace(user.userType === "lecturer" ? "/lecturer" : "/");
+      router.replace(user.userType === "lecturer" ? "/lecturer/courses" : "/");
       return;
     }
 
