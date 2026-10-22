@@ -6,7 +6,9 @@ test.describe("lecturer", () => {
     await signIn(page, lecturer.email, lecturer.password);
     await page.goto("/lecturer");
     await dismissPageTourIfPresent(page);
-    await expect(page.getByRole("heading", { name: "Applicants" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Applicants" })
+    ).toBeVisible();
   });
 
   test("the dashboard lists assigned applicants", async ({ page }) => {
