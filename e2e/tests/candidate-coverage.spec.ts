@@ -1,7 +1,13 @@
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { expect, test } from "@playwright/test";
-import { attachVirtualAuthenticator, lecturer, signIn, signOut } from "./helpers";
+import {
+  attachVirtualAuthenticator,
+  dismissPageTourIfPresent,
+  lecturer,
+  signIn,
+  signOut,
+} from "./helpers";
 
 const email = "e2e.coverage@candidate.edu.au";
 const password = "Password123!";
@@ -144,7 +150,9 @@ test.describe("remaining candidate and lecturer workflows", () => {
   test("the lecturer can shortlist and then decline that new application", async ({ page }) => {
     test.setTimeout(90_000);
     await signIn(page, lecturer.email, lecturer.password);
-    await page.getByPlaceholder("Enter candidate name...").fill("Coverage");
+    await page.goto("/lecturer");
+    await dismissPageTourIfPresent(page);
+    await page.getByPlaceholder("Search candidate name...").fill("Coverage");
     await expect(page.getByText("Eden Coverage").first()).toBeVisible();
     await page.locator("[class*='applicantItem']").filter({ hasText: "Eden Coverage" }).first().click();
     await page.getByRole("button", { name: "Yes, shortlist this profile" }).click();
